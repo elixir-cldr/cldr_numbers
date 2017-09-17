@@ -34,10 +34,10 @@ defmodule CldrNumbers.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, path: "../cldr"},
+      {:ex_cldr, "~> 0.7.0"},
+      {:decimal, "~> 1.4.0"},
       {:poison, "~> 2.1 or ~> 3.0"},
-      {:ex_doc, ">= 0.0.0", only: :dev},
-      {:decimal, "~> 1.4"}
+      {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
 
