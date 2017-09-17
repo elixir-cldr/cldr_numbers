@@ -1,14 +1,22 @@
 defmodule CldrNumbers.Mixfile do
   use Mix.Project
 
+  @version "0.1.0"
+
   def project do
     [
-      app: :cldr_numbers,
-      version: "0.1.0",
+      app: :ex_cldr_numbers,
+      version: @version,
       elixir: "~> 1.5",
+      name: "Cldr Numbers",
+      description: description(),
+      source_url: "https://github.com/kipcole9/cldr",
+      docs: docs(),
+      build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       elixirc_paths: elixirc_paths(Mix.env),
-      deps: deps()
+      deps: deps(),
+      package: package()
     ]
   end
 
@@ -18,12 +26,45 @@ defmodule CldrNumbers.Mixfile do
     ]
   end
 
+  defp description do
+    """
+    Number and currency localization and formatting functions for the Common Locale Data Repository (CLDR).
+    """
+  end
+
   defp deps do
     [
       {:ex_cldr, path: "../cldr"},
       {:poison, "~> 2.1 or ~> 3.0"},
+      {:ex_doc, ">= 0.0.0", only: :dev},
       {:decimal, "~> 1.4"}
     ]
+  end
+
+  defp package do
+    [
+      maintainers: ["Kip Cole"],
+      licenses: ["Apache 2.0"],
+      links: links(),
+      files: [
+        "lib", "config", "mix.exs", "README*", "CHANGELOG*", "LICENSE*"
+      ]
+    ]
+  end
+
+  def docs do
+    [
+      source_ref: "v#{@version}",
+      main: "readme",
+      extras: ["README.md", "CHANGELOG.md"]
+    ]
+  end
+
+  def links do
+    %{
+      "GitHub"    => "https://github.com/kipcole9/cldr_numbers",
+      "Changelog" => "https://github.com/kipcole9/cldr_numbers/blob/v#{@version}/CHANGELOG.md"
+    }
   end
 
   defp elixirc_paths(:test), do: ["lib", "mix", "test"]
