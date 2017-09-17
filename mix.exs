@@ -47,7 +47,7 @@ defmodule CldrNumbers.Mixfile do
       licenses: ["Apache 2.0"],
       links: links(),
       files: [
-        "lib", "config", "mix.exs", "README*", "CHANGELOG*", "LICENSE*"
+        "lib", "src", "config", "mix.exs", "README*", "CHANGELOG*", "LICENSE*"
       ]
     ]
   end
@@ -63,6 +63,7 @@ defmodule CldrNumbers.Mixfile do
   def links do
     %{
       "GitHub"    => "https://github.com/kipcole9/cldr_numbers",
+      "Readme"    => "https://github.com/kipcole9/cldr_numbers/blob/v#{@version}/README.md"
       "Changelog" => "https://github.com/kipcole9/cldr_numbers/blob/v#{@version}/CHANGELOG.md"
     }
   end
