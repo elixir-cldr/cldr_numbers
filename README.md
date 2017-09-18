@@ -6,7 +6,7 @@
 
 ## Introduction and Getting Started
 
-`ex_cldr_numbers` is an addon library application for [ex_cldr](https://hex.pm/packages/ex_cldr) that provides localisation and formatting for numbers and currencies.
+[ex_cldr_numbers](https://hex.pm/packages/ex_cldr_numbers) is an addon library application for [ex_cldr](https://hex.pm/packages/ex_cldr) that provides localization and formatting for numbers and currencies.
 
 The primary api is `Cldr.Number.to_string/2`.  The following examples demonstrate:
 
@@ -40,7 +40,7 @@ Primary documentation is available on [as part of the ex_cldr documentation on h
 
 ## Installation
 
-Note that `:ex_numbers` requires Elixir 1.5 or later.
+Note that [ex_cldr_numbers](https://hex.pm/packages/ex_cldr_numbers) requires Elixir 1.5 or later.
 
 Add `ex_cldr_numbers` as a dependency to your `mix` project:
 
@@ -50,7 +50,7 @@ Add `ex_cldr_numbers` as a dependency to your `mix` project:
       ]
     end
 
-then retrieve `ex_cldr_numbers` from [hex](https://hex.pm/packages/ex_numbers):
+then retrieve `ex_cldr_numbers` from [hex](https://hex.pm/packages/ex_cldr_numbers):
 
     mix deps.get
     mix deps.compile
