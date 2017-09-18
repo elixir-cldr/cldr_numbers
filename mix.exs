@@ -10,7 +10,7 @@ defmodule CldrNumbers.Mixfile do
       elixir: "~> 1.5",
       name: "Cldr Numbers",
       description: description(),
-      source_url: "https://github.com/kipcole9/cldr",
+      source_url: "https://github.com/kipcole9/cldr_numbers",
       docs: docs(),
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
