@@ -458,6 +458,7 @@ defmodule Cldr.Number do
     options =
       defaults
       |> merge(options, fn _k, _v1, v2 -> v2 end)
+      |> canonicalize_locale
       |> adjust_for_currency(options[:currency], options[:format])
       |> resolve_standard_format
       |> adjust_short_forms
@@ -477,12 +478,12 @@ defmodule Cldr.Number do
     |> Map.merge(options, fun)
   end
 
+  defp resolve_standard_format(%{format: format} = options) when format in @short_format_styles do
+    options
+  end
+
   defp resolve_standard_format(options) do
-    if options[:format] in @short_format_styles do
-      options
-    else
-      Map.put(options, :format, lookup_standard_format(options[:format], options))
-    end
+    Map.put(options, :format, lookup_standard_format(options[:format], options))
   end
 
   defp adjust_short_forms(options) do
@@ -500,6 +501,12 @@ defmodule Cldr.Number do
   defp adjust_for_currency(options, _currency, _format) do
     options
   end
+
+  defp canonicalize_locale(%{locale: locale} = options) when is_binary(locale) do
+    Map.put(options, :locale, Locale.new(options[:locale]))
+  end
+
+  defp canonicalize_locale(options), do: options
 
   defp lookup_standard_format(format, options) when is_atom(format) do
     with {:ok, formats} <- formats_for(options[:locale], options[:number_system]) do
