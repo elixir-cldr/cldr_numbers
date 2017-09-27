@@ -7,6 +7,7 @@ defmodule Cldr.Number.Symbol do
   require Cldr
   alias  Cldr.Number
   alias  Cldr.Locale
+  alias  Cldr.LanguageTag
 
   defstruct [:decimal, :group, :exponential, :infinity, :list, :minus_sign,
             :nan, :per_mille, :percent_sign, :plus_sign,
@@ -19,15 +20,16 @@ defmodule Cldr.Number.Symbol do
 
   ## Example:
 
-      iex> Symbol.number_symbols_for("th")
+      iex> Symbol.number_symbols_for(Cldr.Locale.new("th"))
       [latn: %{decimal: ".", exponential: "E", group: ",", infinity: "∞", list: ";",
          minus_sign: "-", nan: "NaN", per_mille: "‰", percent_sign: "%",
          plus_sign: "+", superscripting_exponent: "×", time_separator: ":"},
        thai: %{decimal: ".", exponential: "E", group: ",", infinity: "∞", list: ";",
          minus_sign: "-", nan: "NaN", per_mille: "‰", percent_sign: "%",
          plus_sign: "+", superscripting_exponent: "×", time_separator: ":"}]
+
   """
-  @spec number_symbols_for(Locale.name) :: Keyword.t
+  @spec number_symbols_for(LanguageTag.t) :: Keyword.t
   def number_symbols_for(locale \\ Cldr.get_current_locale())
 
   for locale <- Cldr.Config.known_locales() do
@@ -36,7 +38,7 @@ defmodule Cldr.Number.Symbol do
       |> Cldr.Config.get_locale
       |> Map.get(:number_symbols)
 
-    def number_symbols_for(unquote(locale)) do
+    def number_symbols_for(%LanguageTag{cldr_locale_name: unquote(locale)}) do
       symbols =
         unquote(Macro.escape(symbols))
         |> Enum.map(fn
@@ -72,15 +74,16 @@ defmodule Cldr.Number.Symbol do
 
   ## Example
 
-      iex> Cldr.Number.Symbol.number_symbols_for("th", "thai")
+      iex> Cldr.Number.Symbol.number_symbols_for(Cldr.Locale.new("th"), "thai")
       %{decimal: ".", exponential: "E", group: ",", infinity: "∞", list: ";",
         minus_sign: "-", nan: "NaN", per_mille: "‰", percent_sign: "%",
         plus_sign: "+", superscripting_exponent: "×", time_separator: ":"}
+
   """
-  @spec number_symbols_for(Local.t, atom | binary) ::
+  @spec number_symbols_for(LanguageTag.t, atom | binary) ::
     {:ok, Map.t} | {:no_symbols, String.t} | {:error, String.t}
 
-  def number_symbols_for(locale, number_system) do
+  def number_symbols_for(%LanguageTag{} = locale, number_system) do
     with {:ok, system_name} <- Number.System.system_name_from(number_system, locale),
          {:ok, symbols} <- number_symbols_for(locale)
     do

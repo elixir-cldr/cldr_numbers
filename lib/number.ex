@@ -81,6 +81,8 @@ defmodule Cldr.Number do
   require Cldr
   alias Cldr.Number.Formatter
   alias Cldr.Number.Format.Compiler
+  alias Cldr.Locale
+  alias Cldr.LanguageTag
   import Cldr.Number.Format, only: [formats_for: 2]
 
   @type format_type ::
@@ -174,10 +176,10 @@ defmodule Cldr.Number do
       iex> Cldr.Number.to_string 12345
       {:ok, "12,345"}
 
-      iex> Cldr.Number.to_string 12345, locale: "fr"
+      iex> Cldr.Number.to_string 12345, locale: Cldr.Locale.new("fr")
       {:ok, "12 345"}
 
-      iex> Cldr.Number.to_string 12345, locale: "fr", currency: "USD"
+      iex> Cldr.Number.to_string 12345, locale: Cldr.Locale.new("fr"), currency: "USD"
       {:ok, "12 345,00 $US"}
 
       iex> Cldr.Number.to_string 12345, format: "#E0"
@@ -189,10 +191,12 @@ defmodule Cldr.Number do
       iex> Cldr.Number.to_string -12345, format: :accounting, currency: "THB"
       {:ok, "(THB12,345.00)"}
 
-      iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB", locale: "th"
+      iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB",
+      ...> locale: Cldr.Locale.new("th")
       {:ok, "THB12,345.00"}
 
-      iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB", locale: "th", number_system: :native
+      iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB",
+      ...> locale: Cldr.Locale.new("th"), number_system: :native
       {:ok, "THB๑๒,๓๔๕.๐๐"}
 
       iex> Cldr.Number.to_string 1244.30, format: :long
@@ -251,7 +255,7 @@ defmodule Cldr.Number do
       return looks like:
 
   ```
-      iex> Cldr.Number.to_string(1234, locale: "he", number_system: "hebr")
+      iex> Cldr.Number.to_string(1234, locale: Cldr.Locale.new("he"), number_system: "hebr")
       {:error, {Cldr.UnknownFormatError,
       "The locale \\"he\\" with number system \\"hebr\\" does not define a format :standard."}}
   ```
@@ -281,8 +285,9 @@ defmodule Cldr.Number do
       iex> Cldr.Number.to_string! 12345
       "12,345"
 
-      iex> Cldr.Number.to_string! 12345, locale: "fr"
+      iex> Cldr.Number.to_string! 12345, locale: Cldr.Locale.new("fr")
       "12 345"
+
   """
   @spec to_string!(number, Keyword.t | String.t) :: String.t | Exception.t
   def to_string!(number, options \\ @default_options) do
@@ -363,11 +368,11 @@ defmodule Cldr.Number do
 
   # For Roman numerals
   defp to_string(number, :roman, _options) do
-    Cldr.Rbnf.NumberSystem.roman_upper(number, "root")
+    Cldr.Rbnf.NumberSystem.roman_upper(number, Locale.new("root"))
   end
 
   defp to_string(number, :roman_lower, _options) do
-    Cldr.Rbnf.NumberSystem.roman_lower(number, "root")
+    Cldr.Rbnf.NumberSystem.roman_lower(number, Locale.new("root"))
   end
 
   # For the :currency_long format only
@@ -393,8 +398,9 @@ defmodule Cldr.Number do
     error
   end
 
-  defp to_string(_number, format, options) when is_atom(format)do
-    {:error, {Cldr.UnknownFormatError, "The locale #{inspect options[:locale]} with number system " <>
+  defp to_string(_number, format, options) when is_atom(format) do
+    cldr_locale_name = Map.get(options[:locale], :cldr_locale_name)
+    {:error, {Cldr.UnknownFormatError, "The locale #{inspect cldr_locale_name} with number system " <>
       "#{inspect options[:number_system]} does not define a format " <>
       "#{inspect format}."}}
   end
@@ -557,7 +563,7 @@ defmodule Cldr.Number do
     false
   end
 
-  defp rbnf_error(locale, format) do
-    {Cldr.NoRbnf, "Locale #{inspect locale} does not define an rbnf ruleset #{inspect format}"}
+  defp rbnf_error(%LanguageTag{rbnf_locale_name: rbnf_locale_name}, format) do
+    {Cldr.NoRbnf, "Locale #{inspect rbnf_locale_name} does not define an rbnf ruleset #{inspect format}"}
   end
 end

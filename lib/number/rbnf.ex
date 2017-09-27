@@ -19,13 +19,10 @@ defmodule Cldr.Rbnf do
 
   require Cldr
   alias Cldr.Locale
-
-  @known_locales Enum.filter Cldr.Config.known_locales(), fn (locale) ->
-    Cldr.Config.get_locale(locale).rbnf != %{}
-  end
+  alias Cldr.LanguageTag
 
   def known_locales do
-    @known_locales
+    Cldr.known_rbnf_locales
   end
 
   @doc """
@@ -35,17 +32,19 @@ defmodule Cldr.Rbnf do
 
   """
   @spec for_locale(Locale.t) :: %{} | nil
-  def for_locale(locale \\  Cldr.get_current_locale()) do
-    with {:ok, locale} <- Cldr.valid_locale?(locale) do
-      rbnf_data =
-        locale
-        |> Cldr.Config.get_locale
-        |> Map.get(:rbnf)
+  def for_locale(locale \\ Cldr.get_current_locale())
 
-      {:ok, rbnf_data}
-    else
-      {:error, reason} -> {:error, reason}
-    end
+  def for_locale(%LanguageTag{rbnf_locale_name: nil} = language_tag) do
+    raise inspect(language_tag)
+  end
+
+  def for_locale(%LanguageTag{rbnf_locale_name: rbnf_locale_name}) do
+    rbnf_data =
+      rbnf_locale_name
+      |> Cldr.Config.get_locale
+      |> Map.get(:rbnf)
+
+    {:ok, rbnf_data}
   end
 
   @doc """
@@ -71,10 +70,10 @@ defmodule Cldr.Rbnf do
   """
   @spec for_all_locales :: %{}
   def for_all_locales do
-    Enum.map(known_locales(), fn locale ->
+    Enum.map(known_locales(), fn locale_name ->
+      locale = Locale.new(locale_name)
       Enum.map(for_locale!(locale), fn {group, sets} ->
-        locale = String.replace(locale, "_", "-")
-        {group, %{locale => sets}}
+        {group, %{locale_name => sets}}
       end)
       |> Enum.into(%{})
     end)
@@ -87,6 +86,7 @@ defmodule Cldr.Rbnf do
     @doc false
     def all_rules do
       known_locales()
+      |> Enum.map(&Cldr.Locale.new/1)
       |> Enum.map(&for_locale!/1)
       |> Enum.flat_map(&Map.values/1) # Get sets from groups
       |> Enum.flat_map(&Map.values/1) # Get rules from set

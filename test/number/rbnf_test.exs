@@ -1,5 +1,6 @@
 defmodule Rbnf.Test do
   use ExUnit.Case
+  alias Cldr.Locale
 
   test "rbnf spellout" do
     assert {:ok, "twenty-five thousand three hundred forty"} =
@@ -14,19 +15,19 @@ defmodule Rbnf.Test do
 
   test "rbnf ordinal" do
     assert {:ok, "123,456th"} = Cldr.Number.to_string(123456, format: :ordinal)
-    assert {:ok, "123 456e"} = Cldr.Number.to_string(123456, format: :ordinal, locale: "fr")
+    assert {:ok, "123 456e"} = Cldr.Number.to_string(123456, format: :ordinal, locale: Locale.new("fr"))
   end
 
   test "rbnf improper fraction" do
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(123.456, "en") == "one hundred and twenty-three point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-123.456, "en") == "minus one hundred and twenty-three point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-0.456, "en") == "minus zero point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(0.456, "en") == "zero point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal(0.456, "en") == "zero point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal(0, "en") == "zero"
-    assert Cldr.Rbnf.Spellout.spellout_ordinal(0, "en") == "zeroth"
-    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.0, "en") == "0"
-    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.1, "en") == "0.1"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(123.456, Locale.new("en")) == "one hundred and twenty-three point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-123.456, Locale.new("en")) == "minus one hundred and twenty-three point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-0.456, Locale.new("en")) == "minus zero point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(0.456, Locale.new("en")) == "zero point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal(0.456, Locale.new("en")) == "zero point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal(0, Locale.new("en")) == "zero"
+    assert Cldr.Rbnf.Spellout.spellout_ordinal(0, Locale.new("en")) == "zeroth"
+    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.0, Locale.new("en")) == "0"
+    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.1, Locale.new("en")) == "0.1"
   end
 
   test "roman numerals" do
@@ -52,11 +53,11 @@ defmodule Rbnf.Test do
   Cldr.Rbnf.TestSupport.rbnf_tests fn (name, tests, module, function, locale) ->
     test name do
       Enum.each unquote(Macro.escape(tests)), fn {test_data, test_result} ->
-        if apply(unquote(module), unquote(function), [String.to_integer(test_data), unquote(locale)])
+        if apply(unquote(module), unquote(function), [String.to_integer(test_data), unquote(Macro.escape(locale))])
                   != test_result do
-          IO.puts "Test is failing on locale #{unquote(locale)} for value #{test_data}"
+          IO.puts "Test is failing on locale #{unquote(locale.requested_locale_name)} for value #{test_data}"
         end
-        assert apply(unquote(module), unquote(function), [String.to_integer(test_data), unquote(locale)])
+        assert apply(unquote(module), unquote(function), [String.to_integer(test_data), unquote(Macro.escape(locale))])
           == test_result
       end
     end

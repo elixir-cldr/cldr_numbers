@@ -11,14 +11,14 @@ defmodule Cldr.Rbnf.NumberSystem do
   The functions on this module are defined at compile time based upon the RBNF rules
   defined in the Unicode CLDR data repository.  Available rules are identified by:
 
-      iex> Cldr.Rbnf.NumberSystem.rule_sets "root"
+      iex> Cldr.Rbnf.NumberSystem.rule_sets Cldr.Locale.new("root")
       [:tamil, :roman_upper, :roman_lower, :hebrew_item, :hebrew_0_99, :hebrew,
       :greek_upper, :greek_lower, :georgian, :ethiopic_p1, :ethiopic,
       :cyrillic_lower_1_10, :cyrillic_lower, :armenian_upper, :armenian_lower]
 
   A rule can then be invoked on an available rule_set.  For example
 
-      iex> Cldr.Rbnf.NumberSystem.roman_upper 123, "root"
+      iex> Cldr.Rbnf.NumberSystem.roman_upper 123, Cldr.Locale.new("root")
       "CXXIII"
 
   This call is equivalent to the call through the public API of:

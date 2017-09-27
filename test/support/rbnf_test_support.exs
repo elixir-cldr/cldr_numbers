@@ -18,8 +18,8 @@ defmodule Cldr.Rbnf.TestSupport do
     |> List.delete("hr")
     |> List.delete("uk")
 
-    for locale <- locales do
-      json_data_file = "./test/support/rbnf/#{locale}/rbnf_test.json"
+    for locale_name <- locales do
+      json_data_file = "./test/support/rbnf/#{locale_name}/rbnf_test.json"
       file_data = File.read(json_data_file)
 
       case file_data do
@@ -29,7 +29,9 @@ defmodule Cldr.Rbnf.TestSupport do
           json_data = json_string
           |> Poison.decode!
 
-          if (rbnf_data = Cldr.Rbnf.for_locale!(locale)) != %{} do
+          locale = Cldr.Locale.new(locale_name)
+          if Cldr.known_rbnf_locale?(locale_name) do
+            rbnf_data = Cldr.Rbnf.for_locale!(locale)
             Enum.each Map.keys(json_data), fn rule_group ->
               if rbnf_data[String.to_existing_atom(rule_group)] do
                 module = "Elixir.Cldr.Rbnf.#{rule_group}"
@@ -41,7 +43,7 @@ defmodule Cldr.Rbnf.TestSupport do
                   |> String.replace("-","_")
                   |> String.to_atom
 
-                  name = "#{module}.#{function} for locale #{inspect locale}"
+                  name = "#{module}.#{function} for locale #{inspect locale_name}"
                   |> String.replace("−", "-")
 
                   fun.(name, tests, module, function, locale)

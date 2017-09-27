@@ -151,7 +151,7 @@ defmodule Cldr.Rbnf.Processor do
 
   defp define_rule("-x", _range, rule_group, locale, body) do
     quote do
-      def unquote(rule_group)(number, unquote(locale))
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
       when Kernel.and(is_number(number), number < 0), do: unquote(body)
     end
   end
@@ -159,7 +159,7 @@ defmodule Cldr.Rbnf.Processor do
   # Improper fraction rule
   defp define_rule("x.x", _range, rule_group, locale, body) do
     quote do
-      def unquote(rule_group)(number, unquote(locale))
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
         when is_float(number), do: unquote(body)
     end
   end
@@ -170,7 +170,7 @@ defmodule Cldr.Rbnf.Processor do
 
   defp define_rule(0, "undefined", rule_group, locale, body) do
     quote do
-      def unquote(rule_group)(number, unquote(locale))
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
       when is_integer(number), do: unquote(body)
     end
   end
@@ -178,7 +178,7 @@ defmodule Cldr.Rbnf.Processor do
   defp define_rule(base_value, "undefined", rule_group, locale, body)
   when is_integer(base_value) do
     quote do
-      def unquote(rule_group)(number, unquote(locale))
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
       when Kernel.and(is_integer(number), number >= unquote(base_value)),
         do: unquote(body)
     end
@@ -187,7 +187,7 @@ defmodule Cldr.Rbnf.Processor do
   defp define_rule(base_value, range, rule_group, locale, body)
   when is_integer(range) and is_integer(base_value) do
     quote do
-      def unquote(rule_group)(number, unquote(locale))
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
       when Kernel.and(is_integer(number),
         Kernel.and(number >= unquote(base_value), number < unquote(range))),
       do: unquote(body)
@@ -197,7 +197,7 @@ defmodule Cldr.Rbnf.Processor do
   defp define_rule(base_value, "undefined", rule_group, locale, body)
   when is_integer(base_value) do
     quote do
-      def unquote(rule_group)(number, unquote(locale))
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
         when Kernel.and(is_integer(number), number >= unquote(base_value)),
       do: unquote(body)
     end
@@ -223,7 +223,7 @@ defmodule Cldr.Rbnf.Processor do
   defp rule_body(locale, rule_group, rule, parsed) do
     quote do
       do_rule(number,
-        unquote(locale),
+        unquote(Macro.escape(Cldr.Locale.new(locale))),
         unquote(rule_group),
         unquote(Macro.escape(rule)),
         unquote(Macro.escape(parsed)))
@@ -249,9 +249,9 @@ defmodule Cldr.Rbnf.Processor do
 
   defmacro __before_compile__(env) do
     quote do
-      def rule_sets(locale) do
+      def rule_sets(%Cldr.LanguageTag{rbnf_locale_name: cldr_locale_name}) do
         unquote(Macro.escape(Module.get_attribute(env.module, :public_rulesets)))
-        |> Map.get(locale)
+        |> Map.get(cldr_locale_name)
       end
     end
   end

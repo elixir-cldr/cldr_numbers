@@ -4,6 +4,7 @@ defmodule Cldr.Currency do
   and to return metadata for currencies.
   """
   require Cldr
+  alias Cldr.LanguageTag
 
   @type format :: :standard |
     :accounting |
@@ -284,7 +285,7 @@ defmodule Cldr.Currency do
       name: "Thai Baht", narrow_symbol: "฿", rounding: 0, symbol: "THB",
       tender: true}
   """
-  @spec for_code(code, Cldr.locale) :: %{}
+  @spec for_code(code, LanguageTag.t) :: %{}
   def for_code(currency_code, locale \\ Cldr.get_current_locale()) do
     case validate_currency_code(currency_code) do
       {:error, {_exception, _message}} = error ->
@@ -302,13 +303,13 @@ defmodule Cldr.Currency do
   @spec for_locale(Cldr.locale) :: Map.t
   def for_locale(locale \\ Cldr.get_current_locale())
 
-  for locale <- Cldr.Config.known_locales() do
+  for locale_name <- Cldr.Config.known_locales() do
     currencies =
-      locale
+      locale_name
       |> Cldr.Config.get_locale
       |> Map.get(:currencies)
 
-    def for_locale(unquote(locale)) do
+    def for_locale(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
       unquote(Macro.escape(currencies))
       |> Enum.map(fn {k, v} -> {k, struct(__MODULE__, v)} end)
       |> Enum.into(%{})
