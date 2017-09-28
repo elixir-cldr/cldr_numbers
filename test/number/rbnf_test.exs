@@ -50,6 +50,13 @@ defmodule Rbnf.Test do
     assert Cldr.Number.to_string(123, format: :roman) == {:ok, "CXXIII"}
   end
 
+  test "no rule is available for number" do
+    assert Cldr.Rbnf.Spellout.spellout_numbering_year(-24, Cldr.Locale.new("zh-Hant")) ==
+      {:error,
+        {Cldr.Rbnf.NoRuleForNumber,
+          "rule group :spellout_numbering_year for locale \"zh-Hant\" does not know how to process -24"}}
+  end
+
   Cldr.Rbnf.TestSupport.rbnf_tests fn (name, tests, module, function, locale) ->
     test name do
       Enum.each unquote(Macro.escape(tests)), fn {test_data, test_result} ->
