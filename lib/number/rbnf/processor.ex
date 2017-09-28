@@ -124,27 +124,42 @@ defmodule Cldr.Rbnf.Processor do
   @public_rulesets :public_rulesets
   def define_rules(rule_group_name, env) do
     Module.register_attribute(env.module, @public_rulesets, [])
-    iterate_rules rule_group_name, fn (rule_group, locale, access, rule) ->
-      {:ok, parsed} = Cldr.Rbnf.Rule.parse(rule.definition)
+    iterate_rules rule_group_name, fn
+      (rule_group, locale, "public", :error) ->
+        define_rule(:error, nil, rule_group, locale, nil)
+        |> Code.eval_quoted([], env)
+      (_rule_group, _locale, "private", :error) ->
+        nil
+      (rule_group, locale, access, rule) ->
+        {:ok, parsed} = Cldr.Rbnf.Rule.parse(rule.definition)
 
-      function_body = rule_body(locale, rule_group, rule, parsed)
+        function_body = rule_body(locale, rule_group, rule, parsed)
 
-      rule.base_value
-      |> define_rule(rule.range, rule_group, locale, function_body)
-      |> add_function_to_exports(access, env.module, locale)
-      |> Code.eval_quoted([], env)
+        rule.base_value
+        |> define_rule(rule.range, rule_group, locale, function_body)
+        |> add_function_to_exports(access, env.module, locale)
+        |> Code.eval_quoted([], env)
     end
   end
 
   defp iterate_rules(rule_group_type, fun) do
     all_rules = Cldr.Rbnf.for_all_locales[rule_group_type]
     unless is_nil(all_rules) do
-      for {locale, _rule_group} <-  all_rules do
-        for {rule_group, %{access: access, rules: rules}} <- all_rules[locale] do
+      for {locale_name, _rule_group} <-  all_rules do
+        for {rule_group, %{access: access, rules: rules}} <- all_rules[locale_name] do
           for rule <- rules do
-            fun.(rule_group, locale, access, rule)
+            fun.(rule_group, locale_name, access, rule)
           end
+          fun.(rule_group, locale_name, access, :error)
         end
+      end
+    end
+  end
+
+  defp define_rule(:error, _range, rule_group, locale_name, _body) do
+    quote do
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)}) do
+        {:error, rbnf_rule_error(number, unquote(rule_group), unquote(locale_name))}
       end
     end
   end
@@ -247,11 +262,17 @@ defmodule Cldr.Rbnf.Processor do
     function
   end
 
+  def rbnf_rule_error(number, rule_group, locale_name) do
+    {Cldr.Rbnf.NoRuleForNumber,
+      "rule group #{inspect rule_group} for locale #{inspect locale_name} does not " <>
+      "know how to process #{inspect number}"}
+  end
+
   defmacro __before_compile__(env) do
     quote do
-      def rule_sets(%Cldr.LanguageTag{rbnf_locale_name: cldr_locale_name}) do
+      def rule_sets(%Cldr.LanguageTag{rbnf_locale_name: rbnf_locale_name}) do
         unquote(Macro.escape(Module.get_attribute(env.module, :public_rulesets)))
-        |> Map.get(cldr_locale_name)
+        |> Map.get(rbnf_locale_name)
       end
     end
   end
