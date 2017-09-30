@@ -132,7 +132,7 @@ defmodule Cldr.Currency do
     locale = options[:locale]
 
     with {:ok, currency_code} <- validate_currency_code(currency),
-         {:ok, locale} <- Cldr.valid_locale?(locale)
+         {:ok, locale} <- Cldr.validate_locale(locale)
     do
       currency_data = for_code(currency_code, locale)
       counts = Map.get(currency_data, :count)

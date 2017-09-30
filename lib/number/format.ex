@@ -265,7 +265,7 @@ defmodule Cldr.Number.Format do
   def formats_for(locale \\ Cldr.get_current_locale(), number_system \\ :default)
 
   def formats_for(%LanguageTag{} = locale, number_system) do
-    with {:ok, _} <- Cldr.valid_locale?(locale),
+    with {:ok, _} <- Cldr.validate_locale(locale),
          {:ok, system_name} <- System.system_name_from(number_system, locale)
     do
       formats =
@@ -454,7 +454,7 @@ defmodule Cldr.Number.Format do
   def format_system_types_for(locale \\ Cldr.get_current_locale())
 
   def format_system_types_for(%LanguageTag{} = locale) do
-    with {:ok, _} <- Cldr.valid_locale?(locale) do
+    with {:ok, _} <- Cldr.validate_locale(locale) do
       {:ok, systems} = System.number_systems_for(locale)
       {:ok, Map.keys(systems)}
     else

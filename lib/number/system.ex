@@ -113,7 +113,7 @@ defmodule Cldr.Number.System do
   Returns the number systems available for a locale
   or `{:error, message}` if the locale is not known.
 
-  * `locale` is any valid locale returned by `Cldr.known_locales()`
+  * `locale` is any locale returned by `Cldr.Locale.new/1`
 
   ## Examples
 
@@ -149,7 +149,7 @@ defmodule Cldr.Number.System do
   Returns the number systems available for a locale
   or raises if the locale is not known.
 
-  * `locale` is any valid locale returned by `Cldr.known_locales()`
+  * `locale` is any locale returned by `Cldr.Locale.new/1`
 
   ## Examples
 
@@ -173,7 +173,7 @@ defmodule Cldr.Number.System do
   @doc """
   Returns the actual number system from a number system type.
 
-  * `locale` is any valid locale returned by `Cldr.known_locales()`
+  * `locale` is any locale returned by `Cldr.Locale.new/1`
 
   * `system_name` is any name of name type returned by
   `Cldr.Number.System.number_system_types/0`
@@ -219,7 +219,7 @@ defmodule Cldr.Number.System do
   a locale or an `{:error, message}` tuple if the locale
   is not known.
 
-  * `locale` is any valid locale returned by `Cldr.known_locales()`
+  * `locale` is any locale returned by `Cldr.Locale.new/1`
 
   ## Examples
 
@@ -239,7 +239,7 @@ defmodule Cldr.Number.System do
   @spec number_system_names_for(LanguageTag.t) :: [String.t, ...]
 
   def number_system_names_for(%LanguageTag{} = locale \\ Cldr.default_locale) do
-    with {:ok, _} <- Cldr.valid_locale?(locale),
+    with {:ok, _} <- Cldr.validate_locale(locale),
          {:ok, systems} <- number_systems_for(locale)
     do
       {:ok, systems |> Map.values |> Enum.uniq}
@@ -325,7 +325,7 @@ defmodule Cldr.Number.System do
   end
 
   def system_name_from(system_name, %LanguageTag{} = locale) when is_atom(system_name) do
-    with {:ok, _} <- Cldr.valid_locale?(locale),
+    with {:ok, _} <- Cldr.validate_locale(locale),
          {:ok, number_systems} <- number_systems_for(locale)
     do
       cond do
@@ -370,7 +370,7 @@ defmodule Cldr.Number.System do
       {:ok, List.t} | {:error, tuple}
 
   def number_systems_like(%LanguageTag{} = locale, number_system) do
-    with {:ok, _} <- Cldr.valid_locale?(locale),
+    with {:ok, _} <- Cldr.validate_locale(locale),
          {:ok, %{digits: digits}} <- number_system_for(locale, number_system),
          {:ok, symbols} <- Symbol.number_symbols_for(locale, number_system),
          {:ok, names} <- number_system_names_for(locale)
@@ -553,7 +553,7 @@ defmodule Cldr.Number.System do
       if function_exported?(module, function, 2) do
         locale = Locale.new(locale_name)
         def to_system(number, unquote(system)) do
-          with {:ok, _locale} <- Cldr.valid_locale?(unquote(Macro.escape(locale))) do
+          with {:ok, _locale} <- Cldr.validate_locale(unquote(Macro.escape(locale))) do
             {:ok, unquote(module).unquote(function)(number, unquote(Macro.escape(locale)))}
           else
             {:error, reason} -> {:error, reason}

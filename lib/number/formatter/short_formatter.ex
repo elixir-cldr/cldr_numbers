@@ -65,7 +65,7 @@ defmodule Cldr.Number.Formatter.Short do
   def to_string(number, style, options) do
     locale = (options[:locale] || Cldr.get_current_locale())
 
-    with {:ok, _} <- Cldr.valid_locale?(locale),
+    with {:ok, _} <- Cldr.validate_locale(locale),
          {:ok, number_system} <- System.system_name_from(options[:number_system], locale)
     do
       do_to_short_string(number, style, locale, number_system, options)
