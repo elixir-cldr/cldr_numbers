@@ -2,6 +2,7 @@ defmodule Doc.Test do
   use ExUnit.Case, async: true
 
   doctest Cldr.Number
+  doctest Cldr.Currency
   doctest Cldr.Number.String
   doctest Cldr.Number.Format
   doctest Cldr.Number.System

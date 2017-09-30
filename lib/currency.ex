@@ -4,6 +4,7 @@ defmodule Cldr.Currency do
   and to return metadata for currencies.
   """
   require Cldr
+  alias Cldr.Locale
   alias Cldr.LanguageTag
 
   @type format :: :standard |
@@ -105,7 +106,7 @@ defmodule Cldr.Currency do
   * `currency` is any currency returned by `Cldr.Currency.known_currencies/0`
 
   * `options` is a keyword list of options
-    * `:locale` is any locale returned by `Cldr.known_locales/0`.  The
+    * `:locale` is any locale returned by `Cldr.Locale.new/1`.  The
     default is `Cldr.get_current_locale/0`
 
   ## Examples
@@ -116,13 +117,13 @@ defmodule Cldr.Currency do
       iex> Cldr.Currency.pluralize 3, :USD
       "US dollars"
 
-      iex> Cldr.Currency.pluralize 12, :USD, locale: "zh"
+      iex> Cldr.Currency.pluralize 12, :USD, locale: Cldr.Locale.new("zh")
       "美元"
 
-      iex> Cldr.Currency.pluralize 12, :USD, locale: "fr"
+      iex> Cldr.Currency.pluralize 12, :USD, locale: Cldr.Locale.new("fr")
       "dollars des États-Unis"
 
-      iex> Cldr.Currency.pluralize 1, :USD, locale: "fr"
+      iex> Cldr.Currency.pluralize 1, :USD, locale: Cldr.Locale.new("fr")
       "dollar des États-Unis"
 
   """
@@ -287,20 +288,23 @@ defmodule Cldr.Currency do
   """
   @spec for_code(code, LanguageTag.t) :: %{}
   def for_code(currency_code, locale \\ Cldr.get_current_locale()) do
-    case validate_currency_code(currency_code) do
-      {:error, {_exception, _message}} = error ->
-        error
-      {:ok, code} ->
-        locale
-        |> for_locale
-        |> Map.get(code)
+    with \
+      {:ok, code} <- validate_currency_code(currency_code),
+      {:ok, locale} <- Cldr.validate_locale(locale)
+    do
+      locale
+      |> for_locale
+      |> Map.get(code)
+    else
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
   @doc """
   Returns the currency metadata for a locale.
   """
-  @spec for_locale(Cldr.locale) :: Map.t
+  @spec for_locale(Locale.name | LanguageTag.t) :: Map.t
   def for_locale(locale \\ Cldr.get_current_locale())
 
   for locale_name <- Cldr.Config.known_locales() do
@@ -315,6 +319,18 @@ defmodule Cldr.Currency do
       |> Enum.into(%{})
     end
   end
+
+  def for_locale(locale_name) when is_binary(locale_name) do
+    case Locale.canonical_language_tag(locale_name) do
+      {:ok, locale} -> for_locale(locale)
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def for_locale(locale) do
+    {:error, Locale.locale_error(locale)}
+  end
+
 
   @doc """
   Normalizes the representation of a currency code.
