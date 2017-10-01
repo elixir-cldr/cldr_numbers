@@ -1,9 +1,12 @@
 defmodule Cldr.Number do
   @moduledoc """
-  The main public API for the formatting of numbers and currencies.
+  Formats numbers and currencies based upon CLDR's decimal formats specification.
 
-  Provides the public API for the formatting of numbers based upon
-  CLDR's decimal formats specification documentated [Unicode TR35](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Formats)
+  The format specification is documentated in [Unicode TR35](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Formats).
+  There are several classes of formatting including non-scientific, scientific,
+  rules based (for spelling and ordinal formats), compact formats that display `1k`
+  rather than `1,000` and so on.  See `Cldr.Number.to_string/2` for specific formatting
+  options.
 
   ### Non-Scientific Notation Formatting
 
@@ -95,15 +98,6 @@ defmodule Cldr.Number do
     :accounting |
     :scientific |
     :currency
-
-  @default_options [
-    format:        :standard,
-    currency:      nil,
-    cash:          false,
-    rounding_mode: :half_even,
-    number_system: :default,
-    locale:        Cldr.get_current_locale()
-  ]
 
   @short_format_styles [
     :currency_short,
@@ -261,9 +255,9 @@ defmodule Cldr.Number do
   ```
   """
   @spec to_string(number, Keyword.t | Map.t) :: {:ok, String.t} | {:error, {atom, String.t}}
-  def to_string(number, options \\ @default_options) do
+  def to_string(number, options \\ default_options()) do
     {format, options} = options
-    |> normalize_options(@default_options)
+    |> normalize_options(default_options())
     |> detect_negative_number(number)
 
     with :ok <- currency_format_has_code(format, currency_format?(format), options[:currency]) do
@@ -290,13 +284,24 @@ defmodule Cldr.Number do
 
   """
   @spec to_string!(number, Keyword.t | String.t) :: String.t | Exception.t
-  def to_string!(number, options \\ @default_options) do
+  def to_string!(number, options \\ default_options()) do
     case to_string(number, options) do
       {:error, {exception, message}} ->
         raise exception, message
       {:ok, string} ->
         string
     end
+  end
+
+  defp default_options do
+    [
+      format:        :standard,
+      currency:      nil,
+      cash:          false,
+      rounding_mode: :half_even,
+      number_system: :default,
+      locale:        Cldr.get_current_locale()
+    ]
   end
 
   # For ordinal numbers
