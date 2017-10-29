@@ -1,5 +1,11 @@
 # Changelog
 
+## Cldr_Numbers v0.2.1 October 30th, 2017
+
+### Bug Fixes
+
+* Ensures currency structs are built at compile (thanks to @danschultzer)
+
 ## Cldr_Numbers v0.2.0 October 25th, 2017
 
 ### Breaking changes
