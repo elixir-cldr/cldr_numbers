@@ -312,10 +312,10 @@ defmodule Cldr.Currency do
       locale_name
       |> Cldr.Config.get_locale
       |> Map.get(:currencies)
+      |> Enum.map(fn {k, v} -> {k, struct(@struct, v)} end)
 
     def for_locale(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
       unquote(Macro.escape(currencies))
-      |> Enum.map(fn {k, v} -> {k, struct(__MODULE__, v)} end)
       |> Enum.into(%{})
     end
   end
