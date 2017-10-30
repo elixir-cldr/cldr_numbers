@@ -35,6 +35,12 @@ Primary documentation is available [as part of the ex_cldr documentation on hex]
 
 ## Known restrictions and limitations
 
+TR35 states that for scientific formats (i.e. mantissa and exponent):
+
+> The maximum number of integer digits, if present, specifies the exponent grouping. The most common use of this is to generate engineering notation, in which the exponent is a multiple of three, for example, "##0.###E0". The number 12345 is formatted using "##0.####E0" as "12.345E3".
+
+`ex_cldr_numbers` does not currently support such functionality.
+
 ## Installation
 
 Note that [ex_cldr_numbers](https://hex.pm/packages/ex_cldr_numbers) requires Elixir 1.5 or later.
