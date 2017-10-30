@@ -27,10 +27,7 @@ iex> Cldr.Number.to_string 12345, format: "#E0"
 For help in `iex`:
 
 ```elixir
-iex> h Cldr.Date.to_string
-iex> h Cldr.Time.to_string
-iex> h Cldr.DateTime.to_string
-iex> h Cldr.DateTime.Relative.to_string
+iex> h Cldr.Number.to_string
 ```
 ## Documentation
 
@@ -46,7 +43,7 @@ Add `ex_cldr_numbers` as a dependency to your `mix` project:
 
     defp deps do
       [
-        {:ex_cldr_numbers, "~> 0.1.0"}
+        {:ex_cldr_numbers, "~> 0.2.2"}
       ]
     end
 
