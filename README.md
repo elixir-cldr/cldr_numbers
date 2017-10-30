@@ -31,7 +31,7 @@ iex> h Cldr.Number.to_string
 ```
 ## Documentation
 
-Primary documentation is available on [as part of the ex_cldr documentation on hex](https://hexdocs.pm/ex_cldr/3_number_formats.html)
+Primary documentation is available [as part of the ex_cldr documentation on hex](https://hexdocs.pm/ex_cldr/3_number_formats.html)
 
 ## Known restrictions and limitations
 
