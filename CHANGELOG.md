@@ -1,5 +1,11 @@
 # Changelog
 
+## Cldr_Numbers v0.2.2 October 30th, 2017
+
+### Enhancements
+
+* Move to `ex_cldr` 0.8.2 which changes Cldr.Number.PluralRule.plural_rule/3 implementation for Float so that it no longer casts to a Decimal nor delegates to the Decimal path".  This will have a small positive impact on performance
+
 ## Cldr_Numbers v0.2.1 October 30th, 2017
 
 ### Bug Fixes
