@@ -1,5 +1,9 @@
 # Changelog
 
+## Cldr_Numbers v0.2.3 November 1st, 2017
+
+* Move to `ex_cldr` 0.9.0
+
 ## Cldr_Numbers v0.2.2 October 30th, 2017
 
 ### Enhancements
