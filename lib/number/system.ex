@@ -63,7 +63,7 @@ defmodule Cldr.Number.System do
   ## Example
 
       iex> Cldr.Number.System.number_systems |> Enum.count
-      77
+      78
 
   """
   @spec number_systems :: Map.t
@@ -79,17 +79,14 @@ defmodule Cldr.Number.System do
   ## Example
 
       iex> Cldr.Number.System.number_system_names
-      [:adlm, :ahom, :arab, :arabext, :armn, :armnlow, :bali,
-      :beng, :bhks, :brah, :cakm, :cham, :cyrl, :deva, :ethi,
-      :fullwide, :geor, :grek, :greklow, :gujr, :guru, :hanidays,
-      :hanidec, :hans, :hansfin, :hant, :hantfin, :hebr, :hmng,
-      :java, :jpan, :jpanfin, :kali, :khmr, :knda, :lana, :lanatham,
-      :laoo, :latn, :lepc, :limb, :mathbold, :mathdbl, :mathmono,
-      :mathsanb, :mathsans, :mlym, :modi, :mong, :mroo, :mtei,
-      :mymr, :mymrshan, :mymrtlng, :newa, :nkoo, :olck, :orya,
-      :osma, :roman, :romanlow, :saur, :shrd, :sind, :sinh, :sora,
-      :sund, :takr, :talu, :taml, :tamldec, :telu, :thai, :tibt,
-      :tirh, :vaii, :wara]
+      [:adlm, :ahom, :arab, :arabext, :armn, :armnlow, :bali, :beng, :bhks, :brah,
+       :cakm, :cham, :cyrl, :deva, :ethi, :fullwide, :geor, :gonm, :grek, :greklow,
+       :gujr, :guru, :hanidays, :hanidec, :hans, :hansfin, :hant, :hantfin, :hebr,
+       :hmng, :java, :jpan, :jpanfin, :kali, :khmr, :knda, :lana, :lanatham, :laoo,
+       :latn, :lepc, :limb, :mathbold, :mathdbl, :mathmono, :mathsanb, :mathsans,
+       :mlym, :modi, :mong, :mroo, :mtei, :mymr, :mymrshan, :mymrtlng, :newa, :nkoo,
+       :olck, :orya, :osma, :roman, :romanlow, :saur, :shrd, :sind, :sinh, :sora,
+       :sund, :takr, :talu, :taml, :tamldec, :telu, :thai, :tibt, :tirh, :vaii, :wara]
 
   """
   @number_system_names @number_systems |> Map.keys |> Enum.sort
@@ -459,13 +456,13 @@ defmodule Cldr.Number.System do
 
       iex> Cldr.Number.System.known_number_systems
       [:adlm, :ahom, :arab, :arabext, :armn, :armnlow, :bali, :beng, :bhks, :brah,
-       :cakm, :cham, :cyrl, :deva, :ethi, :fullwide, :geor, :grek, :greklow, :gujr,
-       :guru, :hanidays, :hanidec, :hans, :hansfin, :hant, :hantfin, :hebr, :hmng,
-       :java, :jpan, :jpanfin, :kali, :khmr, :knda, :lana, :lanatham, :laoo, :latn,
-       :lepc, :limb, :mathbold, :mathdbl, :mathmono, :mathsanb, :mathsans, :mlym,
-       :modi, :mong, :mroo, :mtei, :mymr, :mymrshan, :mymrtlng, :newa, :nkoo, :olck,
-       :orya, :osma, :roman, :romanlow, :saur, :shrd, :sind, :sinh, :sora, :sund,
-       :takr, :talu, :taml, :tamldec, :telu, :thai, :tibt, :tirh, :vaii, :wara]
+       :cakm, :cham, :cyrl, :deva, :ethi, :fullwide, :geor, :gonm, :grek, :greklow,
+       :gujr, :guru, :hanidays, :hanidec, :hans, :hansfin, :hant, :hantfin, :hebr,
+       :hmng, :java, :jpan, :jpanfin, :kali, :khmr, :knda, :lana, :lanatham, :laoo,
+       :latn, :lepc, :limb, :mathbold, :mathdbl, :mathmono, :mathsanb, :mathsans,
+       :mlym, :modi, :mong, :mroo, :mtei, :mymr, :mymrshan, :mymrtlng, :newa, :nkoo,
+       :olck, :orya, :osma, :roman, :romanlow, :saur, :shrd, :sind, :sinh, :sora,
+       :sund, :takr, :talu, :taml, :tamldec, :telu, :thai, :tibt, :tirh, :vaii, :wara]
 
   """
   @spec known_number_systems :: [atom, ...]

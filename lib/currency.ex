@@ -149,7 +149,7 @@ defmodule Cldr.Currency do
   ## Example
 
       iex> Cldr.Currency.known_currencies |> Enum.count
-      298
+      300
   """
   @known_currencies Cldr.Config.currency_codes
   def known_currencies do
