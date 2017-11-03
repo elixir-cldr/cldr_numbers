@@ -35,6 +35,7 @@ defmodule Cldr.Number.System do
 
       iex> Cldr.Number.System.default_number_system_type
       :default
+
   """
   def default_number_system_type do
     @default_number_system_type
