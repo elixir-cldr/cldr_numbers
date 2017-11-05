@@ -21,21 +21,22 @@ defmodule Cldr.Rbnf do
   alias Cldr.Locale
   alias Cldr.LanguageTag
 
-  def known_locales do
-    Cldr.known_rbnf_locales
+  def known_locale_names do
+    Cldr.known_rbnf_locale_names
   end
 
   @doc """
   Returns {:ok, rbnf_rules} for a `locale` or `{:error, {Cldr.NoRbnf, info}}`
 
-  * `locale` is any locale returned by `Cldr.Rbnf.known_locales/0`.
+  * `locale` is any locale name returned by `Cldr.Rbnf.known_locale_names/0`.
+    or a `Cldr.LanguageTag`
 
   """
   @spec for_locale(Locale.t) :: %{} | nil
   def for_locale(locale \\ Cldr.get_current_locale())
 
   def for_locale(%LanguageTag{rbnf_locale_name: nil} = language_tag) do
-    raise inspect(language_tag)
+    {:error, rbnf_locale_error(language_tag)}
   end
 
   def for_locale(%LanguageTag{rbnf_locale_name: rbnf_locale_name}) do
@@ -47,11 +48,22 @@ defmodule Cldr.Rbnf do
     {:ok, rbnf_data}
   end
 
+  def for_locale(locale) when is_binary(locale) do
+    with \
+      {:ok, language_tag} = Cldr.Locale.canonical_language_tag(locale)
+    do
+      for_locale(language_tag)
+    else
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
   @doc """
   Returns rbnf_rules for a `locale` or raises an exception if
   there are no rules.
 
-  * `locale` is any locale returned by `Cldr.Rbnf.known_locales/0`.
+  * `locale` is any locale name returned by `Cldr.Rbnf.known_locale_names/0`.
+    or a `Cldr.LanguageTag`
 
   """
   def for_locale!(locale) do
@@ -70,8 +82,8 @@ defmodule Cldr.Rbnf do
   """
   @spec for_all_locales :: %{}
   def for_all_locales do
-    Enum.map(known_locales(), fn locale_name ->
-      locale = Locale.new(locale_name)
+    Enum.map(known_locale_names(), fn locale_name ->
+      locale = Locale.new!(locale_name)
       Enum.map(for_locale!(locale), fn {group, sets} ->
         {group, %{locale_name => sets}}
       end)
@@ -80,13 +92,17 @@ defmodule Cldr.Rbnf do
     |> Cldr.Map.merge_map_list
   end
 
+  defp rbnf_locale_error(locale) do
+    {Cldr.Rbnf.NotAvailable, "RBNF is not available for the locale #{inspect locale}"}
+  end
+
   if Mix.env == :test do
     # Returns all the rules in rbnf without any tagging for rulegroup or set.
     # This is helpful for testing only.
     @doc false
     def all_rules do
       known_locales()
-      |> Enum.map(&Cldr.Locale.new/1)
+      |> Enum.map(&Cldr.Locale.new!/1)
       |> Enum.map(&for_locale!/1)
       |> Enum.flat_map(&Map.values/1) # Get sets from groups
       |> Enum.flat_map(&Map.values/1) # Get rules from set

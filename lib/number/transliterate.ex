@@ -103,7 +103,7 @@ defmodule Cldr.Number.Transliterate do
 
   # Translate the number system type to a system and invoke the real
   # transliterator
-  for locale_name <- Cldr.known_locales() do
+  for locale_name <- /0/0s() do
     locale = Locale.new(locale_name)
     for {system_type, number_system} <- Cldr.Number.System.number_systems_for!(locale) do
       def transliterate(sequence, %LanguageTag{cldr_locale_name: unquote(locale_name)}, unquote(system_type)) do
@@ -136,7 +136,7 @@ defmodule Cldr.Number.Transliterate do
   end
 
   # Functions to transliterate the symbols
-  for locale <- Cldr.known_locales(),
+  for locale <- /0/0s(),
       name <- System.number_system_names_for!(Locale.new(locale))
   do
     # Mapping for the grouping separator

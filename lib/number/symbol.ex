@@ -16,7 +16,7 @@ defmodule Cldr.Number.Symbol do
   @doc """
   Returns a list of the number symbols for all number systems of a locale.
 
-  * `locale` is any locale known to `Cldr`.  See `Cldr.known_locales()`.
+  * `locale` is any locale known to `Cldr`.  See `/0/0s()`.
 
   ## Example:
 
@@ -58,7 +58,7 @@ defmodule Cldr.Number.Symbol do
   @doc """
   Returns the number sysbols for a specific locale and number system.
 
-  * `locale` is any locale known to `Cldr`.  See `Cldr.known_locales()`.
+  * `locale` is any locale known to `Cldr`.  See `/0/0s()`.
 
   * `number_system` which defaults to `:default` and is either:
 

@@ -253,7 +253,7 @@ defmodule Cldr.Number.System do
   a locale or an `{:error, message}` tuple if the locale
   is not known.
 
-  * `locale` is any valid locale returned by `Cldr.known_locales()`
+  * `locale` is any valid locale returned by `/0/0s()`
 
   ## Examples
 
@@ -281,7 +281,7 @@ defmodule Cldr.Number.System do
 
   * `system_name` is any name of name type
 
-  * `locale` is any valid locale returned by `Cldr.known_locales()`
+  * `locale` is any valid locale returned by `/0/0s()`
 
   Number systems can be references in one of two ways:
 
@@ -384,7 +384,7 @@ defmodule Cldr.Number.System do
   end
 
   defp do_number_systems_like(digits, symbols, names) do
-    Enum.map(Cldr.known_locales(), fn this_locale ->
+    Enum.map(/0/0s(), fn this_locale ->
       Enum.reduce names, [], fn this_system, acc ->
         locale = Locale.new(this_locale)
         case number_system_for(locale, this_system) do

@@ -76,7 +76,7 @@ defmodule Cldr.Number.Format do
       "000 Tr ¤", ...]
   """
   format_list =
-    Cldr.known_locales()
+    /0/0s()
     |> Enum.map(&Cldr.Config.decimal_formats_for/1)
     |> Kernel.++(Cldr.Config.get_precompile_number_formats)
     |> List.flatten
@@ -92,7 +92,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the list of decimal formats for a configured locale.
 
-  * `locale` is any locale configured in the system.  See `Cldr.known_locales/0`
+  * `locale` is any locale configured in the system.  See `Cldr.known_locale_names/0`
 
   This function exists to allow the decimal formatter to precompile all
   the known formats at compile time. Its use is not otherwise recommended.
@@ -123,7 +123,7 @@ defmodule Cldr.Number.Format do
   The decimal formats defined for a given locale or
   for a given locale and number system.
 
-  * `locale` is any locale configured in the system.  See `Cldr.known_locales/0`
+  * `locale` is any locale configured in the system.  See `Cldr.known_locale_names/0`
 
   ## Examples
 
@@ -155,7 +155,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the minium grouping digits for a locale.
 
-  * `locale` is any locale configured in the system.  See `Cldr.known_locales/0`
+  * `locale` is any locale configured in the system.  See `Cldr.known_locale_names/0`
 
   ## Examples
 
@@ -199,7 +199,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the minium grouping digits for a locale or raises if there is an error.
 
-  * `locale` is any locale configured in the system.  See `Cldr.known_locales/0`
+  * `locale` is any locale configured in the system.  See `Cldr.known_locale_names/0`
 
   ## Examples
 
@@ -222,7 +222,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Return the predfined formats for a given `locale` and `number_system`.
 
-  * `locale` is any locale configured in the system.  See `Cldr.known_locales/0`
+  * `locale` is any locale configured in the system.  See `Cldr.known_locale_names/0`
 
   * `number_system` is either:
 
@@ -283,7 +283,7 @@ defmodule Cldr.Number.Format do
   Return the predfined formats for a given `locale` and `number_system` or raises
   if either the `locale` or `number_system` is invalid.
 
-  * `locale` is any locale configured in the system.  See `Cldr.known_locales/0`
+  * `locale` is any locale configured in the system.  See `Cldr.known_locale_names/0`
 
   * `number_system` is either a `binary` or `atom`. See `Cldr.Number.Format.formats_for/2`
   for more information.
@@ -302,7 +302,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the format styles available for a `locale`.
 
-  * `locale` is any locale configured in the system.  See `Cldr.known_locales/0`
+  * `locale` is any locale configured in the system.  See `Cldr.known_locale_names/0`
 
   * `number_system` which defaults to `:default` and is either:
 
@@ -348,7 +348,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the short formats available for a locale.
 
-  * `locale` is any locale configured in the system.  See `Cldr.known_locales/0`
+  * `locale` is any locale configured in the system.  See `Cldr.known_locale_names/0`
 
   * `number_system` which defaults to `:default` and is either:
 
@@ -390,7 +390,7 @@ defmodule Cldr.Number.Format do
   Returns the decimal format styles that are supported by
   `Cldr.Number.Formatter.Decimal`.
 
-  * `locale` is any locale configured in the system.  See `Cldr.known_locales/0`
+  * `locale` is any locale configured in the system.  See `Cldr.known_locale_names/0`
 
   * `number_system` which defaults to `:default` and is either:
 
@@ -428,7 +428,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the number system types available for a `locale`
 
-  * `locale` is any locale configured in the system.  See `Cldr.known_locales/0`
+  * `locale` is any locale configured in the system.  See `Cldr.known_locale_names/0`
 
   A number system type is an identifier that categorises number systems
   that comprise a site of digits or rules for transliterating or translating
@@ -465,7 +465,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the names of the number systems for the `locale`.
 
-  * `locale` is any locale configured in the system.  See `Cldr.known_locales/0`
+  * `locale` is any locale configured in the system.  See `Cldr.known_locale_names/0`
 
   ## Examples
 
