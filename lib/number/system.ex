@@ -289,25 +289,17 @@ defmodule Cldr.Number.System do
   number system for the given locale as demonstrated in the third example.
   """
   @spec system_name_from(binary | atom, Locale.name | LanguageTag.t) :: atom
-  def system_name_from(system_name, locale \\ Cldr.get_current_locale())
-
-  def system_name_from(system_name, %LanguageTag{} = locale) when is_binary(system_name) do
-    try do
-      system_name_from(String.to_existing_atom(system_name), locale)
-    rescue ArgumentError ->
-      {:error, Cldr.unknown_number_system_error(system_name)}
-    end
-  end
-
-  def system_name_from(system_name, %LanguageTag{} = locale) when is_atom(system_name) do
-    with {:ok, _} <- Cldr.validate_locale(locale),
-         {:ok, number_systems} <- number_systems_for(locale)
+  def system_name_from(system_name, locale \\ Cldr.get_current_locale()) do
+    with \
+      {:ok, locale} <- Cldr.validate_locale(locale),
+      {:ok, number_system} <- Cldr.validate_number_system_or_type(system_name),
+      {:ok, number_systems} <- number_systems_for(locale)
     do
       cond do
-        Map.has_key?(number_systems, system_name) ->
-          {:ok, Map.get(number_systems, system_name)}
-        system_name in Map.values(number_systems) ->
-          {:ok, system_name}
+        Map.has_key?(number_systems, number_system) ->
+          {:ok, Map.get(number_systems, number_system)}
+        number_system in Map.values(number_systems) ->
+          {:ok, number_system}
         true ->
           {:error, Cldr.unknown_number_system_for_locale_error(system_name, locale, number_systems)}
       end
