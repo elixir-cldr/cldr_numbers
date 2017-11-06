@@ -165,7 +165,7 @@ defmodule Cldr.Number.System do
       {
         :error,
         {Cldr.UnknownNumberSystemError,
-        "The number system :finance is unknown for the locale named en. Valid number systems are %{default: :latn, native: :latn}"}
+        "The number system :finance is unknown for the locale named \\"en\\". Valid number systems are %{default: :latn, native: :latn}"}
       }
 
       iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :native
@@ -281,8 +281,7 @@ defmodule Cldr.Number.System do
       iex> Cldr.Number.System.system_name_from(:nope, Cldr.Locale.new!("en"))
       {
         :error,
-        {Cldr.UnknownNumberSystemError,
-          "The number system :nope is unknown for the locale named en. Valid number systems are %{default: :latn, native: :latn}"}
+        {Cldr.UnknownNumberSystemError, "The number system :nope is unknown"}
       }
 
   Note that return value is not guaranteed to be a valid
@@ -292,7 +291,7 @@ defmodule Cldr.Number.System do
   def system_name_from(system_name, locale \\ Cldr.get_current_locale()) do
     with \
       {:ok, locale} <- Cldr.validate_locale(locale),
-      {:ok, number_system} <- Cldr.validate_number_system_or_type(system_name),
+      {:ok, number_system} <- validate_number_system_or_type(system_name),
       {:ok, number_systems} <- number_systems_for(locale)
     do
       cond do
@@ -525,6 +524,19 @@ defmodule Cldr.Number.System do
 
   defp do_generate_transliteration_map(from, to, _from_length, _to_length) do
     {:error, {ArgumentError, "#{inspect from} and #{inspect to} aren't the same length"}}
+  end
+
+  def validate_number_system_or_type(number_system) do
+    with {:ok, number_system} <- Cldr.validate_number_system(number_system) do
+      {:ok, number_system}
+    else
+      {:error, _} ->
+        with {:ok, number_system} <- Cldr.validate_number_system_type(number_system) do
+          {:ok, number_system}
+        else
+          {:error, _reason} -> {:error, Cldr.unknown_number_system_error(number_system)}
+        end
+    end
   end
 
   def number_system_digits_error(system_name) do
