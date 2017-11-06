@@ -162,8 +162,11 @@ defmodule Cldr.Number.System do
       {:ok, %{digits: "0123456789", type: :numeric}}
 
       iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :finance
-      {:error, {Cldr.UnknownNumberSystemError,
-        "The number system :finance is not known or the locale it is defined in is not known"}}
+      {
+        :error,
+        {Cldr.UnknownNumberSystemError,
+        "The number system :finance is unknown for the locale named en. Valid number systems are %{default: :latn, native: :latn}"}
+      }
 
       iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :native
       {:ok, %{digits: "0123456789", type: :numeric}}
@@ -276,8 +279,11 @@ defmodule Cldr.Number.System do
       {:ok, :latn}
 
       iex> Cldr.Number.System.system_name_from(:nope, Cldr.Locale.new!("en"))
-      {:error, {Cldr.UnknownNumberSystemError,
-        "The number system :nope is not known or the locale it is defined in is not known"}}
+      {
+        :error,
+        {Cldr.UnknownNumberSystemError,
+          "The number system :nope is unknown for the locale named en. Valid number systems are %{default: :latn, native: :latn}"}
+      }
 
   Note that return value is not guaranteed to be a valid
   number system for the given locale as demonstrated in the third example.
@@ -303,7 +309,7 @@ defmodule Cldr.Number.System do
         system_name in Map.values(number_systems) ->
           {:ok, system_name}
         true ->
-          {:error, Cldr.unknown_number_system_error(system_name)}
+          {:error, Cldr.unknown_number_system_for_locale_error(system_name, locale, number_systems)}
       end
     else
       {:error, reason} -> {:error, reason}
@@ -407,28 +413,6 @@ defmodule Cldr.Number.System do
         digits
       {:error, {exception, message}} ->
         raise exception, message
-    end
-  end
-
-  @doc """
-  Returns `{:ok, system}` if the number system
-  is known, or `{:error, reason}`
-
-  ## Examples
-
-      iex> Cldr.Number.System.valid_number_system? :hant
-      {:ok, :hant}
-
-      iex> Cldr.Number.System.valid_number_system? :nope
-      {:error, {Cldr.UnknownNumberSystemError,
-        "The number system :nope is not known or the locale it is defined in is not known"}}
-
-  """
-  def valid_number_system?(system) do
-    if system in Cldr.known_number_systems() do
-      {:ok, system}
-    else
-      {:error, Cldr.unknown_number_system_error(system)}
     end
   end
 

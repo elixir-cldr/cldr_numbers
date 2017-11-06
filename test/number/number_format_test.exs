@@ -38,7 +38,7 @@ defmodule Number.Format.Test do
   end
 
   test "that there is an exception if we get formats for an number system" do
-    assert_raise Cldr.UnknownNumberSystemError, ~r/The number system \"zulu\" is not known/, fn ->
+    assert_raise Cldr.UnknownNumberSystemError, ~r/The number system \"zulu\" is invalid/, fn ->
       Format.formats_for!(~L[en], "zulu")
     end
   end
