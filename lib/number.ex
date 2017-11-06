@@ -170,10 +170,10 @@ defmodule Cldr.Number do
       iex> Cldr.Number.to_string 12345
       {:ok, "12,345"}
 
-      iex> Cldr.Number.to_string 12345, locale: Cldr.Locale.new("fr")
+      iex> Cldr.Number.to_string 12345, locale: Cldr.Locale.new!("fr")
       {:ok, "12 345"}
 
-      iex> Cldr.Number.to_string 12345, locale: Cldr.Locale.new("fr"), currency: "USD"
+      iex> Cldr.Number.to_string 12345, locale: Cldr.Locale.new!("fr"), currency: "USD"
       {:ok, "12 345,00 $US"}
 
       iex> Cldr.Number.to_string 12345, format: "#E0"
@@ -186,11 +186,11 @@ defmodule Cldr.Number do
       {:ok, "(THB12,345.00)"}
 
       iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB",
-      ...> locale: Cldr.Locale.new("th")
+      ...> locale: Cldr.Locale.new!("th")
       {:ok, "THB12,345.00"}
 
       iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB",
-      ...> locale: Cldr.Locale.new("th"), number_system: :native
+      ...> locale: Cldr.Locale.new!("th"), number_system: :native
       {:ok, "THB๑๒,๓๔๕.๐๐"}
 
       iex> Cldr.Number.to_string 1244.30, format: :long
@@ -249,7 +249,7 @@ defmodule Cldr.Number do
       return looks like:
 
   ```
-      iex> Cldr.Number.to_string(1234, locale: Cldr.Locale.new("he"), number_system: "hebr")
+      iex> Cldr.Number.to_string(1234, locale: Cldr.Locale.new!("he"), number_system: "hebr")
       {:error, {Cldr.UnknownFormatError,
       "The locale \\"he\\" with number system \\"hebr\\" does not define a format :standard."}}
   ```
@@ -279,7 +279,7 @@ defmodule Cldr.Number do
       iex> Cldr.Number.to_string! 12345
       "12,345"
 
-      iex> Cldr.Number.to_string! 12345, locale: Cldr.Locale.new("fr")
+      iex> Cldr.Number.to_string! 12345, locale: Cldr.Locale.new!("fr")
       "12 345"
 
   """
@@ -372,12 +372,13 @@ defmodule Cldr.Number do
   end
 
   # For Roman numerals
+  @root_locale Locale.new!("root")
   defp to_string(number, :roman, _options) do
-    Cldr.Rbnf.NumberSystem.roman_upper(number, Locale.new("root"))
+    Cldr.Rbnf.NumberSystem.roman_upper(number, @root_locale)
   end
 
   defp to_string(number, :roman_lower, _options) do
-    Cldr.Rbnf.NumberSystem.roman_lower(number, Locale.new("root"))
+    Cldr.Rbnf.NumberSystem.roman_lower(number, @root_locale)
   end
 
   # For the :currency_long format only
@@ -508,7 +509,7 @@ defmodule Cldr.Number do
   end
 
   defp canonicalize_locale(%{locale: locale} = options) when is_binary(locale) do
-    Map.put(options, :locale, Locale.new(options[:locale]))
+    Map.put(options, :locale, Locale.new!(options[:locale]))
   end
 
   defp canonicalize_locale(options), do: options

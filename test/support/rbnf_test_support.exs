@@ -1,7 +1,7 @@
 defmodule Cldr.Rbnf.TestSupport do
   def rbnf_tests(fun) when is_function(fun) do
     # Come back later an investigate why we get different results
-    locales = Cldr.known_locales()
+    locales = Cldr.known_locale_names()
     |> List.delete("ru")
     |> List.delete("be")
     |> List.delete("es")
@@ -29,8 +29,8 @@ defmodule Cldr.Rbnf.TestSupport do
           json_data = json_string
           |> Poison.decode!
 
-          locale = Cldr.Locale.new(locale_name)
-          if Cldr.known_rbnf_locale?(locale_name) do
+          locale = Cldr.Locale.new!(locale_name)
+          if Cldr.known_rbnf_locale_name?(locale_name) do
             rbnf_data = Cldr.Rbnf.for_locale!(locale)
             Enum.each Map.keys(json_data), fn rule_group ->
               if rbnf_data[String.to_existing_atom(rule_group)] do

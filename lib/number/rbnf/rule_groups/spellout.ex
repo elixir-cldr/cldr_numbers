@@ -11,14 +11,14 @@ defmodule Cldr.Rbnf.Spellout do
   The functions on this module are defined at compile time based upon the RBNF rules
   defined in the Unicode CLDR data repository.  Available rules are identified by:
 
-      iex> Cldr.Rbnf.Spellout.rule_sets Cldr.Locale.new("en")
+      iex> Cldr.Rbnf.Spellout.rule_sets Cldr.Locale.new!("en")
       [:spellout_ordinal_verbose, :spellout_ordinal, :spellout_numbering_year,
         :spellout_numbering_verbose, :spellout_numbering, :spellout_cardinal_verbose,
         :spellout_cardinal]
 
   A rule can then be invoked on an available rule_set. For example:
 
-      iex> Cldr.Rbnf.Spellout.spellout_ordinal 123, Cldr.Locale.new("en")
+      iex> Cldr.Rbnf.Spellout.spellout_ordinal 123, Cldr.Locale.new!("en")
       "one hundred twenty-third"
 
   This call is equivalent to the call through the public API of:

@@ -71,19 +71,19 @@ defmodule Cldr.Number.Transliterate do
       iex> Cldr.Number.Transliterate.transliterate("123556")
       "123556"
 
-      iex> Cldr.Number.Transliterate.transliterate("123,556.000", Cldr.Locale.new("fr"), :default)
+      iex> Cldr.Number.Transliterate.transliterate("123,556.000", Cldr.Locale.new!("fr"), :default)
       "123 556,000"
 
-      iex> Cldr.Number.Transliterate.transliterate("123556", Cldr.Locale.new("th"), :default)
+      iex> Cldr.Number.Transliterate.transliterate("123556", Cldr.Locale.new!("th"), :default)
       "123556"
 
-      iex> Cldr.Number.Transliterate.transliterate("123556", Cldr.Locale.new("th"), "thai")
+      iex> Cldr.Number.Transliterate.transliterate("123556", Cldr.Locale.new!("th"), "thai")
       "๑๒๓๕๕๖"
 
-      iex> Cldr.Number.Transliterate.transliterate("123556", Cldr.Locale.new("th"), :native)
+      iex> Cldr.Number.Transliterate.transliterate("123556", Cldr.Locale.new!("th"), :native)
       "๑๒๓๕๕๖"
 
-      iex> Cldr.Number.Transliterate.transliterate("Some number is: 123556", Cldr.Locale.new("th"), "thai")
+      iex> Cldr.Number.Transliterate.transliterate("Some number is: 123556", Cldr.Locale.new!("th"), "thai")
       "Some number is: ๑๒๓๕๕๖"
   """
 
@@ -93,7 +93,7 @@ defmodule Cldr.Number.Transliterate do
 
   # No transliteration required when the digits and separators as the same
   # as the ones we use in formatting.
-  with {:ok, systems} <- System.number_systems_like(Locale.new("en"), :latn) do
+  with {:ok, systems} <- System.number_systems_like(Locale.new!("en"), :latn) do
     Enum.each systems, fn {locale, system} ->
       def transliterate(sequence, unquote(Macro.escape(locale)), unquote(system)) do
         sequence
@@ -103,8 +103,8 @@ defmodule Cldr.Number.Transliterate do
 
   # Translate the number system type to a system and invoke the real
   # transliterator
-  for locale_name <- /0/0s() do
-    locale = Locale.new(locale_name)
+  for locale_name <- Cldr.Config.known_locale_names() do
+    locale = Locale.new!(locale_name)
     for {system_type, number_system} <- Cldr.Number.System.number_systems_for!(locale) do
       def transliterate(sequence, %LanguageTag{cldr_locale_name: unquote(locale_name)}, unquote(system_type)) do
         transliterate(sequence, unquote(locale_name), unquote(number_system))
@@ -136,11 +136,11 @@ defmodule Cldr.Number.Transliterate do
   end
 
   # Functions to transliterate the symbols
-  for locale <- /0/0s(),
-      name <- System.number_system_names_for!(Locale.new(locale))
+  for locale <- Cldr.Config.known_locale_names(),
+      name <- System.number_system_names_for!(Locale.new!(locale))
   do
     # Mapping for the grouping separator
-    with {:ok, symbols} <- Symbol.number_symbols_for(Locale.new(locale), name) do
+    with {:ok, symbols} <- Symbol.number_symbols_for(Locale.new!(locale), name) do
       defp transliterate_char(unquote(Compiler.placeholder(:group)), unquote(locale), unquote(name)) do
         unquote(symbols.group)
       end

@@ -32,7 +32,7 @@ defmodule Cldr.Number.Symbol do
   @spec number_symbols_for(LanguageTag.t) :: Keyword.t
   def number_symbols_for(locale \\ Cldr.get_current_locale())
 
-  for locale <- Cldr.Config.known_locales() do
+  for locale <- Cldr.Config.known_locale_names() do
     symbols =
       locale
       |> Cldr.Config.get_locale

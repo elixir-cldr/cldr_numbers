@@ -76,7 +76,7 @@ defmodule Cldr.Number.Format do
       "000 Tr ¤", ...]
   """
   format_list =
-    /0/0s()
+    Cldr.Config.known_locale_names()
     |> Enum.map(&Cldr.Config.decimal_formats_for/1)
     |> Kernel.++(Cldr.Config.get_precompile_number_formats)
     |> List.flatten
@@ -99,7 +99,7 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      iex> Cldr.Number.Format.decimal_format_list_for Cldr.Locale.new("en")
+      iex> Cldr.Number.Format.decimal_format_list_for Cldr.Locale.new!("en")
       ["#,##0%", "#,##0.###", "#E0", "0 billion", "0 million", "0 thousand",
        "0 trillion", "00 billion", "00 million", "00 thousand", "00 trillion",
        "000 billion", "000 million", "000 thousand", "000 trillion", "000B", "000K",
@@ -111,7 +111,7 @@ defmodule Cldr.Number.Format do
   @spec decimal_format_list_for(LanguageTag.t) :: [String.t, ...]
   def decimal_format_list_for(locale \\ Cldr.get_current_locale())
 
-  for locale_name <- Cldr.Config.known_locales() do
+  for locale_name <- Cldr.Config.known_locale_names() do
     decimal_formats = Cldr.Config.decimal_formats_for(locale_name)
 
     def decimal_format_list_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
@@ -159,14 +159,14 @@ defmodule Cldr.Number.Format do
 
   ## Examples
 
-      iex> Cldr.Number.Format.minimum_grouping_digits_for(Cldr.Locale.new("en"))
+      iex> Cldr.Number.Format.minimum_grouping_digits_for(Cldr.Locale.new!("en"))
       1
 
   """
   @spec minimum_grouping_digits_for(LanguageTag.t) :: non_neg_integer
   def minimum_grouping_digits_for(locale \\ Cldr.get_current_locale)
 
-  for locale_name <- Cldr.Config.known_locales() do
+  for locale_name <- Cldr.Config.known_locale_names() do
     locale_data =
       locale_name
       |> Cldr.Config.get_locale
@@ -203,10 +203,10 @@ defmodule Cldr.Number.Format do
 
   ## Examples
 
-      iex> Cldr.Number.Format.minimum_grouping_digits_for!(Cldr.Locale.new("en"))
+      iex> Cldr.Number.Format.minimum_grouping_digits_for!(Cldr.Locale.new!("en"))
       1
 
-      Cldr.Number.Format.minimum_grouping_digits_for!(Cldr.Locale.new("end"))
+      Cldr.Number.Format.minimum_grouping_digits_for!(Cldr.Locale.new!("end"))
       ** (Cldr.UnknownLocaleError) The locale "end" is not known
 
   """
@@ -325,7 +325,7 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      iex> Cldr.Number.Format.format_styles_for(Cldr.Locale.new("en"))
+      iex> Cldr.Number.Format.format_styles_for(Cldr.Locale.new!("en"))
       [:accounting, :currency, :currency_long, :currency_short,
       :decimal_long, :decimal_short, :percent, :scientific, :standard]
 
@@ -364,7 +364,7 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      iex> Cldr.Number.Format.short_format_styles_for(Cldr.Locale.new("he"))
+      iex> Cldr.Number.Format.short_format_styles_for(Cldr.Locale.new!("he"))
       [:currency_short, :decimal_long, :decimal_short]
 
   """
@@ -406,7 +406,7 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      iex> Cldr.Number.Format.decimal_format_styles_for Cldr.Locale.new("en")
+      iex> Cldr.Number.Format.decimal_format_styles_for Cldr.Locale.new!("en")
       [:accounting, :currency, :currency_long, :percent,
        :scientific, :standard]
 
@@ -440,13 +440,13 @@ defmodule Cldr.Number.Format do
 
   ## Examples
 
-      iex> Cldr.Number.Format.format_system_types_for Cldr.Locale.new("pl")
+      iex> Cldr.Number.Format.format_system_types_for Cldr.Locale.new!("pl")
       {:ok, [:default, :native]}
 
-      iex> Cldr.Number.Format.format_system_types_for Cldr.Locale.new("ru")
+      iex> Cldr.Number.Format.format_system_types_for Cldr.Locale.new!("ru")
       {:ok, [:default, :native]}
 
-      iex> Cldr.Number.Format.format_system_types_for Cldr.Locale.new("th")
+      iex> Cldr.Number.Format.format_system_types_for Cldr.Locale.new!("th")
       {:ok, [:default, :native]}
 
   """
@@ -469,10 +469,10 @@ defmodule Cldr.Number.Format do
 
   ## Examples
 
-      iex> Cldr.Number.Format.format_system_names_for(Cldr.Locale.new("th"))
+      iex> Cldr.Number.Format.format_system_names_for(Cldr.Locale.new!("th"))
       {:ok, [:latn, :thai]}
 
-      iex> Cldr.Number.Format.format_system_names_for(Cldr.Locale.new("pl"))
+      iex> Cldr.Number.Format.format_system_names_for(Cldr.Locale.new!("pl"))
       {:ok, [:latn]}
 
   """

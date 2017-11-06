@@ -27,16 +27,19 @@ iex> Cldr.Number.to_string 12345, format: "#E0"
 For help in `iex`:
 
 ```elixir
-iex> h Cldr.Date.to_string
-iex> h Cldr.Time.to_string
-iex> h Cldr.DateTime.to_string
-iex> h Cldr.DateTime.Relative.to_string
+iex> h Cldr.Number.to_string
 ```
 ## Documentation
 
-Primary documentation is available on [as part of the ex_cldr documentation on hex](https://hexdocs.pm/ex_cldr/3_number_formats.html)
+Primary documentation is available [as part of the ex_cldr documentation on hex](https://hexdocs.pm/ex_cldr/3_number_formats.html)
 
 ## Known restrictions and limitations
+
+TR35 states that for scientific formats (i.e. mantissa and exponent):
+
+> The maximum number of integer digits, if present, specifies the exponent grouping. The most common use of this is to generate engineering notation, in which the exponent is a multiple of three, for example, "##0.###E0". The number 12345 is formatted using "##0.####E0" as "12.345E3".
+
+`ex_cldr_numbers` does not currently support such functionality.
 
 ## Installation
 
@@ -46,7 +49,7 @@ Add `ex_cldr_numbers` as a dependency to your `mix` project:
 
     defp deps do
       [
-        {:ex_cldr_numbers, "~> 0.1.0"}
+        {:ex_cldr_numbers, "~> 0.3.1"}
       ]
     end
 

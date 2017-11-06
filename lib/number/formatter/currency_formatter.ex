@@ -16,14 +16,14 @@ defmodule Cldr.Number.Formatter.Currency do
   In the first example the format is defined by a decimal mask. In this example
   the format mask comes from:
 
-      iex> Cldr.Number.Format.all_formats_for(Cldr.Locale.new("en")).latn.currency
+      iex> Cldr.Number.Format.all_formats_for(Cldr.Locale.new!("en")).latn.currency
       "¤#,##0.00"
 
   In the second example we are using a format that combines the number with
   a language translation of the currency name.  In this example the format
   comes from:
 
-      iex> Cldr.Number.Format.all_formats_for(Cldr.Locale.new("en")).latn.currency_long
+      iex> Cldr.Number.Format.all_formats_for(Cldr.Locale.new!("en")).latn.currency_long
       %{one: [0, " ", 1], other: [0, " ", 1]}
 
   Where "{0}" is replaced with the number formatted using the `:standard`

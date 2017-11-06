@@ -11,12 +11,12 @@ defmodule Cldr.Rbnf.Ordinal do
   The functions on this module are defined at compile time based upon the RBNF rules
   defined in the Unicode CLDR data repository.  Available rules are identified by:
 
-      iex> Cldr.Rbnf.Ordinal.rule_sets Cldr.Locale.new("en")
+      iex> Cldr.Rbnf.Ordinal.rule_sets Cldr.Locale.new!("en")
       [:digits_ordinal]
 
   A rule can then be invoked on an available rule_set.  For example
 
-      iex> Cldr.Rbnf.Ordinal.digits_ordinal 123, Cldr.Locale.new("en")
+      iex> Cldr.Rbnf.Ordinal.digits_ordinal 123, Cldr.Locale.new!("en")
       "123rd"
 
   This call is equivalent to the call through the public API of:

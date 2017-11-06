@@ -5,7 +5,7 @@ defmodule Number.Format.Test do
 
   Enum.each Cldr.Test.Number.Format.test_data(), fn {value, result, args} ->
     new_args = if args[:locale] do
-      Keyword.put(args, :locale, Cldr.Locale.new(Keyword.get(args, :locale)))
+      Keyword.put(args, :locale, Cldr.Locale.new!(Keyword.get(args, :locale)))
     else
       args
     end

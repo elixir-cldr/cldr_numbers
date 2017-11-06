@@ -50,7 +50,7 @@ defmodule Cldr.Rbnf do
 
   def for_locale(locale) when is_binary(locale) do
     with \
-      {:ok, language_tag} = Cldr.Locale.canonical_language_tag(locale)
+      {:ok, language_tag} <- Cldr.Locale.canonical_language_tag(locale)
     do
       for_locale(language_tag)
     else
@@ -101,7 +101,7 @@ defmodule Cldr.Rbnf do
     # This is helpful for testing only.
     @doc false
     def all_rules do
-      known_locales()
+      known_locale_names()
       |> Enum.map(&Cldr.Locale.new!/1)
       |> Enum.map(&for_locale!/1)
       |> Enum.flat_map(&Map.values/1) # Get sets from groups

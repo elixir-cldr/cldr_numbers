@@ -12,16 +12,18 @@ defmodule Cldr.Number.System do
 
   require Cldr
   require Cldr.Rbnf.{Spellout, NumberSystem, Ordinal}
+
   alias Cldr.Locale
   alias Cldr.Number.Symbol
   alias Cldr.LanguageTag
 
   @default_number_system_type  :default
-  @number_system_types         [:default, :native, :traditional, :finance]
 
   @type name :: atom
   @type types :: :default | :native | :traditional | :finance
 
+  defdelegate known_number_systems, to: Cldr
+  defdelegate known_number_system_types, to:
   @doc """
   Return the default number system type name.
 
@@ -35,26 +37,10 @@ defmodule Cldr.Number.System do
 
       iex> Cldr.Number.System.default_number_system_type
       :default
+
   """
   def default_number_system_type do
     @default_number_system_type
-  end
-
-  @doc """
-  Returns a list of the known number system types.
-
-  Note that not all locales support all number system types.
-  `:default` is available for all locales, the other types
-  configured only in certain locales.
-
-  ## Example
-
-      iex> Cldr.Number.System.number_system_types
-      [:default, :native, :traditional, :finance]
-
-  """
-  def number_system_types do
-    @number_system_types
   end
 
   @doc """
@@ -63,7 +49,7 @@ defmodule Cldr.Number.System do
   ## Example
 
       iex> Cldr.Number.System.number_systems |> Enum.count
-      77
+      78
 
   """
   @spec number_systems :: Map.t
@@ -71,31 +57,6 @@ defmodule Cldr.Number.System do
 
   def number_systems do
     @number_systems
-  end
-
-  @doc """
-  The unique Cldr number systems names,
-
-  ## Example
-
-      iex> Cldr.Number.System.number_system_names
-      [:adlm, :ahom, :arab, :arabext, :armn, :armnlow, :bali,
-      :beng, :bhks, :brah, :cakm, :cham, :cyrl, :deva, :ethi,
-      :fullwide, :geor, :grek, :greklow, :gujr, :guru, :hanidays,
-      :hanidec, :hans, :hansfin, :hant, :hantfin, :hebr, :hmng,
-      :java, :jpan, :jpanfin, :kali, :khmr, :knda, :lana, :lanatham,
-      :laoo, :latn, :lepc, :limb, :mathbold, :mathdbl, :mathmono,
-      :mathsanb, :mathsans, :mlym, :modi, :mong, :mroo, :mtei,
-      :mymr, :mymrshan, :mymrtlng, :newa, :nkoo, :olck, :orya,
-      :osma, :roman, :romanlow, :saur, :shrd, :sind, :sinh, :sora,
-      :sund, :takr, :talu, :taml, :tamldec, :telu, :thai, :tibt,
-      :tirh, :vaii, :wara]
-
-  """
-  @number_system_names @number_systems |> Map.keys |> Enum.sort
-  @spec number_system_names :: [String.t]
-  def number_system_names do
-    @number_system_names
   end
 
   @systems_with_digits Enum.reject @number_systems, fn {_name, system} ->
@@ -113,31 +74,35 @@ defmodule Cldr.Number.System do
   Returns the number systems available for a locale
   or `{:error, message}` if the locale is not known.
 
-  * `locale` is any locale returned by `Cldr.Locale.new/1`
+  * `locale` is any locale returned by `Cldr.Locale.new!/1`
 
   ## Examples
 
-      iex> Cldr.Number.System.number_systems_for Cldr.Locale.new("en")
+      iex> Cldr.Number.System.number_systems_for Cldr.Locale.new!("en")
       {:ok, %{default: :latn, native: :latn}}
 
-      iex> Cldr.Number.System.number_systems_for Cldr.Locale.new("th")
+      iex> Cldr.Number.System.number_systems_for Cldr.Locale.new!("th")
       {:ok, %{default: :latn, native: :thai}}
 
-      iex> Cldr.Number.System.number_systems_for Cldr.Locale.new("zz")
+      iex> Cldr.Number.System.number_systems_for Cldr.Locale.new!("zz")
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
   """
-  @spec number_systems_for(LanguageTag.t) :: Map.t
+  @spec number_systems_for(Locale.name | LanguageTag.t) :: Map.t
   def number_systems_for(locale \\ Cldr.get_current_locale())
 
-  for locale <- Cldr.Config.known_locales() do
+  for locale <- Cldr.Config.known_locale_names() do
     systems =
       locale
       |> Cldr.Config.get_locale
       |> Map.get(:number_systems)
 
-    def number_systems_for(%LanguageTag{cldr_locale_name: unquote(locale)}) do
+    def number_systems_for(locale_name) do
       {:ok, unquote(Macro.escape(systems))}
+    end
+
+    def number_systems_for(%LanguageTag{cldr_locale_name: unquote(locale)}) do
+      number_systems_for(cldr_locale_name)
     end
   end
 
@@ -149,18 +114,18 @@ defmodule Cldr.Number.System do
   Returns the number systems available for a locale
   or raises if the locale is not known.
 
-  * `locale` is any locale returned by `Cldr.Locale.new/1`
+  * `locale` is any locale returned by `Cldr.Locale.new!/1`
 
   ## Examples
 
-      iex> Cldr.Number.System.number_systems_for! Cldr.Locale.new("en")
+      iex> Cldr.Number.System.number_systems_for! Cldr.Locale.new!("en")
       %{default: :latn, native: :latn}
 
-      iex> Cldr.Number.System.number_systems_for! Cldr.Locale.new("th")
+      iex> Cldr.Number.System.number_systems_for! Cldr.Locale.new!("th")
       %{default: :latn, native: :thai}
 
   """
-  @spec number_systems_for!(LanguageTag.t) :: Map.t
+  @spec number_systems_for!(Locale.name | LanguageTag.t) :: Map.t
   def number_systems_for!(locale) do
     case number_systems_for(locale) do
       {:error, {exception, message}} ->
@@ -173,7 +138,7 @@ defmodule Cldr.Number.System do
   @doc """
   Returns the actual number system from a number system type.
 
-  * `locale` is any locale returned by `Cldr.Locale.new/1`
+  * `locale` is any locale returned by `Cldr.Locale.new!/1`
 
   * `system_name` is any name of name type returned by
   `Cldr.Number.System.number_system_types/0`
@@ -184,33 +149,35 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new("th"), :default
+      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("th"), :default
       {:ok, %{digits: "0123456789", type: :numeric}}
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new("th"), :native
+      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("th"), :native
       {:ok, %{digits: "๐๑๒๓๔๕๖๗๘๙", type: :numeric}}
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new("th"), :latn
+      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("th"), :latn
       {:ok, %{digits: "0123456789", type: :numeric}}
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new("en"), :default
+      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :default
       {:ok, %{digits: "0123456789", type: :numeric}}
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new("en"), :finance
+      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :finance
       {:error, {Cldr.UnknownNumberSystemError,
         "The number system :finance is not known or the locale it is defined in is not known"}}
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new("en"), :native
+      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :native
       {:ok, %{digits: "0123456789", type: :numeric}}
 
   """
-
-  def number_system_for(%LanguageTag{} = locale, system_name) do
-    case system_name_from(system_name, locale) do
-      {:error, _} = error ->
-        error
-      {:ok, system_name} ->
-        {:ok, number_systems()[system_name]}
+  @spec number_system_for(Locale.name | LanguageTag.t, System.name) :: [atom(), ...]
+  def number_system_for(locale, system_name) do
+    with \
+      {:ok, locale} <- Cldr.validate_locale(locale)
+      {:ok, system_name} <- system_name_from(system_name, locale)
+    do
+      {:ok, Map.get(number_systems(), system_name)}
+    else
+      {:error, reason} -> {:error, reason}
     end
   end
 
@@ -219,28 +186,29 @@ defmodule Cldr.Number.System do
   a locale or an `{:error, message}` tuple if the locale
   is not known.
 
-  * `locale` is any locale returned by `Cldr.Locale.new/1`
+  * `locale` is any locale returned by `Cldr.Locale.new!/1` or
+    a `Cldr.LanguageTag` struct
 
   ## Examples
 
-      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new("en")
+      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new!("en")
       {:ok, [:latn]}
 
-      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new("th")
+      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new!("th")
       {:ok, [:latn, :thai]}
 
-      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new("he")
+      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new!("he")
       {:ok, [:latn, :hebr]}
 
-      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new("zz")
+      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new!("zz")
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
   """
-  @spec number_system_names_for(LanguageTag.t) :: [String.t, ...]
-
-  def number_system_names_for(%LanguageTag{} = locale \\ Cldr.default_locale) do
-    with {:ok, _} <- Cldr.validate_locale(locale),
-         {:ok, systems} <- number_systems_for(locale)
+  @spec number_system_names_for(Locale.name | LanguageTag.t) :: [atom(), ...]
+  def number_system_names_for(locale \\ Cldr.default_locale) do
+    with \
+      {:ok, locale} <- Cldr.validate_locale(locale),
+      {:ok, systems} <- number_systems_for(locale)
     do
       {:ok, systems |> Map.values |> Enum.uniq}
     else
@@ -253,17 +221,18 @@ defmodule Cldr.Number.System do
   a locale or an `{:error, message}` tuple if the locale
   is not known.
 
-  * `locale` is any valid locale returned by `/0/0s()`
+  * `locale` is any valid locale returned by `Cldr.known_locale_names/0`
+  or a `Cldr.LanguageTag` struct
 
   ## Examples
 
-      iex> Cldr.Number.System.number_system_names_for! Cldr.Locale.new("en")
+      iex> Cldr.Number.System.number_system_names_for! Cldr.Locale.new!("en")
       [:latn]
 
-      iex> Cldr.Number.System.number_system_names_for! Cldr.Locale.new("th")
+      iex> Cldr.Number.System.number_system_names_for! Cldr.Locale.new!("th")
       [:latn, :thai]
 
-      iex> Cldr.Number.System.number_system_names_for! Cldr.Locale.new("he")
+      iex> Cldr.Number.System.number_system_names_for! Cldr.Locale.new!("he")
       [:latn, :hebr]
 
   """
@@ -281,7 +250,7 @@ defmodule Cldr.Number.System do
 
   * `system_name` is any name of name type
 
-  * `locale` is any valid locale returned by `/0/0s()`
+  * `locale` is any valid locale returned by `Cldr.Locale.new!/1`
 
   Number systems can be references in one of two ways:
 
@@ -297,23 +266,23 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      ex> Cldr.Number.System.system_name_from(:default,Cldr.Locale.new( "en"))
+      ex> Cldr.Number.System.system_name_from(:default, Cldr.Locale.new!( "en"))
       {:ok, :latn}
 
-      iex> Cldr.Number.System.system_name_from("latn", Cldr.Locale.new("en"))
+      iex> Cldr.Number.System.system_name_from("latn", Cldr.Locale.new!("en"))
       {:ok, :latn}
 
-      iex> Cldr.Number.System.system_name_from(:native, Cldr.Locale.new("en"))
+      iex> Cldr.Number.System.system_name_from(:native, Cldr.Locale.new!("en"))
       {:ok, :latn}
 
-      iex> Cldr.Number.System.system_name_from(:nope, Cldr.Locale.new("en"))
+      iex> Cldr.Number.System.system_name_from(:nope, Cldr.Locale.new!("en"))
       {:error, {Cldr.UnknownNumberSystemError,
         "The number system :nope is not known or the locale it is defined in is not known"}}
 
   Note that return value is not guaranteed to be a valid
   number system for the given locale as demonstrated in the third example.
   """
-  @spec system_name_from(binary | atom, Locale.name) :: atom
+  @spec system_name_from(binary | atom, Locale.name | LanguageTag.t) :: atom
   def system_name_from(system_name, locale \\ Cldr.get_current_locale())
 
   def system_name_from(system_name, %LanguageTag{} = locale) when is_binary(system_name) do
@@ -384,9 +353,9 @@ defmodule Cldr.Number.System do
   end
 
   defp do_number_systems_like(digits, symbols, names) do
-    Enum.map(/0/0s(), fn this_locale ->
+    Enum.map(Cldr.known_locale_names(), fn this_locale ->
       Enum.reduce names, [], fn this_system, acc ->
-        locale = Locale.new(this_locale)
+        locale = Locale.new!(this_locale)
         case number_system_for(locale, this_system) do
           {:error, _} ->
             acc
@@ -459,13 +428,13 @@ defmodule Cldr.Number.System do
 
       iex> Cldr.Number.System.known_number_systems
       [:adlm, :ahom, :arab, :arabext, :armn, :armnlow, :bali, :beng, :bhks, :brah,
-       :cakm, :cham, :cyrl, :deva, :ethi, :fullwide, :geor, :grek, :greklow, :gujr,
-       :guru, :hanidays, :hanidec, :hans, :hansfin, :hant, :hantfin, :hebr, :hmng,
-       :java, :jpan, :jpanfin, :kali, :khmr, :knda, :lana, :lanatham, :laoo, :latn,
-       :lepc, :limb, :mathbold, :mathdbl, :mathmono, :mathsanb, :mathsans, :mlym,
-       :modi, :mong, :mroo, :mtei, :mymr, :mymrshan, :mymrtlng, :newa, :nkoo, :olck,
-       :orya, :osma, :roman, :romanlow, :saur, :shrd, :sind, :sinh, :sora, :sund,
-       :takr, :talu, :taml, :tamldec, :telu, :thai, :tibt, :tirh, :vaii, :wara]
+       :cakm, :cham, :cyrl, :deva, :ethi, :fullwide, :geor, :gonm, :grek, :greklow,
+       :gujr, :guru, :hanidays, :hanidec, :hans, :hansfin, :hant, :hantfin, :hebr,
+       :hmng, :java, :jpan, :jpanfin, :kali, :khmr, :knda, :lana, :lanatham, :laoo,
+       :latn, :lepc, :limb, :mathbold, :mathdbl, :mathmono, :mathsanb, :mathsans,
+       :mlym, :modi, :mong, :mroo, :mtei, :mymr, :mymrshan, :mymrtlng, :newa, :nkoo,
+       :olck, :orya, :osma, :roman, :romanlow, :saur, :shrd, :sind, :sinh, :sora,
+       :sund, :takr, :talu, :taml, :tamldec, :telu, :thai, :tibt, :tirh, :vaii, :wara]
 
   """
   @spec known_number_systems :: [atom, ...]
@@ -551,7 +520,7 @@ defmodule Cldr.Number.System do
     else
       {module, function, locale_name} = Cldr.Config.rbnf_rule_function(definition.rules)
       if function_exported?(module, function, 2) do
-        locale = Locale.new(locale_name)
+        locale = Locale.new!(locale_name)
         def to_system(number, unquote(system)) do
           with {:ok, _locale} <- Cldr.validate_locale(unquote(Macro.escape(locale))) do
             {:ok, unquote(module).unquote(function)(number, unquote(Macro.escape(locale)))}

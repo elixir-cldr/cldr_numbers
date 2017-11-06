@@ -238,7 +238,7 @@ defmodule Cldr.Rbnf.Processor do
   defp rule_body(locale, rule_group, rule, parsed) do
     quote do
       do_rule(number,
-        unquote(Macro.escape(Cldr.Locale.new(locale))),
+        unquote(Macro.escape(Cldr.Locale.new!(locale))),
         unquote(rule_group),
         unquote(Macro.escape(rule)),
         unquote(Macro.escape(parsed)))

@@ -15,19 +15,19 @@ defmodule Rbnf.Test do
 
   test "rbnf ordinal" do
     assert {:ok, "123,456th"} = Cldr.Number.to_string(123456, format: :ordinal)
-    assert {:ok, "123 456e"} = Cldr.Number.to_string(123456, format: :ordinal, locale: Locale.new("fr"))
+    assert {:ok, "123 456e"} = Cldr.Number.to_string(123456, format: :ordinal, locale: Locale.new!("fr"))
   end
 
   test "rbnf improper fraction" do
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(123.456, Locale.new("en")) == "one hundred and twenty-three point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-123.456, Locale.new("en")) == "minus one hundred and twenty-three point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-0.456, Locale.new("en")) == "minus zero point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(0.456, Locale.new("en")) == "zero point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal(0.456, Locale.new("en")) == "zero point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal(0, Locale.new("en")) == "zero"
-    assert Cldr.Rbnf.Spellout.spellout_ordinal(0, Locale.new("en")) == "zeroth"
-    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.0, Locale.new("en")) == "0"
-    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.1, Locale.new("en")) == "0.1"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(123.456, Locale.new!("en")) == "one hundred and twenty-three point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-123.456, Locale.new!("en")) == "minus one hundred and twenty-three point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-0.456, Locale.new!("en")) == "minus zero point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(0.456, Locale.new!("en")) == "zero point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal(0.456, Locale.new!("en")) == "zero point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal(0, Locale.new!("en")) == "zero"
+    assert Cldr.Rbnf.Spellout.spellout_ordinal(0, Locale.new!("en")) == "zeroth"
+    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.0, Locale.new!("en")) == "0"
+    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.1, Locale.new!("en")) == "0.1"
   end
 
   test "roman numerals" do
@@ -51,7 +51,7 @@ defmodule Rbnf.Test do
   end
 
   test "no rule is available for number" do
-    assert Cldr.Rbnf.Spellout.spellout_numbering_year(-24, Cldr.Locale.new("zh-Hant")) ==
+    assert Cldr.Rbnf.Spellout.spellout_numbering_year(-24, Cldr.Locale.new!("zh-Hant")) ==
       {:error,
         {Cldr.Rbnf.NoRuleForNumber,
           "rule group :spellout_numbering_year for locale \"zh-Hant\" does not know how to process -24"}}
