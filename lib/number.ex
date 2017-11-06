@@ -554,7 +554,7 @@ defmodule Cldr.Number do
   end
 
   defp currency_format_has_code(_format, true, currency) do
-    case Cldr.Currency.validate_currency_code(currency) do
+    case Cldr.validate_currency(currency) do
       {:error, _} = error -> error
       {:ok, _} -> :ok
     end

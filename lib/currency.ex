@@ -134,7 +134,7 @@ defmodule Cldr.Currency do
     locale = options[:locale]
 
     with \
-      {:ok, currency_code} <- validate_currency_code(currency),
+      {:ok, currency_code} <- Cldr.validate_currency(currency),
       {:ok, locale} <- Cldr.validate_locale(locale)
     do
       currency_data = for_code(currency_code, locale)
@@ -183,18 +183,11 @@ defmodule Cldr.Currency do
 
   """
   @spec known_currency?(code, [__MODULE__, ...]) :: boolean
-  def known_currency?(currency_code, custom_currencies \\ [])
-  def known_currency?(currency_code, custom_currencies) when is_binary(currency_code) do
-    case code_atom = normalize_currency_code(currency_code) do
-      {:error, {_exception, _message}} -> false
-      _ -> known_currency?(code_atom, custom_currencies)
+  def known_currency?(currency_code, custom_currencies \\ []) do
+    case Cldr.validate_currency(currency_code) do
+      {:ok, _currency} -> true
+      {:error, _reason} -> currency_code in custom_currencies
     end
-  end
-
-  def known_currency?(currency_code, custom_currencies)
-  when is_atom(currency_code) and is_list(custom_currencies) do
-    !!(Enum.find(known_currencies(), &(&1 == currency_code)) ||
-       Enum.find(custom_currencies, &(&1.code == currency_code)))
   end
 
   @doc """
@@ -220,9 +213,10 @@ defmodule Cldr.Currency do
   @valid_currency_code Regex.compile!("^X[A-Z]{2}$")
   @spec make_currency_code(binary | atom) :: {:ok, atom} | {:error, binary}
   def make_currency_code(code) do
-    currency_code = code
-    |> to_string
-    |> String.upcase
+    currency_code =
+      code
+      |> to_string
+      |> String.upcase
 
     if String.match?(currency_code, @valid_currency_code) do
       {:ok, String.to_atom(currency_code)}
@@ -296,5 +290,4 @@ defmodule Cldr.Currency do
   def for_locale(locale) do
     {:error, Locale.locale_error(locale)}
   end
-
 end

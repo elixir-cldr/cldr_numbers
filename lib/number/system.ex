@@ -23,7 +23,7 @@ defmodule Cldr.Number.System do
   @type types :: :default | :native | :traditional | :finance
 
   defdelegate known_number_systems, to: Cldr
-  defdelegate known_number_system_types, to:
+  defdelegate known_number_system_types, to: Cldr
   @doc """
   Return the default number system type name.
 
@@ -91,18 +91,18 @@ defmodule Cldr.Number.System do
   @spec number_systems_for(Locale.name | LanguageTag.t) :: Map.t
   def number_systems_for(locale \\ Cldr.get_current_locale())
 
-  for locale <- Cldr.Config.known_locale_names() do
+  for locale_name <- Cldr.Config.known_locale_names() do
     systems =
-      locale
+      locale_name
       |> Cldr.Config.get_locale
       |> Map.get(:number_systems)
 
-    def number_systems_for(locale_name) do
+    def number_systems_for(unquote(locale_name)) do
       {:ok, unquote(Macro.escape(systems))}
     end
 
-    def number_systems_for(%LanguageTag{cldr_locale_name: unquote(locale)}) do
-      number_systems_for(cldr_locale_name)
+    def number_systems_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
+      number_systems_for(unquote(locale_name))
     end
   end
 
@@ -172,7 +172,7 @@ defmodule Cldr.Number.System do
   @spec number_system_for(Locale.name | LanguageTag.t, System.name) :: [atom(), ...]
   def number_system_for(locale, system_name) do
     with \
-      {:ok, locale} <- Cldr.validate_locale(locale)
+      {:ok, locale} <- Cldr.validate_locale(locale),
       {:ok, system_name} <- system_name_from(system_name, locale)
     do
       {:ok, Map.get(number_systems(), system_name)}
@@ -289,7 +289,7 @@ defmodule Cldr.Number.System do
     try do
       system_name_from(String.to_existing_atom(system_name), locale)
     rescue ArgumentError ->
-      {:error, number_system_error(system_name)}
+      {:error, Cldr.unknown_number_system_error(system_name)}
     end
   end
 
@@ -303,7 +303,7 @@ defmodule Cldr.Number.System do
         system_name in Map.values(number_systems) ->
           {:ok, system_name}
         true ->
-          {:error, number_system_error(system_name)}
+          {:error, Cldr.unknown_number_system_error(system_name)}
       end
     else
       {:error, reason} -> {:error, reason}
@@ -410,38 +410,6 @@ defmodule Cldr.Number.System do
     end
   end
 
-  @number_system_names Enum.sort(Map.keys(@number_systems))
-  @doc """
-  Returns the names of the known number systems.
-
-  This is the full list of number systems for which
-  a definition is provided in CLDR.
-
-  Note that number formatting is not available for
-  all the number systems in this list.  Number formatting
-  is defined for a specific list of number systems in
-  each locale. To determine which number systems are
-  supported for number formatting in a given locale see
-  `number_system_names_for/1`.
-
-  ## Example
-
-      iex> Cldr.Number.System.known_number_systems
-      [:adlm, :ahom, :arab, :arabext, :armn, :armnlow, :bali, :beng, :bhks, :brah,
-       :cakm, :cham, :cyrl, :deva, :ethi, :fullwide, :geor, :gonm, :grek, :greklow,
-       :gujr, :guru, :hanidays, :hanidec, :hans, :hansfin, :hant, :hantfin, :hebr,
-       :hmng, :java, :jpan, :jpanfin, :kali, :khmr, :knda, :lana, :lanatham, :laoo,
-       :latn, :lepc, :limb, :mathbold, :mathdbl, :mathmono, :mathsanb, :mathsans,
-       :mlym, :modi, :mong, :mroo, :mtei, :mymr, :mymrshan, :mymrtlng, :newa, :nkoo,
-       :olck, :orya, :osma, :roman, :romanlow, :saur, :shrd, :sind, :sinh, :sora,
-       :sund, :takr, :talu, :taml, :tamldec, :telu, :thai, :tibt, :tirh, :vaii, :wara]
-
-  """
-  @spec known_number_systems :: [atom, ...]
-  def known_number_systems do
-    @number_system_names
-  end
-
   @doc """
   Returns `{:ok, system}` if the number system
   is known, or `{:error, reason}`
@@ -457,10 +425,10 @@ defmodule Cldr.Number.System do
 
   """
   def valid_number_system?(system) do
-    if system in known_number_systems() do
+    if system in Cldr.known_number_systems() do
       {:ok, system}
     else
-      {:error, number_system_error(system)}
+      {:error, Cldr.unknown_number_system_error(system)}
     end
   end
 
@@ -522,7 +490,8 @@ defmodule Cldr.Number.System do
       if function_exported?(module, function, 2) do
         locale = Locale.new!(locale_name)
         def to_system(number, unquote(system)) do
-          with {:ok, _locale} <- Cldr.validate_locale(unquote(Macro.escape(locale))) do
+          with \
+            {:ok, _locale} <- Cldr.validate_locale(unquote(Macro.escape(locale))) do
             {:ok, unquote(module).unquote(function)(number, unquote(Macro.escape(locale)))}
           else
             {:error, reason} -> {:error, reason}
@@ -533,7 +502,7 @@ defmodule Cldr.Number.System do
   end
 
   def to_system(_number, system) do
-    {:error, number_system_error(system)}
+    {:error, Cldr.unknown_number_system_error(system)}
   end
 
   @doc """
@@ -580,13 +549,6 @@ defmodule Cldr.Number.System do
 
   defp do_generate_transliteration_map(from, to, _from_length, _to_length) do
     {:error, {ArgumentError, "#{inspect from} and #{inspect to} aren't the same length"}}
-  end
-
-  @doc false
-  def number_system_error(system_name) do
-    {Cldr.UnknownNumberSystemError,
-      "The number system #{inspect system_name} is not known or the locale " <>
-      "it is defined in is not known"}
   end
 
   def number_system_digits_error(system_name) do
