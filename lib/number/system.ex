@@ -306,7 +306,7 @@ defmodule Cldr.Number.System do
         number_system in Map.values(number_systems) ->
           {:ok, number_system}
         true ->
-          {:error, Cldr.unknown_number_system_for_locale_error(system_name, locale, number_systems)}
+          {:error, unknown_number_system_for_locale_error(system_name, locale, number_systems)}
       end
     else
       {:error, reason} -> {:error, reason}
@@ -582,6 +582,29 @@ defmodule Cldr.Number.System do
           {:error, _reason} -> {:error, Cldr.unknown_number_system_error(number_system)}
         end
     end
+  end
+
+  @doc """
+  Returns an error tuple for an number system unknown to a given locale.
+
+    * `number_system` is any number system name **not** returned by `Cldr.known_number_systems/0`
+
+    * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+      or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
+
+    * `valid_number_systems` is a map returned by `Cldr.Number.System.number_systems_for/1`
+
+  ## Examples
+
+
+  """
+  def unknown_number_system_for_locale_error(number_system, locale, valid_number_systems)
+  when is_atom(number_system) do
+    {Cldr.UnknownNumberSystemError,
+      "The number system #{inspect number_system} is unknown " <>
+      "for the locale named #{Cldr.locale_name(locale)}. " <>
+      "Valid number systems are #{inspect valid_number_systems}"
+    }
   end
 
   defp number_system_digits_error(system_name) do
