@@ -1,7 +1,7 @@
 defmodule CldrNumbers.Mixfile do
   use Mix.Project
 
-  @version "0.3.1"
+  @version "1.0.0-rc.0"
 
   def project do
     [
@@ -34,8 +34,7 @@ defmodule CldrNumbers.Mixfile do
 
   defp deps do
     [
-      # {:ex_cldr, "~> 0.11.0"},
-      {:ex_cldr, path: "../cldr"},
+      {:ex_cldr, "~> 1.0-rc"},
       {:decimal, "~> 1.4.1"},
       {:poison, "~> 2.1 or ~> 3.1"},
       {:ex_doc, ">= 0.18.1", only: :dev}
@@ -57,7 +56,7 @@ defmodule CldrNumbers.Mixfile do
     [
       source_ref: "v#{@version}",
       main: "readme",
-      extras: ["README.md", "CHANGELOG.md"]
+      extras: ["README.md", "CHANGELOG.md", "LICENSE.md", "CHANGELOG.md"]
     ]
   end
 
