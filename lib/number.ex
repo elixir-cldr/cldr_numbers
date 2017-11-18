@@ -85,7 +85,8 @@ defmodule Cldr.Number do
   alias Cldr.Number.Formatter
   alias Cldr.Number.Format.Compiler
   alias Cldr.Locale
-  alias Cldr.LanguageTag
+  alias Cldr.Rbnf
+
   import Cldr.Number.Format, only: [formats_for: 2]
 
   @type format_type ::
@@ -310,7 +311,7 @@ defmodule Cldr.Number do
     if @format in Cldr.Rbnf.Ordinal.rule_sets(options[:locale]) do
       Cldr.Rbnf.Ordinal.digits_ordinal(number, options[:locale])
     else
-      {:error, rbnf_error(options[:locale], @format)}
+      {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
   end
 
@@ -320,7 +321,7 @@ defmodule Cldr.Number do
     if @format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
       Cldr.Rbnf.Spellout.spellout_cardinal(number, options[:locale])
     else
-      {:error, rbnf_error(options[:locale], @format)}
+      {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
   end
 
@@ -329,7 +330,7 @@ defmodule Cldr.Number do
     if format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
       Cldr.Rbnf.Spellout.spellout_numbering(number, options[:locale])
     else
-      {:error, rbnf_error(options[:locale], format)}
+      {:error, Rbnf.rbnf_rule_error(options[:locale], format)}
     end
   end
 
@@ -339,7 +340,7 @@ defmodule Cldr.Number do
     if @format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
       Cldr.Rbnf.Spellout.spellout_cardinal_verbose(number, options[:locale])
     else
-      {:error, rbnf_error(options[:locale], @format)}
+      {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
   end
 
@@ -349,7 +350,7 @@ defmodule Cldr.Number do
     if @format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
       Cldr.Rbnf.Spellout.spellout_numbering_year(number, options[:locale])
     else
-      {:error, rbnf_error(options[:locale], @format)}
+      {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
   end
 
@@ -358,7 +359,7 @@ defmodule Cldr.Number do
     if format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
       Cldr.Rbnf.Spellout.spellout_ordinal(number, options[:locale])
     else
-      {:error, rbnf_error(options[:locale], format)}
+      {:error, Rbnf.rbnf_rule_error(options[:locale], format)}
     end
   end
 
@@ -367,7 +368,7 @@ defmodule Cldr.Number do
     if format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
       Cldr.Rbnf.Spellout.spellout_ordinal_verbose(number, options[:locale])
     else
-      {:error, rbnf_error(options[:locale], format)}
+      {:error, Rbnf.rbnf_rule_error(options[:locale], format)}
     end
   end
 
@@ -574,9 +575,5 @@ defmodule Cldr.Number do
 
   defp currency_format?(_format) do
     false
-  end
-
-  defp rbnf_error(%LanguageTag{rbnf_locale_name: rbnf_locale_name}, format) do
-    {Cldr.NoRbnf, "Locale #{inspect rbnf_locale_name} does not define an rbnf ruleset #{inspect format}"}
   end
 end

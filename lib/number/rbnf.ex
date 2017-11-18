@@ -96,6 +96,10 @@ defmodule Cldr.Rbnf do
     {Cldr.Rbnf.NotAvailable, "RBNF is not available for the locale #{inspect locale}"}
   end
 
+  def rbnf_rule_error(%LanguageTag{rbnf_locale_name: rbnf_locale_name}, format) do
+    {Cldr.NoRbnf, "Locale #{inspect rbnf_locale_name} does not define an rbnf ruleset #{inspect format}"}
+  end
+
   if Mix.env == :test do
     # Returns all the rules in rbnf without any tagging for rulegroup or set.
     # This is helpful for testing only.

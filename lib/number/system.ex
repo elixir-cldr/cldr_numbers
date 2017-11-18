@@ -19,11 +19,12 @@ defmodule Cldr.Number.System do
 
   @default_number_system_type  :default
 
-  @type name :: atom
+  @type name :: atom | String.t
   @type types :: :default | :native | :traditional | :finance
 
   defdelegate known_number_systems, to: Cldr
   defdelegate known_number_system_types, to: Cldr
+
   @doc """
   Return the default number system type name.
 
@@ -74,7 +75,8 @@ defmodule Cldr.Number.System do
   Returns the number systems available for a locale
   or `{:error, message}` if the locale is not known.
 
-  * `locale` is any locale returned by `Cldr.Locale.new!/1`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
 
   ## Examples
 
@@ -114,7 +116,8 @@ defmodule Cldr.Number.System do
   Returns the number systems available for a locale
   or raises if the locale is not known.
 
-  * `locale` is any locale returned by `Cldr.Locale.new!/1`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
 
   ## Examples
 
@@ -138,10 +141,12 @@ defmodule Cldr.Number.System do
   @doc """
   Returns the actual number system from a number system type.
 
-  * `locale` is any locale returned by `Cldr.Locale.new!/1`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
 
-  * `system_name` is any name of name type returned by
-  `Cldr.Number.System.number_system_types/0`
+  * `system_name` is any number system name returned by
+    `Cldr.known_number_systems/0` or a number system type
+    returned by `Cldr.known_number_system_types/0`
 
   This function will decode a number system type into the actual
   number system.  If the number system provided can't be decoded
@@ -149,21 +154,21 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("th"), :default
-      {:ok, %{digits: "0123456789", type: :numeric}}
-
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("th"), :native
-      {:ok, %{digits: "๐๑๒๓๔๕๖๗๘๙", type: :numeric}}
-
       iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("th"), :latn
       {:ok, %{digits: "0123456789", type: :numeric}}
 
       iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :default
       {:ok, %{digits: "0123456789", type: :numeric}}
 
+      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("he"), :traditional
+      {:ok, %{rules: "hebrew", type: :algorithmic}}
+
       iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :finance
-      {:error, {Cldr.UnknownNumberSystemError,
-        "The number system :finance is not known or the locale it is defined in is not known"}}
+      {
+        :error,
+        {Cldr.UnknownNumberSystemError,
+          "The number system :finance is unknown for the locale named \\"en\\". Valid number systems are %{default: :latn, native: :latn}"}
+      }
 
       iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :native
       {:ok, %{digits: "0123456789", type: :numeric}}
@@ -221,8 +226,8 @@ defmodule Cldr.Number.System do
   a locale or an `{:error, message}` tuple if the locale
   is not known.
 
-  * `locale` is any valid locale returned by `Cldr.known_locale_names/0`
-  or a `Cldr.LanguageTag` struct
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
 
   ## Examples
 
@@ -236,6 +241,7 @@ defmodule Cldr.Number.System do
       [:latn, :hebr]
 
   """
+  @spec number_system_names_for!(Locale.name | LanguageTag.t) :: [name, ...]
   def number_system_names_for!(locale) do
     case number_system_names_for(locale) do
       {:error, {exception, message}} ->
@@ -248,9 +254,12 @@ defmodule Cldr.Number.System do
   @doc """
   Returns a number system name for a given locale and number system reference.
 
-  * `system_name` is any name of name type
+  * `system_name` is any number system name returned by
+    `Cldr.known_number_systems/0` or a number system type
+    returned by `Cldr.known_number_system_types/0`
 
-  * `locale` is any valid locale returned by `Cldr.Locale.new!/1`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
 
   Number systems can be references in one of two ways:
 
@@ -276,34 +285,28 @@ defmodule Cldr.Number.System do
       {:ok, :latn}
 
       iex> Cldr.Number.System.system_name_from(:nope, Cldr.Locale.new!("en"))
-      {:error, {Cldr.UnknownNumberSystemError,
-        "The number system :nope is not known or the locale it is defined in is not known"}}
+      {
+        :error,
+        {Cldr.UnknownNumberSystemError, "The number system :nope is unknown"}
+      }
 
   Note that return value is not guaranteed to be a valid
   number system for the given locale as demonstrated in the third example.
   """
-  @spec system_name_from(binary | atom, Locale.name | LanguageTag.t) :: atom
-  def system_name_from(system_name, locale \\ Cldr.get_current_locale())
-
-  def system_name_from(system_name, %LanguageTag{} = locale) when is_binary(system_name) do
-    try do
-      system_name_from(String.to_existing_atom(system_name), locale)
-    rescue ArgumentError ->
-      {:error, Cldr.unknown_number_system_error(system_name)}
-    end
-  end
-
-  def system_name_from(system_name, %LanguageTag{} = locale) when is_atom(system_name) do
-    with {:ok, _} <- Cldr.validate_locale(locale),
-         {:ok, number_systems} <- number_systems_for(locale)
+  @spec system_name_from(name, Locale.name | LanguageTag.t) :: atom
+  def system_name_from(system_name, locale \\ Cldr.get_current_locale()) do
+    with \
+      {:ok, locale} <- Cldr.validate_locale(locale),
+      {:ok, number_system} <- validate_number_system_or_type(system_name),
+      {:ok, number_systems} <- number_systems_for(locale)
     do
       cond do
-        Map.has_key?(number_systems, system_name) ->
-          {:ok, Map.get(number_systems, system_name)}
-        system_name in Map.values(number_systems) ->
-          {:ok, system_name}
+        Map.has_key?(number_systems, number_system) ->
+          {:ok, Map.get(number_systems, number_system)}
+        number_system in Map.values(number_systems) ->
+          {:ok, number_system}
         true ->
-          {:error, Cldr.unknown_number_system_error(system_name)}
+          {:error, unknown_number_system_for_locale_error(system_name, locale, number_systems)}
       end
     else
       {:error, reason} -> {:error, reason}
@@ -314,7 +317,24 @@ defmodule Cldr.Number.System do
   Returns a number system name for a given locale and number system reference
   and raises if the number system is not available for the given locale.
 
-  See `Cldr.Number.System.system_name_from/2` for further information.
+  * `system_name` is any number system name returned by
+    `Cldr.known_number_systems/0` or a number system type
+    returned by `Cldr.known_number_system_types/0`
+
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
+
+  ## Examples
+
+    iex> Cldr.Number.System.system_name_from!(:default, Cldr.Locale.new!( "en"))
+    :latn
+
+    iex> Cldr.Number.System.system_name_from!("latn", Cldr.Locale.new!("en"))
+    :latn
+
+    iex> Cldr.Number.System.system_name_from!(:traditional, Cldr.Locale.new!("he"))
+    :hebr
+
   """
   def system_name_from!(system_name, locale \\ Cldr.get_current_locale()) do
     case system_name_from(system_name, locale) do
@@ -335,10 +355,10 @@ defmodule Cldr.Number.System do
   and number system "latn" since this is what the number formatting routines use
   as placeholders.
   """
-  @spec number_systems_like(LanguageTag.t, binary | atom) ::
+  @spec number_systems_like(Locle.name | LanguageTag.t, name) ::
       {:ok, List.t} | {:error, tuple}
 
-  def number_systems_like(%LanguageTag{} = locale, number_system) do
+  def number_systems_like(locale, number_system) do
     with {:ok, _} <- Cldr.validate_locale(locale),
          {:ok, %{digits: digits}} <- number_system_for(locale, number_system),
          {:ok, symbols} <- Symbol.number_symbols_for(locale, number_system),
@@ -371,7 +391,11 @@ defmodule Cldr.Number.System do
 
   @doc """
   Returns `{:ok, digits}` for a number system, or an `{:error, message}` if the
-  number system is not know.
+  number system is not known.
+
+  * `system_name` is any number system name returned by
+    `Cldr.known_number_systems/0` or a number system type
+    returned by `Cldr.known_number_system_types/0`
 
   ## Examples
 
@@ -380,6 +404,7 @@ defmodule Cldr.Number.System do
 
       iex> Cldr.Number.System.number_system_digits(:nope)
       {:error, {Cldr.UnknownNumberSystemError, "The number system :nope is not known or does not have digits"}}
+
   """
   def number_system_digits(system_name) do
     if system = systems_with_digits()[system_name] do
@@ -393,6 +418,10 @@ defmodule Cldr.Number.System do
   Returns `digits` for a number system, or raises an exception if the
   number system is not know.
 
+  * `system_name` is any number system name returned by
+    `Cldr.known_number_systems/0` or a number system type
+    returned by `Cldr.known_number_system_types/0`
+
   ## Examples
 
       iex> Cldr.Number.System.number_system_digits! :latn
@@ -400,35 +429,14 @@ defmodule Cldr.Number.System do
 
       Cldr.Number.System.number_system_digits! :nope
       ** (Cldr.UnknownNumberSystemError) The number system :nope is not known or does not have digits
+
   """
-  def number_system_digits!(system) do
-    case number_system_digits(system) do
+  def number_system_digits!(system_name) do
+    case number_system_digits(system_name) do
       {:ok, digits} ->
         digits
       {:error, {exception, message}} ->
         raise exception, message
-    end
-  end
-
-  @doc """
-  Returns `{:ok, system}` if the number system
-  is known, or `{:error, reason}`
-
-  ## Examples
-
-      iex> Cldr.Number.System.valid_number_system? :hant
-      {:ok, :hant}
-
-      iex> Cldr.Number.System.valid_number_system? :nope
-      {:error, {Cldr.UnknownNumberSystemError,
-        "The number system :nope is not known or the locale it is defined in is not known"}}
-
-  """
-  def valid_number_system?(system) do
-    if system in Cldr.known_number_systems() do
-      {:ok, system}
-    else
-      {:error, Cldr.unknown_number_system_error(system)}
     end
   end
 
@@ -440,23 +448,29 @@ defmodule Cldr.Number.System do
   number system only, it does not provide number
   formatting.
 
+  * `number` is a `float`, `integer` or `Decimal`
+
+  * `system_name` is any number system name returned by
+    `Cldr.known_number_systems/0` or a number system type
+    returned by `Cldr.known_number_system_types/0`
+
   There are two types of number systems in CLDR:
 
   * `:numeric` in which the number system defines
-  a direct mapping between the latin digits `0..9`
-  into a the number system equivalent.  In this case,
-  `to_system/2` invokes `Cldr.Number.Transliterate.transliterate_digits/3`
-  for the given number.
+    a direct mapping between the latin digits `0..9`
+    into a the number system equivalent.  In this case,
+  ` to_system/2` invokes `Cldr.Number.Transliterate.transliterate_digits/3`
+    for the given number.
 
   * `:algorithmic` in which the number system
-  does not have the same structure as the `:latn`
-  number system and therefore the conversion is
-  done algorithmically.  For CLDR the algorithm
-  is implemented through `Cldr.Rbnf` rulesets.
-  These rulesets are considered by CLDR to be
-  less rigorous than the `:numeric` number systems
-  and caution and testing for a specific use case
-  is recommended.
+    does not have the same structure as the `:latn`
+    number system and therefore the conversion is
+    done algorithmically.  For CLDR the algorithm
+    is implemented through `Cldr.Rbnf` rulesets.
+    These rulesets are considered by CLDR to be
+    less rigorous than the `:numeric` number systems
+    and caution and testing for a specific use case
+    is recommended.
 
   ## Examples
 
@@ -473,8 +487,8 @@ defmodule Cldr.Number.System do
       {:ok, "壹佰贰拾叁"}
 
   """
-  @spec to_system(number, atom) :: String.t
-  def to_system(number, number_system)
+  @spec to_system(Math.number_or_decimal, atom) :: String.t
+  def to_system(number, system_name)
 
   for {system, definition} <- @number_systems do
     if definition.type == :numeric do
@@ -510,6 +524,12 @@ defmodule Cldr.Number.System do
   a non-latin number system. Returns a converted
   string or raises on error.
 
+  * `number` is a `float`, `integer` or `Decimal`
+
+  * `system_name` is any number system name returned by
+    `Cldr.known_number_systems/0` or a number system type
+    returned by `Cldr.known_number_system_types/0`
+
   See `Cldr.Number.System.to_string/2` for further
   information.
 
@@ -525,8 +545,8 @@ defmodule Cldr.Number.System do
       "壹佰贰拾叁"
 
   """
-  def to_system!(number, system) do
-    case to_system(number, system) do
+  def to_system!(number, system_name) do
+    case to_system(number, system_name) do
       {:ok, string} -> string
       {:error, {exception, reason}} -> raise exception, reason
     end
@@ -551,7 +571,43 @@ defmodule Cldr.Number.System do
     {:error, {ArgumentError, "#{inspect from} and #{inspect to} aren't the same length"}}
   end
 
-  def number_system_digits_error(system_name) do
+  defp validate_number_system_or_type(number_system) do
+    with {:ok, number_system} <- Cldr.validate_number_system(number_system) do
+      {:ok, number_system}
+    else
+      {:error, _} ->
+        with {:ok, number_system} <- Cldr.validate_number_system_type(number_system) do
+          {:ok, number_system}
+        else
+          {:error, _reason} -> {:error, Cldr.unknown_number_system_error(number_system)}
+        end
+    end
+  end
+
+  @doc """
+  Returns an error tuple for an number system unknown to a given locale.
+
+    * `number_system` is any number system name **not** returned by `Cldr.known_number_systems/0`
+
+    * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+      or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
+
+    * `valid_number_systems` is a map returned by `Cldr.Number.System.number_systems_for/1`
+
+  ## Examples
+
+
+  """
+  def unknown_number_system_for_locale_error(number_system, locale, valid_number_systems)
+  when is_atom(number_system) do
+    {Cldr.UnknownNumberSystemError,
+      "The number system #{inspect number_system} is unknown " <>
+      "for the locale named #{Cldr.locale_name(locale)}. " <>
+      "Valid number systems are #{inspect valid_number_systems}"
+    }
+  end
+
+  defp number_system_digits_error(system_name) do
     {Cldr.UnknownNumberSystemError,
       "The number system #{inspect system_name} is not known or does not have digits"}
   end

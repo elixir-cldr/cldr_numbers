@@ -186,7 +186,7 @@ defmodule Cldr.Currency do
   def known_currency?(currency_code, custom_currencies \\ []) do
     case Cldr.validate_currency(currency_code) do
       {:ok, _currency} -> true
-      {:error, _reason} -> currency_code in custom_currencies
+      {:error, _reason} -> Enum.any?(custom_currencies, &(currency_code == &1.code))
     end
   end
 
