@@ -35,47 +35,47 @@ defmodule Cldr.Number.Formatter.Short do
 
       iex> Cldr.Number.to_string 1234, format: :short, currency: "JPY"
       {:ok, "¥1K"}
+
+  **This module is not part of the public API and is subject
+  to change at any time.**
+
   """
 
-  import Cldr.Macros, only: [docp: 1]
   alias Cldr.Math
   alias Cldr.Locale
   alias Cldr.Number.{System, Format, Formatter, Cardinal}
 
-  docp """
-  Notes from Unicode TR35 on formatting short formats:
-
-  To format a number N, the greatest type less than or equal to N is
-  used, with the appropriate plural category. N is divided by the type, after
-  removing the number of zeros in the pattern, less 1. APIs supporting this
-  format should provide control over the number of significant or fraction
-  digits.
-
-  If the value is precisely 0, or if the type is less than 1000, then the
-  normal number format pattern for that sort of object is supplied. For
-  example, formatting 1200 would result in “$1.2K”, while 990 would result in
-  simply “$990”.
-
-  Thus N=12345 matches <pattern type="10000" count="other">00 K</pattern> . N
-  is divided by 1000 (obtained from 10000 after removing "00" and restoring one
-  "0". The result is formatted according to the normal decimal pattern. With no
-  fractional digits, that yields "12 K".
-  """
+  # Notes from Unicode TR35 on formatting short formats:
+  #
+  # To format a number N, the greatest type less than or equal to N is
+  # used, with the appropriate plural category. N is divided by the type, after
+  # removing the number of zeros in the pattern, less 1. APIs supporting this
+  # format should provide control over the number of significant or fraction
+  # digits.
+  #
+  # If the value is precisely 0, or if the type is less than 1000, then the
+  # normal number format pattern for that sort of object is supplied. For
+  # example, formatting 1200 would result in “$1.2K”, while 990 would result in
+  # simply “$990”.
+  #
+  # Thus N=12345 matches <pattern type="10000" count="other">00 K</pattern> . N
+  # is divided by 1000 (obtained from 10000 after removing "00" and restoring one
+  # "0". The result is formatted according to the normal decimal pattern. With no
+  # fractional digits, that yields "12 K".
 
   def to_string(number, style, options) do
     locale = (options[:locale] || Cldr.get_current_locale())
 
-    with {:ok, _} <- Cldr.validate_locale(locale),
-         {:ok, number_system} <- System.system_name_from(options[:number_system], locale)
+    with \
+      {:ok, locale} <- Cldr.validate_locale(locale),
+      {:ok, number_system} <- System.system_name_from(options[:number_system], locale)
     do
-      do_to_short_string(number, style, locale, number_system, options)
-    else
-      {:error, _} = error -> error
+      short_format_string(number, style, locale, number_system, options)
     end
   end
 
-  @spec do_to_short_string(number, atom, Locale.name, atom, Map.t) :: List.t
-  defp do_to_short_string(number, style, locale, number_system, options) do
+  @spec short_format_string(number, atom, Locale.name, atom, Map.t) :: List.t
+  defp short_format_string(number, style, locale, number_system, options) do
     case Format.formats_for(locale, number_system) do
       {:ok, formats} ->
         formats = Map.get(formats, style)
@@ -154,7 +154,6 @@ defmodule Cldr.Number.Formatter.Short do
     number / adjustment(range, number_of_zeros)
   end
 
-  @doc false
   # TODO: We can precompute these at compile time which would
   # save this lookup
   defp adjustment(range, number_of_zeros) do

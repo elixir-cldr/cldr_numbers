@@ -4,8 +4,14 @@ This is the changelog for Cldr v1.0.0-rc.0 released on November 19th, 2017.  For
 
 This version signals API stability and the first release candidate.
 
-### Enhancements
+## Breaking Changes
+
+* The modules `Cldr.Currency`, `Cldr.Number.System` and `Cldr.Number.Format` now consistently returns an `{:ok, result}` tuple rather than just the `result`
+
+## Enhancements
 
 * Update to [ex_cldr](https://hex.pm/packages/ex_cldr) version 1.0.0-rc.0
+
+
 
 

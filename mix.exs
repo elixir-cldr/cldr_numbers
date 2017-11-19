@@ -56,7 +56,7 @@ defmodule CldrNumbers.Mixfile do
     [
       source_ref: "v#{@version}",
       main: "readme",
-      extras: ["README.md", "CHANGELOG.md", "LICENSE.md", "CHANGELOG.md"]
+      extras: ["README.md", "CHANGELOG.md", "LICENSE.md"]
     ]
   end
 

@@ -5,6 +5,7 @@ defmodule Doc.Test do
   doctest Cldr.Currency
   doctest Cldr.Number.String
   doctest Cldr.Number.Format
+  doctest Cldr.Number.Symbol
   doctest Cldr.Number.System
   doctest Cldr.Number.Transliterate
   doctest Cldr.Number.Format.Compiler

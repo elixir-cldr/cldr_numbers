@@ -20,20 +20,6 @@ defmodule Cldr.Number.String do
   end
 
   @doc """
-  Replace any non-latin1 characters with a \?
-  """
-  def clean(string) do
-    for char <- String.graphemes(string) do
-      if Regex.match?(not_latin1(), char) do
-        "U+" <> Base.encode16(char, case: :lower)
-      else
-        char
-      end
-    end
-    |> Enum.join
-  end
-
-  @doc """
   Replaces characters with a string hex representation
   """
   def hex_string(string) do
@@ -46,9 +32,12 @@ defmodule Cldr.Number.String do
   Pad a a string (representing a number) with leading "0"'s to the
   specified length.
 
+  ## Options
+
   * `number` is a string representation of a number
 
   * `count` is the final length required of the string
+
   """
   @spec pad_leading_zeros(String.t, integer) :: String.t
   def pad_leading_zeros(number_string, count) when count <= 0 do
@@ -63,9 +52,12 @@ defmodule Cldr.Number.String do
   Pad a a string (representing a number) with trailing "0"'s to the
   specified length.
 
+  ## Options
+
   * `number` is a string representation of a number
 
   * `count` is the final length required of the string
+
   """
   @spec pad_trailing_zeros(String.t, integer) :: String.t
   def pad_trailing_zeros(number_string, count) when count <= 0 do
@@ -96,6 +88,7 @@ defmodule Cldr.Number.String do
 
       iex> Cldr.Number.String.chunk_string("1234", 3, :reverse)
       ["1", "234"]
+
   """
   @spec chunk_string(String.t, integer, :forward | :reverse) :: [String.t]
   def chunk_string(string, size, direction \\ :forward)

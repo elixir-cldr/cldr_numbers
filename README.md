@@ -36,7 +36,7 @@ iex> h Cldr.Number.to_string
 
 > The maximum number of integer digits, if present, specifies the exponent grouping. The most common use of this is to generate engineering notation, in which the exponent is a multiple of three, for example, "##0.###E0". The number 12345 is formatted using "##0.####E0" as "12.345E3".
 
-`ex_cldr_numbers` does not currently support such functionality.
+`ex_cldr_numbers` does not currently support this functionality.
 
 ## Installation
 
@@ -54,6 +54,10 @@ then retrieve `ex_cldr_numbers` from [hex](https://hex.pm/packages/ex_cldr_numbe
 
     mix deps.get
     mix deps.compile
+
+## Configuration
+
+`ex_cldr_numbers` uses the configuration set for the dependency `ex_cldr`.  See the documentation for [ex_cldr](https://hexdocs.pm/ex_cldr)
 
 ## Using Cldr_Numbers
 
@@ -135,7 +139,7 @@ iex> Cldr.Number.to_string 1234.31, format: :currency, currency: :CHF, cash: tru
 {:ok, "CHF1,234.30"}
 ```
 
-*  `:accounting` which formats a positive number like `standard` but which usually wraps a negative number in `()`. The `:accounting` format also requires that the `:currency` option be specified.
+*  `:accounting` which formats a positive number like `:standard` but which usually wraps a negative number in `()`. The `:accounting` format also requires that the `:currency` option be specified.
 
 ```elixir
 iex> Cldr.Number.to_string 1234, format: :accounting, currency: :THB

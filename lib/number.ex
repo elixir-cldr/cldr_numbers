@@ -110,6 +110,8 @@ defmodule Cldr.Number do
   @doc """
   Returns a number formatted into a string according to a format pattern and options.
 
+  ## Options
+
   * `number` is an integer, float or Decimal to be formatted
 
   * `options` is a keyword list defining how the number is to be formatted. The
@@ -165,6 +167,12 @@ defmodule Cldr.Number do
         settings that would be applied by default.  For example, currencies have
         fractional digits defined reflecting each currencies minor unit.  Setting
         `:fractional_digits` will override that setting.
+
+  ## Returns
+
+  * `{:ok, string}` or
+
+  * `{:error, {exception, message}}`
 
   ## Examples
 
@@ -266,14 +274,25 @@ defmodule Cldr.Number do
         {:error, reason} -> {:error, reason}
         string -> {:ok, string}
       end
-    else
-      {:error, _} = error -> error
     end
   end
 
   @doc """
   Same as the execution of `to_string/2` but raises an exception if an error would be
   returned.
+
+  ## Options
+
+  * `number` is an integer, float or Decimal to be formatted
+
+  * `options` is a keyword list defining how the number is to be formatted. See
+    `Cldr.Number.to_string/2`
+
+  ## Returns
+
+  * a formatted number as a string or
+
+  * raises an exception
 
   ## Examples
 

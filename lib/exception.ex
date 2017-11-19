@@ -9,3 +9,39 @@ defmodule Cldr.Rbnf.NoRuleForNumber do
     %__MODULE__{message: message}
   end
 end
+
+defmodule Cldr.CurrencyAlreadyDefined do
+  @moduledoc """
+  Exception raised when an attempt is made to define a currency
+  that already exists.
+  """
+  defexception [:message]
+
+  def exception(message) do
+    %__MODULE__{message: message}
+  end
+end
+
+defmodule Cldr.CurrencyCodeInvalid do
+  @moduledoc """
+  Exception raised when an attempt is made to define a currency
+  code that is invalid.
+  """
+  defexception [:message]
+
+  def exception(message) do
+    %__MODULE__{message: message}
+  end
+end
+
+defmodule Cldr.NoNumberSymbols do
+  @moduledoc """
+  Exception raised when when there are no number
+  symbols for a locale and number system.
+  """
+  defexception [:message]
+
+  def exception(message) do
+    %__MODULE__{message: message}
+  end
+end

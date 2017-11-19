@@ -19,7 +19,7 @@ defmodule Cldr.Number.System do
 
   @default_number_system_type  :default
 
-  @type name :: atom | String.t
+  @type system_name :: atom()
   @type types :: :default | :native | :traditional | :finance
 
   defdelegate known_number_systems, to: Cldr
@@ -231,17 +231,17 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_system_names_for! Cldr.Locale.new!("en")
+      iex> Cldr.Number.System.number_system_names_for!("en")
       [:latn]
 
-      iex> Cldr.Number.System.number_system_names_for! Cldr.Locale.new!("th")
+      iex> Cldr.Number.System.number_system_names_for!("th")
       [:latn, :thai]
 
-      iex> Cldr.Number.System.number_system_names_for! Cldr.Locale.new!("he")
+      iex> Cldr.Number.System.number_system_names_for!("he")
       [:latn, :hebr]
 
   """
-  @spec number_system_names_for!(Locale.name | LanguageTag.t) :: [name, ...]
+  @spec number_system_names_for!(Locale.name | LanguageTag.t) :: [system_name, ...]
   def number_system_names_for!(locale) do
     case number_system_names_for(locale) do
       {:error, {exception, message}} ->
@@ -293,7 +293,7 @@ defmodule Cldr.Number.System do
   Note that return value is not guaranteed to be a valid
   number system for the given locale as demonstrated in the third example.
   """
-  @spec system_name_from(name, Locale.name | LanguageTag.t) :: atom
+  @spec system_name_from(system_name, Locale.locale_name | LanguageTag.t) :: atom
   def system_name_from(system_name, locale \\ Cldr.get_current_locale()) do
     with \
       {:ok, locale} <- Cldr.validate_locale(locale),
@@ -355,20 +355,18 @@ defmodule Cldr.Number.System do
   and number system "latn" since this is what the number formatting routines use
   as placeholders.
   """
-  @spec number_systems_like(Locle.name | LanguageTag.t, name) ::
+  @spec number_systems_like(LanguageTag.t | Locale.locale_name, system_name) ::
       {:ok, List.t} | {:error, tuple}
 
   def number_systems_like(locale, number_system) do
-    with {:ok, _} <- Cldr.validate_locale(locale),
-         {:ok, %{digits: digits}} <- number_system_for(locale, number_system),
-         {:ok, symbols} <- Symbol.number_symbols_for(locale, number_system),
-         {:ok, names} <- number_system_names_for(locale)
+    with \
+      {:ok, _} <- Cldr.validate_locale(locale),
+      {:ok, %{digits: digits}} <- number_system_for(locale, number_system),
+      {:ok, symbols} <- Symbol.number_symbols_for(locale, number_system),
+      {:ok, names} <- number_system_names_for(locale)
     do
       likes = do_number_systems_like(digits, symbols, names)
       {:ok, likes}
-    else
-      {:error, _} = error -> error
-      {:no_symbols, _} = error -> error
     end
   end
 

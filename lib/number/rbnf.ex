@@ -53,8 +53,6 @@ defmodule Cldr.Rbnf do
       {:ok, language_tag} <- Cldr.Locale.canonical_language_tag(locale)
     do
       for_locale(language_tag)
-    else
-      {:error, reason} -> {:error, reason}
     end
   end
 

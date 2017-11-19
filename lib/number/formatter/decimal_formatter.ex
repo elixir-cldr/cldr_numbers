@@ -8,11 +8,14 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   The available format styles for a locale can be returned by:
 
-      iex> Cldr.Number.Format.decimal_format_styles_for Cldr.Locale.new!("en")
-      [:accounting, :currency, :currency_long, :percent, :scientific, :standard]
+      iex> Cldr.Number.Format.decimal_format_styles_for("en")
+      {:ok, [:accounting, :currency, :currency_long, :percent, :scientific, :standard]}
 
   This allows a number to be formatted in a locale-specific way but using
   a standard method of describing the purpose of the format.
+
+  **This module is not part of the public API and is subject
+  to change at any time.**
   """
 
   import Cldr.Macros
@@ -28,8 +31,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   @doc """
   Formats a number according to a decimal format string.
 
-  This function is not part of the public API. The
-  public API is `Cldr.Number.to_string/2`.
+  ## Options
 
   * `number` is an integer, float or Decimal
 
@@ -69,7 +71,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     end
   end
 
-  def update_meta(meta, number, options) do
+  defp update_meta(meta, number, options) do
     meta
     |> adjust_fraction_for_currency(options[:currency], options[:cash])
     |> adjust_fraction_for_significant_digits(number)
@@ -302,7 +304,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   defp minimum_group_size(%{first: group_size}, locale) do
-    Format.minimum_grouping_digits_for(locale) + group_size
+    Format.minimum_grouping_digits_for!(locale) + group_size
   end
 
   # The actual grouping function.  Note there are two directions,
@@ -480,7 +482,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   defp currency_symbol(currency, number, size, locale) do
-    currency = Currency.for_code(currency, locale)
+    {:ok, currency} = Currency.currency_for_code(currency, locale)
     currency_symbol(currency, number, size, locale)
   end
 
@@ -497,12 +499,12 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   defp adjust_fraction_for_currency(meta, currency, cash) when is_false(cash) do
-    currency = Currency.for_code(currency)
+    {:ok, currency} = Currency.currency_for_code(currency)
     do_adjust_fraction(meta, currency.digits, currency.rounding)
   end
 
   defp adjust_fraction_for_currency(meta, currency, _cash) do
-    currency = Currency.for_code(currency)
+    {:ok, currency} = Currency.currency_for_code(currency)
     do_adjust_fraction(meta, currency.cash_digits, currency.cash_rounding)
   end
 

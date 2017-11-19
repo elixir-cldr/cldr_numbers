@@ -16,19 +16,24 @@ defmodule Cldr.Number.Formatter.Currency do
   In the first example the format is defined by a decimal mask. In this example
   the format mask comes from:
 
-      iex> Cldr.Number.Format.all_formats_for(Cldr.Locale.new!("en")).latn.currency
+      iex> {:ok, formats} = Cldr.Number.Format.all_formats_for("en")
+      ...> formats.latn.currency
       "¤#,##0.00"
 
   In the second example we are using a format that combines the number with
   a language translation of the currency name.  In this example the format
   comes from:
 
-      iex> Cldr.Number.Format.all_formats_for(Cldr.Locale.new!("en")).latn.currency_long
+      iex> {:ok, formats} = Cldr.Number.Format.all_formats_for("en")
+      ...> formats.latn.currency_long
       %{one: [0, " ", 1], other: [0, " ", 1]}
 
   Where "{0}" is replaced with the number formatted using the `:standard`
   decimal format and "{1} is replaced with locale-specific name of the
   currency adjusted for the locales plural rules."
+
+  **This module is not part of the public API and is subject
+  to change at any time.**
   """
 
   alias Cldr.Number.{Format, System}
@@ -43,7 +48,7 @@ defmodule Cldr.Number.Formatter.Currency do
       "locale #{inspect locale} and number system #{inspect number_system}."
     end
 
-    currency = Currency.for_code(options[:currency], locale)
+    {:ok, currency} = Currency.currency_for_code(options[:currency], locale)
     currency_string = Number.Cardinal.pluralize(number, locale, currency.count)
 
     options = options
@@ -51,8 +56,8 @@ defmodule Cldr.Number.Formatter.Currency do
     |> set_fractional_digits(options[:fractional_digits])
 
     number_string = Number.to_string!(number, options)
-
     format = Number.Cardinal.pluralize(number, locale, formats)
+
     Substitution.substitute([number_string, currency_string], format)
     |> :erlang.iolist_to_binary
   end

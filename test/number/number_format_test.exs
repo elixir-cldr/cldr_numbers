@@ -24,11 +24,11 @@ defmodule Number.Format.Test do
   end
 
   test "minimum_grouping digits delegates to Cldr.Number.Symbol" do
-    assert Format.minimum_grouping_digits_for(~L[en]) == 1
+    assert Format.minimum_grouping_digits_for!(~L[en]) == 1
   end
 
   test "that there are decimal formats for a locale" do
-    assert Map.keys(Cldr.Number.Format.all_formats_for(~L[en])) == [:latn]
+    assert Map.keys(Format.all_formats_for!(~L[en])) == [:latn]
   end
 
   test "that there is an exception if we get formats for an unknown locale" do
