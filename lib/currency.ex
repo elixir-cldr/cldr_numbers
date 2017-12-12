@@ -126,6 +126,7 @@ defmodule Cldr.Currency do
       {:ok, "dollar des États-Unis"}
 
   """
+  @spec pluralize(pos_integer, atom, Keyword.t) :: {:ok, String.t} | {:error, {Exception.t, String.t}}
   def pluralize(number, currency, options \\ []) do
     default_options = [locale: Cldr.get_current_locale()]
     options = Keyword.merge(default_options, options)
@@ -150,6 +151,7 @@ defmodule Cldr.Currency do
       300
 
   """
+  @spec known_currencies() :: list(atom)
   def known_currencies do
     Cldr.known_currencies
   end
@@ -184,7 +186,7 @@ defmodule Cldr.Currency do
       true
 
   """
-  @spec known_currency?(code, [__MODULE__, ...]) :: boolean
+  @spec known_currency?(code, [t, ...]) :: boolean
   def known_currency?(currency_code, custom_currencies \\ []) do
     case Cldr.validate_currency(currency_code) do
       {:ok, _currency} -> true
@@ -262,7 +264,7 @@ defmodule Cldr.Currency do
       tender: true}}
 
   """
-  @spec currency_for_code(code, LanguageTag.t) :: %{}
+  @spec currency_for_code(code, LanguageTag.t) :: {:ok, t} | {:error, {Exception.t, String.t}}
   def currency_for_code(currency_code, locale \\ Cldr.get_current_locale()) do
     with \
       {:ok, code} <- Cldr.validate_currency(currency_code),
@@ -276,7 +278,7 @@ defmodule Cldr.Currency do
   @doc """
   Returns the currency metadata for a locale.
   """
-  @spec currencies_for_locale(Locale.name | LanguageTag.t) :: Map.t
+  @spec currencies_for_locale(Locale.name | LanguageTag.t) :: {:ok, Map.t} | {:error, {Exception.t, String.t}}
   def currencies_for_locale(locale \\ Cldr.get_current_locale())
 
   for locale_name <- Cldr.Config.known_locale_names() do
