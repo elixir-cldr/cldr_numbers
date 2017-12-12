@@ -30,16 +30,16 @@ defmodule Cldr.Currency do
   }
 
   defstruct [
-    :code,
-    :name,
-    :symbol,
-    :narrow_symbol,
-    :digits,
-    :rounding,
-    :cash_digits,
-    :cash_rounding,
-    :tender,
-    :count]
+    code: nil,
+    name: "",
+    symbol: "",
+    narrow_symbol: nil,
+    digits: 0,
+    rounding: 0,
+    cash_digits: 0,
+    cash_rounding: 0,
+    tender: false,
+    count: nil]
 
   @doc """
   Returns a `Currency` struct created from the arguments.
@@ -75,33 +75,13 @@ defmodule Cldr.Currency do
 
   """
   @spec new(binary | atom, map | list) :: t | {:error, binary}
-  @currency_defaults %{
-    name: "",
-    symbol: "",
-    narrow_symbol: nil,
-    digits: 0,
-    rounding: 0,
-    cash_digits: 0,
-    cash_rounding: 0,
-    tender: false
-  }
   def new(currency, options \\ [])
-
-  def new(currency, options) when is_list(options) do
-    new(currency, Enum.into(options, %{}))
-  end
-
-  def new(currency, options) when is_map(options) do
+  def new(currency, options) do
     with \
       {:error, _currency} <- Cldr.validate_currency(currency),
       {:ok, currency_code} <- make_currency_code(currency)
     do
-      options =
-        @currency_defaults
-        |> Map.merge(options)
-        |> Map.merge(%{code: currency_code})
-
-      {:ok, struct(__MODULE__, options)}
+      {:ok, struct(@struct, [{:code, currency} | options])}
     else
       {:ok, _} -> {:error, {Cldr.CurrencyAlreadyDefined, "Currency #{inspect currency} is already defined"}}
       error -> error
