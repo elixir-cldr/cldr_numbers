@@ -81,7 +81,7 @@ defmodule Cldr.Currency do
       {:error, _currency} <- Cldr.validate_currency(currency),
       {:ok, currency_code} <- make_currency_code(currency)
     do
-      {:ok, struct(@struct, [{:code, currency} | options])}
+      {:ok, struct(@struct, [{:code, currency_code} | options])}
     else
       {:ok, _} -> {:error, {Cldr.CurrencyAlreadyDefined, "Currency #{inspect currency} is already defined"}}
       error -> error

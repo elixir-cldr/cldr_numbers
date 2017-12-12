@@ -4,7 +4,7 @@ This is the changelog for Cldr v1.0.0-rc.0 released on December 9th, 2017.  For 
 
 ## Breaking Changes
 
-* The modules `Cldr.Currency`, `Cldr.Number.System` and `Cldr.Number.Format` now consistently returns an `{:ok, result}` tuple rather than just the `result`
+* The modules `Cldr.Currency`, `Cldr.Number.System` and `Cldr.Number.Format` now consistently return an `{:ok, result}` tuple rather than just the `result`
 
 ## Enhancements
 
