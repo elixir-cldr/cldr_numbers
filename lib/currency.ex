@@ -64,6 +64,16 @@ defmodule Cldr.Currency do
         digits: 0, name: "", narrow_symbol: nil, rounding: 0, symbol: "",
         tender: false}}
 
+      iex> Cldr.Currency.new(:ZAA, name: "Invalid Custom Name")
+      {:error, {Cldr.CurrencyCodeInvalid,
+        "Invalid currency code \\"ZAA\\".  Currency codes must start with 'X' followed by 2 alphabetic characters only."}}
+
+      iex> Cldr.Currency.new("xaa", name: "Custom Name")
+      {:ok,
+       %Cldr.Currency{cash_digits: 0, cash_rounding: 0, code: :XAA, count: nil,
+        digits: 0, name: "Custom Name", narrow_symbol: nil, rounding: 0, symbol: "",
+        tender: false}}
+
       iex> Cldr.Currency.new(:XAA, name: "Custom Name")
       {:ok,
        %Cldr.Currency{cash_digits: 0, cash_rounding: 0, code: :XAA, count: nil,
