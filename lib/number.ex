@@ -327,7 +327,8 @@ defmodule Cldr.Number do
   # For ordinal numbers
   @format :digits_ordinal
   defp to_string(number, :ordinal, options) do
-    if @format in Cldr.Rbnf.Ordinal.rule_sets(options[:locale]) do
+    rule_sets = Cldr.Rbnf.Ordinal.rule_sets(options[:locale])
+    if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Ordinal.digits_ordinal(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
@@ -337,7 +338,8 @@ defmodule Cldr.Number do
   # For spellout numbers
   @format :spellout_cardinal
   defp to_string(number, :spellout, options) do
-    if @format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
+    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+    if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_cardinal(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
@@ -346,7 +348,8 @@ defmodule Cldr.Number do
 
   # For spellout numbers
   defp to_string(number, :spellout_numbering = format, options) do
-    if format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
+    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+    if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_numbering(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], format)}
@@ -356,7 +359,8 @@ defmodule Cldr.Number do
   # For spellout numbers
   @format :spellout_cardinal_verbose
   defp to_string(number, :spellout_verbose, options) do
-    if @format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
+    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+    if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_cardinal_verbose(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
@@ -366,7 +370,8 @@ defmodule Cldr.Number do
   # For spellout years
   @format :spellout_numbering_year
   defp to_string(number, :spellout_year, options) do
-    if @format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
+    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+    if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_numbering_year(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
@@ -375,7 +380,8 @@ defmodule Cldr.Number do
 
   # For spellout ordinal
   defp to_string(number, :spellout_ordinal = format, options) do
-    if format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
+    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+    if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_ordinal(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], format)}
@@ -384,7 +390,8 @@ defmodule Cldr.Number do
 
   # For spellout ordinal verbose
   defp to_string(number, :spellout_ordinal_verbose = format, options) do
-    if format in Cldr.Rbnf.Spellout.rule_sets(options[:locale]) do
+    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+    if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_ordinal_verbose(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], format)}

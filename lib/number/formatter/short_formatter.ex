@@ -110,14 +110,16 @@ defmodule Cldr.Number.Formatter.Short do
   end
 
   defp choose_short_format(number, rules, options) when is_number(number) do
-    [range, rule] = rules
-    |> Enum.filter(fn [range, _rules] -> range <= number end)
-    |> Enum.reverse
-    |> hd
+    [range, rule] = 
+      rules
+      |> Enum.filter(fn [range, _rules] -> range <= number end)
+      |> Enum.reverse
+      |> hd
 
-    mod = number
-    |> trunc
-    |> rem(range)
+    mod = 
+      number
+      |> trunc
+      |> rem(range)
 
     {range, Cardinal.pluralize(mod, options[:locale], rule)}
   end

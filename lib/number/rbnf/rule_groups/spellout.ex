@@ -32,4 +32,12 @@ defmodule Cldr.Rbnf.Spellout do
 
   define_rules(:SpelloutRules, __ENV__)
 
+  # Default function to prevent compiler warnings in Cldr.Number
+  def spellout_cardinal_verbose(_number, locale) do
+    {:error, Cldr.Rbnf.rbnf_rule_error(locale, :spellout_cardinal_verbose)}
+  end
+
+  def spellout_ordinal_verbose(_number, locale) do
+    {:error, Cldr.Rbnf.rbnf_rule_error(locale, :spellout_ordinal_verbose)}
+  end
 end
