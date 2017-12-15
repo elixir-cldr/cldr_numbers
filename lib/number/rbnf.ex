@@ -90,12 +90,16 @@ defmodule Cldr.Rbnf do
     |> Cldr.Map.merge_map_list
   end
 
-  defp rbnf_locale_error(locale) do
-    {Cldr.Rbnf.NotAvailable, "RBNF is not available for the locale #{inspect locale}"}
+  def rbnf_locale_error(locale_name) when is_binary(locale_name) do
+    {Cldr.Rbnf.NotAvailable, "RBNF is not available for the locale #{inspect locale_name}"}
+  end
+
+  def rbnf_rule_error(%LanguageTag{rbnf_locale_name: nil, cldr_locale_name: cldr_locale_name}, _format) do
+    {Cldr.Rbnf.NotAvailable, "RBNF is not available for the locale #{inspect cldr_locale_name}"}
   end
 
   def rbnf_rule_error(%LanguageTag{rbnf_locale_name: rbnf_locale_name}, format) do
-    {Cldr.NoRbnf, "Locale #{inspect rbnf_locale_name} does not define an rbnf ruleset #{inspect format}"}
+    {Cldr.Rbnf.NoRule, "Locale #{inspect rbnf_locale_name} does not define an rbnf ruleset #{inspect format}"}
   end
 
   if Mix.env == :test do

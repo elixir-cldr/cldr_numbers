@@ -10,6 +10,18 @@ defmodule Cldr.Rbnf.NoRuleForNumber do
   end
 end
 
+defmodule Cldr.Rbnf.NoRule do
+  @moduledoc """
+  Exception raised when an attempt is made to invoke an RBNF rule that
+  is not supported for a given locale
+  """
+  defexception [:message]
+
+  def exception(message) do
+    %__MODULE__{message: message}
+  end
+end
+
 defmodule Cldr.CurrencyAlreadyDefined do
   @moduledoc """
   Exception raised when an attempt is made to define a currency
