@@ -30,6 +30,20 @@ defmodule Rbnf.Test do
     assert Cldr.Rbnf.Spellout.spellout_ordinal(0.1, Locale.new!("en")) == "0.1"
   end
 
+  test "decimal rbnf for decimal integers" do
+    assert {:ok, "123,456th"} = Cldr.Number.to_string(Decimal.new(123456), format: :ordinal)
+    assert {:ok, "123 456e"} = Cldr.Number.to_string(Decimal.new(123456), format: :ordinal, locale: Locale.new!("fr"))
+
+    assert {:ok, "one hundred and twenty-three thousand, four hundred and fifty-sixth"} =
+    Cldr.Number.to_string(Decimal.new(123456), format: :spellout_ordinal_verbose)
+
+    assert {:ok, "twenty-five thousand three hundred forty"} =
+      Cldr.Number.to_string(Decimal.new(25_340), format: :spellout)
+
+    assert Cldr.Rbnf.Spellout.spellout_cardinal(Decimal.new(0), Locale.new!("en")) == "zero"
+    assert Cldr.Rbnf.Spellout.spellout_ordinal(Decimal.new(0), Locale.new!("en")) == "zeroth"
+  end
+
   test "roman numerals" do
     assert Cldr.Number.to_string(1, format: :roman) == {:ok, "I"}
     assert Cldr.Number.to_string(2, format: :roman) == {:ok, "II"}

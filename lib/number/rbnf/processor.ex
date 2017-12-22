@@ -128,8 +128,10 @@ defmodule Cldr.Rbnf.Processor do
       (rule_group, locale, "public", :error) ->
         define_rule(:error, nil, rule_group, locale, nil)
         |> Code.eval_quoted([], env)
+
       (_rule_group, _locale, "private", :error) ->
         nil
+
       (rule_group, locale, access, rule) ->
         {:ok, parsed} = Cldr.Rbnf.Rule.parse(rule.definition)
 
@@ -156,8 +158,14 @@ defmodule Cldr.Rbnf.Processor do
     end
   end
 
+  # If we are provided with a Decimal integer then we can call the
+  # equivalent integer function without loss of precision
   defp define_rule(:error, _range, rule_group, locale_name, _body) do
     quote do
+      def unquote(rule_group)(%Decimal{exp: 0, coef: number},
+                  %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)} = locale) do
+        unquote(rule_group)(number, locale)
+      end
       def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)}) do
         {:error, rbnf_rule_error(number, unquote(rule_group), unquote(locale_name))}
       end

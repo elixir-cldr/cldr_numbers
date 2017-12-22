@@ -1,11 +1,7 @@
-# Changelog for Cldr_Numbers v1.0.1
+# Changelog for Cldr_Numbers v1.1
 
-This is the changelog for Cldr v1.0.1 released on December 13th, 2017.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v1.1.0 released on December 22nd, 2017.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
 
 ## Enhancements
 
-* Refactor `Cldr.Currency.new/2` to simplify struct building (thanks to @schultzer)
-
-* Add additional specs and correct some for better documentation and improved dialyzer support (thanks to @schultzer)
-
-* Add additional doctests for `Cldr.Currency.new/2`
+* Support RBNF formats for `Decimal` numbers that are integers (ie where the exponent is zero) since these are equivalent to their integer counterparts.  `Decimals` where the `exp` is not zero remain unsupported since the underlying rules engine only knows how to work on `numbers` (integer or float) and it would not be appropriate to convert to a float due to the loss of precision and the fact that the numbers would not round trip.

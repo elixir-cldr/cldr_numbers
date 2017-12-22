@@ -1,4 +1,3 @@
-# http://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules
 defmodule Cldr.Number.Format.Compiler do
   @moduledoc """
   Compiles number patterns with a lexer/parser into patterns for fast runtime interpretation.
@@ -142,6 +141,7 @@ defmodule Cldr.Number.Format.Compiler do
 
       iex> Cldr.Number.Format.Compiler.placeholder(:plus)
       "+"
+
   """
   @spec placeholder(:decimal | :group | :exponent | :exponent_sign |
                     :plus | :minus | :currency) :: String.t
@@ -177,6 +177,7 @@ defmodule Cldr.Number.Format.Compiler do
       {:ok,
        [positive: [currency: 1, literal: " ", format: "#,##0.00"],
         negative: [currency: 1, minus: '-', format: :same_as_positive]]}
+
   """
   def parse(tokens) when is_list(tokens) do
     :decimal_formats_parser.parse tokens
@@ -467,14 +468,6 @@ defmodule Cldr.Number.Format.Compiler do
 
   defp padding_length(_pad, format) do
     String.length(format[:positive][:format])
-    # Enum.reduce format[:positive], 0, fn (element, len) ->
-    #   len + case element do
-    #     {:quote, _}         -> 1  # Since its '' in the format
-    #     {:quoted_char, _}   -> 2  # Since its 'x' in the format
-    #     {:format, format}   -> String.length(format)
-    #     _                   -> 0
-    #   end
-    # end
   end
 
   docp """
@@ -719,12 +712,4 @@ defmodule Cldr.Number.Format.Compiler do
   defp permille_format?(format) do
     Keyword.has_key? format[:positive], :permille
   end
-
-  # defp currency_format?(format) do
-  #   Keyword.has_key? format[:positive], :currency
-  # end
-
-  # defp scientific_format?(format) do
-  #   Keyword.has_key? format[:positive], :exponent
-  # end
 end
