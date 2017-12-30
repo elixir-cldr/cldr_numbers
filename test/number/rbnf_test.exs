@@ -4,26 +4,37 @@ defmodule Rbnf.Test do
 
   test "rbnf spellout" do
     assert {:ok, "twenty-five thousand three hundred forty"} =
-      Cldr.Number.to_string(25_340, format: :spellout)
-
+             Cldr.Number.to_string(25_340, format: :spellout)
   end
 
   test "rbnf spellout ordinal verbose" do
     assert {:ok, "one hundred and twenty-three thousand, four hundred and fifty-sixth"} =
-    Cldr.Number.to_string(123456, format: :spellout_ordinal_verbose)
+             Cldr.Number.to_string(123_456, format: :spellout_ordinal_verbose)
   end
 
   test "rbnf ordinal" do
-    assert {:ok, "123,456th"} = Cldr.Number.to_string(123456, format: :ordinal)
-    assert {:ok, "123 456e"} = Cldr.Number.to_string(123456, format: :ordinal, locale: Locale.new!("fr"))
+    assert {:ok, "123,456th"} = Cldr.Number.to_string(123_456, format: :ordinal)
+
+    assert {:ok, "123 456e"} =
+             Cldr.Number.to_string(123_456, format: :ordinal, locale: Locale.new!("fr"))
   end
 
   test "rbnf improper fraction" do
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(123.456, Locale.new!("en")) == "one hundred and twenty-three point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-123.456, Locale.new!("en")) == "minus one hundred and twenty-three point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-0.456, Locale.new!("en")) == "minus zero point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(0.456, Locale.new!("en")) == "zero point four five six"
-    assert Cldr.Rbnf.Spellout.spellout_cardinal(0.456, Locale.new!("en")) == "zero point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(123.456, Locale.new!("en")) ==
+             "one hundred and twenty-three point four five six"
+
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-123.456, Locale.new!("en")) ==
+             "minus one hundred and twenty-three point four five six"
+
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-0.456, Locale.new!("en")) ==
+             "minus zero point four five six"
+
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(0.456, Locale.new!("en")) ==
+             "zero point four five six"
+
+    assert Cldr.Rbnf.Spellout.spellout_cardinal(0.456, Locale.new!("en")) ==
+             "zero point four five six"
+
     assert Cldr.Rbnf.Spellout.spellout_cardinal(0, Locale.new!("en")) == "zero"
     assert Cldr.Rbnf.Spellout.spellout_ordinal(0, Locale.new!("en")) == "zeroth"
     assert Cldr.Rbnf.Spellout.spellout_ordinal(0.0, Locale.new!("en")) == "0"
@@ -31,14 +42,20 @@ defmodule Rbnf.Test do
   end
 
   test "decimal rbnf for decimal integers" do
-    assert {:ok, "123,456th"} = Cldr.Number.to_string(Decimal.new(123456), format: :ordinal)
-    assert {:ok, "123 456e"} = Cldr.Number.to_string(Decimal.new(123456), format: :ordinal, locale: Locale.new!("fr"))
+    assert {:ok, "123,456th"} = Cldr.Number.to_string(Decimal.new(123_456), format: :ordinal)
+
+    assert {:ok, "123 456e"} =
+             Cldr.Number.to_string(
+               Decimal.new(123_456),
+               format: :ordinal,
+               locale: Locale.new!("fr")
+             )
 
     assert {:ok, "one hundred and twenty-three thousand, four hundred and fifty-sixth"} =
-    Cldr.Number.to_string(Decimal.new(123456), format: :spellout_ordinal_verbose)
+             Cldr.Number.to_string(Decimal.new(123_456), format: :spellout_ordinal_verbose)
 
     assert {:ok, "twenty-five thousand three hundred forty"} =
-      Cldr.Number.to_string(Decimal.new(25_340), format: :spellout)
+             Cldr.Number.to_string(Decimal.new(25_340), format: :spellout)
 
     assert Cldr.Rbnf.Spellout.spellout_cardinal(Decimal.new(0), Locale.new!("en")) == "zero"
     assert Cldr.Rbnf.Spellout.spellout_ordinal(Decimal.new(0), Locale.new!("en")) == "zeroth"
@@ -66,21 +83,34 @@ defmodule Rbnf.Test do
 
   test "no rule is available for number" do
     assert Cldr.Rbnf.Spellout.spellout_numbering_year(-24, Cldr.Locale.new!("zh-Hant")) ==
-      {:error,
-        {Cldr.Rbnf.NoRuleForNumber,
-          "rule group :spellout_numbering_year for locale \"zh-Hant\" does not know how to process -24"}}
+             {
+               :error,
+               {
+                 Cldr.Rbnf.NoRuleForNumber,
+                 "rule group :spellout_numbering_year for locale \"zh-Hant\" does not know how to process -24"
+               }
+             }
   end
 
-  Cldr.Rbnf.TestSupport.rbnf_tests fn (name, tests, module, function, locale) ->
+  Cldr.Rbnf.TestSupport.rbnf_tests(fn name, tests, module, function, locale ->
     test name do
-      Enum.each unquote(Macro.escape(tests)), fn {test_data, test_result} ->
-        if apply(unquote(module), unquote(function), [String.to_integer(test_data), unquote(Macro.escape(locale))])
-                  != test_result do
-          IO.puts "Test is failing on locale #{unquote(locale.requested_locale_name)} for value #{test_data}"
+      Enum.each(unquote(Macro.escape(tests)), fn {test_data, test_result} ->
+        if apply(unquote(module), unquote(function), [
+             String.to_integer(test_data),
+             unquote(Macro.escape(locale))
+           ]) != test_result do
+          IO.puts(
+            "Test is failing on locale #{unquote(locale.requested_locale_name)} for value #{
+              test_data
+            }"
+          )
         end
-        assert apply(unquote(module), unquote(function), [String.to_integer(test_data), unquote(Macro.escape(locale))])
-          == test_result
-      end
+
+        assert apply(unquote(module), unquote(function), [
+                 String.to_integer(test_data),
+                 unquote(Macro.escape(locale))
+               ]) == test_result
+      end)
     end
-  end
+  end)
 end

@@ -8,6 +8,7 @@ defmodule Number.System.Test do
 
   test "that number_systems_for raises when the locale is not known" do
     locale = Cldr.Locale.new!("zzz")
+
     assert_raise Cldr.UnknownLocaleError, ~r/The locale \"zzz\" is not known/, fn ->
       Cldr.Number.System.number_systems_for!(locale)
     end
@@ -15,6 +16,7 @@ defmodule Number.System.Test do
 
   test "that number_system_names_for raises when the locale is not known" do
     locale = Cldr.Locale.new!("zzz")
+
     assert_raise Cldr.UnknownLocaleError, ~r/The locale .* is not known/, fn ->
       Cldr.Number.System.number_system_names_for!(locale)
     end

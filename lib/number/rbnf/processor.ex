@@ -6,16 +6,20 @@ defmodule Cldr.Rbnf.Processor do
   """
   defmacro __using__(_opts) do
     quote location: :keep do
-      alias  Cldr.Number
-      alias  Cldr.Digits
+      alias Cldr.Number
+      alias Cldr.Digits
       import Cldr.Rbnf.Processor
 
       defp do_rule(number, locale, function, rule, parsed) do
-        results = Enum.map(parsed, fn {operation, argument} ->
-          do_operation(operation, number, locale, function, rule, argument)
-        end)
+        results =
+          Enum.map(parsed, fn {operation, argument} ->
+            do_operation(operation, number, locale, function, rule, argument)
+          end)
 
-        if Enum.any?(results, fn {:error, _} -> true; _ -> false end) do
+        if Enum.any?(results, fn
+             {:error, _} -> true
+             _ -> false
+           end) do
           {:error, collect_errors(results)}
         else
           :erlang.iolist_to_binary(results)
@@ -24,7 +28,10 @@ defmodule Cldr.Rbnf.Processor do
 
       defp collect_errors(results) do
         results
-        |> Enum.map(fn {_, v} -> v; other -> other end)
+        |> Enum.map(fn
+          {_, v} -> v
+          other -> other
+        end)
         |> Enum.join(", ")
       end
 
@@ -33,40 +40,40 @@ defmodule Cldr.Rbnf.Processor do
       end
 
       defp do_operation(:modulo, number, locale, function, rule, nil)
-      when is_number(number) and number < 0 do
+           when is_number(number) and number < 0 do
         apply(__MODULE__, function, [abs(number), locale])
       end
 
       defp do_operation(:modulo, number, locale, function, rule, {:format, format})
-      when is_number(number) and number < 0 do
+           when is_number(number) and number < 0 do
         Cldr.Number.to_string!(abs(number), locale: locale, format: format)
       end
 
       defp do_operation(:modulo, number, locale, function, rule, nil)
-      when is_integer(number) do
-        mod = number - (div(number, rule.divisor) * rule.divisor)
+           when is_integer(number) do
+        mod = number - div(number, rule.divisor) * rule.divisor
         apply(__MODULE__, function, [mod, locale])
       end
 
       # For Fractional rules we format the integral part
       defp do_operation(:modulo, number, locale, function, _rule, nil)
-      when is_float(number) do
+           when is_float(number) do
         format_fraction(number, locale)
       end
 
       defp do_operation(:modulo, number, locale, _function, rule, {:rule, rule_name}) do
-        mod = number - (div(number, rule.divisor) * rule.divisor)
+        mod = number - div(number, rule.divisor) * rule.divisor
         apply(__MODULE__, rule_name, [mod, locale])
       end
 
       defp do_operation(:modulo, number, locale, function, rule, {:format, format}) do
-        mod = number - (div(number, rule.divisor) * rule.divisor)
+        mod = number - div(number, rule.divisor) * rule.divisor
         Cldr.Number.to_string!(mod, locale: locale, format: format)
       end
 
       # For Fractional rules we format the fraction as individual digits.
       defp do_operation(:quotient, number, locale, function, rule, nil)
-      when is_float(number) do
+           when is_float(number) do
         apply(__MODULE__, function, [trunc(number), locale])
       end
 
@@ -99,7 +106,8 @@ defmodule Cldr.Rbnf.Processor do
       end
 
       defp do_operation(:conditional, number, locale, function, rule, argument) do
-        mod = number - (div(number, rule.divisor) * rule.divisor)
+        mod = number - div(number, rule.divisor) * rule.divisor
+
         if mod > 0 do
           do_rule(mod, locale, function, rule, argument)
         else
@@ -108,13 +116,14 @@ defmodule Cldr.Rbnf.Processor do
       end
 
       defp format_fraction(number, locale) do
-        fraction = number
-        |> Digits.fraction_as_integer
-        |> Integer.to_string
-        |> String.split("", trim: true)
-        |> Enum.map(&String.to_integer/1)
-        |> Enum.map(&Cldr.Rbnf.Spellout.spellout_cardinal(&1, locale))
-        |> Enum.join(" ")
+        fraction =
+          number
+          |> Digits.fraction_as_integer()
+          |> Integer.to_string()
+          |> String.split("", trim: true)
+          |> Enum.map(&String.to_integer/1)
+          |> Enum.map(&Cldr.Rbnf.Spellout.spellout_cardinal(&1, locale))
+          |> Enum.join(" ")
       end
 
       @before_compile Cldr.Rbnf.Processor
@@ -124,15 +133,16 @@ defmodule Cldr.Rbnf.Processor do
   @public_rulesets :public_rulesets
   def define_rules(rule_group_name, env) do
     Module.register_attribute(env.module, @public_rulesets, [])
-    iterate_rules rule_group_name, fn
-      (rule_group, locale, "public", :error) ->
+
+    iterate_rules(rule_group_name, fn
+      rule_group, locale, "public", :error ->
         define_rule(:error, nil, rule_group, locale, nil)
         |> Code.eval_quoted([], env)
 
-      (_rule_group, _locale, "private", :error) ->
+      _rule_group, _locale, "private", :error ->
         nil
 
-      (rule_group, locale, access, rule) ->
+      rule_group, locale, access, rule ->
         {:ok, parsed} = Cldr.Rbnf.Rule.parse(rule.definition)
 
         function_body = rule_body(locale, rule_group, rule, parsed)
@@ -141,17 +151,19 @@ defmodule Cldr.Rbnf.Processor do
         |> define_rule(rule.range, rule_group, locale, function_body)
         |> add_function_to_exports(access, env.module, locale)
         |> Code.eval_quoted([], env)
-    end
+    end)
   end
 
   defp iterate_rules(rule_group_type, fun) do
-    all_rules = Cldr.Rbnf.for_all_locales[rule_group_type]
+    all_rules = Cldr.Rbnf.for_all_locales()[rule_group_type]
+
     unless is_nil(all_rules) do
-      for {locale_name, _rule_group} <-  all_rules do
+      for {locale_name, _rule_group} <- all_rules do
         for {rule_group, %{access: access, rules: rules}} <- all_rules[locale_name] do
           for rule <- rules do
             fun.(rule_group, locale_name, access, rule)
           end
+
           fun.(rule_group, locale_name, access, :error)
         end
       end
@@ -162,10 +174,13 @@ defmodule Cldr.Rbnf.Processor do
   # equivalent integer function without loss of precision
   defp define_rule(:error, _range, rule_group, locale_name, _body) do
     quote do
-      def unquote(rule_group)(%Decimal{exp: 0, coef: number},
-                  %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)} = locale) do
+      def unquote(rule_group)(
+            %Decimal{exp: 0, coef: number},
+            %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)} = locale
+          ) do
         unquote(rule_group)(number, locale)
       end
+
       def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)}) do
         {:error, rbnf_rule_error(number, unquote(rule_group), unquote(locale_name))}
       end
@@ -175,7 +190,8 @@ defmodule Cldr.Rbnf.Processor do
   defp define_rule("-x", _range, rule_group, locale, body) do
     quote do
       def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
-      when Kernel.and(is_number(number), number < 0), do: unquote(body)
+          when Kernel.and(is_number(number), number < 0),
+          do: unquote(body)
     end
   end
 
@@ -183,7 +199,8 @@ defmodule Cldr.Rbnf.Processor do
   defp define_rule("x.x", _range, rule_group, locale, body) do
     quote do
       def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
-        when is_float(number), do: unquote(body)
+          when is_float(number),
+          do: unquote(body)
     end
   end
 
@@ -194,35 +211,38 @@ defmodule Cldr.Rbnf.Processor do
   defp define_rule(0, "undefined", rule_group, locale, body) do
     quote do
       def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
-      when is_integer(number), do: unquote(body)
+          when is_integer(number),
+          do: unquote(body)
     end
   end
 
   defp define_rule(base_value, "undefined", rule_group, locale, body)
-  when is_integer(base_value) do
+       when is_integer(base_value) do
     quote do
       def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
-      when Kernel.and(is_integer(number), number >= unquote(base_value)),
-        do: unquote(body)
+          when Kernel.and(is_integer(number), number >= unquote(base_value)),
+          do: unquote(body)
     end
   end
 
   defp define_rule(base_value, range, rule_group, locale, body)
-  when is_integer(range) and is_integer(base_value) do
+       when is_integer(range) and is_integer(base_value) do
     quote do
       def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
-      when Kernel.and(is_integer(number),
-        Kernel.and(number >= unquote(base_value), number < unquote(range))),
-      do: unquote(body)
+          when Kernel.and(
+                 is_integer(number),
+                 Kernel.and(number >= unquote(base_value), number < unquote(range))
+               ),
+          do: unquote(body)
     end
   end
 
   defp define_rule(base_value, "undefined", rule_group, locale, body)
-  when is_integer(base_value) do
+       when is_integer(base_value) do
     quote do
       def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
-        when Kernel.and(is_integer(number), number >= unquote(base_value)),
-      do: unquote(body)
+          when Kernel.and(is_integer(number), number >= unquote(base_value)),
+          do: unquote(body)
     end
   end
 
@@ -245,23 +265,32 @@ defmodule Cldr.Rbnf.Processor do
   # Get the AST of the rule body
   defp rule_body(locale, rule_group, rule, parsed) do
     quote do
-      do_rule(number,
+      do_rule(
+        number,
         unquote(Macro.escape(Cldr.Locale.new!(locale))),
         unquote(rule_group),
         unquote(Macro.escape(rule)),
-        unquote(Macro.escape(parsed)))
+        unquote(Macro.escape(parsed))
+      )
     end
   end
 
   # Keep track of the public rulesets per locale so we can introspect the
   # public interface
-  defp add_function_to_exports({:def, _aliases, [{:when, _, [{name, _, _} | _]} | _]} = function,
-      "public", module, locale) do
+  defp add_function_to_exports(
+         {:def, _aliases, [{:when, _, [{name, _, _} | _]} | _]} = function,
+         "public",
+         module,
+         locale
+       ) do
     public_rulesets = Module.get_attribute(module, @public_rulesets) || %{}
-    locale_public_rulesets = [name | (Map.get(public_rulesets, locale) || [])]
+    locale_public_rulesets = [name | Map.get(public_rulesets, locale) || []]
 
-    Module.put_attribute module, @public_rulesets,
+    Module.put_attribute(
+      module,
+      @public_rulesets,
       Map.put(public_rulesets, locale, Enum.uniq(locale_public_rulesets))
+    )
 
     function
   end
@@ -271,9 +300,11 @@ defmodule Cldr.Rbnf.Processor do
   end
 
   def rbnf_rule_error(number, rule_group, locale_name) do
-    {Cldr.Rbnf.NoRuleForNumber,
-      "rule group #{inspect rule_group} for locale #{inspect locale_name} does not " <>
-      "know how to process #{inspect number}"}
+    {
+      Cldr.Rbnf.NoRuleForNumber,
+      "rule group #{inspect(rule_group)} for locale #{inspect(locale_name)} does not " <>
+        "know how to process #{inspect(number)}"
+    }
   end
 
   defmacro __before_compile__(env) do
@@ -284,5 +315,4 @@ defmodule Cldr.Rbnf.Processor do
       end
     end
   end
-
 end

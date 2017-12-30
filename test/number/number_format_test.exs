@@ -3,17 +3,19 @@ defmodule Number.Format.Test do
   alias Cldr.Number.Format
   import Cldr.Locale.Sigil
 
-  Enum.each Cldr.Test.Number.Format.test_data(), fn {value, result, args} ->
-    new_args = if args[:locale] do
-      Keyword.put(args, :locale, Cldr.Locale.new!(Keyword.get(args, :locale)))
-    else
-      args
-    end
+  Enum.each(Cldr.Test.Number.Format.test_data(), fn {value, result, args} ->
+    new_args =
+      if args[:locale] do
+        Keyword.put(args, :locale, Cldr.Locale.new!(Keyword.get(args, :locale)))
+      else
+        args
+      end
 
-    test "formatted #{inspect value} == #{inspect result} with args: #{inspect args}" do
-      assert {:ok, unquote(result)} = Cldr.Number.to_string(unquote(value), unquote(Macro.escape(new_args)))
+    test "formatted #{inspect(value)} == #{inspect(result)} with args: #{inspect(args)}" do
+      assert {:ok, unquote(result)} =
+               Cldr.Number.to_string(unquote(value), unquote(Macro.escape(new_args)))
     end
-  end
+  end)
 
   test "literal-only format returns the literal" do
     assert {:ok, "xxx"} = Cldr.Number.to_string(1234, format: "xxx")
@@ -44,18 +46,29 @@ defmodule Number.Format.Test do
   end
 
   test "that an rbnf format request fails if the locale doesn't define the ruleset" do
-    assert Cldr.Number.to_string(123, format: :spellout_ordinal_verbose, locale: ~L[zh]) == \
-      {:error, {Cldr.Rbnf.NoRule, "Locale \"zh\" does not define an rbnf ruleset :spellout_ordinal_verbose"}}
+    assert Cldr.Number.to_string(123, format: :spellout_ordinal_verbose, locale: ~L[zh]) ==
+             {
+               :error,
+               {
+                 Cldr.Rbnf.NoRule,
+                 "Locale \"zh\" does not define an rbnf ruleset :spellout_ordinal_verbose"
+               }
+             }
   end
 
   test "that we get default formats_for" do
-    assert Format.formats_for!.__struct__ == Cldr.Number.Format
+    assert Format.formats_for!().__struct__ == Cldr.Number.Format
   end
 
   test "that when there is no format defined for a number system we get an error return" do
     assert Cldr.Number.to_string(1234, locale: ~L[he], number_system: :hebr) ==
-      {:error, {Cldr.UnknownFormatError,
-      "The locale \"he\" with number system :hebr does not define a format :standard."}}
+             {
+               :error,
+               {
+                 Cldr.UnknownFormatError,
+                 "The locale \"he\" with number system :hebr does not define a format :standard."
+               }
+             }
   end
 
   test "that when there is no format defined for a number system raises" do

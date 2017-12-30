@@ -25,7 +25,7 @@ defmodule Cldr.Number.String do
   def hex_string(string) do
     String.to_charlist(string)
     |> Enum.map(&("\\x" <> Integer.to_string(&1)))
-    |> Enum.join
+    |> Enum.join()
   end
 
   @doc """
@@ -39,7 +39,7 @@ defmodule Cldr.Number.String do
   * `count` is the final length required of the string
 
   """
-  @spec pad_leading_zeros(String.t, integer) :: String.t
+  @spec pad_leading_zeros(String.t(), integer) :: String.t()
   def pad_leading_zeros(number_string, count) when count <= 0 do
     number_string
   end
@@ -59,7 +59,7 @@ defmodule Cldr.Number.String do
   * `count` is the final length required of the string
 
   """
-  @spec pad_trailing_zeros(String.t, integer) :: String.t
+  @spec pad_trailing_zeros(String.t(), integer) :: String.t()
   def pad_trailing_zeros(number_string, count) when count <= 0 do
     number_string
   end
@@ -90,7 +90,7 @@ defmodule Cldr.Number.String do
       ["1", "234"]
 
   """
-  @spec chunk_string(String.t, integer, :forward | :reverse) :: [String.t]
+  @spec chunk_string(String.t(), integer, :forward | :reverse) :: [String.t()]
   def chunk_string(string, size, direction \\ :forward)
 
   def chunk_string(string, 0, _direction) do
@@ -103,7 +103,7 @@ defmodule Cldr.Number.String do
 
   def chunk_string(string, size, :forward) do
     string
-    |> String.to_charlist
+    |> String.to_charlist()
     |> Enum.chunk(size, size, [])
     |> Enum.map(&List.to_string/1)
   end
@@ -111,6 +111,7 @@ defmodule Cldr.Number.String do
   def chunk_string(string, size, :reverse) do
     len = String.length(string)
     remainder = rem(len, size)
+
     if remainder > 0 do
       {head, last} = String.split_at(string, remainder)
       [head] ++ do_chunk_string(last, size)

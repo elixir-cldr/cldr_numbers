@@ -26,8 +26,7 @@ defmodule Cldr.Rbnf.Ordinal do
   """
 
   import Kernel, except: [and: 2]
-  use    Cldr.Rbnf.Processor
+  use Cldr.Rbnf.Processor
 
   define_rules(:OrdinalRules, __ENV__)
-
 end

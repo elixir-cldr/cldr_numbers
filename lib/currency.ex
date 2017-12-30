@@ -7,39 +7,39 @@ defmodule Cldr.Currency do
   alias Cldr.Locale
   alias Cldr.LanguageTag
 
-  @type format :: :standard |
-    :accounting |
-    :short |
-    :long |
-    :percent |
-    :scientific
+  @type format ::
+          :standard
+          | :accounting
+          | :short
+          | :long
+          | :percent
+          | :scientific
 
-  @type code :: String.t
+  @type code :: String.t()
 
   @type t :: %__MODULE__{
-    code: code,
-    name: String.t,
-    tender: boolean,
-    symbol: String.t,
-    digits: pos_integer,
-    rounding: pos_integer,
-    narrow_symbol: String.t,
-    cash_digits: pos_integer,
-    cash_rounding: pos_integer,
-    count: %{}
-  }
+          code: code,
+          name: String.t(),
+          tender: boolean,
+          symbol: String.t(),
+          digits: pos_integer,
+          rounding: pos_integer,
+          narrow_symbol: String.t(),
+          cash_digits: pos_integer,
+          cash_rounding: pos_integer,
+          count: %{}
+        }
 
-  defstruct [
-    code: nil,
-    name: "",
-    symbol: "",
-    narrow_symbol: nil,
-    digits: 0,
-    rounding: 0,
-    cash_digits: 0,
-    cash_rounding: 0,
-    tender: false,
-    count: nil]
+  defstruct code: nil,
+            name: "",
+            symbol: "",
+            narrow_symbol: nil,
+            digits: 0,
+            rounding: 0,
+            cash_digits: 0,
+            cash_rounding: 0,
+            tender: false,
+            count: nil
 
   @doc """
   Returns a `Currency` struct created from the arguments.
@@ -86,15 +86,20 @@ defmodule Cldr.Currency do
   """
   @spec new(binary | atom, map | list) :: t | {:error, binary}
   def new(currency, options \\ [])
+
   def new(currency, options) do
-    with \
-      {:error, _currency} <- Cldr.validate_currency(currency),
-      {:ok, currency_code} <- make_currency_code(currency)
-    do
+    with {:error, _currency} <- Cldr.validate_currency(currency),
+         {:ok, currency_code} <- make_currency_code(currency) do
       {:ok, struct(@struct, [{:code, currency_code} | options])}
     else
-      {:ok, _} -> {:error, {Cldr.CurrencyAlreadyDefined, "Currency #{inspect currency} is already defined"}}
-      error -> error
+      {:ok, _} ->
+        {
+          :error,
+          {Cldr.CurrencyAlreadyDefined, "Currency #{inspect(currency)} is already defined"}
+        }
+
+      error ->
+        error
     end
   end
 
@@ -136,17 +141,16 @@ defmodule Cldr.Currency do
       {:ok, "dollar des États-Unis"}
 
   """
-  @spec pluralize(pos_integer, atom, Keyword.t) :: {:ok, String.t} | {:error, {Exception.t, String.t}}
+  @spec pluralize(pos_integer, atom, Keyword.t()) ::
+          {:ok, String.t()} | {:error, {Exception.t(), String.t()}}
   def pluralize(number, currency, options \\ []) do
     default_options = [locale: Cldr.get_current_locale()]
     options = Keyword.merge(default_options, options)
     locale = options[:locale]
 
-    with \
-      {:ok, currency_code} <- Cldr.validate_currency(currency),
-      {:ok, locale} <- Cldr.validate_locale(locale),
-      {:ok, currency_data} <- currency_for_code(currency_code, locale)
-    do
+    with {:ok, currency_code} <- Cldr.validate_currency(currency),
+         {:ok, locale} <- Cldr.validate_locale(locale),
+         {:ok, currency_data} <- currency_for_code(currency_code, locale) do
       counts = Map.get(currency_data, :count)
       {:ok, Cldr.Number.Cardinal.pluralize(number, locale, counts)}
     end
@@ -163,7 +167,7 @@ defmodule Cldr.Currency do
   """
   @spec known_currencies() :: list(atom)
   def known_currencies do
-    Cldr.known_currencies
+    Cldr.known_currencies()
   end
 
   @doc """
@@ -241,13 +245,19 @@ defmodule Cldr.Currency do
     currency_code =
       code
       |> to_string
-      |> String.upcase
+      |> String.upcase()
 
     if String.match?(currency_code, @valid_currency_code) do
       {:ok, String.to_atom(currency_code)}
     else
-      {:error, {Cldr.CurrencyCodeInvalid, "Invalid currency code #{inspect currency_code}.  " <>
-        "Currency codes must start with 'X' followed by 2 alphabetic characters only."}}
+      {
+        :error,
+        {
+          Cldr.CurrencyCodeInvalid,
+          "Invalid currency code #{inspect(currency_code)}.  " <>
+            "Currency codes must start with 'X' followed by 2 alphabetic characters only."
+        }
+      }
     end
   end
 
@@ -274,13 +284,12 @@ defmodule Cldr.Currency do
       tender: true}}
 
   """
-  @spec currency_for_code(code, LanguageTag.t) :: {:ok, t} | {:error, {Exception.t, String.t}}
+  @spec currency_for_code(code, LanguageTag.t()) ::
+          {:ok, t} | {:error, {Exception.t(), String.t()}}
   def currency_for_code(currency_code, locale \\ Cldr.get_current_locale()) do
-    with \
-      {:ok, code} <- Cldr.validate_currency(currency_code),
-      {:ok, locale} <- Cldr.validate_locale(locale),
-      {:ok, currencies} <- currencies_for_locale(locale)
-    do
+    with {:ok, code} <- Cldr.validate_currency(currency_code),
+         {:ok, locale} <- Cldr.validate_locale(locale),
+         {:ok, currencies} <- currencies_for_locale(locale) do
       {:ok, Map.get(currencies, code)}
     end
   end
@@ -288,13 +297,14 @@ defmodule Cldr.Currency do
   @doc """
   Returns the currency metadata for a locale.
   """
-  @spec currencies_for_locale(Locale.name | LanguageTag.t) :: {:ok, Map.t} | {:error, {Exception.t, String.t}}
+  @spec currencies_for_locale(Locale.name() | LanguageTag.t()) ::
+          {:ok, Map.t()} | {:error, {Exception.t(), String.t()}}
   def currencies_for_locale(locale \\ Cldr.get_current_locale())
 
   for locale_name <- Cldr.Config.known_locale_names() do
     currencies =
       locale_name
-      |> Cldr.Config.get_locale
+      |> Cldr.Config.get_locale()
       |> Map.get(:currencies)
       |> Enum.map(fn {k, v} -> {k, struct(@struct, v)} end)
       |> Enum.into(%{})

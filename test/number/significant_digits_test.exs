@@ -2,7 +2,7 @@ defmodule Significant.Digits.Test do
   use ExUnit.Case
 
   test "round 1,239,451 to 3 significant digits and return 1,240,000" do
-    assert 1_240_000 == Cldr.Math.round_significant(1239451, 3)
+    assert 1_240_000 == Cldr.Math.round_significant(1_239_451, 3)
   end
 
   test "round 12.1257 to 3 significant digits and return 12.1" do
@@ -37,26 +37,22 @@ defmodule Significant.Digits.Test do
   # Decimal tests
   test "round decimal 12345 to 3 significant digits and return 12300" do
     assert Decimal.reduce(Decimal.new(12300)) ==
-      Cldr.Math.round_significant(Decimal.new(12345), 3)
+             Cldr.Math.round_significant(Decimal.new(12345), 3)
   end
 
   test "round decimal 0.12345 to 3 significant digits and return 0.123" do
-    assert Decimal.new(0.123) ==
-      Cldr.Math.round_significant(Decimal.new(0.12345), 3)
+    assert Decimal.new(0.123) == Cldr.Math.round_significant(Decimal.new(0.12345), 3)
   end
 
   test "round decimal 3.14159 to 4 significant digits and return 3.142" do
-    assert Decimal.new(3.142) ==
-      Cldr.Math.round_significant(Decimal.new(3.14159), 4)
+    assert Decimal.new(3.142) == Cldr.Math.round_significant(Decimal.new(3.14159), 4)
   end
 
   test "round decimal 1.23004 to 4 significant digits and return 1.23" do
-    assert Decimal.new(1.23) ==
-      Cldr.Math.round_significant(Decimal.new(1.23004), 4)
+    assert Decimal.new(1.23) == Cldr.Math.round_significant(Decimal.new(1.23004), 4)
   end
 
   test "round negative decimal -1.23004 to 4 significant digits and return 1.23" do
-    assert Decimal.new(-1.23) ==
-      Cldr.Math.round_significant(Decimal.new(-1.23004), 4)
+    assert Decimal.new(-1.23) == Cldr.Math.round_significant(Decimal.new(-1.23004), 4)
   end
 end
