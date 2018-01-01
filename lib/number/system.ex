@@ -17,7 +17,7 @@ defmodule Cldr.Number.System do
   alias Cldr.Number.Symbol
   alias Cldr.LanguageTag
 
-  @default_number_system_type  :default
+  @default_number_system_type :default
 
   @type system_name :: atom()
   @type types :: :default | :native | :traditional | :finance
@@ -53,16 +53,16 @@ defmodule Cldr.Number.System do
       78
 
   """
-  @spec number_systems :: Map.t
-  @number_systems Cldr.Config.number_systems
+  @spec number_systems :: Map.t()
+  @number_systems Cldr.Config.number_systems()
 
   def number_systems do
     @number_systems
   end
 
-  @systems_with_digits Enum.reject @number_systems, fn {_name, system} ->
-    is_nil(system[:digits])
-  end
+  @systems_with_digits Enum.reject(@number_systems, fn {_name, system} ->
+                         is_nil(system[:digits])
+                       end)
 
   @doc """
   Number systems that have their own digit characters defined.
@@ -90,13 +90,13 @@ defmodule Cldr.Number.System do
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
   """
-  @spec number_systems_for(Locale.name | LanguageTag.t) :: Map.t
+  @spec number_systems_for(Locale.name() | LanguageTag.t()) :: Map.t()
   def number_systems_for(locale \\ Cldr.get_current_locale())
 
   for locale_name <- Cldr.Config.known_locale_names() do
     systems =
       locale_name
-      |> Cldr.Config.get_locale
+      |> Cldr.Config.get_locale()
       |> Map.get(:number_systems)
 
     def number_systems_for(unquote(locale_name)) do
@@ -128,11 +128,12 @@ defmodule Cldr.Number.System do
       %{default: :latn, native: :thai}
 
   """
-  @spec number_systems_for!(Locale.name | LanguageTag.t) :: Map.t
+  @spec number_systems_for!(Locale.name() | LanguageTag.t()) :: Map.t()
   def number_systems_for!(locale) do
     case number_systems_for(locale) do
       {:error, {exception, message}} ->
         raise exception, message
+
       {:ok, systems} ->
         systems
     end
@@ -174,12 +175,10 @@ defmodule Cldr.Number.System do
       {:ok, %{digits: "0123456789", type: :numeric}}
 
   """
-  @spec number_system_for(Locale.name | LanguageTag.t, System.name) :: [atom(), ...]
+  @spec number_system_for(Locale.name() | LanguageTag.t(), System.name()) :: [atom(), ...]
   def number_system_for(locale, system_name) do
-    with \
-      {:ok, locale} <- Cldr.validate_locale(locale),
-      {:ok, system_name} <- system_name_from(system_name, locale)
-    do
+    with {:ok, locale} <- Cldr.validate_locale(locale),
+         {:ok, system_name} <- system_name_from(system_name, locale) do
       {:ok, Map.get(number_systems(), system_name)}
     else
       {:error, reason} -> {:error, reason}
@@ -209,13 +208,11 @@ defmodule Cldr.Number.System do
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
   """
-  @spec number_system_names_for(Locale.name | LanguageTag.t) :: [atom(), ...]
-  def number_system_names_for(locale \\ Cldr.default_locale) do
-    with \
-      {:ok, locale} <- Cldr.validate_locale(locale),
-      {:ok, systems} <- number_systems_for(locale)
-    do
-      {:ok, systems |> Map.values |> Enum.uniq}
+  @spec number_system_names_for(Locale.name() | LanguageTag.t()) :: [atom(), ...]
+  def number_system_names_for(locale \\ Cldr.default_locale()) do
+    with {:ok, locale} <- Cldr.validate_locale(locale),
+         {:ok, systems} <- number_systems_for(locale) do
+      {:ok, systems |> Map.values() |> Enum.uniq()}
     else
       {:error, reason} -> {:error, reason}
     end
@@ -241,11 +238,12 @@ defmodule Cldr.Number.System do
       [:latn, :hebr]
 
   """
-  @spec number_system_names_for!(Locale.name | LanguageTag.t) :: [system_name, ...]
+  @spec number_system_names_for!(Locale.name() | LanguageTag.t()) :: [system_name, ...]
   def number_system_names_for!(locale) do
     case number_system_names_for(locale) do
       {:error, {exception, message}} ->
         raise exception, message
+
       {:ok, names} ->
         names
     end
@@ -293,18 +291,18 @@ defmodule Cldr.Number.System do
   Note that return value is not guaranteed to be a valid
   number system for the given locale as demonstrated in the third example.
   """
-  @spec system_name_from(system_name, Locale.locale_name | LanguageTag.t) :: atom
+  @spec system_name_from(system_name, Locale.locale_name() | LanguageTag.t()) :: atom
   def system_name_from(system_name, locale \\ Cldr.get_current_locale()) do
-    with \
-      {:ok, locale} <- Cldr.validate_locale(locale),
-      {:ok, number_system} <- validate_number_system_or_type(system_name),
-      {:ok, number_systems} <- number_systems_for(locale)
-    do
+    with {:ok, locale} <- Cldr.validate_locale(locale),
+         {:ok, number_system} <- validate_number_system_or_type(system_name),
+         {:ok, number_systems} <- number_systems_for(locale) do
       cond do
         Map.has_key?(number_systems, number_system) ->
           {:ok, Map.get(number_systems, number_system)}
+
         number_system in Map.values(number_systems) ->
           {:ok, number_system}
+
         true ->
           {:error, unknown_number_system_for_locale_error(system_name, locale, number_systems)}
       end
@@ -340,6 +338,7 @@ defmodule Cldr.Number.System do
     case system_name_from(system_name, locale) do
       {:error, {exception, message}} ->
         raise exception, message
+
       {:ok, name} ->
         name
     end
@@ -355,16 +354,14 @@ defmodule Cldr.Number.System do
   and number system "latn" since this is what the number formatting routines use
   as placeholders.
   """
-  @spec number_systems_like(LanguageTag.t | Locale.locale_name, system_name) ::
-      {:ok, List.t} | {:error, tuple}
+  @spec number_systems_like(LanguageTag.t() | Locale.locale_name(), system_name) ::
+          {:ok, List.t()} | {:error, tuple}
 
   def number_systems_like(locale, number_system) do
-    with \
-      {:ok, _} <- Cldr.validate_locale(locale),
-      {:ok, %{digits: digits}} <- number_system_for(locale, number_system),
-      {:ok, symbols} <- Symbol.number_symbols_for(locale, number_system),
-      {:ok, names} <- number_system_names_for(locale)
-    do
+    with {:ok, _} <- Cldr.validate_locale(locale),
+         {:ok, %{digits: digits}} <- number_system_for(locale, number_system),
+         {:ok, symbols} <- Symbol.number_symbols_for(locale, number_system),
+         {:ok, names} <- number_system_names_for(locale) do
       likes = do_number_systems_like(digits, symbols, names)
       {:ok, likes}
     end
@@ -372,19 +369,23 @@ defmodule Cldr.Number.System do
 
   defp do_number_systems_like(digits, symbols, names) do
     Enum.map(Cldr.known_locale_names(), fn this_locale ->
-      Enum.reduce names, [], fn this_system, acc ->
+      Enum.reduce(names, [], fn this_system, acc ->
         locale = Locale.new!(this_locale)
+
         case number_system_for(locale, this_system) do
           {:error, _} ->
             acc
+
           {:ok, %{digits: these_digits}} ->
             {:ok, these_symbols} = Symbol.number_symbols_for(locale, this_system)
+
             if digits == these_digits && symbols == these_symbols do
               acc ++ {locale, this_system}
             end
         end
-      end
-    end) |> Enum.reject(&(is_nil(&1) || &1 == []))
+      end)
+    end)
+    |> Enum.reject(&(is_nil(&1) || &1 == []))
   end
 
   @doc """
@@ -433,6 +434,7 @@ defmodule Cldr.Number.System do
     case number_system_digits(system_name) do
       {:ok, digits} ->
         digits
+
       {:error, {exception, message}} ->
         raise exception, message
     end
@@ -485,7 +487,7 @@ defmodule Cldr.Number.System do
       {:ok, "壹佰贰拾叁"}
 
   """
-  @spec to_system(Math.number_or_decimal, atom) :: String.t
+  @spec to_system(Math.number_or_decimal(), atom) :: String.t()
   def to_system(number, system_name)
 
   for {system, definition} <- @number_systems do
@@ -495,15 +497,17 @@ defmodule Cldr.Number.System do
           number
           |> to_string
           |> Cldr.Number.Transliterate.transliterate_digits(:latn, unquote(system))
+
         {:ok, string}
       end
     else
       {module, function, locale_name} = Cldr.Config.rbnf_rule_function(definition.rules)
+
       if function_exported?(module, function, 2) do
         locale = Locale.new!(locale_name)
+
         def to_system(number, unquote(system)) do
-          with \
-            {:ok, _locale} <- Cldr.validate_locale(unquote(Macro.escape(locale))) do
+          with {:ok, _locale} <- Cldr.validate_locale(unquote(Macro.escape(locale))) do
             {:ok, unquote(module).unquote(function)(number, unquote(Macro.escape(locale)))}
           else
             {:error, reason} -> {:error, reason}
@@ -558,15 +562,15 @@ defmodule Cldr.Number.System do
   end
 
   defp do_generate_transliteration_map(from, to, from_length, to_length)
-  when from_length == to_length do
+       when from_length == to_length do
     from
-    |> String.graphemes
+    |> String.graphemes()
     |> Enum.zip(String.graphemes(to))
     |> Enum.into(%{})
   end
 
   defp do_generate_transliteration_map(from, to, _from_length, _to_length) do
-    {:error, {ArgumentError, "#{inspect from} and #{inspect to} aren't the same length"}}
+    {:error, {ArgumentError, "#{inspect(from)} and #{inspect(to)} aren't the same length"}}
   end
 
   defp validate_number_system_or_type(number_system) do
@@ -597,17 +601,19 @@ defmodule Cldr.Number.System do
 
   """
   def unknown_number_system_for_locale_error(number_system, locale, valid_number_systems)
-  when is_atom(number_system) do
-    {Cldr.UnknownNumberSystemError,
-      "The number system #{inspect number_system} is unknown " <>
-      "for the locale named #{Cldr.locale_name(locale)}. " <>
-      "Valid number systems are #{inspect valid_number_systems}"
+      when is_atom(number_system) do
+    {
+      Cldr.UnknownNumberSystemError,
+      "The number system #{inspect(number_system)} is unknown " <>
+        "for the locale named #{Cldr.locale_name(locale)}. " <>
+        "Valid number systems are #{inspect(valid_number_systems)}"
     }
   end
 
   defp number_system_digits_error(system_name) do
-    {Cldr.UnknownNumberSystemError,
-      "The number system #{inspect system_name} is not known or does not have digits"}
+    {
+      Cldr.UnknownNumberSystemError,
+      "The number system #{inspect(system_name)} is not known or does not have digits"
+    }
   end
 end
-

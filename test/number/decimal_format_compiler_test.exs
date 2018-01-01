@@ -2,11 +2,11 @@ defmodule DecimalFormatCompiler.Test do
   use ExUnit.Case, async: false
   alias Cldr.Number.Format
 
-  Enum.each Format.decimal_format_list, fn (format) ->
-    test "Compile decimal format #{inspect format}" do
+  Enum.each(Format.decimal_format_list(), fn format ->
+    test "Compile decimal format #{inspect(format)}" do
       assert {:ok, _result} = Format.Compiler.parse(unquote(format))
     end
-  end
+  end)
 
   test "compile fails on empty format" do
     assert {:error, _result} = Format.Compiler.parse("")

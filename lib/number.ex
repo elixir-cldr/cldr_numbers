@@ -90,15 +90,15 @@ defmodule Cldr.Number do
   import Cldr.Number.Format, only: [formats_for: 2]
 
   @type format_type ::
-    :standard |
-    :decimal_short |
-    :decimal_long |
-    :currency_short |
-    :currency_long |
-    :percent |
-    :accounting |
-    :scientific |
-    :currency
+          :standard
+          | :decimal_short
+          | :decimal_long
+          | :currency_short
+          | :currency_long
+          | :percent
+          | :accounting
+          | :scientific
+          | :currency
 
   @short_format_styles [
     :currency_short,
@@ -263,11 +263,13 @@ defmodule Cldr.Number do
       "The locale \\"he\\" with number system \\"hebr\\" does not define a format :standard."}}
   ```
   """
-  @spec to_string(number, Keyword.t | Map.t) :: {:ok, String.t} | {:error, {atom, String.t}}
+  @spec to_string(number, Keyword.t() | Map.t()) ::
+          {:ok, String.t()} | {:error, {atom, String.t()}}
   def to_string(number, options \\ default_options()) do
-    {format, options} = options
-    |> normalize_options(default_options())
-    |> detect_negative_number(number)
+    {format, options} =
+      options
+      |> normalize_options(default_options())
+      |> detect_negative_number(number)
 
     with :ok <- currency_format_has_code(format, currency_format?(format), options[:currency]) do
       case to_string(number, format, options) do
@@ -303,11 +305,12 @@ defmodule Cldr.Number do
       "12 345"
 
   """
-  @spec to_string!(number, Keyword.t | String.t) :: String.t | Exception.t
+  @spec to_string!(number, Keyword.t() | String.t()) :: String.t() | Exception.t()
   def to_string!(number, options \\ default_options()) do
     case to_string(number, options) do
       {:error, {exception, message}} ->
         raise exception, message
+
       {:ok, string} ->
         string
     end
@@ -315,12 +318,12 @@ defmodule Cldr.Number do
 
   defp default_options do
     [
-      format:        :standard,
-      currency:      nil,
-      cash:          false,
+      format: :standard,
+      currency: nil,
+      cash: false,
       rounding_mode: :half_even,
       number_system: :default,
-      locale:        Cldr.get_current_locale()
+      locale: Cldr.get_current_locale()
     ]
   end
 
@@ -328,6 +331,7 @@ defmodule Cldr.Number do
   @format :digits_ordinal
   defp to_string(number, :ordinal, options) do
     rule_sets = Cldr.Rbnf.Ordinal.rule_sets(options[:locale])
+
     if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Ordinal.digits_ordinal(number, options[:locale])
     else
@@ -339,6 +343,7 @@ defmodule Cldr.Number do
   @format :spellout_cardinal
   defp to_string(number, :spellout, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+
     if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_cardinal(number, options[:locale])
     else
@@ -349,6 +354,7 @@ defmodule Cldr.Number do
   # For spellout numbers
   defp to_string(number, :spellout_numbering = format, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+
     if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_numbering(number, options[:locale])
     else
@@ -360,6 +366,7 @@ defmodule Cldr.Number do
   @format :spellout_cardinal_verbose
   defp to_string(number, :spellout_verbose, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+
     if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_cardinal_verbose(number, options[:locale])
     else
@@ -371,6 +378,7 @@ defmodule Cldr.Number do
   @format :spellout_numbering_year
   defp to_string(number, :spellout_year, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+
     if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_numbering_year(number, options[:locale])
     else
@@ -381,6 +389,7 @@ defmodule Cldr.Number do
   # For spellout ordinal
   defp to_string(number, :spellout_ordinal = format, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+
     if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_ordinal(number, options[:locale])
     else
@@ -391,6 +400,7 @@ defmodule Cldr.Number do
   # For spellout ordinal verbose
   defp to_string(number, :spellout_ordinal_verbose = format, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+
     if rule_sets && @format in rule_sets do
       Cldr.Rbnf.Spellout.spellout_ordinal_verbose(number, options[:locale])
     else
@@ -415,7 +425,7 @@ defmodule Cldr.Number do
 
   # For all other short formats
   defp to_string(number, format, options)
-  when is_atom(format) and format in @short_format_styles do
+       when is_atom(format) and format in @short_format_styles do
     Formatter.Short.to_string(number, format, options)
   end
 
@@ -433,9 +443,15 @@ defmodule Cldr.Number do
 
   defp to_string(_number, format, options) when is_atom(format) do
     cldr_locale_name = Map.get(options[:locale], :cldr_locale_name)
-    {:error, {Cldr.UnknownFormatError, "The locale #{inspect cldr_locale_name} with number system " <>
-      "#{inspect options[:number_system]} does not define a format " <>
-      "#{inspect format}."}}
+
+    {
+      :error,
+      {
+        Cldr.UnknownFormatError,
+        "The locale #{inspect(cldr_locale_name)} with number system " <>
+          "#{inspect(options[:number_system])} does not define a format " <> "#{inspect(format)}."
+      }
+    }
   end
 
   @doc """
@@ -458,7 +474,7 @@ defmodule Cldr.Number do
       {:ok, "ק׳"}
 
   """
-  @spec to_number_system(number, atom) :: String.t | {:error, {Exception.t, String.t}}
+  @spec to_number_system(number, atom) :: String.t() | {:error, {Exception.t(), String.t()}}
   def to_number_system(number, system) do
     Cldr.Number.System.to_system(number, system)
   end
@@ -502,12 +518,12 @@ defmodule Cldr.Number do
   defp merge(defaults, options, fun) when is_list(options) do
     defaults
     |> Keyword.merge(options, fun)
-    |> Cldr.Map.from_keyword
+    |> Cldr.Map.from_keyword()
   end
 
   defp merge(defaults, options, fun) when is_map(options) do
     defaults
-    |> Cldr.Map.from_keyword
+    |> Cldr.Map.from_keyword()
     |> Map.merge(options, fun)
   end
 
@@ -521,10 +537,10 @@ defmodule Cldr.Number do
 
   defp adjust_short_forms(options) do
     options
-    |> check_options(:short, options[:currency],  :currency_short)
-    |> check_options(:long,  options[:currency],  :currency_long)
+    |> check_options(:short, options[:currency], :currency_short)
+    |> check_options(:long, options[:currency], :currency_long)
     |> check_options(:short, !options[:currency], :decimal_short)
-    |> check_options(:long,  !options[:currency], :decimal_long)
+    |> check_options(:long, !options[:currency], :decimal_long)
   end
 
   defp adjust_for_currency(options, currency, nil) when not is_nil(currency) do
@@ -562,12 +578,12 @@ defmodule Cldr.Number do
   end
 
   defp detect_negative_number({format, options}, number)
-  when (is_float(number) or is_integer(number)) and number < 0 do
+       when (is_float(number) or is_integer(number)) and number < 0 do
     {format, Map.put(options, :pattern, :negative)}
   end
 
   defp detect_negative_number({format, options}, %Decimal{sign: sign})
-  when sign < 0 do
+       when sign < 0 do
     {format, Map.put(options, :pattern, :negative)}
   end
 
@@ -576,8 +592,13 @@ defmodule Cldr.Number do
   end
 
   defp currency_format_has_code(format, true, nil) do
-    {:error, {Cldr.FormatError, "currency format #{inspect format} requires that " <>
-      "options[:currency] be specified"}}
+    {
+      :error,
+      {
+        Cldr.FormatError,
+        "currency format #{inspect(format)} requires that " <> "options[:currency] be specified"
+      }
+    }
   end
 
   defp currency_format_has_code(_format, true, currency) do

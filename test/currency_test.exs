@@ -8,5 +8,4 @@ defmodule Cldr.Currency.Test do
   test "that we reject unknown currencies" do
     assert Cldr.Currency.known_currency?("ABCD") == false
   end
-
 end

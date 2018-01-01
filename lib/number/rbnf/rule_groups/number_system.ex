@@ -28,8 +28,7 @@ defmodule Cldr.Rbnf.NumberSystem do
   """
 
   import Kernel, except: [and: 2]
-  use    Cldr.Rbnf.Processor
+  use Cldr.Rbnf.Processor
 
   define_rules(:NumberingSystemRules, __ENV__)
-
 end

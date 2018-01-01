@@ -28,7 +28,7 @@ defmodule Cldr.Rbnf.Spellout do
   """
 
   import Kernel, except: [and: 2]
-  use    Cldr.Rbnf.Processor
+  use Cldr.Rbnf.Processor
 
   define_rules(:SpelloutRules, __ENV__)
 

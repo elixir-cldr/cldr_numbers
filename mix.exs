@@ -12,9 +12,9 @@ defmodule CldrNumbers.Mixfile do
       description: description(),
       source_url: "https://github.com/kipcole9/cldr_numbers",
       docs: docs(),
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
-      elixirc_paths: elixirc_paths(Mix.env),
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
       package: package()
     ]
@@ -47,7 +47,13 @@ defmodule CldrNumbers.Mixfile do
       licenses: ["Apache 2.0"],
       links: links(),
       files: [
-        "lib", "src", "config", "mix.exs", "README*", "CHANGELOG*", "LICENSE*"
+        "lib",
+        "src",
+        "config",
+        "mix.exs",
+        "README*",
+        "CHANGELOG*",
+        "LICENSE*"
       ]
     ]
   end
@@ -63,13 +69,13 @@ defmodule CldrNumbers.Mixfile do
 
   def links do
     %{
-      "GitHub"    => "https://github.com/kipcole9/cldr_numbers",
-      "Readme"    => "https://github.com/kipcole9/cldr_numbers/blob/v#{@version}/README.md",
+      "GitHub" => "https://github.com/kipcole9/cldr_numbers",
+      "Readme" => "https://github.com/kipcole9/cldr_numbers/blob/v#{@version}/README.md",
       "Changelog" => "https://github.com/kipcole9/cldr_numbers/blob/v#{@version}/CHANGELOG.md"
     }
   end
 
   defp elixirc_paths(:test), do: ["lib", "mix", "test"]
-  defp elixirc_paths(:dev),  do: ["lib", "mix"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(:dev), do: ["lib", "mix"]
+  defp elixirc_paths(_), do: ["lib"]
 end

@@ -3,11 +3,11 @@ defmodule Number.String.Test do
   alias Cldr.Number
 
   test "that the regexp for latin1 is correct" do
-    assert Number.String.latin1 == ~r/([\x00-\x7F])/
+    assert Number.String.latin1() == ~r/([\x00-\x7F])/
   end
 
   test "that the regexp for not latin1 is correct" do
-    assert Number.String.not_latin1 == ~r/([^\x00-\x7F])/
+    assert Number.String.not_latin1() == ~r/([^\x00-\x7F])/
   end
 
   test "that we transliterate a non latin1 character" do

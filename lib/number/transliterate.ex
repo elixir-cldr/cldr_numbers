@@ -87,26 +87,34 @@ defmodule Cldr.Number.Transliterate do
       "Some number is: ๑๒๓๕๕๖"
   """
 
-  @spec transliterate(String.t, LanguageTag.t, String.t) :: String.t
-  def transliterate(sequence, locale \\ Cldr.get_current_locale(),
-      number_system \\ System.default_number_system_type)
+  @spec transliterate(String.t(), LanguageTag.t(), String.t()) :: String.t()
+  def transliterate(
+        sequence,
+        locale \\ Cldr.get_current_locale(),
+        number_system \\ System.default_number_system_type()
+      )
 
   # No transliteration required when the digits and separators as the same
   # as the ones we use in formatting.
   with {:ok, systems} <- System.number_systems_like(Locale.new!("en"), :latn) do
-    Enum.each systems, fn {locale, system} ->
+    Enum.each(systems, fn {locale, system} ->
       def transliterate(sequence, unquote(Macro.escape(locale)), unquote(system)) do
         sequence
       end
-    end
+    end)
   end
 
   # Translate the number system type to a system and invoke the real
   # transliterator
   for locale_name <- Cldr.Config.known_locale_names() do
     locale = Locale.new!(locale_name)
+
     for {system_type, number_system} <- Cldr.Number.System.number_systems_for!(locale) do
-      def transliterate(sequence, %LanguageTag{cldr_locale_name: unquote(locale_name)}, unquote(system_type)) do
+      def transliterate(
+            sequence,
+            %LanguageTag{cldr_locale_name: unquote(locale_name)},
+            unquote(system_type)
+          ) do
         transliterate(sequence, unquote(locale_name), unquote(number_system))
       end
     end
@@ -121,47 +129,67 @@ defmodule Cldr.Number.Transliterate do
 
   # We can only transliterate if the target {locale, number_system} has defined
   # digits.  Some systems don't have digits, just rules.
-  for {name, %{digits: _digits}} <- System.systems_with_digits do
+  for {name, %{digits: _digits}} <- System.systems_with_digits() do
     def transliterate(sequence, locale, number_system = unquote(name)) do
       sequence
-      |> String.graphemes
+      |> String.graphemes()
       |> Enum.map(&transliterate_char(&1, locale, number_system))
-      |> List.to_string
+      |> List.to_string()
     end
   end
 
   def transliterate(_digit, locale, number_system) do
-    raise Cldr.UnknownLocaleError, "Locale/number system #{inspect locale}/ " <>
-    "#{inspect number_system} is not known or the number system does not have digits (it may be algorithmic)"
+    raise Cldr.UnknownLocaleError,
+          "Locale/number system #{inspect(locale)}/ " <>
+            "#{inspect(number_system)} is not known or the number system does not have digits (it may be algorithmic)"
   end
 
   # Functions to transliterate the symbols
   for locale <- Cldr.Config.known_locale_names(),
-      name <- System.number_system_names_for!(Locale.new!(locale))
-  do
+      name <- System.number_system_names_for!(Locale.new!(locale)) do
     # Mapping for the grouping separator
     with {:ok, symbols} <- Symbol.number_symbols_for(Locale.new!(locale), name) do
-      defp transliterate_char(unquote(Compiler.placeholder(:group)), unquote(locale), unquote(name)) do
+      defp transliterate_char(
+             unquote(Compiler.placeholder(:group)),
+             unquote(locale),
+             unquote(name)
+           ) do
         unquote(symbols.group)
       end
 
       # Mapping for the decimal separator
-      defp transliterate_char(unquote(Compiler.placeholder(:decimal)), unquote(locale), unquote(name)) do
+      defp transliterate_char(
+             unquote(Compiler.placeholder(:decimal)),
+             unquote(locale),
+             unquote(name)
+           ) do
         unquote(symbols.decimal)
       end
 
       # Mapping for the exponent
-      defp transliterate_char(unquote(Compiler.placeholder(:exponent)), unquote(locale), unquote(name)) do
+      defp transliterate_char(
+             unquote(Compiler.placeholder(:exponent)),
+             unquote(locale),
+             unquote(name)
+           ) do
         unquote(symbols.exponential)
       end
 
       # Mapping for the plus sign
-      defp transliterate_char(unquote(Compiler.placeholder(:plus)), unquote(locale), unquote(name)) do
+      defp transliterate_char(
+             unquote(Compiler.placeholder(:plus)),
+             unquote(locale),
+             unquote(name)
+           ) do
         unquote(symbols.plus_sign)
       end
 
       # Mapping for the minus sign
-      defp transliterate_char(unquote(Compiler.placeholder(:minus)), unquote(locale), unquote(name)) do
+      defp transliterate_char(
+             unquote(Compiler.placeholder(:minus)),
+             unquote(locale),
+             unquote(name)
+           ) do
         unquote(symbols.minus_sign)
       end
     end
@@ -204,8 +232,7 @@ defmodule Cldr.Number.Transliterate do
   for {from_system, to_system} <- Application.get_env(:ex_cldr, :precompile_transliterations, []) do
     with {:ok, from} = System.number_system_digits(from_system),
          {:ok, to} = System.number_system_digits(to_system),
-         map = System.generate_transliteration_map(from, to)
-    do
+         map = System.generate_transliteration_map(from, to) do
       def transliterate_digits(digits, unquote(from_system), unquote(to_system)) do
         do_transliterate_digits(digits, unquote(Macro.escape(map)))
       end
@@ -213,14 +240,16 @@ defmodule Cldr.Number.Transliterate do
   end
 
   require Logger
+
   def transliterate_digits(digits, from_system, to_system) when is_binary(digits) do
     with {:ok, from} <- System.number_system_digits(from_system),
-         {:ok, to} <- System.number_system_digits(to_system)
-    do
-      Logger.warn "Transliteration from number system #{inspect from_system} to " <>
-      "#{inspect to_system} requires dynamic generation of a transliteration map for " <>
-      "each function call which is slow. Please consider configuring this transliteration pair. " <>
-      "See module docs for `Cldr.Number.Transliteration` for futher information."
+         {:ok, to} <- System.number_system_digits(to_system) do
+      Logger.warn(
+        "Transliteration from number system #{inspect(from_system)} to " <>
+          "#{inspect(to_system)} requires dynamic generation of a transliteration map for " <>
+          "each function call which is slow. Please consider configuring this transliteration pair. " <>
+          "See module docs for `Cldr.Number.Transliteration` for futher information."
+      )
 
       map = System.generate_transliteration_map(from, to)
       do_transliterate_digits(digits, map)
@@ -231,8 +260,8 @@ defmodule Cldr.Number.Transliterate do
 
   defp do_transliterate_digits(digits, map) do
     digits
-    |> String.graphemes
+    |> String.graphemes()
     |> Enum.map(&Map.get(map, &1, &1))
-    |> Enum.join
+    |> Enum.join()
   end
 end

@@ -14,8 +14,8 @@ defmodule Cldr.Rbnf.Rule do
   def tokenize(definition) when is_binary(definition) do
     definition
     |> String.trim_leading("'")
-    |> String.to_charlist
-    |> :rbnf_lexer.string
+    |> String.to_charlist()
+    |> :rbnf_lexer.string()
   end
 
   def tokenize(%Rule{definition: definition} = _rule) do
@@ -39,7 +39,6 @@ defmodule Cldr.Rbnf.Rule do
 
   def parse(tokens) when is_list(tokens) do
     tokens
-    |> :rbnf_parser.parse
+    |> :rbnf_parser.parse()
   end
-
 end
