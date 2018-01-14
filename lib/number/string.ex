@@ -101,11 +101,20 @@ defmodule Cldr.Number.String do
     [""]
   end
 
-  def chunk_string(string, size, :forward) do
-    string
-    |> String.to_charlist()
-    |> Enum.chunk(size, size, [])
-    |> Enum.map(&List.to_string/1)
+  if Version.parse!(System.version).major >= 1 and Version.parse!(System.version).minor > 6  do
+    def chunk_string(string, size, :forward) do
+      string
+      |> String.to_charlist()
+      |> Enum.chunk_every(size, size, [])
+      |> Enum.map(&List.to_string/1)
+    end
+  else
+    def chunk_string(string, size, :forward) do
+      string
+      |> String.to_charlist()
+      |> Enum.chunk(size, size, [])
+      |> Enum.map(&List.to_string/1)
+    end
   end
 
   def chunk_string(string, size, :reverse) do

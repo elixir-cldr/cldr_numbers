@@ -500,6 +500,19 @@ defmodule Cldr.Number do
     Cldr.Number.System.to_system!(number, system)
   end
 
+  @doc """
+  Return the precision (number of digits) of a number
+
+  This function delegates to `Cldr.Digits.number_of_digits/1`
+
+  ## Example
+
+      iex> Cldr.Number.precision 1.234
+      4
+
+  """
+  defdelegate precision(number), to: Cldr.Digits, as: :number_of_digits
+
   # Merge options and default options with supplied options always
   # the winner.  If :currency is specified then the default :format
   # will be format: currency

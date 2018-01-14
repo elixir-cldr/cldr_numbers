@@ -1,6 +1,14 @@
-# Changelog for Cldr_Numbers v1.1.1
+# Changelog for Cldr_Numbers v1.2.0
 
-This is the changelog for Cldr v1.1.1 released on December 31st, 2017.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v1.2.0 released on January 14th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Enhancements
+
+* Add `Cldr.Number.precision/1` tor return the number of digits in a float, integer or Decimal.  This function delegates to `Cldr.Digits.number_of_digits/1`
+
+* `Cldr.Number.String.chunk_string/3` is now Elixir version dependent since in Elixir version 1.7 `String.chunk/4` is deprecated in favour of `String.chunk_every/4`
+
+# Changelog for Cldr_Numbers v1.1.1
 
 ## Enhancements
 
