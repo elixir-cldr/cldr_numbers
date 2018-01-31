@@ -8,6 +8,8 @@ This is the changelog for Cldr v1.3.0 released on _, 2018.  For older changelogs
 
 * As a result the `Cldr.Number.to_string/2` option `cash: <boolean>` is deprecated and a new option `:currency_digits` is introduced.  The valid options for `:currency_digits` are `:accounting` (the default), `:cash` and `:iso`.
 
+* Requires `ex_cldr` version 1.4
+
 ### Deprecations
 
 * The option `cash: <boolean>` for `Cldr.Number.to_string/2` is deprecated and will be removed in `cldr_numbers` version 2.0.
