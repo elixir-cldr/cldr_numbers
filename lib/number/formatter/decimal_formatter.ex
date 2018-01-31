@@ -18,7 +18,6 @@ defmodule Cldr.Number.Formatter.Decimal do
   to change at any time.**
   """
 
-  import Cldr.Macros
   import Cldr.Number.Symbol, only: [number_symbols_for: 2]
   import Cldr.Math, only: [power_of_10: 1]
 
@@ -76,7 +75,7 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   defp update_meta(meta, number, options) do
     meta
-    |> adjust_fraction_for_currency(options[:currency], options[:cash])
+    |> adjust_fraction_for_currency(options[:currency], options[:currency_digits])
     |> adjust_fraction_for_significant_digits(number)
     |> adjust_for_fractional_digits(options[:fractional_digits])
     |> Map.put(:number, number)
@@ -548,18 +547,23 @@ defmodule Cldr.Number.Formatter.Decimal do
   # digits to match the currency definition.  We also need to adjust the
   # rounding increment to match the currency definition. Note that here
   # we are just adjusting the meta data, not the number itself
-  defp adjust_fraction_for_currency(meta, nil, _cash) do
+  defp adjust_fraction_for_currency(meta, nil, _currency_digits) do
     meta
   end
 
-  defp adjust_fraction_for_currency(meta, currency, cash) when is_false(cash) do
+  defp adjust_fraction_for_currency(meta, currency, :accounting) do
     {:ok, currency} = Currency.currency_for_code(currency)
     do_adjust_fraction(meta, currency.digits, currency.rounding)
   end
 
-  defp adjust_fraction_for_currency(meta, currency, _cash) do
+  defp adjust_fraction_for_currency(meta, currency, :cash) do
     {:ok, currency} = Currency.currency_for_code(currency)
     do_adjust_fraction(meta, currency.cash_digits, currency.cash_rounding)
+  end
+
+  defp adjust_fraction_for_currency(meta, currency, :iso) do
+    {:ok, currency} = Currency.currency_for_code(currency)
+    do_adjust_fraction(meta, currency.iso_digits, currency.iso_digits)
   end
 
   defp do_adjust_fraction(meta, digits, rounding) do

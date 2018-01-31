@@ -129,13 +129,13 @@ iex> Cldr.Number.to_string 1234, format: :standard
 {:ok, "1,234"}
 ```
 
-*  `:currency` which formats a number according to the format or a particular currency adjusted for rounding, number of decimal digits after the fraction, whether the currency is accounting or cash rounded and using the appropriate locale-specific currency symbol.  This format also requires that the option `:currency` be specified.  Note that for currency formatting the defined rounding and fractional digits defined for the currency is used.  The boolean parameter `:cash` can also be specified to indicate if this is a cash amount.  Some currencies, like the Swiss Franc and Australian Dollar have a smallest cash amount that is 0.05 of the Franc of Dollar and hence rouding has to take that into account.
+*  `:currency` which formats a number according to the format or a particular currency adjusted for rounding, number of decimal digits after the fraction, whether the currency is accounting or cash rounded and using the appropriate locale-specific currency symbol.  This format also requires that the option `:currency` be specified.  Note that for currency formatting the defined rounding and fractional digits defined for the currency is used.  The parameter `:currency_digits` can also be specified to indicate if formatting is to use `:accounting`, `:cash` or `:iso` digit definitions.  The default is `:accounting`. Some currencies, like the Swiss Franc and Australian Dollar have a smallest cash amount that is 0.05 of the Franc of Dollar and hence rouding has to take that into account.
 
 ```elixir
 iex> Cldr.Number.to_string 1234.31, format: :currency, currency: :CHF
 {:ok, "CHF1,234.31"}
 
-iex> Cldr.Number.to_string 1234.31, format: :currency, currency: :CHF, cash: true
+iex> Cldr.Number.to_string 1234.31, format: :currency, currency: :CHF, currency_digits: :cash
 {:ok, "CHF1,234.30"}
 ```
 

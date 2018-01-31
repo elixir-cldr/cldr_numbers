@@ -22,11 +22,12 @@ defmodule Cldr.Currency do
           name: String.t(),
           tender: boolean,
           symbol: String.t(),
-          digits: pos_integer,
-          rounding: pos_integer,
+          digits: non_neg_integer,
+          rounding: non_neg_integer,
           narrow_symbol: String.t(),
-          cash_digits: pos_integer,
-          cash_rounding: pos_integer,
+          cash_digits: non_neg_integer,
+          cash_rounding: non_neg_integer,
+          iso_digits: non_neg_integer,
           count: %{}
         }
 
@@ -38,6 +39,7 @@ defmodule Cldr.Currency do
             rounding: 0,
             cash_digits: 0,
             cash_rounding: 0,
+            iso_digits: 0,
             tender: false,
             count: nil
 
@@ -272,16 +274,36 @@ defmodule Cldr.Currency do
   ## Examples
 
       iex> Cldr.Currency.currency_for_code("AUD")
-      {:ok, %Cldr.Currency{cash_digits: 2, cash_rounding: 0, code: "AUD",
-      count: %{one: "Australian dollar", other: "Australian dollars"},
-      digits: 2, name: "Australian Dollar", narrow_symbol: "$",
-      rounding: 0, symbol: "A$", tender: true}}
+      {:ok,
+        %Cldr.Currency{
+          cash_digits: 2,
+          cash_rounding: 0,
+          code: "AUD",
+          count: %{one: "Australian dollar", other: "Australian dollars"},
+          digits: 2,
+          iso_digits: 2,
+          name: "Australian Dollar",
+          narrow_symbol: "$",
+          rounding: 0,
+          symbol: "A$",
+          tender: true
+      }}
 
       iex> Cldr.Currency.currency_for_code("THB")
-      {:ok, %Cldr.Currency{cash_digits: 2, cash_rounding: 0, code: "THB",
-      count: %{one: "Thai baht", other: "Thai baht"}, digits: 2,
-      name: "Thai Baht", narrow_symbol: "฿", rounding: 0, symbol: "THB",
-      tender: true}}
+      {:ok,
+        %Cldr.Currency{
+          cash_digits: 2,
+          cash_rounding: 0,
+          code: "THB",
+          count: %{one: "Thai baht", other: "Thai baht"},
+          digits: 2,
+          iso_digits: 2,
+          name: "Thai Baht",
+          narrow_symbol: "฿",
+          rounding: 0,
+          symbol: "THB",
+          tender: true
+      }}
 
   """
   @spec currency_for_code(code, LanguageTag.t()) ::

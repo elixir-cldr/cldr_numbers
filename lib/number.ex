@@ -143,6 +143,11 @@ defmodule Cldr.Number do
       * `:cash`: a boolean which indicates whether a number being formatted as a
         `:currency` is to be considered a cash value or not. Currencies can be
         rounded differently depending on whether `:cash` is `true` or `false`.
+        *This option is deprecated in favour of `currency_digits: :cash`.
+
+      * `:currency_digits` indicates which of the rounding and digits should be
+        used. The options are `:accounting` which is the default `:cash` or
+        `:iso`
 
       * `:rounding_mode`: determines how a number is rounded to meet the precision
         of the format requested. The available rounding modes are `:down`,
@@ -179,10 +184,10 @@ defmodule Cldr.Number do
       iex> Cldr.Number.to_string 12345
       {:ok, "12,345"}
 
-      iex> Cldr.Number.to_string 12345, locale: Cldr.Locale.new!("fr")
+      iex> Cldr.Number.to_string 12345, locale: "fr"
       {:ok, "12 345"}
 
-      iex> Cldr.Number.to_string 12345, locale: Cldr.Locale.new!("fr"), currency: "USD"
+      iex> Cldr.Number.to_string 12345, locale: "fr", currency: "USD"
       {:ok, "12 345,00 $US"}
 
       iex> Cldr.Number.to_string 12345, format: "#E0"
@@ -195,11 +200,11 @@ defmodule Cldr.Number do
       {:ok, "(THB12,345.00)"}
 
       iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB",
-      ...> locale: Cldr.Locale.new!("th")
+      ...> locale: "th"
       {:ok, "THB12,345.00"}
 
       iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB",
-      ...> locale: Cldr.Locale.new!("th"), number_system: :native
+      ...> locale: "th", number_system: :native
       {:ok, "THB๑๒,๓๔๕.๐๐"}
 
       iex> Cldr.Number.to_string 1244.30, format: :long
@@ -320,7 +325,7 @@ defmodule Cldr.Number do
     [
       format: :standard,
       currency: nil,
-      cash: false,
+      currency_digits: :accounting,
       rounding_mode: :half_even,
       number_system: :default,
       locale: Cldr.get_current_locale()
@@ -522,6 +527,7 @@ defmodule Cldr.Number do
       |> merge(options, fn _k, _v1, v2 -> v2 end)
       |> canonicalize_locale
       |> adjust_for_currency(options[:currency], options[:format])
+      |> set_currency_digits
       |> resolve_standard_format
       |> adjust_short_forms
 
@@ -562,6 +568,27 @@ defmodule Cldr.Number do
 
   defp adjust_for_currency(options, _currency, _format) do
     options
+  end
+
+  defp set_currency_digits(%{cash: true} = options) do
+    options
+    |> Map.delete(:cash)
+    |> Map.put(:currency_digits, :cash)
+  end
+
+  defp set_currency_digits(%{cash: false} = options) do
+    options
+    |> Map.delete(:cash)
+    |> Map.put(:currency_digits, :accounting)
+  end
+
+  defp set_currency_digits(%{currency_digits: _mode} = options) do
+    options
+  end
+
+  defp set_currency_digits(options) do
+    options
+    |> Map.put(:currency_digits, :accounting)
   end
 
   defp canonicalize_locale(%{locale: locale} = options) when is_binary(locale) do

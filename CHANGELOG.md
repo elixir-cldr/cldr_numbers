@@ -1,3 +1,15 @@
+# Changelog for Cldr_Numbers v1.3.0
+
+This is the changelog for Cldr v1.3.0 released on _, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Enhancements
+
+* In certain cases the ISO definition of a currencies decimal digits (subunit) differs from CLDR. One such example is the Colombian Peso where Cldr has the number of digits as 0 whereas ISO4217 has the number of digits as 2.  Cldr 1.4 adds a field `:iso_digits` to the `Cldr.Currency` struct to allow the selection of the ISO definition as an option.  As a result the option `cash: <boolean>` is deprecated and a new option `:currency_digits` is introduced.  The valid options for `:currency_digits` are `:accounting` (the default), `:cash` and `:iso`.
+
+### Deprecations
+
+* The option `cash: <boolean>` for `Cldr.Number.to_string/2` is deprecated and will be removed in `Money` version 2.0.
+
 # Changelog for Cldr_Numbers v1.2.0
 
 This is the changelog for Cldr v1.2.0 released on January 14th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
