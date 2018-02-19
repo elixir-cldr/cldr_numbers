@@ -1,7 +1,7 @@
 defmodule CldrNumbers.Mixfile do
   use Mix.Project
 
-  @version "1.3.0"
+  @version "1.3.1"
 
   def project do
     [
@@ -38,7 +38,8 @@ defmodule CldrNumbers.Mixfile do
       {:decimal, "~> 1.4"},
       {:poison, "~> 2.1 or ~> 3.1", optional: true},
       {:jason, "~> 1.0", optional: true},
-      {:ex_doc, "~> 0.18", only: :dev}
+      {:ex_doc, "~> 0.18", only: :dev, optional: true},
+      {:benchee, "~> 0.12.0", optional: true, only: :dev, runtime: false}
     ]
   end
 

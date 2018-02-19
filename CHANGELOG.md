@@ -1,6 +1,12 @@
-# Changelog for Cldr_Numbers v1.3.0
+# Changelog for Cldr_Numbers v1.3.1
 
-This is the changelog for Cldr v1.3.0 released on February 4th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v1.3.0 released on February 19th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Enhancements
+
+* Performance improvement for zero padding numbers during formatting
+
+# Changelog for Cldr_Numbers v1.3.0
 
 ### Enhancements
 

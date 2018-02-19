@@ -45,7 +45,7 @@ defmodule Cldr.Number.String do
   end
 
   def pad_leading_zeros(number_string, count) do
-    String.pad_leading(number_string, count, "0")
+    :binary.copy("0", count - byte_size(number_string)) <> number_string
   end
 
   @doc """
@@ -65,7 +65,7 @@ defmodule Cldr.Number.String do
   end
 
   def pad_trailing_zeros(number_string, count) do
-    String.pad_trailing(number_string, count, "0")
+    number_string <> :binary.copy("0", count - byte_size(number_string))
   end
 
   @doc """
@@ -101,7 +101,7 @@ defmodule Cldr.Number.String do
     [""]
   end
 
-  if Version.parse!(System.version).major >= 1 and Version.parse!(System.version).minor > 6  do
+  if Version.compare(System.version, "1.6.0") in [:gt, :eq] do
     def chunk_string(string, size, :forward) do
       string
       |> String.to_charlist()
