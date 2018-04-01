@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v1.4.1
+
+This is the changelog for Cldr v1.4.1 released on April 1st, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Enhancements
+
+* Update ex_cldr dependency to version 1.5.1 so we can use `Cldr.Config.app_name/0` instead of hard-coding the app name `:ex_cldr`
+
 # Changelog for Cldr_Numbers v1.4.0
 
 This is the changelog for Cldr v1.4.0 released on March 29th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
