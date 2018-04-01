@@ -41,6 +41,7 @@ defmodule Cldr.Number.Transliterate do
   alias Cldr.Number.Format.Compiler
   alias Cldr.Locale
   alias Cldr.LanguageTag
+  alias Cldr.Config
 
   @doc """
   Transliterates from latin digits to another number system's digits.
@@ -229,7 +230,7 @@ defmodule Cldr.Number.Transliterate do
 
   """
   @spec transliterate_digits(binary, atom, atom) :: binary
-  for {from_system, to_system} <- Application.get_env(:ex_cldr, :precompile_transliterations, []) do
+  for {from_system, to_system} <- Application.get_env(Config.app_name, :precompile_transliterations, []) do
     with {:ok, from} = System.number_system_digits(from_system),
          {:ok, to} = System.number_system_digits(to_system),
          map = System.generate_transliteration_map(from, to) do
