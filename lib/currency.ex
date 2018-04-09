@@ -67,8 +67,7 @@ defmodule Cldr.Currency do
         tender: false}}
 
       iex> Cldr.Currency.new(:ZAA, name: "Invalid Custom Name")
-      {:error, {Cldr.CurrencyCodeInvalid,
-        "Invalid currency code \\"ZAA\\".  Currency codes must start with 'X' followed by 2 alphabetic characters only."}}
+      {:error, {Cldr.UnknownCurrencyError, "The currency :ZAA is invalid"}}
 
       iex> Cldr.Currency.new("xaa", name: "Custom Name")
       {:ok,
@@ -90,11 +89,11 @@ defmodule Cldr.Currency do
   def new(currency, options \\ [])
 
   def new(currency, options) do
-    with {:error, _currency} <- Cldr.validate_currency(currency),
-         {:ok, currency_code} <- make_currency_code(currency) do
+    with {:ok, currency_code} <- Cldr.validate_currency(currency),
+         false <- currency_code in known_currencies() do
       {:ok, struct(@struct, [{:code, currency_code} | options])}
     else
-      {:ok, _} ->
+      true ->
         {
           :error,
           {Cldr.CurrencyAlreadyDefined, "Currency #{inspect(currency)} is already defined"}
@@ -204,9 +203,12 @@ defmodule Cldr.Currency do
   """
   @spec known_currency?(code, [t, ...]) :: boolean
   def known_currency?(currency_code, custom_currencies \\ []) do
-    case Cldr.validate_currency(currency_code) do
-      {:ok, _currency} -> true
+    with {:ok, currency_code} <-  Cldr.validate_currency(currency_code),
+          true <- currency_code in known_currencies() do
+      true
+    else
       {:error, _reason} -> Enum.any?(custom_currencies, &(currency_code == &1.code))
+      false -> Enum.any?(custom_currencies, &(currency_code == &1.code))
     end
   end
 
@@ -312,8 +314,18 @@ defmodule Cldr.Currency do
     with {:ok, code} <- Cldr.validate_currency(currency_code),
          {:ok, locale} <- Cldr.validate_locale(locale),
          {:ok, currencies} <- currencies_for_locale(locale) do
-      {:ok, Map.get(currencies, code)}
+      {:ok, get_currency_metadata(code, Map.get(currencies, code))}
     end
+  end
+
+  defp get_currency_metadata(code, nil) do
+    string_code = to_string(code)
+    {:ok, meta} = new(code, name: string_code, symbol: string_code, narrow_symbol: string_code, count: %{other: string_code})
+    meta
+  end
+
+  defp get_currency_metadata(_code, meta) do
+    meta
   end
 
   @doc """

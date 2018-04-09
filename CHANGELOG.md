@@ -1,6 +1,12 @@
-# Changelog for Cldr_Numbers v1.4.1
+# Changelog for Cldr_Numbers v1.4.2
 
-This is the changelog for Cldr v1.4.1 released on April 1st, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v1.4.2 released on April 9th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Enhancements
+
+* Supports formatting valid but unknown currency codes.  These codes are defined by ISO4217 to begin with "X" and have two following alphabetic characters.  Since these currency codes are valid but unknown to `Cldr`, the formatted output is based upon incomplete information.
+
+# Changelog for Cldr_Numbers v1.4.1
 
 ### Enhancements
 
