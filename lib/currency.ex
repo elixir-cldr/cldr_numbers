@@ -201,7 +201,8 @@ defmodule Cldr.Currency do
       true
 
   """
-  @spec known_currency?(code, [t, ...]) :: boolean
+  @spec known_currency?(code) :: boolean
+  @spec known_currency?(code, [t]) :: boolean
   def known_currency?(currency_code, custom_currencies \\ []) do
     with {:ok, currency_code} <-  Cldr.validate_currency(currency_code),
           true <- currency_code in known_currencies() do
