@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v1.4.3
+
+This is the changelog for Cldr v1.4.2 released on May 28th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Enhancements
+
+* Extracts the data encapsultion for currencies to its own package [ex_cldr_currencies](https://hex.pm/packages/ex_cldr_currencies).  This package is a dependency here and optionally for the package [ex_cldr_html](https://hex.pm/packages/ex_cldr_html)
+
 # Changelog for Cldr_Numbers v1.4.2
 
 This is the changelog for Cldr v1.4.2 released on April 9th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
