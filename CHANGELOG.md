@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v1.5.0
+
+This is the changelog for Cldr v1.5.0 released on July 8th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Enhancements
+
+* Add the optional argument `:minimum_grouping_digits` to `Number.to_string/2`.  For an understanding of the meaning of minimum grouping digits, consult this [section](https://unicode.org/reports/tr35/tr35-numbers.html#Examples_of_minimumGroupingDigits) of [TR35](https://unicode.org/reports/tr35/tr35-numbers.html).  The use of this option should be considered exceptional - its use is to override the minimum grouping digits defined for a locale.
+
 # Changelog for Cldr_Numbers v1.4.4
 
 This is the changelog for Cldr v1.4.2 released on May 30th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)

@@ -8,6 +8,7 @@ erl_crash.dump
 *.ez
 *.tar
 .DS_Store
+/src/*.erl
 
 # The xml downloaded from Unicode
 /downloads

@@ -146,7 +146,7 @@ defmodule Cldr.Number do
         *This option is deprecated in favour of `currency_digits: :cash`.
 
       * `:currency_digits` indicates which of the rounding and digits should be
-        used. The options are `:accounting` which is the default `:cash` or
+        used. The options are `:accounting` which is the default, `:cash` or
         `:iso`
 
       * `:rounding_mode`: determines how a number is rounded to meet the precision
@@ -173,6 +173,15 @@ defmodule Cldr.Number do
         fractional digits defined reflecting each currencies minor unit.  Setting
         `:fractional_digits` will override that setting.
 
+      * `:minimum_grouping_digits` overrides the CLDR definition of minimum grouping
+        digits. For example in the locale `es` the number `1234` is formatted by default
+        as `1345` because the locale defines the `minimium_grouping_digits` as `2`. If
+        `minimum_grouping_digits: 1` is set as an option the number is formatting as
+        `1.345`. The `:minimum_grouping_digits` is added to the grouping defined by
+        the number format.  If the sum of these two digits is greater than the number
+        of digits in the integer (or fractional) part of the number then no grouping
+        is performed.
+
   ## Returns
 
   * `{:ok, string}` or
@@ -186,6 +195,12 @@ defmodule Cldr.Number do
 
       iex> Cldr.Number.to_string 12345, locale: "fr"
       {:ok, "12 345"}
+
+      iex> Cldr.Number.to_string 1345.32, currency: :EUR, locale: "es", minimum_grouping_digits: 1
+      {:ok, "1.345,32 €"}
+
+      iex> Cldr.Number.to_string 1345.32, currency: :EUR, locale: "es"
+      {:ok, "1345,32 €"}
 
       iex> Cldr.Number.to_string 12345, locale: "fr", currency: "USD"
       {:ok, "12 345,00 $US"}
@@ -326,6 +341,7 @@ defmodule Cldr.Number do
       format: :standard,
       currency: nil,
       currency_digits: :accounting,
+      minimum_grouping_digits: 0,
       rounding_mode: :half_even,
       number_system: :default,
       locale: Cldr.get_current_locale()
