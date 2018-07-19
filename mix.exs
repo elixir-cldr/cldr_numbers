@@ -51,7 +51,10 @@ defmodule CldrNumbers.Mixfile do
       links: links(),
       files: [
         "lib",
-        "src",
+        "src/decimal_formats_lexer.xrl",
+        "src/decimal_formats_parser.yrl",
+        "src/rbnf_lexer.xrl",
+        "src/rbnf_parser.yrl",
         "config",
         "mix.exs",
         "README*",
