@@ -309,14 +309,14 @@ defmodule Cldr.Number.Formatter.Decimal do
   defp apply_grouping(
          {sign, integer, [] = fraction, exponent_sign, exponent},
          %{grouping: groups},
-         %{locale: locale}
+         %{locale: locale, minimum_grouping_digits: minimum_grouping_digits}
        ) do
     integer =
       do_grouping(
         integer,
         groups[:integer],
         length(integer),
-        minimum_group_size(groups[:integer], locale),
+        minimum_group_size(groups[:integer], minimum_grouping_digits, locale),
         :reverse
       )
 
@@ -324,14 +324,14 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   defp apply_grouping({sign, integer, fraction, exponent_sign, exponent}, %{grouping: groups}, %{
-         locale: locale
+         locale: locale, minimum_grouping_digits: minimum_grouping_digits
        }) do
     integer =
       do_grouping(
         integer,
         groups[:integer],
         length(integer),
-        minimum_group_size(groups[:integer], locale),
+        minimum_group_size(groups[:integer], minimum_grouping_digits, locale),
         :reverse
       )
 
@@ -340,15 +340,19 @@ defmodule Cldr.Number.Formatter.Decimal do
         fraction,
         groups[:fraction],
         length(fraction),
-        minimum_group_size(groups[:fraction], locale),
+        minimum_group_size(groups[:fraction], minimum_grouping_digits, locale),
         :forward
       )
 
     {sign, integer, fraction, exponent_sign, exponent}
   end
 
-  defp minimum_group_size(%{first: group_size}, locale) do
+  defp minimum_group_size(%{first: group_size}, 0, locale) do
     Format.minimum_grouping_digits_for!(locale) + group_size
+  end
+
+  defp minimum_group_size(%{first: group_size}, minimum_grouping_digits, _locale) do
+    minimum_grouping_digits + group_size
   end
 
   # The actual grouping function.  Note there are two directions,
