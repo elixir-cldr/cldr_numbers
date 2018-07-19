@@ -14,3 +14,7 @@ erl_crash.dump
 
 # Ignore the generated json files
 /data
+
+# erl is always generated
+*.erl
+
