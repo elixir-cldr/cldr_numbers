@@ -39,8 +39,7 @@ defmodule CldrNumbers.Mixfile do
       {:decimal, "~> 1.4"},
       {:poison, "~> 2.1 or ~> 3.1", optional: true},
       {:jason, "~> 1.0", optional: true},
-      {:ex_doc, "~> 0.18 or ~> 0.19.0-rc", only: :dev, optional: true},
-      {:benchee, "~> 0.12.0", optional: true, only: :dev, runtime: false}
+      {:ex_doc, "~> 0.18 or ~> 0.19.0-rc", only: :dev, optional: true}
     ]
   end
 

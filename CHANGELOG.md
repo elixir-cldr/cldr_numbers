@@ -1,3 +1,13 @@
+# Changelog for Cldr_Numbers v1.5.2
+
+This is the changelog for Cldr v1.5.2 released on September 27th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Correct the typespec for `Cldr.Numbers.to_string/2`. Thanks to @amuino.  Closes Money #81.
+
+* Remove `benchee` as an optional dependent
+
 # Changelog for Cldr_Numbers v1.5.1
 
 This is the changelog for Cldr v1.5.1 released on July 20th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
