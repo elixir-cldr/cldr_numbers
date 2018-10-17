@@ -73,7 +73,7 @@ defmodule Cldr.Number.Transliterate do
       "123556"
 
       iex> Cldr.Number.Transliterate.transliterate("123,556.000", Cldr.Locale.new!("fr"), :default)
-      "123 556,000"
+      "123 556,000"
 
       iex> Cldr.Number.Transliterate.transliterate("123556", Cldr.Locale.new!("th"), :default)
       "123556"

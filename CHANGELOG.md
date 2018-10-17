@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v1.6.0
+
+This is the changelog for Cldr v1.6.0 released on Octoebr 18th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Enhancements
+
+* Updated dependency on [ex_cldr](https://hex.pm/packages/ex_cldr) to version 1.8 which uses CLDR version 34 data.
+
 # Changelog for Cldr_Numbers v1.5.2
 
 This is the changelog for Cldr v1.5.2 released on September 27th, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)

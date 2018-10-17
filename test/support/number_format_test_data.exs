@@ -2,20 +2,20 @@ defmodule Cldr.Test.Number.Format do
   def test_data do
     [
       {1234, "1,234", []},
-      {1234, "1 234", [locale: "fr"]},
+      {1234, "1 234", [locale: "fr"]},
       {0.000123456, "0", []},
       {-0.000123456, "0", []},
 
       # Data from http://unicode.org/reports/tr35/tr35-numbers.html
 
       # Number_Patterns
-      {1234.567, "1 234,57", [format: "#,##0.##", locale: "fr"]},
-      {1234.567, "1 234,567", [format: "#,##0.###", locale: "fr"]},
+      {1234.567, "1 234,57", [format: "#,##0.##", locale: "fr"]},
+      {1234.567, "1 234,567", [format: "#,##0.###", locale: "fr"]},
       {1234.567, "1234,567", [format: "###0.#####", locale: "fr"]},
       {1234.567, "1234,5670", [format: "###0.0000#", locale: "fr"]},
       {1234.567, "01234,5670", [format: "00000.0000", locale: "fr"]},
-      {1234.567, "1 234,57 €", [format: "#,##0.00 ¤", locale: "fr", currency: :EUR]},
-      {1234.567, "1 235 JPY", [format: "#,##0.00 ¤", locale: "fr", currency: "JPY"]},
+      {1234.567, "1 234,57 €", [format: "#,##0.00 ¤", locale: "fr", currency: :EUR]},
+      {1234.567, "1 235 JPY", [format: "#,##0.00 ¤", locale: "fr", currency: "JPY"]},
 
       # Fraction grouping
       {1234.4353244565, "1234,435 324 456 5", [format: "#,###.###,#########", locale: "pl"]},
@@ -50,7 +50,7 @@ defmodule Cldr.Test.Number.Format do
       {123.4, "123.40 $", [format: "#,##0.00 ¤¤¤¤", currency: :AUD]},
       {1234, "A$1,234.00", [currency: :AUD]},
       {1234, "COP1,234.00", [currency: :COP, currency_digits: :iso]},
-      {1234, "COP1,234", [currency: :COP]},
+      {1234, "COP1,234.00", [currency: :COP]},
 
       # Rounding
       {1234.21, "1,234.20", [format: "#,##0.05"]},

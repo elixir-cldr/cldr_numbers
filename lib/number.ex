@@ -194,7 +194,7 @@ defmodule Cldr.Number do
       {:ok, "12,345"}
 
       iex> Cldr.Number.to_string 12345, locale: "fr"
-      {:ok, "12 345"}
+      {:ok, "12 345"}
 
       iex> Cldr.Number.to_string 1345.32, currency: :EUR, locale: "es", minimum_grouping_digits: 1
       {:ok, "1.345,32 €"}
@@ -203,7 +203,7 @@ defmodule Cldr.Number do
       {:ok, "1345,32 €"}
 
       iex> Cldr.Number.to_string 12345, locale: "fr", currency: "USD"
-      {:ok, "12 345,00 $US"}
+      {:ok, "12 345,00 $US"}
 
       iex> Cldr.Number.to_string 12345, format: "#E0"
       {:ok, "1.2345E4"}
@@ -216,11 +216,11 @@ defmodule Cldr.Number do
 
       iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB",
       ...> locale: "th"
-      {:ok, "THB12,345.00"}
+      {:ok, "฿12,345.00"}
 
       iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB",
       ...> locale: "th", number_system: :native
-      {:ok, "THB๑๒,๓๔๕.๐๐"}
+      {:ok, "฿๑๒,๓๔๕.๐๐"}
 
       iex> Cldr.Number.to_string 1244.30, format: :long
       {:ok, "1 thousand"}
@@ -322,7 +322,7 @@ defmodule Cldr.Number do
       "12,345"
 
       iex> Cldr.Number.to_string! 12345, locale: Cldr.Locale.new!("fr")
-      "12 345"
+      "12 345"
 
   """
   @spec to_string!(number | Decimal.t(), Keyword.t() | Map.t()) :: String.t() | Exception.t()

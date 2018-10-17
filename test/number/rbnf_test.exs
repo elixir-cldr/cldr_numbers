@@ -15,7 +15,7 @@ defmodule Rbnf.Test do
   test "rbnf ordinal" do
     assert {:ok, "123,456th"} = Cldr.Number.to_string(123_456, format: :ordinal)
 
-    assert {:ok, "123 456e"} =
+    assert {:ok, "123 456e"} =
              Cldr.Number.to_string(123_456, format: :ordinal, locale: Locale.new!("fr"))
   end
 
@@ -44,7 +44,7 @@ defmodule Rbnf.Test do
   test "decimal rbnf for decimal integers" do
     assert {:ok, "123,456th"} = Cldr.Number.to_string(Decimal.new(123_456), format: :ordinal)
 
-    assert {:ok, "123 456e"} =
+    assert {:ok, "123 456e"} =
              Cldr.Number.to_string(
                Decimal.new(123_456),
                format: :ordinal,

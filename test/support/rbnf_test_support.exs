@@ -18,6 +18,7 @@ defmodule Cldr.Rbnf.TestSupport do
       |> List.delete("af")
       |> List.delete("hr")
       |> List.delete("uk")
+      |> List.delete("hu")
 
     for locale_name <- locales do
       json_data_file = "./test/support/rbnf/#{locale_name}/rbnf_test.json"
@@ -30,7 +31,7 @@ defmodule Cldr.Rbnf.TestSupport do
         {:ok, json_string} ->
           json_data =
             json_string
-            |> Poison.decode!()
+            |> Jason.decode!()
 
           locale = Cldr.Locale.new!(locale_name)
 
