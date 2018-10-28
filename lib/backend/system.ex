@@ -10,8 +10,8 @@ defmodule Cldr.Number.Backend.System do
         Returns the number systems available for a locale
         or `{:error, message}` if the locale is not known.
 
-        * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
+        * `locale` is any valid locale name returned by `#{inspect backend}.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by `#{inspect backend}.Locale.new!/1`
 
         ## Examples
 
