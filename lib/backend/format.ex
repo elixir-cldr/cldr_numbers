@@ -5,7 +5,7 @@ defmodule Cldr.Number.Backend.Format do
     config = Macro.escape(config)
 
     quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
-      defmodule Format do
+      defmodule Number.Format do
         @doc """
         Returns the list of decimal formats in the configured locales including
         the list of locales configured for precompilation in `config.exs`.
@@ -38,7 +38,7 @@ defmodule Cldr.Number.Backend.Format do
           |> Enum.reject(&is_nil/1)
           |> Enum.sort()
 
-        @spec decimal_format_list :: [format, ...]
+        @spec decimal_format_list :: [Cldr.Number.Format.format, ...]
         def decimal_format_list do
           unquote(Macro.escape(format_list))
         end
@@ -57,7 +57,7 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Example
 
-            iex> Cldr.Number.Format.decimal_format_list_for("en")
+            iex> #{inspect(__MODULE__)}.decimal_format_list_for("en")
             {:ok, ["#,##0%", "#,##0.###", "#E0", "0 billion", "0 million", "0 thousand",
              "0 trillion", "00 billion", "00 million", "00 thousand", "00 trillion",
              "000 billion", "000 million", "000 thousand", "000 trillion", "000B", "000K",
@@ -69,9 +69,9 @@ defmodule Cldr.Number.Backend.Format do
         @spec decimal_format_list_for(LanguageTag.t() | Locale.locale_name()) ::
                 {:ok, [String.t(), ...]} | {:error, {Exception.t(), String.t()}}
 
-        def decimal_format_list_for(locale \\ Cldr.get_current_locale())
+        def decimal_format_list_for(locale \\ unquote(backend).get_current_locale())
 
-        for locale_name <- Cldr.Config.known_locale_names() do
+        for locale_name <- Cldr.Config.known_locale_names(config) do
           decimal_formats = Cldr.Config.decimal_formats_for(locale_name)
 
           def decimal_format_list_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
@@ -80,13 +80,13 @@ defmodule Cldr.Number.Backend.Format do
         end
 
         def decimal_format_list_for(locale_name) when is_binary(locale_name) do
-          with {:ok, locale} <- Cldr.validate_locale(locale_name) do
+          with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             decimal_format_list_for(locale)
           end
         end
 
         def decimal_format_list_for(locale) do
-          {:error, Locale.locale_error(locale)}
+          {:error, Cldr.Locale.locale_error(locale)}
         end
 
         @doc """
@@ -113,9 +113,9 @@ defmodule Cldr.Number.Backend.Format do
         @spec minimum_grouping_digits_for(LanguageTag.t()) ::
                 {:ok, non_neg_integer} | {:error, {Exception.t(), String.t()}}
 
-        def minimum_grouping_digits_for(locale \\ Cldr.get_current_locale())
+        def minimum_grouping_digits_for(locale \\ unquote(backend).get_current_locale())
 
-        for locale_name <- Cldr.Config.known_locale_names() do
+        for locale_name <- Cldr.Config.known_locale_names(config) do
           locale_data =
             locale_name
             |> Cldr.Config.get_locale()

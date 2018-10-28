@@ -52,16 +52,16 @@ defmodule Cldr.Number.Backend.Symbol do
 
         """
         @spec number_symbols_for(LanguageTag.t() | Locale.locale_name()) :: Keyword.t()
-        def number_symbols_for(locale \\ Cldr.get_current_locale())
+        def number_symbols_for(locale \\ unquote(backend).get_current_locale())
 
-        for locale <- Cldr.Config.known_locale_names() do
+        for locale <- Cldr.Config.known_locale_names(config) do
           symbols =
             locale
             |> Cldr.Config.get_locale()
             |> Map.get(:number_symbols)
             |> Enum.map(fn
               {k, nil} -> {k, nil}
-              {k, v} -> {k, struct(@struct, v)}
+              {k, v} -> {k, struct(Cldr.Number.Symbol, v)}
             end)
             |> Enum.into(%{})
 
@@ -71,13 +71,13 @@ defmodule Cldr.Number.Backend.Symbol do
         end
 
         def number_symbols_for(locale_name) when is_binary(locale_name) do
-          with {:ok, locale} <- Cldr.validate_locale(locale_name) do
+          with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             number_symbols_for(locale)
           end
         end
 
         def number_symbols_for(locale) do
-          {:error, Locale.locale_error(locale)}
+          {:error, Cldr.Locale.locale_error(locale)}
         end
       end
     end

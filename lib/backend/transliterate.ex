@@ -5,7 +5,7 @@ defmodule Cldr.Number.Backend.Transliterate do
     config = Macro.escape(config)
 
     quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
-      defmodule Transliterate do
+      defmodule Number.Transliterate do
         @moduledoc """
         Transliteration for digits and separators.
 

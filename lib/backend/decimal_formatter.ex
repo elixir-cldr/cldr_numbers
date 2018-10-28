@@ -5,15 +5,8 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
     config = Macro.escape(config)
 
     quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
-      defmodule Formatter.Decimal do
+      defmodule Number.Formatter.Decimal do
         @moduledoc false
-
-        import Cldr.Number.Symbol, only: [number_symbols_for: 2]
-        import Cldr.Math, only: [power_of_10: 1]
-
-        alias Cldr.{Currency, Number, Math, Digits}
-        alias Cldr.Number.Format
-        alias Cldr.Number.Format.Compiler
 
         @doc """
         Formats a number according to a decimal format string.
@@ -27,17 +20,20 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
         * `options` is a map of options.  See `Cldr.Number.to_string/2` for further information.
 
         """
+        alias Cldr.Number.Format.Compiler
+        alias Cldr.Number.Formatter.Decimal
+
         @spec to_string(Math.number(), String.t(), Map.t()) ::
                 {:ok, String.t()} | {:error, {atom, String.t()}}
         def to_string(number, format, options)
 
         # Precompile the known formats and build the formatting pipeline
         # specific to this format thereby optimizing the performance.
-        for format <- unquote(backend).Number.Format.decimal_format_list() do
+        for format <- Number.Format.decimal_format_list() do
           case Compiler.compile(format) do
             {:ok, meta, formatting_pipeline} ->
               def to_string(number, unquote(format), options) when is_map(options) do
-                meta = update_meta(unquote(Macro.escape(meta)), number, options)
+                meta = Decimal.update_meta(unquote(Macro.escape(meta)), number, unquote(backend), options)
                 unquote(formatting_pipeline)
               end
 
@@ -53,8 +49,8 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
         def to_string(number, format, options) when is_map(options) do
           case Compiler.compile(format) do
             {:ok, meta, _pipeline} ->
-              meta = update_meta(meta, number, options)
-              do_to_string(number, meta, unquote(backend), options)
+              meta = Decimal.update_meta(meta, number, unquote(backend), options)
+              Decimal.do_to_string(number, meta, unquote(backend), options)
 
             {:error, message} ->
               {:error, {Cldr.FormatCompileError, message}}

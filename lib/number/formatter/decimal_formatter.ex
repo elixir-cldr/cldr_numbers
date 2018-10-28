@@ -45,7 +45,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   @doc false
-  def update_meta(meta, number, options, backend) do
+  def update_meta(meta, number, backend, options) do
     meta
     |> adjust_fraction_for_currency(options[:currency], options[:currency_digits], backend)
     |> adjust_fraction_for_significant_digits(number)

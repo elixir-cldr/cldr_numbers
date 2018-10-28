@@ -28,7 +28,7 @@ defmodule Cldr.Number.Backend.System do
         @spec number_systems_for(Locale.name() | LanguageTag.t()) :: Map.t()
         def number_systems_for(locale)
 
-        for locale_name <- Cldr.Config.known_locale_names(backend) do
+        for locale_name <- Cldr.Config.known_locale_names(config) do
           systems =
             locale_name
             |> Cldr.Config.get_locale()

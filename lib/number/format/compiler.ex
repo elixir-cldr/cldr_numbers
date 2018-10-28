@@ -238,13 +238,9 @@ defmodule Cldr.Number.Format.Compiler do
   that are required we produce an optimal code path.
   """
   def formatting_pipeline(meta) do
-    # |> stage_if_not(:round_fractional_digits, match?(%{fractional_digits: %{max: 0, min: 0}}, meta))
     first_stage(:absolute_value)
     |> stage_if_not(:multiply_by_factor, match?(%{multiplier: 1}, meta))
-    |> stage_if_not(
-      :round_to_significant_digits,
-      match?(%{significant_digits: %{min: 0, max: 0}}, meta)
-    )
+    |> stage_if_not(:round_to_significant_digits, match?(%{significant_digits: %{min: 0, max: 0}}, meta))
     |> stage_if_not(:round_to_nearest, match?(%{rounding: 0}, meta))
     |> stage(:set_exponent)
     |> stage(:round_fractional_digits)
@@ -252,22 +248,22 @@ defmodule Cldr.Number.Format.Compiler do
     |> stage(:adjust_leading_zeros)
     |> stage(:adjust_trailing_zeros)
     |> stage_if_not(:set_max_integer_digits, match?(%{integer_digits: %{max: 0}}, meta))
-    |> stage_if_not(
-      :apply_grouping,
-      match?(%{grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}}}, meta)
-    )
+    |> stage_if_not(:apply_grouping, match?(%{grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}}}, meta))
     |> stage(:reassemble_number_string)
     |> stage(:transliterate)
     |> stage(:assemble_format)
   end
 
   defp first_stage(fun) do
-    quote context: Cldr.Number.Formatter.Decimal,
-          do: unquote(fun)(var!(number), var!(meta), var!(options))
+    quote context: Cldr.Number.Formatter.Decimal do
+      unquote(fun)(var!(number), var!(meta), var!(backend), var!(options))
+    end
   end
 
   defp stage(fun) do
-    quote context: Cldr.Number.Formatter.Decimal, do: unquote(fun)(var!(meta), var!(options))
+    quote context: Cldr.Number.Formatter.Decimal do
+      unquote(fun)(var!(meta), var!(backend), var!(options))
+    end
   end
 
   defp stage(pipeline, fun) do
@@ -291,7 +287,7 @@ defmodule Cldr.Number.Format.Compiler do
       {:ok, _meta, stages} ->
         {_, pipe} =
           Macro.prewalk(stages, [], fn {name, _, _} = t, acc ->
-            if name not in [:var!, :meta, :options, :number] do
+            if name not in [:var!, :meta, :options, :backend, :number] do
               {t, [name | acc]}
             else
               {t, acc}

@@ -5,7 +5,7 @@ defmodule Cldr.Number.Backend.Rbnf do
     config = Macro.escape(config)
 
     quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
-      defmodule Rbnf.NumberSystem do
+      defmodule Number.Rbnf.NumberSystem do
         @moduledoc """
         Functions to implement the number system rule-based-number-format rules of CLDR.
 
@@ -36,10 +36,10 @@ defmodule Cldr.Number.Backend.Rbnf do
         import Kernel, except: [and: 2]
         use Cldr.Rbnf.Processor
 
-        define_rules(:NumberingSystemRules, unquote(backend), __ENV__)
+        define_rules(:NumberingSystemRules, backend, __ENV__)
       end
 
-      defmodule Rbnf.Spellout do
+      defmodule Number.Rbnf.Spellout do
         @moduledoc """
         Functions to implement the spellout rule-based-number-format rules of CLDR.
 
@@ -70,7 +70,7 @@ defmodule Cldr.Number.Backend.Rbnf do
         import Kernel, except: [and: 2]
         use Cldr.Rbnf.Processor
 
-        define_rules(:SpelloutRules, unquote(backend), __ENV__)
+        define_rules(:SpelloutRules, backend, __ENV__)
 
         # Default function to prevent compiler warnings in Cldr.Number
         def spellout_cardinal_verbose(_number, locale) do
@@ -82,7 +82,7 @@ defmodule Cldr.Number.Backend.Rbnf do
         end
       end
 
-      defmodule Cldr.Rbnf.Ordinal do
+      defmodule Number.Rbnf.Ordinal do
         @moduledoc """
         Functions to implement the ordinal rule-based-number-format rules of CLDR.
 
@@ -111,7 +111,7 @@ defmodule Cldr.Number.Backend.Rbnf do
         import Kernel, except: [and: 2]
         use Cldr.Rbnf.Processor
 
-        define_rules(:OrdinalRules, unquote(backend), __ENV__)
+        define_rules(:OrdinalRules, backend, __ENV__)
       end
     end
   end
