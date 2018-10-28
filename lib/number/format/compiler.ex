@@ -92,7 +92,6 @@ defmodule Cldr.Number.Format.Compiler do
   """
 
   import Kernel, except: [length: 1]
-  import Cldr.Macros, only: [docp: 1]
 
   # Placeholders in a pattern that will be replaces with
   # locale specific symbols at run time.  There is a later
@@ -306,12 +305,10 @@ defmodule Cldr.Number.Format.Compiler do
     end
   end
 
-  docp """
-  Extract the metadata from the format.
-
-  The metadata is used to generate the formatted output.  A numeric format
-  is optional and in such cases no analysis is required.
-  """
+  # Extract the metadata from the format.
+  #
+  # The metadata is used to generate the formatted output.  A numeric format
+  # is optional and in such cases no analysis is required.
 
   defp analyze(format) do
     do_analyse(format, format[:positive][:format])
@@ -358,9 +355,7 @@ defmodule Cldr.Number.Format.Compiler do
     end
   end
 
-  docp """
-  Extract how many integer digits are to be displayed.
-  """
+  # Extract how many integer digits are to be displayed.
 
   @digits_match Regex.compile!("(?<digits>" <> @digits <> "+)")
   defp required_integer_digits(%{"compact_integer" => integer_format}) do
@@ -373,12 +368,10 @@ defmodule Cldr.Number.Format.Compiler do
 
   defp required_integer_digits(_), do: @min_integer_digits
 
-  docp """
-  If the pattern starts with a non-digit then its no limit on integer
-  digits.  If the pattern starts with a digit then the maximum number
-  of digits is the length of the integer pattern.  We can assume there
-  are no '#' after digits since thats not permitted by the parser.
-  """
+  # If the pattern starts with a non-digit then its no limit on integer
+  # digits.  If the pattern starts with a digit then the maximum number
+  # of digits is the length of the integer pattern.  We can assume there
+  # are no '#'after digits since thats not permitted by the parser.
 
   @first_is_digit Regex.compile!("^" <> @digits)
   defp max_integer_digits(%{"compact_integer" => integer_format}) do
@@ -391,9 +384,7 @@ defmodule Cldr.Number.Format.Compiler do
 
   defp max_integer_digits(_), do: @max_integer_digits
 
-  docp """
-  Extract how many fraction digits must be displayed.
-  """
+  # Extract how many fraction digits must be displayed.
 
   defp required_fraction_digits(%{"compact_fraction" => nil}), do: 0
 
@@ -407,9 +398,7 @@ defmodule Cldr.Number.Format.Compiler do
 
   defp required_fraction_digits(_), do: @min_fraction_digits
 
-  docp """
-  Extract how many additional fraction digits may be displayed.
-  """
+  # Extract how many additional fraction digits may be displayed.
 
   @hashes_match Regex.compile!("(?<hashes>[" <> @digit_omit_zeroes <> "]+)")
   defp optional_fraction_digits(%{"compact_fraction" => ""}), do: 0
@@ -424,9 +413,7 @@ defmodule Cldr.Number.Format.Compiler do
 
   defp optional_fraction_digits(_), do: 0
 
-  docp """
-  Extract the exponent from the format
-  """
+  # Extract the exponent from the format
 
   defp exponent_digits(%{"exponent_digits" => ""}), do: 0
 
@@ -436,19 +423,15 @@ defmodule Cldr.Number.Format.Compiler do
 
   defp exponent_digits(_), do: 0
 
-  docp """
-  Extract whether a + sign was given the format exponent
-  """
+  # Extract whether a + sign was given the format exponent
 
   def exponent_sign(%{"exponent_sign" => ""}), do: false
   def exponent_sign(%{"exponent_sign" => _exponent_sign}), do: true
   def exponent_sign(_), do: false
 
-  docp """
-  Extract the number of significant digits to round the mantissa
-  to.  If we've already calculated a significant digits number
-  using the "@@###" form then we'll use that instead.
-  """
+  # Extract the number of significant digits to round the mantissa
+  # to.  If we've already calculated a significant digits number
+  # usingthe "@@###" form then we'll use that instead.
 
   @scientific_match Regex.compile!("(?<scientific_rounding>0[0#]*)?")
   defp scientific_rounding(%{"exponent_digits" => ""}), do: 0
@@ -468,44 +451,42 @@ defmodule Cldr.Number.Format.Compiler do
 
   defp scientific_rounding(_), do: 0
 
-  docp """
-  Extract the padding length of the format.
-
-  Patterns support padding the result to a specific width. In a pattern the pad
-  escape character, followed by a single pad character, causes padding to be
-  parsed and formatted. The pad escape character is '*'. For example,
-  "$*x#,##0.00" formats 123 to "$xx123.00" , and 1234 to "$1,234.00" .
-
-  When padding is in effect, the width of the positive subpattern, including
-  prefix and suffix, determines the format width. For example, in the pattern
-  "* #0 o''clock", the format width is 10.
-
-  Some parameters which usually do not matter have meaning when padding is
-  used, because the pattern width is significant with padding. In the pattern
-  "* ##,##,#,##0.##", the format width is 14. The initial characters "##,##,"
-  do not affect the grouping size or maximum integer digits, but they do affect
-  the format width.
-
-  Padding may be inserted at one of four locations: before the prefix, after
-  the prefix, before the suffix, or after the suffix. No padding can be
-  specified in any other location. If there is no prefix, before the prefix and
-  after the prefix are equivalent, likewise for the suffix. When specified in a
-  pattern, the code point immediately following the pad escape is the pad
-  character. This may be any character, including a special pattern character.
-  That is, the pad escape escapes the following character. If there is no
-  character after the pad escape, then the pattern is illegal.
-
-  This function determines the length of the pattern against which we pad if
-  required.  Although the padding length is considered to be the sum of the
-  prefix, format and suffix the reality is that prefix and suffix also fill
-  part of the format so the padding length is really only the length of the
-  format itself, not including any quote marks that escape characters. Then
-  we need to consider any padding applicable to the currency format.
-
-  The currency placeholder is between 1 and 5 characters.  The substitution can
-  be between 1 and an arbitrarily sized string.  Worse, we don't know the
-  substitution until runtime so we can't precalculate it.
-  """
+  # Extract the padding length of the format.
+  #
+  # Patterns support padding the result to a specific width. In a pattern the pad
+  # escape character, followed by a single pad character, causes padding to be
+  # parsed and formatted. The pad escape character is '*'. For example,
+  # "$*x#,##0.00" formats 123 to "$xx123.00" , and 1234 to "$1,234.00" .
+  #
+  # When padding is in effect, the width of the positive subpattern, including
+  # prefix and suffix, determines the format width. For example, in the pattern
+  # "* #0 o''clock", the format width is 10.
+  #
+  # Some parameters which usually do not matter have meaning when padding is
+  # used, because the pattern width is significant with padding. In the pattern
+  # "* ##,##,#,##0.##", the format width is 14. The initial characters "##,##,"
+  # do not affect the grouping size or maximum integer digits, but they do affect
+  # the format width.
+  #
+  # Padding may be inserted at one of four locations: before the prefix, after
+  # the prefix, before the suffix, or after the suffix. No padding can be
+  # specified in any other location. If there is no prefix, before the prefix and
+  # after the prefix are equivalent, likewise for the suffix. When specified in a
+  # pattern, the code point immediately following the pad escape is the pad
+  # character. This may be any character, including a special pattern character.
+  # That is, the pad escape escapes the following character. If there is no
+  # character after the pad escape, then the pattern is illegal.
+  #
+  # This function determines the length of the pattern against which we pad if
+  # required.  Although the padding length is considered to be the sum of the
+  # prefix, format and suffix the reality is that prefix and suffix also fill
+  # part of the format so the padding length is really only the length of the
+  # format itself, not including any quote marks that escape characters. Then
+  # we need to consider any padding applicable to the currency format.
+  #
+  # The currency placeholder is between 1 and 5 characters.  The substitution can
+  # be between 1 and an arbitrarily sized string.  Worse, we don't know the
+  # substitution until runtime so we can't precalculate it.
 
   defp padding_length(nil, _format) do
     0
@@ -515,20 +496,16 @@ defmodule Cldr.Number.Format.Compiler do
     String.length(format[:positive][:format])
   end
 
-  docp """
-  The pad character to be applied if padding is in effect.
-  """
+  # The pad character to be applied if padding is in effect.
 
   def padding_char(format) do
     format[:positive][:pad] || @default_pad_char
   end
 
-  docp """
-  Return a scale factor depending on the format mask.
-
-  We multiply the number by a scale factor if the format
-  has a percent or permille symbol.
-  """
+  # Return a scale factor depending on the format mask.
+  #
+  # We multiply the number by a scale factor if the format
+  # has a percent or permille symbol.
 
   defp multiplier(format) do
     cond do
@@ -538,12 +515,10 @@ defmodule Cldr.Number.Format.Compiler do
     end
   end
 
-  docp """
-  Return the size of the groupings (first and rest) for the format.
-
-  An integer format may have zero, one or two groupings - any others
-  are ignored. A fraction format may have one group only.
-  """
+  # Return the size of the groupings (first and rest) for the format.
+  #
+  # An integer format may have zero, one or two groupings - any others
+  # are ignored. A fraction format may have one group only.
 
   defp grouping(%{"integer" => integer_format, "fraction" => fraction_format}) do
     %{integer: integer_grouping(integer_format), fraction: fraction_grouping(fraction_format)}
@@ -556,9 +531,7 @@ defmodule Cldr.Number.Format.Compiler do
     }
   end
 
-  docp """
-  Extract the integer grouping
-  """
+  # Extract the integer grouping
 
   defp integer_grouping(format) do
     [_drop | groups] = String.split(format, @grouping_separator)
@@ -581,9 +554,7 @@ defmodule Cldr.Number.Format.Compiler do
     end
   end
 
-  docp """
-  Extract the fraction grouping
-  """
+  # Extract the fraction grouping
 
   defp fraction_grouping(format) do
     [group | _drop] = String.split(format, @grouping_separator)
@@ -596,66 +567,64 @@ defmodule Cldr.Number.Format.Compiler do
     end
   end
 
-  docp """
-  Extracts the significant digit metrics from the format.
-
-  There are two ways of controlling how many digits are shows: (a) significant
-  digits counts, or (b) integer and fraction digit counts. Integer and fraction
-  digit counts are described above. When a formatter is using significant
-  digits counts, it uses however many integer and fraction digits are required
-  to display the specified number of significant digits. It may ignore min/max
-  integer/fraction digits, or it may use them to the extent possible.
-
-  Significant Digits Examples
-
-  Pattern	| Min sign. digits  | Max sign. digits  | Number	  | Output
-  ------- | ----------------- | ----------------- | --------- | ------
-  @@@	    | 3	                | 3	                | 12345	    | 12300
-  @@@	    | 3	                | 3	                | 0.12345	  | 0.123
-  @@##	  | 2	                | 4	                | 3.14159	  | 3.142
-  @@##	  | 2	                | 4	                | 1.23004	  | 1.23
-
-  * In order to enable significant digits formatting, use a pattern containing
-    the '@' pattern character.
-
-  * In order to disable significant digits formatting, use a pattern that
-    does not contain the '@' pattern character.
-
-  * Significant digit counts may be expressed using patterns that specify a
-    minimum and maximum number of significant digits. These are indicated by
-    the '@' and '#' characters. The minimum number of significant digits is the
-    number of '@' characters. The maximum number of significant digits is the
-    number of '@' characters plus the number of '#' characters following on the
-    right. For example, the pattern "@@@" indicates exactly 3 significant
-    digits. The pattern "@##" indicates from 1 to 3 significant digits.
-    Trailing zero digits to the right of the decimal separator are suppressed
-    after the minimum number of significant digits have been shown. For
-    example, the pattern "@##" formats the number 0.1203 as "0.12".
-
-  * Implementations may forbid the use of significant digits in combination
-    with min/max integer/fraction digits. In such a case, if a pattern uses
-    significant digits, it may not contain a decimal separator, nor the '0'
-    pattern character. Patterns such as "@00" or "@.###" would be disallowed.
-
-    -> This implementation takes no special care with regard to mixing
-       significant digits and other formats.  Mixing formats
-       results in unspecified output.
-
-  * Any number of '#' characters may be prepended to the left of the
-    leftmost '@' character. These have no effect on the minimum and maximum
-    significant digits counts, but may be used to position grouping separators.
-    For example, "#,#@#" indicates a minimum of one significant digits, a
-    maximum of two significant digits, and a grouping size of three.
-
-  * The number of significant digits has no effect on parsing.
-
-  * Significant digits may be used together with exponential notation. Such
-    patterns are equivalent to a normal exponential pattern with a minimum and
-    maximum integer digit count of one, a minimum fraction digit count of
-    Minimum Significant Digits - 1, and a maximum fraction digit count of
-    Maximum Significant Digits - 1. For example, the pattern "@@###E0" is
-    equivalent to "0.0###E0".
-  """
+  # Extracts the significant digit metrics from the format.
+  #
+  # There are two ways of controlling how many digits are shows: (a) significant
+  # digits counts, or (b) integer and fraction digit counts. Integer and fraction
+  # digit counts are described above. When a formatter is using significant
+  # digits counts, it uses however many integer and fraction digits are required
+  # to display the specified number of significant digits. It may ignore min/max
+  # integer/fraction digits, or it may use them to the extent possible.
+  #
+  # Significant Digits Examples
+  #
+  # Pattern  | Min sign. digits  | Max sign. digits  | Number    | Output
+  # ------- | ----------------- | ----------------- | --------- | ------
+  # @@@      | 3                  | 3                  | 12345      | 12300
+  # @@@      | 3                  | 3                  | 0.12345    | 0.123
+  # @@##    | 2                  | 4                  | 3.14159    | 3.142
+  # @@##    | 2                  | 4                  | 1.23004    | 1.23
+  #
+  # * In order to enable significant digits formatting, use a pattern containing
+  #   the '@' pattern character.
+  #
+  # * In order to disable significant digits formatting, use a pattern that
+  #   does not contain the '@' pattern character.
+  #
+  # * Significant digit counts may be expressed using patterns that specify a
+  #   minimum and maximum number of significant digits. These are indicated by
+  #   the '@' and '#' characters. The minimum number of significant digits is the
+  #   number of '@' characters. The maximum number of significant digits is the
+  #   number of '@' characters plus the number of '#' characters following on the
+  #   right. For example, the pattern "@@@" indicates exactly 3 significant
+  #   digits. The pattern "@##" indicates from 1 to 3 significant digits.
+  #   Trailing zero digits to the right of the decimal separator are suppressed
+  #   after the minimum number of significant digits have been shown. For
+  #   example, the pattern "@##" formats the number 0.1203 as "0.12".
+  #
+  # * Implementations may forbid the use of significant digits in combination
+  #   with min/max integer/fraction digits. In such a case, if a pattern uses
+  #   significant digits, it may not contain a decimal separator, nor the '0'
+  #   pattern character. Patterns such as "@00" or "@.###" would be disallowed.
+  #
+  #   -> This implementation takes no special care with regard to mixing
+  #      significant digits and other formats.  Mixing formats
+  #      results in unspecified output.
+  #
+  # * Any number of '#' characters may be prepended to the left of the
+  #   leftmost '@' character. These have no effect on the minimum and maximum
+  #   significant digits counts, but may be used to position grouping separators.
+  #   For example, "#,#@#" indicates a minimum of one significant digits, a
+  #   maximum of two significant digits, and a grouping size of three.
+  #
+  # * The number of significant digits has no effect on parsing.
+  #
+  # * Significant digits may be used together with exponential notation. Such
+  #   patterns are equivalent to a normal exponential pattern with a minimum and
+  #   maximum integer digit count of one, a minimum fraction digit count of
+  #   Minimum Significant Digits - 1, and a maximum fraction digit count of
+  #   Maximum Significant Digits - 1. For example, the pattern "@@###E0" is
+  #   equivalent to "0.0###E0".
 
   # Build up the regex to extract the '@' and following '#' from the pattern
   @min_significant_digits "(?<ats>" <> @significant_digit <> "+)"
@@ -683,43 +652,41 @@ defmodule Cldr.Number.Format.Compiler do
 
   defp significant_digits(_), do: %{min: 0, max: 0}
 
-  docp """
-  Extract the rounding value from a format.
-
-  Patterns support rounding to a specific increment. For example, 1230 rounded
-  to the nearest 50 is 1250. Mathematically, rounding to specific increments is
-  performed by dividing by the increment, rounding to an integer, then
-  multiplying by the increment. To take a more bizarre example, 1.234 rounded
-  to the nearest 0.65 is 1.3, as follows:
-
-  | Original:                       | 1.234     |
-  | Divide by increment (0.65):     | 1.89846…  |
-  | Round:                          | 2         |
-  | Multiply by increment (0.65):   | 1.3       |
-
-  To specify a rounding increment in a pattern, include the increment in the
-  pattern itself. "#,#50" specifies a rounding increment of 50. "#,##0.05"
-  specifies a rounding increment of 0.05.
-
-  * Rounding only affects the string produced by formatting. It does not affect
-    parsing or change any numerical values.
-
-  * An implementation may allow the specification of a rounding mode to
-    determine how values are rounded. In the absence of such choices, the
-    default is to round "half-even", as described in IEEE arithmetic. That is,
-    it rounds towards the "nearest neighbor" unless both neighbors are
-    equidistant, in which case, it rounds towards the even neighbor. Behaves as
-    for round "half-up" if the digit to the left of the discarded fraction is
-    odd; behaves as for round "half-down" if it's even. Note that this is the
-    rounding mode that minimizes cumulative error when applied repeatedly over
-    a sequence of calculations.
-
-  * Some locales use rounding in their currency formats to reflect the smallest
-    currency denomination.
-
-  * In a pattern, digits '1' through '9' specify rounding, but otherwise
-    behave identically to digit '0'.
-  """
+  # Extract the rounding value from a format.
+  #
+  # Patterns support rounding to a specific increment. For example, 1230 rounded
+  # to the nearest 50 is 1250. Mathematically, rounding to specific increments is
+  # performed by dividing by the increment, rounding to an integer, then
+  # multiplying by the increment. To take a more bizarre example, 1.234 rounded
+  # to the nearest 0.65 is 1.3, as follows:
+  #
+  # | Original:                       | 1.234     |
+  # | Divide by increment (0.65):     | 1.89846…  |
+  # | Round:                          | 2         |
+  # | Multiply by increment (0.65):   | 1.3       |
+  #
+  # To specify a rounding increment in a pattern, include the increment in the
+  # pattern itself. "#,#50" specifies a rounding increment of 50. "#,##0.05"
+  # specifies a rounding increment of 0.05.
+  #
+  # * Rounding only affects the string produced by formatting. It does not affect
+  #   parsing or change any numerical values.
+  #
+  # * An implementation may allow the specification of a rounding mode to
+  #   determine how values are rounded. In the absence of such choices, the
+  #   default is to round "half-even", as described in IEEE arithmetic. That is,
+  #   it rounds towards the "nearest neighbor" unless both neighbors are
+  #   equidistant, in which case, it rounds towards the even neighbor. Behaves as
+  #   for round "half-up" if the digit to the left of the discarded fraction is
+  #   odd; behaves as for round "half-down" if it's even. Note that this is the
+  #   rounding mode that minimizes cumulative error when applied repeatedly over
+  #   a sequence of calculations.
+  #
+  # * Some locales use rounding in their currency formats to reflect the smallest
+  #   currency denomination.
+  #
+  # * In a pattern, digits '1' through '9' specify rounding, but otherwise
+  #   behave identically to digit '0'.
 
   defp rounding(%{"integer" => integer_format, "fraction" => fraction_format}) do
     format =
@@ -752,9 +719,7 @@ defmodule Cldr.Number.Format.Compiler do
     @format
   end
 
-  docp """
-  Separate the format into the integer, fraction and exponent parts.
-  """
+  # Separate the format into the integer, fraction and exponent parts.
 
   defp split_format(nil) do
     %{}

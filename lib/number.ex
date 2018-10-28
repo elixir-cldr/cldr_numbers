@@ -81,13 +81,10 @@ defmodule Cldr.Number do
   possible.
   """
 
-  require Cldr
   alias Cldr.Number.Formatter
   alias Cldr.Number.Format.Compiler
   alias Cldr.Locale
   alias Cldr.Rbnf
-
-  import Cldr.Number.Format, only: [formats_for: 2]
 
   @type format_type ::
           :standard
@@ -285,14 +282,15 @@ defmodule Cldr.Number do
   """
   @spec to_string(number | Decimal.t, Keyword.t() | Map.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
-  def to_string(number, options \\ default_options()) do
+  def to_string(number, backend, options \\ []) do
     {format, options} =
-      options
+      backend.default_options()
+      |> Keyword.merge(options)
       |> normalize_options(default_options())
       |> detect_negative_number(number)
 
     with :ok <- currency_format_has_code(format, currency_format?(format), options[:currency]) do
-      case to_string(number, format, options) do
+      case to_string(number, format, backend, options) do
         {:error, reason} -> {:error, reason}
         string -> {:ok, string}
       end
@@ -318,15 +316,17 @@ defmodule Cldr.Number do
 
   ## Examples
 
-      iex> Cldr.Number.to_string! 12345
+      iex> Cldr.Number.to_string! 12345, TestBackend.Cldr
       "12,345"
 
-      iex> Cldr.Number.to_string! 12345, locale: Cldr.Locale.new!("fr")
+      iex> Cldr.Number.to_string! 12345, TestBackend.Cldr, locale: "fr"
       "12 345"
 
   """
-  @spec to_string!(number | Decimal.t(), Keyword.t() | Map.t()) :: String.t() | Exception.t()
-  def to_string!(number, options \\ default_options()) do
+  @spec to_string!(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
+    String.t() | Exception.t()
+
+  def to_string!(number, _backend, options \\ []) do
     case to_string(number, options) do
       {:error, {exception, message}} ->
         raise exception, message
@@ -336,21 +336,9 @@ defmodule Cldr.Number do
     end
   end
 
-  defp default_options do
-    [
-      format: :standard,
-      currency: nil,
-      currency_digits: :accounting,
-      minimum_grouping_digits: 0,
-      rounding_mode: :half_even,
-      number_system: :default,
-      locale: Cldr.get_current_locale()
-    ]
-  end
-
   # For ordinal numbers
   @format :digits_ordinal
-  defp to_string(number, :ordinal, options) do
+  defp to_string(number, :ordinal, _backend, options) do
     rule_sets = Cldr.Rbnf.Ordinal.rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
@@ -362,7 +350,7 @@ defmodule Cldr.Number do
 
   # For spellout numbers
   @format :spellout_cardinal
-  defp to_string(number, :spellout, options) do
+  defp to_string(number, :spellout, _backend, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
@@ -373,7 +361,7 @@ defmodule Cldr.Number do
   end
 
   # For spellout numbers
-  defp to_string(number, :spellout_numbering = format, options) do
+  defp to_string(number, :spellout_numbering = format, _backend, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
@@ -385,7 +373,7 @@ defmodule Cldr.Number do
 
   # For spellout numbers
   @format :spellout_cardinal_verbose
-  defp to_string(number, :spellout_verbose, options) do
+  defp to_string(number, :spellout_verbose, _backend, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
@@ -397,7 +385,7 @@ defmodule Cldr.Number do
 
   # For spellout years
   @format :spellout_numbering_year
-  defp to_string(number, :spellout_year, options) do
+  defp to_string(number, :spellout_year, _backend, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
@@ -408,7 +396,7 @@ defmodule Cldr.Number do
   end
 
   # For spellout ordinal
-  defp to_string(number, :spellout_ordinal = format, options) do
+  defp to_string(number, :spellout_ordinal = format, _backend, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
@@ -419,7 +407,7 @@ defmodule Cldr.Number do
   end
 
   # For spellout ordinal verbose
-  defp to_string(number, :spellout_ordinal_verbose = format, options) do
+  defp to_string(number, :spellout_ordinal_verbose = format, _backend, options) do
     rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
@@ -430,39 +418,39 @@ defmodule Cldr.Number do
   end
 
   # For Roman numerals
-  @root_locale Locale.new!("root")
-  defp to_string(number, :roman, _options) do
+  @root_locale Cldr.Config.get_locale("root")
+  defp to_string(number, :roman, backend, _options) do
     Cldr.Rbnf.NumberSystem.roman_upper(number, @root_locale)
   end
 
-  defp to_string(number, :roman_lower, _options) do
+  defp to_string(number, :roman_lower, backend, _options) do
     Cldr.Rbnf.NumberSystem.roman_lower(number, @root_locale)
   end
 
   # For the :currency_long format only
-  defp to_string(number, :currency_long = format, options) do
+  defp to_string(number, :currency_long = format, backend, options) do
     Formatter.Currency.to_string(number, format, options)
   end
 
   # For all other short formats
-  defp to_string(number, format, options)
+  defp to_string(number, format, backend, options)
        when is_atom(format) and format in @short_format_styles do
     Formatter.Short.to_string(number, format, options)
   end
 
   # For all other formats
-  defp to_string(number, format, options) when is_binary(format) do
+  defp to_string(number, format, backend, options) when is_binary(format) do
     Formatter.Decimal.to_string(number, format, options)
   end
 
   # For all other formats.  The known atom-based formats are described
   # above so this must be a format name expected to be defined by a
   # locale but its not there.
-  defp to_string(_number, {:error, _} = error, _options) do
+  defp to_string(_number, {:error, _} = error, backend, _options) do
     error
   end
 
-  defp to_string(_number, format, options) when is_atom(format) do
+  defp to_string(_number, format, backend, options) when is_atom(format) do
     cldr_locale_name = Map.get(options[:locale], :cldr_locale_name)
 
     {

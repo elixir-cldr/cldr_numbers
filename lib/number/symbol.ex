@@ -28,15 +28,15 @@ defmodule Cldr.Number.Symbol do
   Returns a map of `Cldr.Number.Symbol.t` structs of the number symbols for each
   of the number systems of a locale.
 
-  ## Options
+  ## Arguments
 
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
-    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`.  The
-    default is `Cldr.get_current_locale/0`.
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`.  The
+    default is `Cldr.get_current_locale/1`.
 
   ## Example:
 
-      iex> Cldr.Number.Symbol.number_symbols_for("th")
+      iex> Cldr.Number.Symbol.number_symbols_for("th", TestBackend.Cldr)
       {:ok, %{
          latn: %Cldr.Number.Symbol{
            decimal: ".",
@@ -69,43 +69,20 @@ defmodule Cldr.Number.Symbol do
        }}
 
   """
-  @spec number_symbols_for(LanguageTag.t() | Locale.locale_name()) :: Keyword.t()
-  def number_symbols_for(locale \\ Cldr.get_current_locale())
-
-  for locale <- Cldr.Config.known_locale_names() do
-    symbols =
-      locale
-      |> Cldr.Config.get_locale()
-      |> Map.get(:number_symbols)
-      |> Enum.map(fn
-        {k, nil} -> {k, nil}
-        {k, v} -> {k, struct(@struct, v)}
-      end)
-      |> Enum.into(%{})
-
-    def number_symbols_for(%LanguageTag{cldr_locale_name: unquote(locale)}) do
-      {:ok, unquote(Macro.escape(symbols))}
-    end
+  @spec number_symbols_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) :: Keyword.t()
+  def number_symbols_for(locale, backend) do
+    backend.number_symbols_for(locale)
   end
 
-  def number_symbols_for(locale_name) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name) do
-      number_symbols_for(locale)
-    end
-  end
-
-  def number_symbols_for(locale) do
-    {:error, Locale.locale_error(locale)}
-  end
 
   @doc """
   Returns the number sysbols for a specific locale and number system.
 
   ## Options
 
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
-    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`.  The
-    default is `Cldr.get_current_locale/0`.
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`.  The
+    default is `Cldr.get_current_locale/1`.
 
   * `number_system` is any number system name returned by
     `Cldr.known_number_systems/0` or a number system type
@@ -113,7 +90,7 @@ defmodule Cldr.Number.Symbol do
 
   ## Example
 
-      iex> Cldr.Number.Symbol.number_symbols_for("th", "thai")
+      iex> Cldr.Number.Symbol.number_symbols_for("th", "thai", TestBackend.Cldr)
       {:ok, %Cldr.Number.Symbol{
          decimal: ".",
          exponential: "E",
@@ -130,21 +107,21 @@ defmodule Cldr.Number.Symbol do
        }}
 
   """
-  @spec number_symbols_for(LanguageTag.t() | Locale.locale_name(), System.system_name()) ::
+  @spec number_symbols_for(LanguageTag.t() | Locale.locale_name(), System.system_name(), Cldr.backend()) ::
           {:ok, Map.t()} | {:error, {Cldr.NoNumberSymbols, String.t()}}
 
-  def number_symbols_for(%LanguageTag{} = locale, number_system) do
+  def number_symbols_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, system_name} <- Number.System.system_name_from(number_system, locale),
-         {:ok, symbols} <- number_symbols_for(locale) do
+         {:ok, symbols} <- number_symbols_for(locale, backend) do
       symbols
       |> Map.get(system_name)
       |> symbols_return(locale, number_system)
     end
   end
 
-  def number_symbols_for(locale_name, number_system) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name) do
-      number_symbols_for(locale, number_system)
+  def number_symbols_for(locale_name, number_system, backend) when is_binary(locale_name) do
+    with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
+      number_symbols_for(locale, number_system, backend)
     end
   end
 

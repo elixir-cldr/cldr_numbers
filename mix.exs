@@ -1,7 +1,7 @@
 defmodule CldrNumbers.Mixfile do
   use Mix.Project
 
-  @version "1.6.0"
+  @version "2.0.0-rc.0"
 
   def project do
     [
@@ -16,7 +16,8 @@ defmodule CldrNumbers.Mixfile do
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
-      package: package()
+      package: package(),
+      cldr_provider: {Cldr.Number.Backend, :define_number_modules, []}
     ]
   end
 
@@ -34,10 +35,9 @@ defmodule CldrNumbers.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 1.8"},
-      {:ex_cldr_currencies, "~> 1.1"},
+      {:ex_cldr, path: "../cldr"},
+      {:ex_cldr_currencies, path: "../cldr_currencies"},
       {:decimal, "~> 1.4"},
-      {:poison, "~> 2.1 or ~> 3.1", optional: true},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.18", only: :dev, optional: true}
     ]

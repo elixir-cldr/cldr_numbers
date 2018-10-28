@@ -17,7 +17,6 @@ defmodule Cldr.Rbnf do
   there are rbnf rules defined.
   """
 
-  require Cldr
   alias Cldr.Locale
   alias Cldr.LanguageTag
 

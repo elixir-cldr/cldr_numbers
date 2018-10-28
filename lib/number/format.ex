@@ -63,8 +63,8 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      Cldr.Number.Format.decimal_format_list ["#", "#,##,##0%",
-      #=> "#,##,##0.###", "#,##,##0.00¤", "#,##,##0.00¤;(#,##,##0.00¤)",
+      => Cldr.Number.Format.decimal_format_list(TestBackend.Cldr)
+      ["#", "#,##,##0%", "#,##,##0.###", "#,##,##0.00¤", "#,##,##0.00¤;(#,##,##0.00¤)",
       "#,##,##0 %", "#,##0%", "#,##0.###", "#,##0.00 ¤",
       "#,##0.00 ¤;(#,##0.00 ¤)", "#,##0.00¤", "#,##0.00¤;(#,##0.00¤)",
       "#,##0 %", "#0%", "#0.######", "#0.00 ¤", "#E0", "%#,##0", "% #,##0",
@@ -76,24 +76,16 @@ defmodule Cldr.Number.Format do
       "000 Tr ¤", ...]
 
   """
-  format_list =
-    Cldr.Config.known_locale_names()
-    |> Enum.map(&Cldr.Config.decimal_formats_for/1)
-    |> Kernel.++(Cldr.Config.get_precompile_number_formats())
-    |> List.flatten()
-    |> Enum.uniq()
-    |> Enum.reject(&is_nil/1)
-    |> Enum.sort()
 
-  @spec decimal_format_list :: [format, ...]
-  def decimal_format_list do
-    unquote(Macro.escape(format_list))
+  @spec decimal_format_list(Cldr.backend()) :: [format, ...]
+  def decimal_format_list(backend) do
+    backend.decimal_format_list
   end
 
   @doc """
   Returns the list of decimal formats for a configured locale.
 
-  ## Options
+  ## Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
@@ -104,7 +96,7 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      iex> Cldr.Number.Format.decimal_format_list_for("en")
+      iex> Cldr.Number.Format.decimal_format_list_for("en", TestBackend.Cldr)
       {:ok, ["#,##0%", "#,##0.###", "#E0", "0 billion", "0 million", "0 thousand",
        "0 trillion", "00 billion", "00 million", "00 thousand", "00 trillion",
        "000 billion", "000 million", "000 thousand", "000 trillion", "000B", "000K",
@@ -113,27 +105,11 @@ defmodule Cldr.Number.Format do
        "¤000T", "¤00B", "¤00K", "¤00M", "¤00T", "¤0B", "¤0K", "¤0M", "¤0T"]}
 
   """
-  @spec decimal_format_list_for(LanguageTag.t() | Locale.locale_name()) ::
+  @spec decimal_format_list_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) ::
           {:ok, [String.t(), ...]} | {:error, {Exception.t(), String.t()}}
 
-  def decimal_format_list_for(locale \\ Cldr.get_current_locale())
-
-  for locale_name <- Cldr.Config.known_locale_names() do
-    decimal_formats = Cldr.Config.decimal_formats_for(locale_name)
-
-    def decimal_format_list_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
-      {:ok, unquote(Macro.escape(decimal_formats))}
-    end
-  end
-
-  def decimal_format_list_for(locale_name) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name) do
-      decimal_format_list_for(locale)
-    end
-  end
-
-  def decimal_format_list_for(locale) do
-    {:error, Locale.locale_error(locale)}
+  def decimal_format_list_for(locale, backend) do
+    backend.decimal_format_list_for(locale)
   end
 
   @doc """
@@ -169,10 +145,13 @@ defmodule Cldr.Number.Format do
          ....
         }}
   """
-  @spec all_formats_for(LanguageTag.t() | Locale.locale_name()) ::
+
+  @spec all_formats_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) ::
           {:ok, Map.t()} | {:error, {Exception.t(), String.t()}}
 
-  def all_formats_for(locale \\ Cldr.get_current_locale())
+  def all_formats_for(locale, backend) do
+    backend.all_formats_for(locale)
+  end
 
   @doc """
   Returns the minium grouping digits for a locale.
@@ -195,63 +174,22 @@ defmodule Cldr.Number.Format do
       {:ok, 1}
 
   """
-  @spec minimum_grouping_digits_for(LanguageTag.t()) ::
+  @spec minimum_grouping_digits_for(LanguageTag.t(), Cldr.backend()) ::
           {:ok, non_neg_integer} | {:error, {Exception.t(), String.t()}}
 
-  def minimum_grouping_digits_for(locale \\ Cldr.get_current_locale())
-
-  for locale_name <- Cldr.Config.known_locale_names() do
-    locale_data =
-      locale_name
-      |> Cldr.Config.get_locale()
-
-    number_formats =
-      locale_data
-      |> Map.get(:number_formats)
-      |> Enum.map(fn {type, format} -> {type, struct(@struct, format)} end)
-      |> Enum.into(%{})
-
-    minimum_grouping_digits =
-      locale_data
-      |> Map.get(:minimum_grouping_digits)
-
-    def all_formats_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
-      {:ok, unquote(Macro.escape(number_formats))}
-    end
-
-    def minimum_grouping_digits_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
-      {:ok, unquote(minimum_grouping_digits)}
-    end
+  def minimum_grouping_digits_for(locale, backend) do
+    backend.minimum_grouping_digits_for(locale)
   end
 
-  def all_formats_for(locale_name) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name) do
-      all_formats_for(locale)
-    end
-  end
-
-  def all_formats_for(%LanguageTag{} = locale) do
-    {:error, Locale.locale_error(locale)}
-  end
-
-  def minimum_grouping_digits_for(locale_name) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name) do
-      minimum_grouping_digits_for(locale)
-    end
-  end
-
-  def minimum_grouping_digits_for(%LanguageTag{} = locale) do
-    {:error, Locale.locale_error(locale)}
-  end
 
   @doc """
   Returns the decimal formats defined for a given locale.
 
-  ## Options
+  ## Arguments
 
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
-    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
+    is `Cldr.get_current_locale/1`
 
   ## Returns
 
@@ -262,17 +200,14 @@ defmodule Cldr.Number.Format do
   See `Cldr.Number.Format.all_formats_for/1` for further information.
 
   """
-  def all_formats_for!(locale) do
-    case all_formats_for(locale) do
-      {:ok, formats} -> formats
-      {:error, {exception, message}} -> raise exception, message
-    end
+  def all_formats_for!(locale, backend) do
+    backend.all_formats_for!(locale)
   end
 
   @doc """
   Returns the minium grouping digits for a locale or raises if there is an error.
 
-  ## Options
+  ## Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
@@ -287,11 +222,8 @@ defmodule Cldr.Number.Format do
       ** (Cldr.UnknownLocaleError) The locale :invalid is invalid
 
   """
-  def minimum_grouping_digits_for!(locale) do
-    case minimum_grouping_digits_for(locale) do
-      {:ok, digits} -> digits
-      {:error, {exception, message}} -> raise exception, message
-    end
+  def minimum_grouping_digits_for!(locale, backend) do
+    backend.minimum_grouping_digits_for!(locale)
   end
 
   @doc """
@@ -331,20 +263,19 @@ defmodule Cldr.Number.Format do
         }
 
   """
-  @spec formats_for(LanguageTag.t(), atom | String.t()) :: Map.t()
-  def formats_for(locale \\ Cldr.get_current_locale(), number_system \\ :default)
+  @spec formats_for(LanguageTag.t(), atom | String.t(), Cldr.backend()) :: Map.t()
 
-  def formats_for(%LanguageTag{} = locale, number_system) do
-    with {:ok, locale} <- Cldr.validate_locale(locale),
+  def formats_for(%LanguageTag{} = locale, number_system, backend) do
+    with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, system_name} <- System.system_name_from(number_system, locale),
-         {:ok, formats} <- all_formats_for(locale) do
+         {:ok, formats} <- all_formats_for(locale, backend) do
       {:ok, Map.get(formats, system_name)}
     end
   end
 
-  def formats_for(locale_name, number_system) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name) do
-      formats_for(locale, number_system)
+  def formats_for(locale_name, number_system, backend) when is_binary(locale_name) do
+    with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
+      formats_for(locale, number_system, backend)
     end
   end
 
@@ -362,11 +293,9 @@ defmodule Cldr.Number.Format do
     by `Cldr.Number.System.number_systems_for/1`
 
   """
-  @spec formats_for!(LanguageTag.t(), System.system_name()) :: Map.t() | none()
-  def formats_for!(locale \\ Cldr.get_current_locale(), number_system \\ :default)
-
-  def formats_for!(locale, number_system) do
-    case formats_for(locale, number_system) do
+  @spec formats_for!(LanguageTag.t(), System.system_name(), Cldr.backend()) :: Map.t() | none()
+  def formats_for!(locale, number_system, backend) do
+    case formats_for(locale, number_system, backend) do
       {:ok, formats} -> formats
       {:error, {exception, message}} -> raise exception, message
     end
@@ -398,14 +327,12 @@ defmodule Cldr.Number.Format do
       :decimal_long, :decimal_short, :percent, :scientific, :standard]}
 
   """
-  @spec format_styles_for(LanguageTag.t() | Locale.locale_name(), System.system_name()) :: [
+  @spec format_styles_for(LanguageTag.t() | Locale.locale_name(), System.system_name(), Cldr.backend()) :: [
           atom,
           ...
         ]
-  def format_styles_for(locale \\ Cldr.get_current_locale(), number_system \\ :default)
-
-  def format_styles_for(%LanguageTag{} = locale, number_system) do
-    with {:ok, formats} <- formats_for(locale, number_system) do
+  def format_styles_for(%LanguageTag{} = locale, number_system, backend) do
+    with {:ok, formats} <- formats_for(locale, number_system, backend) do
       {
         :ok,
         formats
@@ -417,9 +344,9 @@ defmodule Cldr.Number.Format do
     end
   end
 
-  def format_styles_for(locale_name, number_system) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name) do
-      format_styles_for(locale, number_system)
+  def format_styles_for(locale_name, number_system, backend) when is_binary(locale_name) do
+    with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
+      format_styles_for(locale, number_system, backend)
     end
   end
 
@@ -444,11 +371,9 @@ defmodule Cldr.Number.Format do
   @isnt_really_a_short_format [:currency_long]
   @short_formats MapSet.new(@short_format_styles -- @isnt_really_a_short_format)
 
-  @spec short_format_styles_for(LanguageTag.t(), binary | atom) :: [atom, ...]
-  def short_format_styles_for(locale \\ Cldr.get_current_locale(), number_system \\ :default)
-
-  def short_format_styles_for(%LanguageTag{} = locale, number_system) do
-    with {:ok, formats} <- format_styles_for(locale, number_system) do
+  @spec short_format_styles_for(LanguageTag.t(), binary | atom, Cldr.backend()) :: [atom, ...]
+  def short_format_styles_for(%LanguageTag{} = locale, number_system, backend) do
+    with {:ok, formats} <- format_styles_for(locale, number_system, backend) do
       {
         :ok,
         formats
@@ -459,9 +384,9 @@ defmodule Cldr.Number.Format do
     end
   end
 
-  def short_format_styles_for(locale_name, number_system) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name) do
-      short_format_styles_for(locale, number_system)
+  def short_format_styles_for(locale_name, number_system, backend) when is_binary(locale_name) do
+    with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
+      short_format_styles_for(locale, number_system, backend)
     end
   end
 
@@ -485,20 +410,19 @@ defmodule Cldr.Number.Format do
        :scientific, :standard]}
 
   """
-  @spec decimal_format_styles_for(LanguageTag.t() | Locale.locale_name(), System.system_name()) ::
+  @spec decimal_format_styles_for(LanguageTag.t() | Locale.locale_name(), System.system_name(), Cldr.backend()) ::
           [atom, ...]
-  def decimal_format_styles_for(locale \\ Cldr.get_current_locale(), number_system \\ :default)
 
-  def decimal_format_styles_for(%LanguageTag{} = locale, number_system) do
-    with {:ok, styles} <- format_styles_for(locale, number_system),
-         {:ok, short_styles} <- short_format_styles_for(locale, number_system) do
+  def decimal_format_styles_for(%LanguageTag{} = locale, number_system, backend) do
+    with {:ok, styles} <- format_styles_for(locale, number_system, backend),
+         {:ok, short_styles} <- short_format_styles_for(locale, number_system, backend) do
       {:ok, styles -- short_styles -- [:currency_long, :currency_spacing]}
     end
   end
 
-  def decimal_format_styles_for(locale_name, number_system) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name) do
-      decimal_format_styles_for(locale, number_system)
+  def decimal_format_styles_for(locale_name, number_system, backend) when is_binary(locale_name) do
+    with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
+      decimal_format_styles_for(locale, number_system, backend)
     end
   end
 

@@ -1,22 +1,21 @@
 defmodule Cldr.Number.Formatter.Decimal do
-  @moduledoc """
-  Formats a number according to a locale-specific predefined format or a user-defined format.
-
-  As a performance optimization, all decimal formats known at compile time are
-  compiled into function that roughly halves the time to format a number
-  compared to a non-precompiled format.
-
-  The available format styles for a locale can be returned by:
-
-      iex> Cldr.Number.Format.decimal_format_styles_for("en")
-      {:ok, [:accounting, :currency, :currency_long, :percent, :scientific, :standard]}
-
-  This allows a number to be formatted in a locale-specific way but using
-  a standard method of describing the purpose of the format.
-
-  **This module is not part of the public API and is subject
-  to change at any time.**
-  """
+  @moduledoc false
+  # Formats a number according to a locale-specific predefined format or a user-defined format.
+  #
+  # As a performance optimization, all decimal formats known at compile time are
+  # compiled into function that roughly halves the time to format a number
+  # compared to a non-precompiled format.
+  #
+  # The available format styles for a locale can be returned by:
+  #
+  #     iex> Cldr.Number.Format.decimal_format_styles_for("en")
+  #     {:ok, [:accounting, :currency, :currency_long, :percent, :scientific, :standard]}
+  #
+  # This allows a number to be formatted in a locale-specific way but using
+  # a standard method of describing the purpose of the format.
+  #
+  # **This module is not part of the public API and is subject
+  # to change at any time.**
 
   import Cldr.Number.Symbol, only: [number_symbols_for: 2]
   import Cldr.Math, only: [power_of_10: 1]
@@ -30,7 +29,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   @doc """
   Formats a number according to a decimal format string.
 
-  ## Options
+  ## Arguments
 
   * `number` is an integer, float or Decimal
 
@@ -41,39 +40,12 @@ defmodule Cldr.Number.Formatter.Decimal do
   """
   @spec to_string(Math.number(), String.t(), Map.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
-  def to_string(number, format, options)
-
-  # Precompile the known formats and build the formatting pipeline
-  # specific to this format thereby optimizing the performance.
-  for format <- Cldr.Number.Format.decimal_format_list() do
-    case Compiler.compile(format) do
-      {:ok, meta, formatting_pipeline} ->
-        def to_string(number, unquote(format), options) when is_map(options) do
-          meta = update_meta(unquote(Macro.escape(meta)), number, options)
-          unquote(formatting_pipeline)
-        end
-
-      {:error, message} ->
-        raise Cldr.FormatCompileError, "#{message} compiling #{inspect(format)}"
-    end
+  def to_string(number, format, backend, options) do
+    backend.to_string(number, format, options)
   end
 
-  # For formats not precompiled we need to compile first
-  # and then process. This will be slower than a compiled
-  # format since we have to (a) compile the format and (b)
-  # execute the full formatting pipeline.
-  def to_string(number, format, options) when is_map(options) do
-    case Compiler.compile(format) do
-      {:ok, meta, _pipeline} ->
-        meta = update_meta(meta, number, options)
-        do_to_string(number, meta, options)
-
-      {:error, message} ->
-        {:error, {Cldr.FormatCompileError, message}}
-    end
-  end
-
-  defp update_meta(meta, number, options) do
+  @doc false
+  def update_meta(meta, number, options) do
     meta
     |> adjust_fraction_for_currency(options[:currency], options[:currency_digits])
     |> adjust_fraction_for_significant_digits(number)
@@ -81,7 +53,8 @@ defmodule Cldr.Number.Formatter.Decimal do
     |> Map.put(:number, number)
   end
 
-  defp do_to_string(number, %{integer_digits: _integer_digits} = meta, options) do
+  @doc false
+  def do_to_string(number, %{integer_digits: _integer_digits} = meta, options) do
     number
     |> absolute_value(meta, options)
     |> multiply_by_factor(meta, options)
@@ -101,7 +74,8 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   # For when the format itself actually has only literal components
   # and no number format.
-  defp do_to_string(number, meta, options) do
+  @doc false
+  def do_to_string(number, meta, options) do
     assemble_format(number, meta, options)
   end
 
