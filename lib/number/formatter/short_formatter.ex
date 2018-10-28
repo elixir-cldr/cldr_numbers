@@ -43,7 +43,7 @@ defmodule Cldr.Number.Formatter.Short do
 
   alias Cldr.Math
   alias Cldr.Locale
-  alias Cldr.Number.{System, Format, Formatter, Cardinal}
+  alias Cldr.Number.{System, Format, Formatter}
 
   # Notes from Unicode TR35 on formatting short formats:
   #
@@ -63,23 +63,23 @@ defmodule Cldr.Number.Formatter.Short do
   # "0". The result is formatted according to the normal decimal pattern. With no
   # fractional digits, that yields "12 K".
 
-  def to_string(number, style, options) do
-    locale = options[:locale] || Cldr.get_current_locale()
+  def to_string(number, style, backend, options) do
+    locale = options[:locale] || backend.default_locale()
 
-    with {:ok, locale} <- Cldr.validate_locale(locale),
-         {:ok, number_system} <- System.system_name_from(options[:number_system], locale) do
-      short_format_string(number, style, locale, number_system, options)
+    with {:ok, locale} <- Cldr.validate_locale(locale, backend),
+         {:ok, number_system} <- System.system_name_from(options[:number_system], locale, backend) do
+      short_format_string(number, style, locale, number_system, backend, options)
     end
   end
 
-  @spec short_format_string(number, atom, Locale.name(), atom, Map.t()) :: List.t()
-  defp short_format_string(number, style, locale, number_system, options) do
-    case Format.formats_for(locale, number_system) do
+  @spec short_format_string(number, atom, Locale.name(), atom, Cldr.backend(), Map.t()) :: List.t()
+  defp short_format_string(number, style, locale, number_system, backend, options) do
+    case Format.formats_for(locale, number_system, backend) do
       {:ok, formats} ->
         formats = Map.get(formats, style)
 
         {number, format} =
-          case choose_short_format(number, formats, options) do
+          case choose_short_format(number, formats, backend, options) do
             {range, [format, number_of_zeros]} ->
               {normalise_number(number, range, number_of_zeros), format}
 
@@ -87,7 +87,7 @@ defmodule Cldr.Number.Formatter.Short do
               {number, format}
           end
 
-        Formatter.Decimal.to_string(number, format, digits(options, options[:fractional_digits]))
+        Formatter.Decimal.to_string(number, format, backend, digits(options, options[:fractional_digits]))
 
       {:error, _} = error ->
         error
@@ -104,16 +104,16 @@ defmodule Cldr.Number.Formatter.Short do
     options
   end
 
-  defp choose_short_format(number, _rules, options) when is_number(number) and number < 1000 do
+  defp choose_short_format(number, _rules, backend, options) when is_number(number) and number < 1000 do
     format =
       options[:locale]
-      |> Format.formats_for!(options[:number_system])
+      |> Format.formats_for!(options[:number_system], backend)
       |> Map.get(standard_or_currency(options))
 
     {number, format}
   end
 
-  defp choose_short_format(number, rules, options) when is_number(number) do
+  defp choose_short_format(number, rules, backend, options) when is_number(number) do
     [range, rule] =
       rules
       |> Enum.filter(fn [range, _rules] -> range <= number end)
@@ -125,14 +125,14 @@ defmodule Cldr.Number.Formatter.Short do
       |> trunc
       |> rem(range)
 
-    {range, Cardinal.pluralize(mod, options[:locale], rule)}
+    {range, Module.concat(backend, Number.Cardinal).pluralize(mod, options[:locale], rule)}
   end
 
-  defp choose_short_format(%Decimal{} = number, rules, options) do
+  defp choose_short_format(%Decimal{} = number, rules, backend, options) do
     number
     |> Decimal.round(0, :floor)
     |> Decimal.to_integer()
-    |> choose_short_format(rules, options)
+    |> choose_short_format(rules, backend, options)
   end
 
   defp standard_or_currency(options) do

@@ -267,7 +267,7 @@ defmodule Cldr.Number.Format do
 
   def formats_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
-         {:ok, system_name} <- System.system_name_from(number_system, locale),
+         {:ok, system_name} <- System.system_name_from(number_system, locale, backend),
          {:ok, formats} <- all_formats_for(locale, backend) do
       {:ok, Map.get(formats, system_name)}
     end
@@ -455,19 +455,18 @@ defmodule Cldr.Number.Format do
       {:ok, [:default, :native]}
 
   """
-  @spec format_system_types_for(LanguageTag.t()) :: [atom, ...]
-  def format_system_types_for(locale \\ Cldr.get_current_locale())
+  @spec format_system_types_for(LanguageTag.t(), Cldr.backend()) :: [atom, ...]
 
-  def format_system_types_for(%LanguageTag{} = locale) do
-    with {:ok, _} <- Cldr.validate_locale(locale) do
-      {:ok, systems} = System.number_systems_for(locale)
+  def format_system_types_for(%LanguageTag{} = locale, backend) do
+    with {:ok, _} <- Cldr.validate_locale(locale, backend) do
+      {:ok, systems} = System.number_systems_for(locale, backend)
       {:ok, Map.keys(systems)}
     end
   end
 
-  def format_system_types_for(locale_name) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name) do
-      format_system_types_for(locale)
+  def format_system_types_for(locale_name, backend) when is_binary(locale_name) do
+    with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
+      format_system_types_for(locale, backend)
     end
   end
 
@@ -489,16 +488,15 @@ defmodule Cldr.Number.Format do
       {:ok, [:latn]}
 
   """
-  @spec format_system_names_for(LanguageTag.t()) :: [String.t(), ...]
-  def format_system_names_for(locale \\ Cldr.get_current_locale())
+  @spec format_system_names_for(LanguageTag.t(), Cldr.backend()) :: [String.t(), ...]
 
-  def format_system_names_for(%LanguageTag{} = locale) do
-    Cldr.Number.System.number_system_names_for(locale)
+  def format_system_names_for(%LanguageTag{} = locale, backend) do
+    Cldr.Number.System.number_system_names_for(locale, backend)
   end
 
-  def format_system_names_for(locale_name) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name) do
-      format_system_names_for(locale)
+  def format_system_names_for(locale_name, backend) when is_binary(locale_name) do
+    with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
+      format_system_names_for(locale, backend)
     end
   end
 end

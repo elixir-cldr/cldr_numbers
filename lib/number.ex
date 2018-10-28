@@ -83,6 +83,7 @@ defmodule Cldr.Number do
 
   alias Cldr.Number.Formatter
   alias Cldr.Number.Format.Compiler
+  alias Cldr.Number.Format
   alias Cldr.Locale
   alias Cldr.Rbnf
 
@@ -286,7 +287,7 @@ defmodule Cldr.Number do
     {format, options} =
       backend.default_options()
       |> Keyword.merge(options)
-      |> normalize_options(default_options())
+      |> normalize_options([], backend)
       |> detect_negative_number(number)
 
     with :ok <- currency_format_has_code(format, currency_format?(format), options[:currency]) do
@@ -338,11 +339,11 @@ defmodule Cldr.Number do
 
   # For ordinal numbers
   @format :digits_ordinal
-  defp to_string(number, :ordinal, _backend, options) do
-    rule_sets = Cldr.Rbnf.Ordinal.rule_sets(options[:locale])
+  defp to_string(number, :ordinal, backend, options) do
+    rule_sets = Module.concat(backend, Rbnf.Ordinal).rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
-      Cldr.Rbnf.Ordinal.digits_ordinal(number, options[:locale])
+      Module.concat(backend, Rbnf.Ordinal).digits_ordinal(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
@@ -350,22 +351,22 @@ defmodule Cldr.Number do
 
   # For spellout numbers
   @format :spellout_cardinal
-  defp to_string(number, :spellout, _backend, options) do
-    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+  defp to_string(number, :spellout, backend, options) do
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
-      Cldr.Rbnf.Spellout.spellout_cardinal(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_cardinal(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
   end
 
   # For spellout numbers
-  defp to_string(number, :spellout_numbering = format, _backend, options) do
-    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+  defp to_string(number, :spellout_numbering = format, backend, options) do
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
-      Cldr.Rbnf.Spellout.spellout_numbering(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_numbering(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], format)}
     end
@@ -373,11 +374,11 @@ defmodule Cldr.Number do
 
   # For spellout numbers
   @format :spellout_cardinal_verbose
-  defp to_string(number, :spellout_verbose, _backend, options) do
-    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+  defp to_string(number, :spellout_verbose, backend, options) do
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
-      Cldr.Rbnf.Spellout.spellout_cardinal_verbose(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_cardinal_verbose(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
@@ -385,33 +386,33 @@ defmodule Cldr.Number do
 
   # For spellout years
   @format :spellout_numbering_year
-  defp to_string(number, :spellout_year, _backend, options) do
-    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+  defp to_string(number, :spellout_year, backend, options) do
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
-      Cldr.Rbnf.Spellout.spellout_numbering_year(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_numbering_year(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
   end
 
   # For spellout ordinal
-  defp to_string(number, :spellout_ordinal = format, _backend, options) do
-    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+  defp to_string(number, :spellout_ordinal = format, backend, options) do
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
-      Cldr.Rbnf.Spellout.spellout_ordinal(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_ordinal(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], format)}
     end
   end
 
   # For spellout ordinal verbose
-  defp to_string(number, :spellout_ordinal_verbose = format, _backend, options) do
-    rule_sets = Cldr.Rbnf.Spellout.rule_sets(options[:locale])
+  defp to_string(number, :spellout_ordinal_verbose = format, backend, options) do
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
 
     if rule_sets && @format in rule_sets do
-      Cldr.Rbnf.Spellout.spellout_ordinal_verbose(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_ordinal_verbose(number, options[:locale])
     else
       {:error, Rbnf.rbnf_rule_error(options[:locale], format)}
     end
@@ -420,37 +421,37 @@ defmodule Cldr.Number do
   # For Roman numerals
   @root_locale Cldr.Config.get_locale("root")
   defp to_string(number, :roman, backend, _options) do
-    Cldr.Rbnf.NumberSystem.roman_upper(number, @root_locale)
+    Module.concat(backend, Rbnf.NumberSystem).roman_upper(number, @root_locale)
   end
 
   defp to_string(number, :roman_lower, backend, _options) do
-    Cldr.Rbnf.NumberSystem.roman_lower(number, @root_locale)
+    Module.concat(backend, Rbnf.NumberSystem).roman_lower(number, @root_locale)
   end
 
   # For the :currency_long format only
   defp to_string(number, :currency_long = format, backend, options) do
-    Formatter.Currency.to_string(number, format, options)
+    Formatter.Currency.to_string(number, format, backend, options)
   end
 
   # For all other short formats
   defp to_string(number, format, backend, options)
        when is_atom(format) and format in @short_format_styles do
-    Formatter.Short.to_string(number, format, options)
+    Formatter.Short.to_string(number, format, backend, options)
   end
 
   # For all other formats
   defp to_string(number, format, backend, options) when is_binary(format) do
-    Formatter.Decimal.to_string(number, format, options)
+    Formatter.Decimal.to_string(number, format, backend, options)
   end
 
   # For all other formats.  The known atom-based formats are described
   # above so this must be a format name expected to be defined by a
   # locale but its not there.
-  defp to_string(_number, {:error, _} = error, backend, _options) do
+  defp to_string(_number, {:error, _} = error, _backend, _options) do
     error
   end
 
-  defp to_string(_number, format, backend, options) when is_atom(format) do
+  defp to_string(_number, format, _backend, options) when is_atom(format) do
     cldr_locale_name = Map.get(options[:locale], :cldr_locale_name)
 
     {
@@ -525,14 +526,14 @@ defmodule Cldr.Number do
   # Merge options and default options with supplied options always
   # the winner.  If :currency is specified then the default :format
   # will be format: currency
-  defp normalize_options(options, defaults) do
+  defp normalize_options(options, defaults, backend) do
     options =
       defaults
       |> merge(options, fn _k, _v1, v2 -> v2 end)
-      |> canonicalize_locale
+      |> canonicalize_locale(backend)
       |> adjust_for_currency(options[:currency], options[:format])
       |> set_currency_digits
-      |> resolve_standard_format
+      |> resolve_standard_format(backend)
       |> adjust_short_forms
 
     {options[:format], options}
@@ -550,12 +551,12 @@ defmodule Cldr.Number do
     |> Map.merge(options, fun)
   end
 
-  defp resolve_standard_format(%{format: format} = options) when format in @short_format_styles do
+  defp resolve_standard_format(%{format: format} = options, _backend) when format in @short_format_styles do
     options
   end
 
-  defp resolve_standard_format(options) do
-    Map.put(options, :format, lookup_standard_format(options[:format], options))
+  defp resolve_standard_format(options, backend) do
+    Map.put(options, :format, lookup_standard_format(options[:format], backend, options))
   end
 
   defp adjust_short_forms(options) do
@@ -595,19 +596,19 @@ defmodule Cldr.Number do
     |> Map.put(:currency_digits, :accounting)
   end
 
-  defp canonicalize_locale(%{locale: locale} = options) when is_binary(locale) do
-    Map.put(options, :locale, Locale.new!(options[:locale]))
+  defp canonicalize_locale(%{locale: locale} = options, backend) when is_binary(locale) do
+    Map.put(options, :locale, Locale.new!(options[:locale], backend))
   end
 
-  defp canonicalize_locale(options), do: options
+  defp canonicalize_locale(options, _backend), do: options
 
-  defp lookup_standard_format(format, options) when is_atom(format) do
-    with {:ok, formats} <- formats_for(options[:locale], options[:number_system]) do
+  defp lookup_standard_format(format, backend, options) when is_atom(format) do
+    with {:ok, formats} <- Format.formats_for(options[:locale], options[:number_system], backend) do
       Map.get(formats, options[:format]) || format
     end
   end
 
-  defp lookup_standard_format(format, _options) when is_binary(format) do
+  defp lookup_standard_format(format, _backend, _options) when is_binary(format) do
     format
   end
 

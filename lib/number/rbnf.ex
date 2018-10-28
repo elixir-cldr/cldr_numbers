@@ -20,8 +20,8 @@ defmodule Cldr.Rbnf do
   alias Cldr.Locale
   alias Cldr.LanguageTag
 
-  def known_locale_names do
-    Cldr.known_rbnf_locale_names()
+  def known_locale_names(backend) do
+    Cldr.known_rbnf_locale_names(backend)
   end
 
   @doc """
@@ -31,14 +31,13 @@ defmodule Cldr.Rbnf do
     or a `Cldr.LanguageTag`
 
   """
-  @spec for_locale(Locale.t()) :: %{} | nil
-  def for_locale(locale \\ Cldr.get_current_locale())
+  @spec for_locale(Locale.t(), Cldr.backend()) :: %{} | nil
 
-  def for_locale(%LanguageTag{rbnf_locale_name: nil} = language_tag) do
+  def for_locale(%LanguageTag{rbnf_locale_name: nil} = language_tag, _backend) do
     {:error, rbnf_locale_error(language_tag)}
   end
 
-  def for_locale(%LanguageTag{rbnf_locale_name: rbnf_locale_name}) do
+  def for_locale(%LanguageTag{rbnf_locale_name: rbnf_locale_name}, _backend) do
     rbnf_data =
       rbnf_locale_name
       |> Cldr.Config.get_locale()
@@ -47,9 +46,9 @@ defmodule Cldr.Rbnf do
     {:ok, rbnf_data}
   end
 
-  def for_locale(locale) when is_binary(locale) do
-    with {:ok, language_tag} <- Cldr.Locale.canonical_language_tag(locale) do
-      for_locale(language_tag)
+  def for_locale(locale, backend) when is_binary(locale) do
+    with {:ok, language_tag} <- Cldr.Locale.canonical_language_tag(locale, backend) do
+      for_locale(language_tag, backend)
     end
   end
 
@@ -61,8 +60,8 @@ defmodule Cldr.Rbnf do
     or a `Cldr.LanguageTag`
 
   """
-  def for_locale!(locale) do
-    case for_locale(locale) do
+  def for_locale!(locale, backend) do
+    case for_locale(locale, backend) do
       {:ok, rules} -> rules
       {:error, {exception, reason}} -> raise exception, reason
     end
@@ -74,13 +73,14 @@ defmodule Cldr.Rbnf do
 
   This function is primarily intended to support compile-time generation
   of functions to process rbnf rules.
-  """
-  @spec for_all_locales :: %{}
-  def for_all_locales do
-    Enum.map(known_locale_names(), fn locale_name ->
-      locale = Locale.new!(locale_name)
 
-      Enum.map(for_locale!(locale), fn {group, sets} ->
+  """
+  @spec for_all_locales(Cldr.backend()) :: %{}
+  def for_all_locales(backend) do
+    Enum.map(known_locale_names(backend), fn locale_name ->
+      locale = Locale.new!(locale_name, backend)
+
+      Enum.map(for_locale!(locale, backend), fn {group, sets} ->
         {group, %{locale_name => sets}}
       end)
       |> Enum.into(%{})

@@ -1,10 +1,8 @@
 defmodule Cldr.Number.Backend.Number do
   def define_number_module(config) do
-    module = inspect(__MODULE__)
     backend = config.backend
-    config = Macro.escape(config)
 
-    quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
+    quote location: :keep, bind_quoted: [backend: backend] do
       defmodule Number do
         @moduledoc """
         Formats numbers and currencies based upon CLDR's decimal formats specification.
@@ -88,13 +86,6 @@ defmodule Cldr.Number.Backend.Number do
         possible.
         """
 
-        require Cldr
-        alias Cldr.Number.Formatter
-        alias Cldr.Number.Format.Compiler
-        alias Cldr.Locale
-        alias Cldr.Rbnf
-
-        import Cldr.Number.Format, only: [formats_for: 2]
 
         @doc """
         Returns a number formatted into a string according to a format pattern and options.
@@ -283,7 +274,7 @@ defmodule Cldr.Number.Backend.Number do
         Same as the execution of `to_string/2` but raises an exception if an error would be
         returned.
 
-        ## Options
+        ## Arguments
 
         * `number` is an integer, float or Decimal to be formatted
 

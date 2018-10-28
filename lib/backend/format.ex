@@ -15,8 +15,8 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Example
 
-            Cldr.Number.Format.decimal_format_list ["#", "#,##,##0%",
-            #=> "#,##,##0.###", "#,##,##0.00¤", "#,##,##0.00¤;(#,##,##0.00¤)",
+            #=> #{inspect(__MODULE__)}.Format.decimal_format_list ["#", "#,##,##0%",
+            "#,##,##0.###", "#,##,##0.00¤", "#,##,##0.00¤;(#,##,##0.00¤)",
             "#,##,##0 %", "#,##0%", "#,##0.###", "#,##0.00 ¤",
             "#,##0.00 ¤;(#,##0.00 ¤)", "#,##0.00¤", "#,##0.00¤;(#,##0.00¤)",
             "#,##0 %", "#0%", "#0.######", "#0.00 ¤", "#E0", "%#,##0", "% #,##0",
@@ -123,7 +123,7 @@ defmodule Cldr.Number.Backend.Format do
           number_formats =
             locale_data
             |> Map.get(:number_formats)
-            |> Enum.map(fn {type, format} -> {type, struct(@struct, format)} end)
+            |> Enum.map(fn {type, format} -> {type, struct(Cldr.Number.Format, format)} end)
             |> Enum.into(%{})
 
           minimum_grouping_digits =
@@ -137,32 +137,31 @@ defmodule Cldr.Number.Backend.Format do
           def minimum_grouping_digits_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
             {:ok, unquote(minimum_grouping_digits)}
           end
+        end
 
-          @doc """
-          Returns the decimal formats defined for a given locale.
+        @doc """
+        Returns the decimal formats defined for a given locale.
 
-          ## Arguments
+        ## Arguments
 
-          * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
-            or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-            is `Cldr.get_current_locale/1`
+        * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
+          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
+          is `Cldr.get_current_locale/1`
 
-          ## Returns
+        ## Returns
 
-          * a list of decimal formats ot
+        * a list of decimal formats ot
 
-          * raises an exception
+        * raises an exception
 
-          See `Cldr.Number.Format.all_formats_for/1` for further information.
+        See `Cldr.Number.Format.all_formats_for/1` for further information.
 
-          """
-          def all_formats_for!(locale, backend) do
-            case all_formats_for(locale, backend) do
-              {:ok, formats} -> formats
-              {:error, {exception, message}} -> raise exception, message
-            end
+        """
+        def all_formats_for!(locale) do
+          case all_formats_for(locale) do
+            {:ok, formats} -> formats
+            {:error, {exception, message}} -> raise exception, message
           end
-
         end
       end
     end

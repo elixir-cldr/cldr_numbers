@@ -111,7 +111,7 @@ defmodule Cldr.Number.Symbol do
           {:ok, Map.t()} | {:error, {Cldr.NoNumberSymbols, String.t()}}
 
   def number_symbols_for(%LanguageTag{} = locale, number_system, backend) do
-    with {:ok, system_name} <- Number.System.system_name_from(number_system, locale),
+    with {:ok, system_name} <- Number.System.system_name_from(number_system, locale, backend),
          {:ok, symbols} <- number_symbols_for(locale, backend) do
       symbols
       |> Map.get(system_name)

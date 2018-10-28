@@ -5,7 +5,7 @@ defmodule Cldr.Number.Backend.Symbol do
     config = Macro.escape(config)
 
     quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
-      defmodule Symbol do
+      defmodule Number.Symbol do
         @doc """
         Returns a map of `Cldr.Number.Symbol.t` structs of the number symbols for each
         of the number systems of a locale.
@@ -18,7 +18,7 @@ defmodule Cldr.Number.Backend.Symbol do
 
         ## Example:
 
-            iex> Cldr.Number.Symbol.number_symbols_for("th")
+            iex> #{inspect(__MODULE__)}.number_symbols_for("th")
             {:ok, %{
                latn: %Cldr.Number.Symbol{
                  decimal: ".",

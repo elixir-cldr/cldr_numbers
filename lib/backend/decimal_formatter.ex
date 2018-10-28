@@ -54,7 +54,7 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
           case Compiler.compile(format) do
             {:ok, meta, _pipeline} ->
               meta = update_meta(meta, number, options)
-              do_to_string(number, meta, options)
+              do_to_string(number, meta, unquote(backend), options)
 
             {:error, message} ->
               {:error, {Cldr.FormatCompileError, message}}

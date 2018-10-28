@@ -38,23 +38,23 @@ defmodule Cldr.Number.Formatter.Decimal do
   * `options` is a map of options.  See `Cldr.Number.to_string/2` for further information.
 
   """
-  @spec to_string(Math.number(), String.t(), Map.t()) ::
+  @spec to_string(Math.number(), String.t(), CLdr.backend(), Map.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
   def to_string(number, format, backend, options) do
     backend.to_string(number, format, options)
   end
 
   @doc false
-  def update_meta(meta, number, options) do
+  def update_meta(meta, number, options, backend) do
     meta
-    |> adjust_fraction_for_currency(options[:currency], options[:currency_digits])
+    |> adjust_fraction_for_currency(options[:currency], options[:currency_digits], backend)
     |> adjust_fraction_for_significant_digits(number)
     |> adjust_for_fractional_digits(options[:fractional_digits])
     |> Map.put(:number, number)
   end
 
   @doc false
-  def do_to_string(number, %{integer_digits: _integer_digits} = meta, options) do
+  def do_to_string(number, %{integer_digits: _integer_digits} = meta, backend, options) do
     number
     |> absolute_value(meta, options)
     |> multiply_by_factor(meta, options)
@@ -66,17 +66,17 @@ defmodule Cldr.Number.Formatter.Decimal do
     |> adjust_leading_zeros(meta, options)
     |> adjust_trailing_zeros(meta, options)
     |> set_max_integer_digits(meta, options)
-    |> apply_grouping(meta, options)
+    |> apply_grouping(meta, options, backend)
     |> reassemble_number_string(meta, options)
-    |> transliterate(meta, options)
-    |> assemble_format(meta, options)
+    |> transliterate(meta, backend, options)
+    |> assemble_format(meta, backend, options)
   end
 
   # For when the format itself actually has only literal components
   # and no number format.
   @doc false
-  def do_to_string(number, meta, options) do
-    assemble_format(number, meta, options)
+  def do_to_string(number, meta, backend, options) do
+    assemble_format(number, meta, backend, options)
   end
 
   # We work with the absolute value because the formatting of the sign
@@ -283,14 +283,15 @@ defmodule Cldr.Number.Formatter.Decimal do
   defp apply_grouping(
          {sign, integer, [] = fraction, exponent_sign, exponent},
          %{grouping: groups},
-         %{locale: locale, minimum_grouping_digits: minimum_grouping_digits}
+         %{locale: locale, minimum_grouping_digits: minimum_grouping_digits},
+         backend
        ) do
     integer =
       do_grouping(
         integer,
         groups[:integer],
         length(integer),
-        minimum_group_size(groups[:integer], minimum_grouping_digits, locale),
+        minimum_group_size(groups[:integer], minimum_grouping_digits, locale, backend),
         :reverse
       )
 
@@ -299,13 +300,13 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   defp apply_grouping({sign, integer, fraction, exponent_sign, exponent}, %{grouping: groups}, %{
          locale: locale, minimum_grouping_digits: minimum_grouping_digits
-       }) do
+       }, backend) do
     integer =
       do_grouping(
         integer,
         groups[:integer],
         length(integer),
-        minimum_group_size(groups[:integer], minimum_grouping_digits, locale),
+        minimum_group_size(groups[:integer], minimum_grouping_digits, locale, backend),
         :reverse
       )
 
@@ -314,18 +315,18 @@ defmodule Cldr.Number.Formatter.Decimal do
         fraction,
         groups[:fraction],
         length(fraction),
-        minimum_group_size(groups[:fraction], minimum_grouping_digits, locale),
+        minimum_group_size(groups[:fraction], minimum_grouping_digits, locale, backend),
         :forward
       )
 
     {sign, integer, fraction, exponent_sign, exponent}
   end
 
-  defp minimum_group_size(%{first: group_size}, 0, locale) do
-    Format.minimum_grouping_digits_for!(locale) + group_size
+  defp minimum_group_size(%{first: group_size}, 0, locale, backend) do
+    Format.minimum_grouping_digits_for!(locale, backend) + group_size
   end
 
-  defp minimum_group_size(%{first: group_size}, minimum_grouping_digits, _locale) do
+  defp minimum_group_size(%{first: group_size}, minimum_grouping_digits, _locale, _backend) do
     minimum_grouping_digits + group_size
   end
 
@@ -442,13 +443,13 @@ defmodule Cldr.Number.Formatter.Decimal do
   # whether the number is positive or negative (as indicated
   # by options[:sign]) we assemble the parts and transliterate
   # the currency sign, percent and permille characters.
-  defp assemble_format(number_string, meta, options) do
+  defp assemble_format(number_string, meta, backend, options) do
     number_string
-    |> do_assemble_format(meta.number, meta, meta.format[options[:pattern]], options)
+    |> do_assemble_format(meta.number, meta, meta.format[options[:pattern]], backend, options)
     |> :erlang.iolist_to_binary()
   end
 
-  defp do_assemble_format(number_string, number, meta, format, options) do
+  defp do_assemble_format(number_string, number, meta, format, backend, options) do
     system = options[:number_system]
     locale = options[:locale]
     currency = options[:currency]
@@ -460,7 +461,7 @@ defmodule Cldr.Number.Formatter.Decimal do
         {:pad, _} -> padding_string(meta, number_string)
         {:plus, _} -> symbols.plus_sign
         {:minus, _} -> if number_string == "0", do: "", else: symbols.minus_sign
-        {:currency, type} -> currency_symbol(currency, number, type, locale)
+        {:currency, type} -> currency_symbol(currency, number, type, locale, backend)
         {:percent, _} -> symbols.percent_sign
         {:permille, _} -> symbols.per_mille
         {:literal, literal} -> literal
@@ -496,51 +497,51 @@ defmodule Cldr.Number.Formatter.Decimal do
   #   ¤¤¤    Appropriate currency display name for the currency, based on the
   #          plural rules in effect for the locale
   #   ¤¤¤¤   Narrow currency symbol.
-  defp currency_symbol(%Currency{} = currency, _number, 1, _locale) do
+  defp currency_symbol(%Currency{} = currency, _number, 1, _locale, _backend) do
     currency.symbol
   end
 
-  defp currency_symbol(%Currency{} = currency, _number, 2, _locale) do
+  defp currency_symbol(%Currency{} = currency, _number, 2, _locale, _backend) do
     currency.code
   end
 
-  defp currency_symbol(%Currency{} = currency, number, 3, locale) do
-    Number.Cardinal.pluralize(number, locale, currency.count)
+  defp currency_symbol(%Currency{} = currency, number, 3, locale, backend) do
+    Module.concat(backend, Number.Cardinal).pluralize(number, locale, currency.count)
   end
 
-  defp currency_symbol(%Currency{} = currency, _number, 4, _locale) do
+  defp currency_symbol(%Currency{} = currency, _number, 4, _locale, _backend) do
     currency.narrow_symbol || currency.symbol
   end
 
-  defp currency_symbol(currency, number, size, locale) do
+  defp currency_symbol(currency, number, size, locale, backend) do
     {:ok, currency} = Currency.currency_for_code(currency, locale)
-    currency_symbol(currency, number, size, locale)
+    currency_symbol(currency, number, size, locale, backend)
   end
 
-  defp transliterate(number_string, _meta, %{locale: locale, number_system: number_system}) do
-    Cldr.Number.Transliterate.transliterate(number_string, locale, number_system)
+  defp transliterate(number_string, _meta, %{locale: locale, number_system: number_system}, backend) do
+    Cldr.Number.Transliterate.transliterate(number_string, locale, number_system, backend)
   end
 
   # When formatting a currency we need to adjust the number of fractional
   # digits to match the currency definition.  We also need to adjust the
   # rounding increment to match the currency definition. Note that here
   # we are just adjusting the meta data, not the number itself
-  defp adjust_fraction_for_currency(meta, nil, _currency_digits) do
+  defp adjust_fraction_for_currency(meta, nil, _currency_digits, _backend) do
     meta
   end
 
-  defp adjust_fraction_for_currency(meta, currency, :accounting) do
-    {:ok, currency} = Currency.currency_for_code(currency)
+  defp adjust_fraction_for_currency(meta, currency, :accounting, backend) do
+    {:ok, currency} = Currency.currency_for_code(currency, backend)
     do_adjust_fraction(meta, currency.digits, currency.rounding)
   end
 
-  defp adjust_fraction_for_currency(meta, currency, :cash) do
-    {:ok, currency} = Currency.currency_for_code(currency)
+  defp adjust_fraction_for_currency(meta, currency, :cash, backend) do
+    {:ok, currency} = Currency.currency_for_code(currency, backend)
     do_adjust_fraction(meta, currency.cash_digits, currency.cash_rounding)
   end
 
-  defp adjust_fraction_for_currency(meta, currency, :iso) do
-    {:ok, currency} = Currency.currency_for_code(currency)
+  defp adjust_fraction_for_currency(meta, currency, :iso, backend) do
+    {:ok, currency} = Currency.currency_for_code(currency, backend)
     do_adjust_fraction(meta, currency.iso_digits, currency.iso_digits)
   end
 

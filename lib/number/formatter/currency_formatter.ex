@@ -39,11 +39,12 @@ defmodule Cldr.Number.Formatter.Currency do
   alias Cldr.Number.{Format, System}
   alias Cldr.{Number, Substitution, Currency}
 
-  def to_string(number, :currency_long, options) do
+  def to_string(number, :currency_long, backend, options) do
     locale = options[:locale]
-    number_system = System.system_name_from!(options[:number_system], locale)
+    number_system = System.system_name_from!(options[:number_system], locale, backend)
+    cardinal = Module.concat(backend, Number.Cardinal)
 
-    if !(formats = Format.formats_for!(locale, number_system).currency_long) do
+    if !(formats = Format.formats_for!(locale, number_system, backend).currency_long) do
       raise ArgumentError,
         message:
           "No :currency_long format known for " <>
@@ -51,7 +52,7 @@ defmodule Cldr.Number.Formatter.Currency do
     end
 
     {:ok, currency} = Currency.currency_for_code(options[:currency], locale)
-    currency_string = Number.Cardinal.pluralize(number, locale, currency.count)
+    currency_string = cardinal.pluralize(number, locale, currency.count)
 
     options =
       options
@@ -59,7 +60,7 @@ defmodule Cldr.Number.Formatter.Currency do
       |> set_fractional_digits(options[:fractional_digits])
 
     number_string = Number.to_string!(number, options)
-    format = Number.Cardinal.pluralize(number, locale, formats)
+    format = cardinal.pluralize(number, locale, formats)
 
     Substitution.substitute([number_string, currency_string], format)
     |> :erlang.iolist_to_binary()

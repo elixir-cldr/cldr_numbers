@@ -79,19 +79,19 @@ defmodule Cldr.Number.Backend.Transliterate do
             iex> Cldr.Number.Transliterate.transliterate("123556")
             "123556"
 
-            iex> Cldr.Number.Transliterate.transliterate("123,556.000", Cldr.Locale.new!("fr"), :default)
+            iex> Cldr.Number.Transliterate.transliterate("123,556.000", "fr", :default)
             "123 556,000"
 
-            iex> Cldr.Number.Transliterate.transliterate("123556", Cldr.Locale.new!("th"), :default)
+            iex> Cldr.Number.Transliterate.transliterate("123556", "th", :default)
             "123556"
 
-            iex> Cldr.Number.Transliterate.transliterate("123556", Cldr.Locale.new!("th"), "thai")
+            iex> Cldr.Number.Transliterate.transliterate("123556", "th", "thai")
             "๑๒๓๕๕๖"
 
-            iex> Cldr.Number.Transliterate.transliterate("123556", Cldr.Locale.new!("th"), :native)
+            iex> Cldr.Number.Transliterate.transliterate("123556", "th", :native)
             "๑๒๓๕๕๖"
 
-            iex> Cldr.Number.Transliterate.transliterate("Some number is: 123556", Cldr.Locale.new!("th"), "thai")
+            iex> Cldr.Number.Transliterate.transliterate("Some number is: 123556", "th", "thai")
             "Some number is: ๑๒๓๕๕๖"
         """
 
@@ -104,7 +104,7 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         # No transliteration required when the digits and separators as the same
         # as the ones we use in formatting.
-        with {:ok, systems} <- System.number_systems_like(Locale.new!("en"), :latn) do
+        with {:ok, systems} <- System.number_systems_like(Locale.new!("en", backend), :latn) do
           Enum.each(systems, fn {locale, system} ->
             def transliterate(sequence, unquote(Macro.escape(locale)), unquote(system)) do
               sequence
@@ -115,7 +115,7 @@ defmodule Cldr.Number.Backend.Transliterate do
         # Translate the number system type to a system and invoke the real
         # transliterator
         for locale_name <- Cldr.Config.known_locale_names() do
-          locale = Locale.new!(locale_name)
+          locale = Module.concat(backend, Locale).new!(locale_name)
 
           for {system_type, number_system} <- Cldr.Number.System.number_systems_for!(locale) do
             def transliterate(

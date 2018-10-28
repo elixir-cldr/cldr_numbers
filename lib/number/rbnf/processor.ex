@@ -131,10 +131,10 @@ defmodule Cldr.Rbnf.Processor do
   end
 
   @public_rulesets :public_rulesets
-  def define_rules(rule_group_name, env) do
+  def define_rules(rule_group_name, backend, env) do
     Module.register_attribute(env.module, @public_rulesets, [])
 
-    iterate_rules(rule_group_name, fn
+    iterate_rules(rule_group_name, backend, fn
       rule_group, locale, "public", :error ->
         define_rule(:error, nil, rule_group, locale, nil)
         |> Code.eval_quoted([], env)
@@ -145,7 +145,7 @@ defmodule Cldr.Rbnf.Processor do
       rule_group, locale, access, rule ->
         {:ok, parsed} = Cldr.Rbnf.Rule.parse(rule.definition)
 
-        function_body = rule_body(locale, rule_group, rule, parsed)
+        function_body = rule_body(locale, rule_group, rule, parsed, backend)
 
         rule.base_value
         |> define_rule(rule.range, rule_group, locale, function_body)
@@ -154,8 +154,8 @@ defmodule Cldr.Rbnf.Processor do
     end)
   end
 
-  defp iterate_rules(rule_group_type, fun) do
-    all_rules = Cldr.Rbnf.for_all_locales()[rule_group_type]
+  defp iterate_rules(rule_group_type, backend, fun) do
+    all_rules = Cldr.Rbnf.for_all_locales(backend)[rule_group_type]
 
     unless is_nil(all_rules) do
       for {locale_name, _rule_group} <- all_rules do
@@ -263,11 +263,11 @@ defmodule Cldr.Rbnf.Processor do
   end
 
   # Get the AST of the rule body
-  defp rule_body(locale, rule_group, rule, parsed) do
+  defp rule_body(locale, rule_group, rule, parsed, backend) do
     quote do
       do_rule(
         number,
-        unquote(Macro.escape(Cldr.Locale.new!(locale))),
+        unquote(Macro.escape(Cldr.Locale.new!(locale, backend))),
         unquote(rule_group),
         unquote(Macro.escape(rule)),
         unquote(Macro.escape(parsed))
