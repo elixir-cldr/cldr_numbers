@@ -4,8 +4,16 @@ defmodule Cldr.Rbnf.Processor do
   Macro to define the interpreter for the compiled RBNF rules specific to a rule group (Ordinal,
   Spellout, NumberingSystem)
   """
-  defmacro __using__(_opts) do
+  defmacro __using__(backend) do
+    IO.puts "Processor using"
+    IO.inspect backend
+
+    ordinal_module = Module.concat(backend, Number.Ordinal)
+    cardinal_module = Module.concat(backend, Number.Cardinal)
+    spellout_module = Module.concat(backend, Number.Spellout)
+
     quote location: :keep do
+      IO.inspect unquote(backend)
       alias Cldr.Number
       alias Cldr.Digits
       import Cldr.Rbnf.Processor
@@ -96,12 +104,12 @@ defmodule Cldr.Rbnf.Processor do
       end
 
       defp do_operation(:ordinal, number, locale, _function, _rule, plurals) do
-        plural = Cldr.Number.Ordinal.plural_rule(number, locale)
+        plural = unquote(ordinal_module).plural_rule(number, locale)
         Map.get(plurals, plural) || Map.get(plurals, :other)
       end
 
       defp do_operation(:cardinal, number, locale, _function, _rule, plurals) do
-        plural = Cldr.Number.Cardinal.plural_rule(number, locale)
+        plural = unquote(cardinal_module).plural_rule(number, locale)
         Map.get(plurals, plural) || Map.get(plurals, :other)
       end
 
@@ -122,7 +130,7 @@ defmodule Cldr.Rbnf.Processor do
           |> Integer.to_string()
           |> String.split("", trim: true)
           |> Enum.map(&String.to_integer/1)
-          |> Enum.map(&Cldr.Rbnf.Spellout.spellout_cardinal(&1, locale))
+          |> Enum.map(&unquote(spellout_module).spellout_cardinal(&1, locale))
           |> Enum.join(" ")
       end
 
@@ -263,11 +271,15 @@ defmodule Cldr.Rbnf.Processor do
   end
 
   # Get the AST of the rule body
-  defp rule_body(locale, rule_group, rule, parsed, backend) do
+  defp rule_body(locale_name, rule_group, rule, parsed, _backend) do
+    locale =
+      Cldr.Config.all_language_tags
+      |> Map.get(locale_name)
+
     quote do
       do_rule(
         number,
-        unquote(Macro.escape(Cldr.Locale.new!(locale, backend))),
+        unquote(Macro.escape(locale)),
         unquote(rule_group),
         unquote(Macro.escape(rule)),
         unquote(Macro.escape(parsed))

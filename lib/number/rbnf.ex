@@ -56,7 +56,7 @@ defmodule Cldr.Rbnf do
   Returns rbnf_rules for a `locale` or raises an exception if
   there are no rules.
 
-  * `locale` is any locale name returned by `Cldr.Rbnf.known_locale_names/0`.
+  * `locale` is any locale name returned by `Cldr.Rbnf.known_locale_names/1`.
     or a `Cldr.LanguageTag`
 
   """
@@ -67,20 +67,25 @@ defmodule Cldr.Rbnf do
     end
   end
 
-  @doc """
-  Returns a map that merges all rules by the primary dimension of
-  RuleGroup, within which rbnf rules are keyed by locale.
-
-  This function is primarily intended to support compile-time generation
-  of functions to process rbnf rules.
-
-  """
+  # Returns a map that merges all rules by the primary dimension of
+  # RuleGroup, within which rbnf rules are keyed by locale.
+  #
+  # This function is primarily intended to support compile-time generation
+  # of functions to process rbnf rules.
+  @doc false
   @spec for_all_locales(Cldr.backend()) :: %{}
   def for_all_locales(backend) do
-    Enum.map(known_locale_names(backend), fn locale_name ->
-      locale = Locale.new!(locale_name, backend)
+    known_rbnf_locale_names =
+      Module.get_attribute(backend, :config)
+      |> Cldr.Config.known_rbnf_locale_names
 
-      Enum.map(for_locale!(locale, backend), fn {group, sets} ->
+    Enum.map(known_rbnf_locale_names, fn locale_name ->
+      locale =
+        locale_name
+        |> Cldr.Config.get_locale()
+        |> Map.get(:rbnf)
+
+      Enum.map(locale, fn {group, sets} ->
         {group, %{locale_name => sets}}
       end)
       |> Enum.into(%{})

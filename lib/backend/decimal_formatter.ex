@@ -1,10 +1,10 @@
 defmodule Cldr.Number.Backend.Decimal.Formatter do
   def define_number_module(config) do
-    module = inspect(__MODULE__)
-    backend = config.backend
-    config = Macro.escape(config)
+    alias Cldr.Number.Formatter.Decimal
 
-    quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
+    backend = config.backend
+
+    quote location: :keep do
       defmodule Number.Formatter.Decimal do
         @moduledoc false
 
@@ -29,18 +29,8 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
 
         # Precompile the known formats and build the formatting pipeline
         # specific to this format thereby optimizing the performance.
-        for format <- Number.Format.decimal_format_list() do
-          case Compiler.compile(format) do
-            {:ok, meta, formatting_pipeline} ->
-              def to_string(number, unquote(format), options) when is_map(options) do
-                meta = Decimal.update_meta(unquote(Macro.escape(meta)), number, unquote(backend), options)
-                unquote(formatting_pipeline)
-              end
-
-            {:error, message} ->
-              raise Cldr.FormatCompileError, "#{message} compiling #{inspect(format)}"
-          end
-        end
+        # IO.inspect Cldr.Number.Formatter.Decimal.define_to_string(unquote(backend))
+        unquote(Decimal.define_to_string(backend))
 
         # For formats not precompiled we need to compile first
         # and then process. This will be slower than a compiled

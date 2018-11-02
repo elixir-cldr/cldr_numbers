@@ -79,7 +79,7 @@ defmodule Cldr.Number.Format do
 
   @spec decimal_format_list(Cldr.backend()) :: [format, ...]
   def decimal_format_list(backend) do
-    backend.decimal_format_list
+    Module.concat(backend, Number.Format).decimal_format_list
   end
 
   @doc """

@@ -28,19 +28,10 @@ defmodule Cldr.Number.Backend.Format do
             "000 Tr ¤", ...]
 
         """
-        format_list =
-          config
-          |> Cldr.Config.known_locale_names
-          |> Enum.map(&Cldr.Config.decimal_formats_for/1)
-          |> Kernel.++(Cldr.Config.get_precompile_number_formats())
-          |> List.flatten()
-          |> Enum.uniq()
-          |> Enum.reject(&is_nil/1)
-          |> Enum.sort()
-
+        @format_list Cldr.Config.decimal_format_list(config)
         @spec decimal_format_list :: [Cldr.Number.Format.format, ...]
         def decimal_format_list do
-          unquote(Macro.escape(format_list))
+          unquote(Macro.escape(@format_list))
         end
 
         @doc """

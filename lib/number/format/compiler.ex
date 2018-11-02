@@ -256,13 +256,13 @@ defmodule Cldr.Number.Format.Compiler do
 
   defp first_stage(fun) do
     quote context: Cldr.Number.Formatter.Decimal do
-      unquote(fun)(var!(number), var!(meta), var!(backend), var!(options))
+      Decimal.unquote(fun)(number, meta, backend, options)
     end
   end
 
   defp stage(fun) do
     quote context: Cldr.Number.Formatter.Decimal do
-      unquote(fun)(var!(meta), var!(backend), var!(options))
+      Decimal.unquote(fun)(meta, backend, options)
     end
   end
 
@@ -287,10 +287,10 @@ defmodule Cldr.Number.Format.Compiler do
       {:ok, _meta, stages} ->
         {_, pipe} =
           Macro.prewalk(stages, [], fn {name, _, _} = t, acc ->
-            if name not in [:var!, :meta, :options, :backend, :number] do
+            if name not in [:meta, :options, :backend, :number] do
               {t, [name | acc]}
             else
-              {t, acc}
+              {{name, [], Cldr.Number.Formatter.Decimal}, acc}
             end
           end)
 

@@ -31,10 +31,11 @@ defmodule Cldr.Number.Backend.Rbnf do
 
             iex> Cldr.Number.to_string 123, format: :roman
             {:ok, "CXXIII"}
+
         """
 
         import Kernel, except: [and: 2]
-        use Cldr.Rbnf.Processor
+        use Cldr.Rbnf.Processor, backend
 
         define_rules(:NumberingSystemRules, backend, __ENV__)
       end
@@ -65,10 +66,11 @@ defmodule Cldr.Number.Backend.Rbnf do
 
             iex> Cldr.Number.to_string 123, format: :spellout
             {:ok, "one hundred twenty-three"}
+
         """
 
         import Kernel, except: [and: 2]
-        use Cldr.Rbnf.Processor
+        use Cldr.Rbnf.Processor, backend
 
         define_rules(:SpelloutRules, backend, __ENV__)
 
@@ -106,10 +108,11 @@ defmodule Cldr.Number.Backend.Rbnf do
 
             iex> Cldr.Number.to_string 123, format: :ordinal
             {:ok, "123rd"}
+
         """
 
         import Kernel, except: [and: 2]
-        use Cldr.Rbnf.Processor
+        use Cldr.Rbnf.Processor, backend
 
         define_rules(:OrdinalRules, backend, __ENV__)
       end
