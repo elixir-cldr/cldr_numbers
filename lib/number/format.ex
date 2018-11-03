@@ -178,7 +178,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the minium grouping digits for a locale.
 
-  ## Options
+  ## Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
@@ -228,7 +228,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Return the predfined formats for a given `locale` and `number_system`.
 
-  ## Options
+  ## Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
@@ -263,7 +263,6 @@ defmodule Cldr.Number.Format do
 
   """
   @spec formats_for(LanguageTag.t() | binary(), atom | String.t(), Cldr.backend()) :: Map.t()
-
   def formats_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, system_name} <- System.system_name_from(number_system, locale, backend),
@@ -303,7 +302,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the format styles available for a `locale`.
 
-  ## Options
+  ## Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
@@ -352,7 +351,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the short formats available for a locale.
 
-  ## Options
+  ## Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
@@ -393,7 +392,7 @@ defmodule Cldr.Number.Format do
   Returns the decimal format styles that are supported by
   `Cldr.Number.Formatter.Decimal`.
 
-  ## Options
+  ## Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
@@ -428,7 +427,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the number system types available for a `locale`
 
-  ## Options
+  ## Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
@@ -472,7 +471,7 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the names of the number systems for the `locale`.
 
-  ## Options
+  ## Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default

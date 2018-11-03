@@ -6,6 +6,44 @@ defmodule Cldr.Number.Backend.Format do
 
     quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
       defmodule Number.Format do
+        @moduledoc """
+        Functions to manage the collection of number patterns defined in Cldr.
+
+        Number patterns affect how numbers are interpreted in a localized context.
+        Here are some examples, based on the French locale. The "." shows where the
+        decimal point should go. The "," shows where the thousands separator should
+        go. A "0" indicates zero-padding: if the number is too short, a zero (in the
+        locale's numeric set) will go there. A "#" indicates no padding: if the
+        number is too short, nothing goes there. A "¤" shows where the currency sign
+        will go. The following illustrates the effects of different patterns for the
+        French locale, with the number "1234.567". Notice how the pattern characters
+        ',' and '.' are replaced by the characters appropriate for the locale.
+
+        ## Number Pattern Examples
+
+        | Pattern	      | Currency	      | Text        |
+        | ------------- | :-------------: | ----------: |
+        | #,##0.##	    | n/a	            | 1 234,57    |
+        | #,##0.###	    | n/a	            | 1 234,567   |
+        | ###0.#####	  | n/a	            | 1234,567    |
+        | ###0.0000#	  | n/a	            | 1234,5670   |
+        | 00000.0000	  | n/a	            | 01234,5670  |
+        | #,##0.00 ¤	  | EUR	            | 1 234,57 €  |
+
+        The number of # placeholder characters before the decimal do not matter,
+        since no limit is placed on the maximum number of digits. There should,
+        however, be at least one zero some place in the pattern. In currency formats,
+        the number of digits after the decimal also do not matter, since the
+        information in the supplemental data (see Supplemental Currency Data) is used
+        to override the number of decimal places — and the rounding — according to
+        the currency that is being formatted. That can be seen in the above chart,
+        with the difference between Yen and Euro formatting.
+
+        Details of the number formats are described in the
+        [Unicode documentation](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns)
+
+        """
+
         @doc """
         Returns the list of decimal formats in the configured locales including
         the list of locales configured for precompilation in `config.exs`.
@@ -37,7 +75,7 @@ defmodule Cldr.Number.Backend.Format do
         @doc """
         Returns the list of decimal formats for a configured locale.
 
-        ## Options
+        ## Arguments
 
         * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
@@ -81,9 +119,30 @@ defmodule Cldr.Number.Backend.Format do
         end
 
         @doc """
-        Returns the minium grouping digits for a locale.
+        Returns the decimal formats defined for a given locale.
 
-        ## Options
+        ## Arguments
+
+        * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
+          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
+          is `Cldr.get_current_locale/1`
+
+        ## Returns
+
+        * a list of decimal formats or
+
+        * `{:error, {exception, message}}`
+
+        """
+        @spec all_formats_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
+                {:ok, non_neg_integer} | {:error, {Exception.t(), String.t()}}
+
+        def all_formats_for(locale \\ unquote(backend).get_current_locale())
+
+        @doc """
+        Returns the minimum grouping digits for a locale.
+
+        ## Arguments
 
         * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
@@ -101,7 +160,7 @@ defmodule Cldr.Number.Backend.Format do
             {:ok, 1}
 
         """
-        @spec minimum_grouping_digits_for(LanguageTag.t()) ::
+        @spec minimum_grouping_digits_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
                 {:ok, non_neg_integer} | {:error, {Exception.t(), String.t()}}
 
         def minimum_grouping_digits_for(locale \\ unquote(backend).get_current_locale())
@@ -130,6 +189,18 @@ defmodule Cldr.Number.Backend.Format do
           end
         end
 
+        def all_formats_for(locale_name) when is_binary(locale_name) do
+          with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
+            all_formats_for(locale)
+          end
+        end
+
+        def minimum_grouping_digits_for(locale_name) when is_binary(locale_name) do
+          with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
+            minimum_grouping_digits_for(locale)
+          end
+        end
+
         @doc """
         Returns the minium grouping digits for a locale.
         or raises on error.
@@ -152,6 +223,9 @@ defmodule Cldr.Number.Backend.Format do
             1
 
         """
+        @spec minimum_grouping_digits_for!(LanguageTag.t() | Cldr.Locale.locale_name()) ::
+                non_neg_integer | no_return()
+
         def minimum_grouping_digits_for!(locale) do
           case minimum_grouping_digits_for(locale) do
             {:ok, digits} -> digits
@@ -174,9 +248,12 @@ defmodule Cldr.Number.Backend.Format do
 
         * raises an exception
 
-        See `Cldr.Number.Format.all_formats_for/1` for further information.
+        See `#{inspect(__MODULE__)}.Number.Format.all_formats_for/1` for further information.
 
         """
+        @spec all_formats_for!(LanguageTag.t() | Cldr.Locale.locale_name()) ::
+                non_neg_integer | no_return()
+
         def all_formats_for!(locale) do
           case all_formats_for(locale) do
             {:ok, formats} -> formats
@@ -187,7 +264,7 @@ defmodule Cldr.Number.Backend.Format do
         @doc """
         Return the predfined formats for a given `locale` and `number_system`.
 
-        ## Options
+        ## Arguments
 
         * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
@@ -222,7 +299,6 @@ defmodule Cldr.Number.Backend.Format do
 
         """
         @spec formats_for(LanguageTag.t() | binary(), atom | String.t()) :: Map.t()
-
         def formats_for(%LanguageTag{} = locale, number_system) do
           Cldr.Number.Format.formats_for(locale, number_system, unquote(backend))
         end
