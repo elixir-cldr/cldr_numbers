@@ -44,7 +44,7 @@ defmodule Cldr.Number.Backend.System do
         end
 
         def number_systems_for(locale) do
-          {:error, Locale.locale_error(locale)}
+          {:error, Cldr.Locale.locale_error(locale)}
         end
       end
     end

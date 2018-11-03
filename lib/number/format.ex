@@ -150,7 +150,29 @@ defmodule Cldr.Number.Format do
           {:ok, Map.t()} | {:error, {Exception.t(), String.t()}}
 
   def all_formats_for(locale, backend) do
-    backend.all_formats_for(locale)
+    Module.concat(backend, Number.Format).all_formats_for(locale)
+  end
+
+  @doc """
+  Returns the decimal formats defined for a given locale.
+
+  ## Arguments
+
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
+    is `Cldr.get_current_locale/1`
+
+  ## Returns
+
+  * a list of decimal formats ot
+
+  * raises an exception
+
+  See `Cldr.Number.Format.all_formats_for/1` for further information.
+
+  """
+  def all_formats_for!(locale, backend) do
+    Module.concat(backend, Number.Format).all_formats_for!(locale)
   end
 
   @doc """
@@ -178,30 +200,7 @@ defmodule Cldr.Number.Format do
           {:ok, non_neg_integer} | {:error, {Exception.t(), String.t()}}
 
   def minimum_grouping_digits_for(locale, backend) do
-    backend.minimum_grouping_digits_for(locale)
-  end
-
-
-  @doc """
-  Returns the decimal formats defined for a given locale.
-
-  ## Arguments
-
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
-    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_current_locale/1`
-
-  ## Returns
-
-  * a list of decimal formats ot
-
-  * raises an exception
-
-  See `Cldr.Number.Format.all_formats_for/1` for further information.
-
-  """
-  def all_formats_for!(locale, backend) do
-    backend.all_formats_for!(locale)
+    Module.concat(backend, Number.Format).minimum_grouping_digits_for(locale)
   end
 
   @doc """
@@ -223,7 +222,7 @@ defmodule Cldr.Number.Format do
 
   """
   def minimum_grouping_digits_for!(locale, backend) do
-    backend.minimum_grouping_digits_for!(locale)
+    Module.concat(backend, Number.Format).minimum_grouping_digits_for!(locale)
   end
 
   @doc """
@@ -240,7 +239,7 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      Cldr.Number.Format.formats_for "fr", :native
+      Cldr.Number.Format.formats_for "fr", :native, Test.Cldr
       #=> %Cldr.Number.Format{
         accounting: "#,##0.00 ¤;(#,##0.00 ¤)",
         currency: "#,##0.00 ¤",
@@ -263,7 +262,7 @@ defmodule Cldr.Number.Format do
         }
 
   """
-  @spec formats_for(LanguageTag.t(), atom | String.t(), Cldr.backend()) :: Map.t()
+  @spec formats_for(LanguageTag.t() | binary(), atom | String.t(), Cldr.backend()) :: Map.t()
 
   def formats_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
@@ -283,7 +282,7 @@ defmodule Cldr.Number.Format do
   Return the predfined formats for a given `locale` and `number_system` or raises
   if either the `locale` or `number_system` is invalid.
 
-  ## Options
+  ## Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default

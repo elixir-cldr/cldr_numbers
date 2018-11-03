@@ -59,7 +59,7 @@ defmodule Cldr.Number.Formatter.Currency do
       |> Map.put(:format, :standard)
       |> set_fractional_digits(options[:fractional_digits])
 
-    number_string = Number.to_string!(number, options)
+    number_string = Number.to_string!(number, backend, options)
     format = cardinal.pluralize(number, locale, formats)
 
     Substitution.substitute([number_string, currency_string], format)

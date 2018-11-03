@@ -89,7 +89,7 @@ defmodule Cldr.Number.System do
   """
   @spec number_systems_for(Locale.name() | LanguageTag.t(), Cldr.backend()) :: Map.t()
   def number_systems_for(locale, backend) do
-    backend.number_systems_for(locale)
+    Module.concat(backend, Number.System).number_systems_for(locale)
   end
 
   @doc """
@@ -276,7 +276,7 @@ defmodule Cldr.Number.System do
   def system_name_from(system_name, locale, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, number_system} <- validate_number_system_or_type(system_name, backend),
-         {:ok, number_systems} <- number_systems_for(locale, locale) do
+         {:ok, number_systems} <- number_systems_for(locale, backend) do
       cond do
         Map.has_key?(number_systems, number_system) ->
           {:ok, Map.get(number_systems, number_system)}

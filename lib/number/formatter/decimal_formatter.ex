@@ -20,7 +20,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   import Cldr.Number.Symbol, only: [number_symbols_for: 2]
   import Cldr.Math, only: [power_of_10: 1]
 
-  alias Cldr.{Currency, Number, Math, Digits}
+  alias Cldr.{Currency, Math, Digits}
   alias Cldr.Number.Format
   alias Cldr.Number.Format.Compiler
 
@@ -41,7 +41,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   @spec to_string(Math.number(), String.t(), CLdr.backend(), Map.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
   def to_string(number, format, backend, options) do
-    backend.to_string(number, format, options)
+    Module.concat(backend, Number.Formatter.Decimal).to_string(number, format, options)
   end
 
   @doc false

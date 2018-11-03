@@ -4,16 +4,13 @@ defmodule Cldr.Rbnf.Processor do
   Macro to define the interpreter for the compiled RBNF rules specific to a rule group (Ordinal,
   Spellout, NumberingSystem)
   """
-  defmacro __using__(backend) do
-    IO.puts "Processor using"
-    IO.inspect backend
-
+  defmacro __using__(opts) do
+    backend = opts[:backend]
     ordinal_module = Module.concat(backend, Number.Ordinal)
     cardinal_module = Module.concat(backend, Number.Cardinal)
-    spellout_module = Module.concat(backend, Number.Spellout)
+    spellout_module = Module.concat(backend, Rbnf.Spellout)
 
     quote location: :keep do
-      IO.inspect unquote(backend)
       alias Cldr.Number
       alias Cldr.Digits
       import Cldr.Rbnf.Processor
@@ -54,7 +51,7 @@ defmodule Cldr.Rbnf.Processor do
 
       defp do_operation(:modulo, number, locale, function, rule, {:format, format})
            when is_number(number) and number < 0 do
-        Cldr.Number.to_string!(abs(number), locale: locale, format: format)
+        Cldr.Number.to_string!(abs(number), unquote(backend), locale: locale, format: format)
       end
 
       defp do_operation(:modulo, number, locale, function, rule, nil)
@@ -76,7 +73,7 @@ defmodule Cldr.Rbnf.Processor do
 
       defp do_operation(:modulo, number, locale, function, rule, {:format, format}) do
         mod = number - div(number, rule.divisor) * rule.divisor
-        Cldr.Number.to_string!(mod, locale: locale, format: format)
+        Cldr.Number.to_string!(mod, unquote(backend), locale: locale, format: format)
       end
 
       # For Fractional rules we format the fraction as individual digits.
@@ -96,7 +93,7 @@ defmodule Cldr.Rbnf.Processor do
       end
 
       defp do_operation(:call, number, locale, _function, _rule, {:format, format}) do
-        Cldr.Number.to_string!(number, locale: locale, format: format)
+        Cldr.Number.to_string!(number, unquote(backend), locale: locale, format: format)
       end
 
       defp do_operation(:call, number, locale, _function, _rule, {:rule, rule_name}) do

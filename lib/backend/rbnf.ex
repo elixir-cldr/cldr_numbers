@@ -1,11 +1,9 @@
 defmodule Cldr.Number.Backend.Rbnf do
   def define_number_modules(config) do
-    module = inspect(__MODULE__)
     backend = config.backend
-    config = Macro.escape(config)
 
-    quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
-      defmodule Number.Rbnf.NumberSystem do
+    quote location: :keep do
+      defmodule Rbnf.NumberSystem do
         @moduledoc """
         Functions to implement the number system rule-based-number-format rules of CLDR.
 
@@ -31,16 +29,15 @@ defmodule Cldr.Number.Backend.Rbnf do
 
             iex> Cldr.Number.to_string 123, format: :roman
             {:ok, "CXXIII"}
-
         """
 
         import Kernel, except: [and: 2]
-        use Cldr.Rbnf.Processor, backend
+        use Cldr.Rbnf.Processor, backend: unquote(backend)
 
-        define_rules(:NumberingSystemRules, backend, __ENV__)
+        define_rules(:NumberingSystemRules, unquote(backend), __ENV__)
       end
 
-      defmodule Number.Rbnf.Spellout do
+      defmodule Rbnf.Spellout do
         @moduledoc """
         Functions to implement the spellout rule-based-number-format rules of CLDR.
 
@@ -70,9 +67,9 @@ defmodule Cldr.Number.Backend.Rbnf do
         """
 
         import Kernel, except: [and: 2]
-        use Cldr.Rbnf.Processor, backend
+        use Cldr.Rbnf.Processor, backend: unquote(backend)
 
-        define_rules(:SpelloutRules, backend, __ENV__)
+        define_rules(:SpelloutRules, unquote(backend), __ENV__)
 
         # Default function to prevent compiler warnings in Cldr.Number
         def spellout_cardinal_verbose(_number, locale) do
@@ -84,7 +81,7 @@ defmodule Cldr.Number.Backend.Rbnf do
         end
       end
 
-      defmodule Number.Rbnf.Ordinal do
+      defmodule Rbnf.Ordinal do
         @moduledoc """
         Functions to implement the ordinal rule-based-number-format rules of CLDR.
 
@@ -112,9 +109,9 @@ defmodule Cldr.Number.Backend.Rbnf do
         """
 
         import Kernel, except: [and: 2]
-        use Cldr.Rbnf.Processor, backend
+        use Cldr.Rbnf.Processor, backend: unquote(backend)
 
-        define_rules(:OrdinalRules, backend, __ENV__)
+        define_rules(:OrdinalRules, unquote(backend), __ENV__)
       end
     end
   end

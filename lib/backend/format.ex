@@ -97,7 +97,7 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Examples
 
-            iex> Cldr.Number.Format.minimum_grouping_digits_for("en")
+            iex> #{inspect(__MODULE__)}.Number.Format.minimum_grouping_digits_for("en")
             {:ok, 1}
 
         """
@@ -131,6 +131,35 @@ defmodule Cldr.Number.Backend.Format do
         end
 
         @doc """
+        Returns the minium grouping digits for a locale.
+        or raises on error.
+
+        ## Arguments
+
+        * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
+          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
+          is `Cldr.get_current_locale/1`
+
+        ## Returns
+
+        * `minumum_digits` or
+
+        * raises an exception
+
+        ## Examples
+
+            iex> #{inspect(__MODULE__)}.Number.Format.minimum_grouping_digits_for!("en")
+            1
+
+        """
+        def minimum_grouping_digits_for!(locale) do
+          case minimum_grouping_digits_for(locale) do
+            {:ok, digits} -> digits
+            {:error, {exception, reason}} -> raise exception, reason
+          end
+        end
+
+        @doc """
         Returns the decimal formats defined for a given locale.
 
         ## Arguments
@@ -153,6 +182,49 @@ defmodule Cldr.Number.Backend.Format do
             {:ok, formats} -> formats
             {:error, {exception, message}} -> raise exception, message
           end
+        end
+
+        @doc """
+        Return the predfined formats for a given `locale` and `number_system`.
+
+        ## Options
+
+        * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
+          is `Cldr.get_current_locale/0`
+
+        * `number_system` is any valid number system or number system type returned
+          by `Cldr.Number.System.number_systems_for/1`
+
+        ## Example
+
+            Cldr.Number.Format.formats_for "fr", :native
+            #=> %Cldr.Number.Format{
+              accounting: "#,##0.00 ¤;(#,##0.00 ¤)",
+              currency: "#,##0.00 ¤",
+              percent: "#,##0 %",
+              scientific: "#E0",
+              standard: "#,##0.###"
+              currency_short: [{"1000", [one: "0 k ¤", other: "0 k ¤"]},
+               {"10000", [one: "00 k ¤", other: "00 k ¤"]},
+               {"100000", [one: "000 k ¤", other: "000 k ¤"]},
+               {"1000000", [one: "0 M ¤", other: "0 M ¤"]},
+               {"10000000", [one: "00 M ¤", other: "00 M ¤"]},
+               {"100000000", [one: "000 M ¤", other: "000 M ¤"]},
+               {"1000000000", [one: "0 Md ¤", other: "0 Md ¤"]},
+               {"10000000000", [one: "00 Md ¤", other: "00 Md ¤"]},
+               {"100000000000", [one: "000 Md ¤", other: "000 Md ¤"]},
+               {"1000000000000", [one: "0 Bn ¤", other: "0 Bn ¤"]},
+               {"10000000000000", [one: "00 Bn ¤", other: "00 Bn ¤"]},
+               {"100000000000000", [one: "000 Bn ¤", other: "000 Bn ¤"]}],
+               ...
+              }
+
+        """
+        @spec formats_for(LanguageTag.t() | binary(), atom | String.t()) :: Map.t()
+
+        def formats_for(%LanguageTag{} = locale, number_system) do
+          Cldr.Number.Format.formats_for(locale, number_system, unquote(backend))
         end
       end
     end
