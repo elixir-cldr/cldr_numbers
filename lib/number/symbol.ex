@@ -5,7 +5,6 @@ defmodule Cldr.Number.Symbol do
   """
 
   require Cldr
-  alias Cldr.Number
   alias Cldr.Locale
   alias Cldr.LanguageTag
 
@@ -71,9 +70,8 @@ defmodule Cldr.Number.Symbol do
   """
   @spec number_symbols_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) :: Keyword.t()
   def number_symbols_for(locale, backend) do
-    backend.number_symbols_for(locale)
+    Module.concat(backend, Number.Symbol).number_symbols_for(locale)
   end
-
 
   @doc """
   Returns the number sysbols for a specific locale and number system.
@@ -111,7 +109,7 @@ defmodule Cldr.Number.Symbol do
           {:ok, Map.t()} | {:error, {Cldr.NoNumberSymbols, String.t()}}
 
   def number_symbols_for(%LanguageTag{} = locale, number_system, backend) do
-    with {:ok, system_name} <- Number.System.system_name_from(number_system, locale, backend),
+    with {:ok, system_name} <- Cldr.Number.System.system_name_from(number_system, locale, backend),
          {:ok, symbols} <- number_symbols_for(locale, backend) do
       symbols
       |> Map.get(system_name)

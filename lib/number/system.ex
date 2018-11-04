@@ -8,6 +8,7 @@ defmodule Cldr.Number.System do
   The system name is also used as a key to define the separators that are used
   when formatting a number is this number_system. See
   `Cldr.Number.Symbol.number_symbols_for/2`.
+
   """
 
   alias Cldr.Locale
@@ -60,6 +61,7 @@ defmodule Cldr.Number.System do
   @systems_with_digits Enum.reject(@number_systems, fn {_name, system} ->
                          is_nil(system[:digits])
                        end)
+                       |> Map.new
 
   @doc """
   Number systems that have their own digit characters defined.
@@ -358,7 +360,7 @@ defmodule Cldr.Number.System do
             acc
 
           {:ok, %{digits: these_digits}} ->
-            {:ok, these_symbols} = Symbol.number_symbols_for(locale, this_system)
+            {:ok, these_symbols} = Symbol.number_symbols_for(locale, this_system, backend)
 
             if digits == these_digits && symbols == these_symbols do
               acc ++ {locale, this_system}
@@ -387,7 +389,7 @@ defmodule Cldr.Number.System do
 
   """
   def number_system_digits(system_name) do
-    if system = systems_with_digits()[system_name] do
+    if system = Map.get(systems_with_digits(), system_name) do
       {:ok, Map.get(system, :digits)}
     else
       {:error, number_system_digits_error(system_name)}

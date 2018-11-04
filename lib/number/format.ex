@@ -264,17 +264,7 @@ defmodule Cldr.Number.Format do
   """
   @spec formats_for(LanguageTag.t() | binary(), atom | String.t(), Cldr.backend()) :: Map.t()
   def formats_for(%LanguageTag{} = locale, number_system, backend) do
-    with {:ok, locale} <- Cldr.validate_locale(locale, backend),
-         {:ok, system_name} <- System.system_name_from(number_system, locale, backend),
-         {:ok, formats} <- all_formats_for(locale, backend) do
-      {:ok, Map.get(formats, system_name)}
-    end
-  end
-
-  def formats_for(locale_name, number_system, backend) when is_binary(locale_name) do
-    with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
-      formats_for(locale, number_system, backend)
-    end
+    backend.formats_for(locale, number_system)
   end
 
   @doc """

@@ -4,7 +4,9 @@ defmodule Cldr.Number.Backend.Format do
     backend = config.backend
     config = Macro.escape(config)
 
-    quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
+    number_system = Module.concat(backend, Number.System)
+
+    quote location: :keep, bind_quoted: [module: module, backend: backend, config: config, number_system: number_system] do
       defmodule Number.Format do
         @moduledoc """
         Functions to manage the collection of number patterns defined in Cldr.
@@ -43,6 +45,8 @@ defmodule Cldr.Number.Backend.Format do
         [Unicode documentation](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns)
 
         """
+
+        alias Cldr.Number.System
 
         @doc """
         Returns the list of decimal formats in the configured locales including
@@ -300,7 +304,17 @@ defmodule Cldr.Number.Backend.Format do
         """
         @spec formats_for(LanguageTag.t() | binary(), atom | String.t()) :: Map.t()
         def formats_for(%LanguageTag{} = locale, number_system) do
-          Cldr.Number.Format.formats_for(locale, number_system, unquote(backend))
+          with {:ok, locale} <- unquote(backend).validate_locale(locale),
+               {:ok, system_name} <- System.system_name_from(number_system, locale, unquote(backend)),
+               {:ok, formats} <- all_formats_for(locale) do
+            {:ok, Map.get(formats, system_name)}
+          end
+        end
+
+        def formats_for(locale_name, number_system) when is_binary(locale_name) do
+          with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
+            formats_for(locale, number_system)
+          end
         end
       end
     end
