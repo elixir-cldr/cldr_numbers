@@ -561,7 +561,7 @@ defmodule Cldr.Number.System do
       {:ok, number_system}
     else
       {:error, _} ->
-        with {:ok, number_system} <- Cldr.validate_number_system_type(number_system, backend) do
+        with {:ok, number_system} <- Cldr.validate_number_system_type(number_system, backend)do
           {:ok, number_system}
         else
           {:error, _reason} -> {:error, Cldr.unknown_number_system_error(number_system)}

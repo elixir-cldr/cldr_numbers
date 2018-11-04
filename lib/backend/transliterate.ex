@@ -98,24 +98,24 @@ defmodule Cldr.Number.Backend.Transliterate do
         @spec transliterate(String.t(), LanguageTag.t(), String.t()) :: String.t()
         def transliterate(
               sequence,
-              locale \\ Cldr.get_current_locale(),
+              locale \\ unquote(backend).get_current_locale(),
               number_system \\ System.default_number_system_type()
             )
 
         # No transliteration required when the digits and separators as the same
         # as the ones we use in formatting.
-        with {:ok, systems} <- Cldr.Config.known_number_systems_like("en", :latn) do
-          Enum.each(systems, fn {locale, system} ->
+        with {:ok, systems} <- Cldr.Config.known_number_systems_like("en", :latn, config) do
+          for {locale, system} <- systems do
             def transliterate(sequence, unquote(Macro.escape(locale)), unquote(system)) do
               sequence
             end
-          end)
+          end
         end
 
         # Translate the number system type to a system and invoke the real
         # transliterator
         for locale_name <- Cldr.Config.known_locale_names(config),
-            {system_type, number_system} <- Cldr.Config.number_systems_for(locale_name) do
+            {system_type, number_system} <- Cldr.Config.number_systems_for!(locale_name) do
           def transliterate(
                 sequence,
                 %LanguageTag{cldr_locale_name: unquote(locale_name)},
@@ -128,7 +128,7 @@ defmodule Cldr.Number.Backend.Transliterate do
         # For when the number system is provided as a string. We generate functions using
         # atom format so we need to convert but only to existing atoms
         def transliterate(sequence, locale, number_system) when is_binary(number_system) do
-          {:ok, system} = System.system_name_from(number_system, locale)
+          {:ok, system} = Cldr.Config.system_name_from(number_system, locale)
           transliterate(sequence, locale, system)
         end
 
@@ -151,13 +151,11 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         # Functions to transliterate the symbols
         for locale_name <- Cldr.Config.known_locale_names(config),
-            language_tag <- Map.get(Cldr.Config.all_language_tags(), locale_name),
-            locale = Cldr.Config.get_locale(locale_name),
-            {name, symbols} <- Cldr.Config.number_symbols_for(locale) do
+            {name, symbols} <- Cldr.Config.number_symbols_for!(locale_name) do
           # Mapping for the grouping separator
           defp transliterate_char(
                  unquote(Compiler.placeholder(:group)),
-                 unquote(language_tag),
+                 %LanguageTag{cldr_locale_name: unquote(locale_name)},
                  unquote(name)
                ) do
             unquote(symbols.group)
@@ -166,7 +164,7 @@ defmodule Cldr.Number.Backend.Transliterate do
           # Mapping for the decimal separator
           defp transliterate_char(
                  unquote(Compiler.placeholder(:decimal)),
-                 unquote(language_tag),
+                 %LanguageTag{cldr_locale_name: unquote(locale_name)},
                  unquote(name)
                ) do
             unquote(symbols.decimal)
@@ -175,7 +173,7 @@ defmodule Cldr.Number.Backend.Transliterate do
           # Mapping for the exponent
           defp transliterate_char(
                  unquote(Compiler.placeholder(:exponent)),
-                 unquote(language_tag),
+                 %LanguageTag{cldr_locale_name: unquote(locale_name)},
                  unquote(name)
                ) do
             unquote(symbols.exponential)
@@ -184,7 +182,7 @@ defmodule Cldr.Number.Backend.Transliterate do
           # Mapping for the plus sign
           defp transliterate_char(
                  unquote(Compiler.placeholder(:plus)),
-                 unquote(language_tag),
+                 %LanguageTag{cldr_locale_name: unquote(locale_name)},
                  unquote(name)
                ) do
             unquote(symbols.plus_sign)
@@ -193,7 +191,7 @@ defmodule Cldr.Number.Backend.Transliterate do
           # Mapping for the minus sign
           defp transliterate_char(
                  unquote(Compiler.placeholder(:minus)),
-                 unquote(language_tag),
+                 %LanguageTag{cldr_locale_name: unquote(locale_name)},
                  unquote(name)
                ) do
             unquote(symbols.minus_sign)

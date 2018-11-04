@@ -264,7 +264,7 @@ defmodule Cldr.Number.Format do
   """
   @spec formats_for(LanguageTag.t() | binary(), atom | String.t(), Cldr.backend()) :: Map.t()
   def formats_for(%LanguageTag{} = locale, number_system, backend) do
-    backend.formats_for(locale, number_system)
+    Module.concat(backend, Number.Format).formats_for(locale, number_system)
   end
 
   @doc """

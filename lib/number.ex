@@ -85,7 +85,6 @@ defmodule Cldr.Number do
   alias Cldr.Number.Format.Compiler
   alias Cldr.Number.Format
   alias Cldr.Locale
-  alias Cldr.Rbnf
 
   @type format_type ::
           :standard
@@ -283,10 +282,10 @@ defmodule Cldr.Number do
   """
   @spec to_string(number | Decimal.t, Cldr.backend(), Keyword.t() | Map.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
-  def to_string(number, backend, options) do
+  def to_string(number, backend, options \\ []) do
     {format, options} =
       options
-      |> normalize_options([], backend)
+      |> normalize_options(Module.concat(backend, Number).default_options(), backend)
       |> detect_negative_number(number)
 
     with :ok <- currency_format_has_code(format, currency_format?(format), options[:currency]) do
@@ -344,7 +343,7 @@ defmodule Cldr.Number do
     if rule_sets && @format in rule_sets do
       Module.concat(backend, Rbnf.Ordinal).digits_ordinal(number, options[:locale])
     else
-      {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
   end
 
@@ -356,7 +355,7 @@ defmodule Cldr.Number do
     if rule_sets && @format in rule_sets do
       Module.concat(backend, Rbnf.Spellout).spellout_cardinal(number, options[:locale])
     else
-      {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
   end
 
@@ -367,7 +366,7 @@ defmodule Cldr.Number do
     if rule_sets && @format in rule_sets do
       Module.concat(backend, Rbnf.Spellout).spellout_numbering(number, options[:locale])
     else
-      {:error, Rbnf.rbnf_rule_error(options[:locale], format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], format)}
     end
   end
 
@@ -379,7 +378,7 @@ defmodule Cldr.Number do
     if rule_sets && @format in rule_sets do
       Module.concat(backend, Rbnf.Spellout).spellout_cardinal_verbose(number, options[:locale])
     else
-      {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
   end
 
@@ -391,7 +390,7 @@ defmodule Cldr.Number do
     if rule_sets && @format in rule_sets do
       Module.concat(backend, Rbnf.Spellout).spellout_numbering_year(number, options[:locale])
     else
-      {:error, Rbnf.rbnf_rule_error(options[:locale], @format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], @format)}
     end
   end
 
@@ -402,7 +401,7 @@ defmodule Cldr.Number do
     if rule_sets && @format in rule_sets do
       Module.concat(backend, Rbnf.Spellout).spellout_ordinal(number, options[:locale])
     else
-      {:error, Rbnf.rbnf_rule_error(options[:locale], format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], format)}
     end
   end
 
@@ -413,12 +412,12 @@ defmodule Cldr.Number do
     if rule_sets && @format in rule_sets do
       Module.concat(backend, Rbnf.Spellout).spellout_ordinal_verbose(number, options[:locale])
     else
-      {:error, Rbnf.rbnf_rule_error(options[:locale], format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], format)}
     end
   end
 
   # For Roman numerals
-  @root_locale Cldr.Config.get_locale("root")
+  @root_locale Map.get(Cldr.Config.all_language_tags(), "root")
   defp to_string(number, :roman, backend, _options) do
     Module.concat(backend, Rbnf.NumberSystem).roman_upper(number, @root_locale)
   end

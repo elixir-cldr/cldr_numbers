@@ -17,7 +17,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   # **This module is not part of the public API and is subject
   # to change at any time.**
 
-  import Cldr.Number.Symbol, only: [number_symbols_for: 2]
+  import Cldr.Number.Symbol, only: [number_symbols_for: 3]
   import Cldr.Math, only: [power_of_10: 1]
 
   alias Cldr.{Currency, Math, Digits}
@@ -461,7 +461,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     system = options[:number_system]
     locale = options[:locale]
     currency = options[:currency]
-    {:ok, symbols} = number_symbols_for(locale, system)
+    {:ok, symbols} = number_symbols_for(locale, system, backend)
 
     Enum.map(format, fn token ->
       case token do
@@ -522,11 +522,11 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   def currency_symbol(currency, number, size, locale, backend) do
-    {:ok, currency} = Currency.currency_for_code(currency, locale)
+    {:ok, currency} = Currency.currency_for_code(currency, backend, locale: locale)
     currency_symbol(currency, number, size, locale, backend)
   end
 
-  def transliterate(number_string, _meta, %{locale: locale, number_system: number_system}, backend) do
+  def transliterate(number_string, _meta, backend, %{locale: locale, number_system: number_system}) do
     Cldr.Number.Transliterate.transliterate(number_string, locale, number_system, backend)
   end
 

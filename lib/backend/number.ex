@@ -301,7 +301,7 @@ defmodule Cldr.Number.Backend.Number do
           Cldr.Number.to_string(number, unquote(backend), options)
         end
 
-        defp default_options do
+        def default_options do
           [
             format: :standard,
             currency: nil,

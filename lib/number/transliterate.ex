@@ -86,7 +86,7 @@ defmodule Cldr.Number.Transliterate do
 
   """
   def transliterate(sequence, locale, number_system, backend) do
-    backend.transliterate(sequence, locale, number_system)
+    Module.concat(backend, Number.Transliterate).transliterate(sequence, locale, number_system)
   end
 
   def transliterate_digits(digits, from_system, to_system) when is_binary(digits) do
