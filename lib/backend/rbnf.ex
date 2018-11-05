@@ -15,19 +15,19 @@ defmodule Cldr.Number.Backend.Rbnf do
         The functions on this module are defined at compile time based upon the RBNF rules
         defined in the Unicode CLDR data repository.  Available rules are identified by:
 
-            iex> Cldr.Rbnf.NumberSystem.rule_sets Cldr.Locale.new!("root")
+            iex> #{inspect(unquote(backend))}.Rbnf.NumberSystem.rule_sets "root"
             [:tamil, :roman_upper, :roman_lower, :hebrew_item, :hebrew_0_99, :hebrew,
             :greek_upper, :greek_lower, :georgian, :ethiopic_p1, :ethiopic,
             :cyrillic_lower_1_10, :cyrillic_lower, :armenian_upper, :armenian_lower]
 
         A rule can then be invoked on an available rule_set.  For example
 
-            iex> Cldr.Rbnf.NumberSystem.roman_upper 123, Cldr.Locale.new!("root")
+            iex> #{inspect(unquote(backend))}.Rbnf.NumberSystem.roman_upper 123, "root"
             "CXXIII"
 
         This call is equivalent to the call through the public API of:
 
-            iex> Cldr.Number.to_string 123, format: :roman
+            iex> #{inspect(unquote(backend))}.Number.to_string 123, format: :roman
             {:ok, "CXXIII"}
         """
 

@@ -6,8 +6,6 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
 
     quote location: :keep do
       defmodule Number.Formatter.Decimal do
-        @moduledoc false
-
         @doc """
         Formats a number according to a decimal format string.
 
@@ -15,9 +13,10 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
 
         * `number` is an integer, float or Decimal
 
-        * `format` is a format string.  See `Cldr.Number` for further information.
+        * `format` is a format string.  See `#{inspect(unquote(backend))}.Number` for further information.
 
-        * `options` is a map of options.  See `Cldr.Number.to_string/2` for further information.
+        * `options` is a map of options.  See `#{inspect(unquote(backend))}.Number.to_string/2`
+          for further information.
 
         """
         alias Cldr.Number.Format.Compiler

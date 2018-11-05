@@ -1,4 +1,6 @@
 defmodule Cldr.Number.Backend do
+  @moduledoc false
+
   def define_number_modules(config) do
     quote location: :keep do
       unquote Cldr.Number.Backend.Number.define_number_module(config)

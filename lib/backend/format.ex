@@ -127,9 +127,11 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Arguments
 
-        * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
-          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-          is `Cldr.get_current_locale/1`
+        * `locale` is any valid locale name returned by
+          `#{inspect(backend)}.known_locale_names/1`
+          or a `Cldr.LanguageTag` struct returned by
+          `#{inspect(backend)}.Locale.new!/2`. The default
+          is `#{inspect(backend)}.get_current_locale/1`
 
         ## Returns
 
@@ -149,8 +151,9 @@ defmodule Cldr.Number.Backend.Format do
         ## Arguments
 
         * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-          is `Cldr.get_current_locale/0`
+          or a `Cldr.LanguageTag` struct returned by
+          `#{inspect(backend)}.Locale.new!/1`. The default
+          is `#{inspect(backend)}.get_current_locale/0`
 
         ## Returns
 
@@ -211,9 +214,10 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Arguments
 
-        * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
+        * `locale` is any valid locale name returned by
+          `#{inspect(backend)}.known_locale_names/1`
           or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-          is `Cldr.get_current_locale/1`
+          is `#{inspect(backend)}.get_current_locale/1`
 
         ## Returns
 
@@ -242,9 +246,11 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Arguments
 
-        * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
-          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-          is `Cldr.get_current_locale/1`
+        * `locale` is any valid locale name returned by
+          `#{inspect(backend)}.known_locale_names/1`
+          or a `Cldr.LanguageTag` struct returned by
+          `#{inspect(backend)}.Locale.new!/2`. The default
+          is `#{inspect(backend)}.get_current_locale/1`
 
         ## Returns
 
@@ -258,7 +264,7 @@ defmodule Cldr.Number.Backend.Format do
         @spec all_formats_for!(LanguageTag.t() | Cldr.Locale.locale_name()) ::
                 non_neg_integer | no_return()
 
-        def all_formats_for!(locale) do
+        def all_formats_for!(locale \\ unquote(backend).get_current_locale()) do
           case all_formats_for(locale) do
             {:ok, formats} -> formats
             {:error, {exception, message}} -> raise exception, message
@@ -270,16 +276,17 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Arguments
 
-        * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-          is `Cldr.get_current_locale/0`
+        * `locale` is any valid locale name returned by
+          `#{inspect(backend)}.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`.
+          The default is `#{inspect(backend)}.get_current_locale/0`
 
         * `number_system` is any valid number system or number system type returned
-          by `Cldr.Number.System.number_systems_for/1`
+          by `#{inspect(backend)}.Number.System.number_systems_for/1`
 
         ## Example
 
-            Cldr.Number.Format.formats_for "fr", :native
+            #{inspect(__MODULE__)}.formats_for "fr", :native
             #=> %Cldr.Number.Format{
               accounting: "#,##0.00 ¤;(#,##0.00 ¤)",
               currency: "#,##0.00 ¤",

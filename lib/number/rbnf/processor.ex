@@ -147,6 +147,17 @@ defmodule Cldr.Rbnf.Processor do
       _rule_group, _locale, "private", :error ->
         nil
 
+      rule_group, locale, "public", :redirect ->
+        define_rule(:redirect, backend, rule_group, locale, nil)
+        |> Code.eval_quoted([], env)
+
+      rule_group, locale, "public", :none_for_this_locale ->
+        define_rule(:none_for_this_locale, "public", rule_group, locale, nil)
+        |> Code.eval_quoted([], env)
+
+      _rule_group, _locale, "private", :redirect ->
+        nil
+
       rule_group, locale, access, rule ->
         {:ok, parsed} = Cldr.Rbnf.Rule.parse(rule.definition)
 
@@ -157,6 +168,7 @@ defmodule Cldr.Rbnf.Processor do
         |> add_function_to_exports(access, env.module, locale)
         |> Code.eval_quoted([], env)
     end)
+
   end
 
   defp iterate_rules(rule_group_type, backend, fun) do
@@ -168,8 +180,8 @@ defmodule Cldr.Rbnf.Processor do
           for rule <- rules do
             fun.(rule_group, locale_name, access, rule)
           end
-
           fun.(rule_group, locale_name, access, :error)
+          fun.(rule_group, locale_name, access, :redirect)
         end
       end
     end
@@ -178,7 +190,7 @@ defmodule Cldr.Rbnf.Processor do
   # If we are provided with a Decimal integer then we can call the
   # equivalent integer function without loss of precision
   defp define_rule(:error, _range, rule_group, locale_name, _body) do
-    quote do
+    quote location: :keep do
       def unquote(rule_group)(
             %Decimal{exp: 0, coef: number},
             %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)} = locale
@@ -192,18 +204,36 @@ defmodule Cldr.Rbnf.Processor do
     end
   end
 
-  defp define_rule("-x", _range, rule_group, locale, body) do
-    quote do
-      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
+  defp define_rule(:redirect, backend, rule_group, _locale_name, _body) do
+    quote location: :keep do
+      def unquote(rule_group)(number, locale_name) when is_binary(locale_name) do
+        with {:ok, locale} <- Module.concat(unquote(backend), Locale).new(locale_name) do
+          unquote(rule_group)(number, locale)
+        end
+      end
+    end
+  end
+
+  defp define_rule(:none_for_this_locale, _range, rule_group, _locale_name, _body) do
+    quote location: :keep do
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: locale_name}) do
+        {:error, rbnf_rule_error(number, unquote(rule_group), locale_name)}
+      end
+    end
+  end
+
+  defp define_rule("-x", _range, rule_group, locale_name, body) do
+    quote location: :keep do
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)})
           when Kernel.and(is_number(number), number < 0),
           do: unquote(body)
     end
   end
 
   # Improper fraction rule
-  defp define_rule("x.x", _range, rule_group, locale, body) do
-    quote do
-      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
+  defp define_rule("x.x", _range, rule_group, locale_name, body) do
+    quote location: :keep do
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)})
           when is_float(number),
           do: unquote(body)
     end
@@ -213,27 +243,27 @@ defmodule Cldr.Rbnf.Processor do
     define_rule("x.x", range, rule_group, locale, body)
   end
 
-  defp define_rule(0, "undefined", rule_group, locale, body) do
-    quote do
-      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
+  defp define_rule(0, "undefined", rule_group, locale_name, body) do
+    quote location: :keep do
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)})
           when is_integer(number),
           do: unquote(body)
     end
   end
 
-  defp define_rule(base_value, "undefined", rule_group, locale, body)
+  defp define_rule(base_value, "undefined", rule_group, locale_name, body)
        when is_integer(base_value) do
-    quote do
-      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
+    quote location: :keep do
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)})
           when Kernel.and(is_integer(number), number >= unquote(base_value)),
           do: unquote(body)
     end
   end
 
-  defp define_rule(base_value, range, rule_group, locale, body)
+  defp define_rule(base_value, range, rule_group, locale_name, body)
        when is_integer(range) and is_integer(base_value) do
-    quote do
-      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
+    quote location: :keep do
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)})
           when Kernel.and(
                  is_integer(number),
                  Kernel.and(number >= unquote(base_value), number < unquote(range))
@@ -242,28 +272,28 @@ defmodule Cldr.Rbnf.Processor do
     end
   end
 
-  defp define_rule(base_value, "undefined", rule_group, locale, body)
+  defp define_rule(base_value, "undefined", rule_group, locale_name, body)
        when is_integer(base_value) do
-    quote do
-      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale)})
+    quote location: :keep do
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)})
           when Kernel.and(is_integer(number), number >= unquote(base_value)),
           do: unquote(body)
     end
   end
 
-  defp define_rule("Inf", _range, _rule_group, _locale, _body) do
+  defp define_rule("Inf", _range, _rule_group, _locale_name, _body) do
     {:error, "Infinite rule sets are not implemented"}
   end
 
-  defp define_rule("NaN", _range, _rule_group, _locale, _body) do
+  defp define_rule("NaN", _range, _rule_group, _locale_name, _body) do
     {:error, "NaN rule sets are not implemented"}
   end
 
-  defp define_rule("0.x", _range, _rule_group, _locale, _body) do
+  defp define_rule("0.x", _range, _rule_group, _locale_name, _body) do
     {:error, "Proper Fraction rule sets are not implemented"}
   end
 
-  defp define_rule("x.0", _range, _rule_group, _locale, _body) do
+  defp define_rule("x.0", _range, _rule_group, _locale_name, _body) do
     {:error, "Master rule sets are not implemented"}
   end
 
@@ -273,7 +303,7 @@ defmodule Cldr.Rbnf.Processor do
       Cldr.Config.all_language_tags
       |> Map.get(locale_name)
 
-    quote do
+    quote location: :keep do
       do_rule(
         number,
         unquote(Macro.escape(locale)),
@@ -317,10 +347,36 @@ defmodule Cldr.Rbnf.Processor do
   end
 
   defmacro __before_compile__(env) do
-    quote do
+    module = env.module
+    rule_sets =
+      module
+      |> Module.get_attribute(:public_rulesets)
+      |> Map.values
+      |> List.flatten
+      |> Enum.uniq
+      |> Enum.sort
+
+    IO.puts "______ #{inspect env.module} _________"
+    quote location: :keep, bind_quoted: [module: module, rule_sets: rule_sets] do
       def rule_sets(%Cldr.LanguageTag{rbnf_locale_name: rbnf_locale_name}) do
-        unquote(Macro.escape(Module.get_attribute(env.module, :public_rulesets)))
+        unquote(rule_sets)
         |> Map.get(rbnf_locale_name)
+      end
+
+      def rule_sets(rbnf_locale_name) when is_binary(rbnf_locale_name) do
+        unquote(rule_sets)
+        |> Map.get(rbnf_locale_name)
+      end
+
+      def all_rule_sets do
+        unquote(rule_sets)
+      end
+
+      for rule_group <- rule_sets do
+        IO.puts "Rule group: #{inspect rule_group}"
+        def unquote(rule_group)(number, locale) do
+          {:error, rbnf_rule_error(number, unquote(rule_group), locale.rbnf_locale_name)}
+        end
       end
     end
   end
