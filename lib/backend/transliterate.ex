@@ -46,7 +46,6 @@ defmodule Cldr.Number.Backend.Transliterate do
         alias Cldr.Number.System
         alias Cldr.Number.Symbol
         alias Cldr.Number.Format.Compiler
-        alias Cldr.Locale
         alias Cldr.LanguageTag
         alias Cldr.Config
 
@@ -76,22 +75,22 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         ## Examples
 
-            iex> Cldr.Number.Transliterate.transliterate("123556")
+            iex> #{inspect(__MODULE__)}.transliterate("123556")
             "123556"
 
-            iex> Cldr.Number.Transliterate.transliterate("123,556.000", "fr", :default)
+            iex> #{inspect(__MODULE__)}.transliterate("123,556.000", "fr", :default)
             "123 556,000"
 
-            iex> Cldr.Number.Transliterate.transliterate("123556", "th", :default)
+            iex> #{inspect(__MODULE__)}.transliterate("123556", "th", :default)
             "123556"
 
-            iex> Cldr.Number.Transliterate.transliterate("123556", "th", "thai")
+            iex> #{inspect(__MODULE__)}.transliterate("123556", "th", "thai")
             "๑๒๓๕๕๖"
 
-            iex> Cldr.Number.Transliterate.transliterate("123556", "th", :native)
+            iex> #{inspect(__MODULE__)}.transliterate("123556", "th", :native)
             "๑๒๓๕๕๖"
 
-            iex> Cldr.Number.Transliterate.transliterate("Some number is: 123556", "th", "thai")
+            iex> #{inspect(__MODULE__)}.transliterate("Some number is: 123556", "th", "thai")
             "Some number is: ๑๒๓๕๕๖"
         """
 
@@ -104,7 +103,7 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         # No transliteration required when the digits and separators as the same
         # as the ones we use in formatting.
-        with {:ok, systems} <- Cldr.Config.known_number_systems_like("en", :latn, config) do
+        with {:ok, systems} <- Config.known_number_systems_like("en", :latn, config) do
           for {locale, system} <- systems do
             def transliterate(sequence, unquote(Macro.escape(locale)), unquote(system)) do
               sequence
@@ -114,8 +113,8 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         # Translate the number system type to a system and invoke the real
         # transliterator
-        for locale_name <- Cldr.Config.known_locale_names(config),
-            {system_type, number_system} <- Cldr.Config.number_systems_for!(locale_name) do
+        for locale_name <- Config.known_locale_names(config),
+            {system_type, number_system} <- Config.number_systems_for!(locale_name) do
           def transliterate(
                 sequence,
                 %LanguageTag{cldr_locale_name: unquote(locale_name)},
@@ -128,7 +127,7 @@ defmodule Cldr.Number.Backend.Transliterate do
         # For when the number system is provided as a string. We generate functions using
         # atom format so we need to convert but only to existing atoms
         def transliterate(sequence, locale, number_system) when is_binary(number_system) do
-          {:ok, system} = Cldr.Config.system_name_from(number_system, locale)
+          {:ok, system} = Config.system_name_from(number_system, locale)
           transliterate(sequence, locale, system)
         end
 
@@ -143,15 +142,22 @@ defmodule Cldr.Number.Backend.Transliterate do
           end
         end
 
+        def transliterate(sequence, locale_name, number_system) when is_binary(locale_name) do
+          with {:ok, locale} <- Module.concat(unquote(backend), :Locale).new(locale_name) do
+            transliterate(sequence, locale, number_system)
+          end
+        end
+
         def transliterate(_digit, locale, number_system) do
           raise Cldr.UnknownLocaleError,
-                "Locale/number system #{inspect(locale)}/ " <>
-                  "#{inspect(number_system)} is not known or the number system does not have digits (it may be algorithmic)"
+                "Locale/number system #{inspect(locale)}/" <>
+                  "#{inspect(number_system)} is not known or the number " <>
+                  "system does not have digits (it may be algorithmic)"
         end
 
         # Functions to transliterate the symbols
-        for locale_name <- Cldr.Config.known_locale_names(config),
-            {name, symbols} <- Cldr.Config.number_symbols_for!(locale_name) do
+        for locale_name <- Config.known_locale_names(config),
+            {name, symbols} <- Config.number_symbols_for!(locale_name) do
           # Mapping for the grouping separator
           defp transliterate_char(
                  unquote(Compiler.placeholder(:group)),
@@ -227,7 +233,7 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         ## Example
 
-            iex> Cldr.Number.Transliterate.transliterate_digits "٠١٢٣٤٥٦٧٨٩", :arab, :latn
+            iex> #{inspect(__MODULE__)}.transliterate_digits "٠١٢٣٤٥٦٧٨٩", :arab, :latn
             "0123456789"
 
         """
