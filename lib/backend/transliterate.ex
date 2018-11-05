@@ -42,6 +42,7 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         If a transliteration is requested between two number pairs that have not been configured for
         precompilation, a warning is logged.
+
         """
         alias Cldr.Number.System
         alias Cldr.Number.Symbol
@@ -57,6 +58,8 @@ defmodule Cldr.Number.Backend.Transliterate do
         separators as well as the plus, minus and exponent symbols. Any other character
         in the string will be returned "as is".
 
+        ## Arguments
+
         * `sequence` is the string to be transliterated.
 
         * `locale` is any known locale, defaulting to `Cldr.get_current_locale/0`.
@@ -65,12 +68,12 @@ defmodule Cldr.Number.Backend.Transliterate do
           is the actual name of a known number system. If epressed as an `atom` it is
           used as a key to look up a number system for the locale (the usual keys are
           `:default` and `:native` but :traditional and :finance are also part of the
-          standard). See `Cldr.Number.System.number_systems_for/1` for a locale to
+          standard). See `#{inspect(backend)}.Number.System.number_systems_for/1` for a locale to
           see what number system types are defined. The default is `:default`.
 
-        For available number systems see `Cldr.Number.System.number_systems/0`
-        and `Cldr.Number.System.number_systems_for/1`.  Also see
-        `Cldr.Number.Symbol.number_symbols_for/1`.
+        For available number systems see `Cldr.Number.System.number_systems/1`
+        and `#{inspect(backend)}.Number.System.number_systems_for/2`.  Also see
+        `#{inspect(backend)}.Number.Symbol.number_symbols_for/2`.
 
 
         ## Examples
@@ -92,6 +95,7 @@ defmodule Cldr.Number.Backend.Transliterate do
 
             iex> #{inspect(__MODULE__)}.transliterate("Some number is: 123556", "th", "thai")
             "Some number is: ๑๒๓๕๕๖"
+
         """
 
         @spec transliterate(String.t(), LanguageTag.t(), String.t()) :: String.t()

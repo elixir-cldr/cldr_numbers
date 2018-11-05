@@ -29,7 +29,6 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
 
         # Precompile the known formats and build the formatting pipeline
         # specific to this format thereby optimizing the performance.
-        # IO.inspect Cldr.Number.Formatter.Decimal.define_to_string(unquote(backend))
         unquote(Decimal.define_to_string(backend))
 
         # For formats not precompiled we need to compile first
