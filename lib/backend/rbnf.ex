@@ -70,15 +70,6 @@ defmodule Cldr.Number.Backend.Rbnf do
         use Cldr.Rbnf.Processor, backend: unquote(backend)
 
         define_rules(:SpelloutRules, unquote(backend), __ENV__)
-
-        # Default function to prevent compiler warnings in Cldr.Number
-        def spellout_cardinal_verbose(_number, locale) do
-          {:error, Cldr.Rbnf.rbnf_rule_error(locale, :spellout_cardinal_verbose)}
-        end
-
-        def spellout_ordinal_verbose(_number, locale) do
-          {:error, Cldr.Rbnf.rbnf_rule_error(locale, :spellout_ordinal_verbose)}
-        end
       end
 
       defmodule Rbnf.Ordinal do

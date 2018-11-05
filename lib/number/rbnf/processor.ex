@@ -10,10 +10,12 @@ defmodule Cldr.Rbnf.Processor do
     cardinal_module = Module.concat(backend, Number.Cardinal)
     spellout_module = Module.concat(backend, Rbnf.Spellout)
 
+
     quote location: :keep do
       alias Cldr.Number
       alias Cldr.Digits
       import Cldr.Rbnf.Processor
+      Module.put_attribute(__MODULE__, :backend, unquote(backend))
 
       defp do_rule(number, locale, function, rule, parsed) do
         results =
@@ -151,10 +153,6 @@ defmodule Cldr.Rbnf.Processor do
         define_rule(:redirect, backend, rule_group, locale, nil)
         |> Code.eval_quoted([], env)
 
-      rule_group, locale, "public", :none_for_this_locale ->
-        define_rule(:none_for_this_locale, "public", rule_group, locale, nil)
-        |> Code.eval_quoted([], env)
-
       _rule_group, _locale, "private", :redirect ->
         nil
 
@@ -178,10 +176,11 @@ defmodule Cldr.Rbnf.Processor do
       for {locale_name, _rule_group} <- all_rules do
         for {rule_group, %{access: access, rules: rules}} <- all_rules[locale_name] do
           for rule <- rules do
+            # IO.puts "Locale: #{inspect locale_name}: Group: #{inspect rule_group}: Rule: #{inspect rule}"
             fun.(rule_group, locale_name, access, rule)
           end
-          fun.(rule_group, locale_name, access, :error)
           fun.(rule_group, locale_name, access, :redirect)
+          fun.(rule_group, locale_name, access, :error)
         end
       end
     end
@@ -204,20 +203,12 @@ defmodule Cldr.Rbnf.Processor do
     end
   end
 
-  defp define_rule(:redirect, backend, rule_group, _locale_name, _body) do
+  defp define_rule(:redirect, backend, rule_group, locale_name, _body) do
     quote location: :keep do
-      def unquote(rule_group)(number, locale_name) when is_binary(locale_name) do
-        with {:ok, locale} <- Module.concat(unquote(backend), Locale).new(locale_name) do
+      def unquote(rule_group)(number, unquote(locale_name)) do
+        with {:ok, locale} <- Module.concat(unquote(backend), Locale).new(unquote(locale_name)) do
           unquote(rule_group)(number, locale)
         end
-      end
-    end
-  end
-
-  defp define_rule(:none_for_this_locale, _range, rule_group, _locale_name, _body) do
-    quote location: :keep do
-      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: locale_name}) do
-        {:error, rbnf_rule_error(number, unquote(rule_group), locale_name)}
       end
     end
   end
@@ -246,7 +237,7 @@ defmodule Cldr.Rbnf.Processor do
   defp define_rule(0, "undefined", rule_group, locale_name, body) do
     quote location: :keep do
       def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)})
-          when is_integer(number),
+          when is_integer(number) and number == 0,
           do: unquote(body)
     end
   end
@@ -268,15 +259,6 @@ defmodule Cldr.Rbnf.Processor do
                  is_integer(number),
                  Kernel.and(number >= unquote(base_value), number < unquote(range))
                ),
-          do: unquote(body)
-    end
-  end
-
-  defp define_rule(base_value, "undefined", rule_group, locale_name, body)
-       when is_integer(base_value) do
-    quote location: :keep do
-      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)})
-          when Kernel.and(is_integer(number), number >= unquote(base_value)),
           do: unquote(body)
     end
   end
@@ -347,35 +329,55 @@ defmodule Cldr.Rbnf.Processor do
   end
 
   defmacro __before_compile__(env) do
-    module = env.module
+    module =
+      env.module
+
+    backend =
+      module
+      |> Module.get_attribute(:backend)
+
     rule_sets =
       module
       |> Module.get_attribute(:public_rulesets)
+
+    all_rule_sets =
+      rule_sets
       |> Map.values
       |> List.flatten
       |> Enum.uniq
       |> Enum.sort
 
-    IO.puts "______ #{inspect env.module} _________"
-    quote location: :keep, bind_quoted: [module: module, rule_sets: rule_sets] do
+    rule_sets = Macro.escape(rule_sets)
+
+    quote location: :keep, bind_quoted: [rule_sets: rule_sets, all_rule_sets: all_rule_sets, backend: backend] do
+      # All rule sets for a locale
       def rule_sets(%Cldr.LanguageTag{rbnf_locale_name: rbnf_locale_name}) do
-        unquote(rule_sets)
+        rule_sets(rbnf_locale_name)
         |> Map.get(rbnf_locale_name)
       end
 
       def rule_sets(rbnf_locale_name) when is_binary(rbnf_locale_name) do
-        unquote(rule_sets)
+        unquote(Macro.escape(rule_sets))
         |> Map.get(rbnf_locale_name)
       end
 
+      # All rule sets for all locales
       def all_rule_sets do
-        unquote(rule_sets)
+        unquote(all_rule_sets)
       end
 
-      for rule_group <- rule_sets do
-        IO.puts "Rule group: #{inspect rule_group}"
-        def unquote(rule_group)(number, locale) do
-          {:error, rbnf_rule_error(number, unquote(rule_group), locale.rbnf_locale_name)}
+      # Return an error for a valid rule set which
+      # is not supported for either the locale or
+      # the number
+      for rule_group <- all_rule_sets do
+        def unquote(rule_group)(number, locale_name) when is_binary(locale_name) do
+          with {:ok, locale} <- Cldr.validate_locale(locale_name, unquote(backend)) do
+            unquote(rule_group)(number, locale)
+          end
+        end
+
+        def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: rbnf_locale_name}) do
+          {:error, rbnf_rule_error(number, unquote(rule_group), rbnf_locale_name)}
         end
       end
     end
