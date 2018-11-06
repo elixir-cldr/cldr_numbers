@@ -61,7 +61,7 @@ defmodule Cldr.Number.System do
   @systems_with_digits Enum.reject(@number_systems, fn {_name, system} ->
                          is_nil(system[:digits])
                        end)
-                       |> Map.new
+                       |> Map.new()
 
   @doc """
   Number systems that have their own digit characters defined.
@@ -157,7 +157,10 @@ defmodule Cldr.Number.System do
       {:ok, %{digits: "0123456789", type: :numeric}}
 
   """
-  @spec number_system_for(Locale.name() | LanguageTag.t(), System.name(), Cldr.backend()) :: [atom(), ...]
+  @spec number_system_for(Locale.name() | LanguageTag.t(), System.name(), Cldr.backend()) :: [
+          atom(),
+          ...
+        ]
   def number_system_for(locale, system_name, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, system_name} <- system_name_from(system_name, locale, backend) do
@@ -220,7 +223,10 @@ defmodule Cldr.Number.System do
       [:latn, :hebr]
 
   """
-  @spec number_system_names_for!(Locale.name() | LanguageTag.t(), Cldr.backend()) :: [system_name, ...]
+  @spec number_system_names_for!(Locale.name() | LanguageTag.t(), Cldr.backend()) :: [
+          system_name,
+          ...
+        ]
   def number_system_names_for!(locale, backend) do
     case number_system_names_for(locale, backend) do
       {:error, {exception, message}} ->
@@ -274,7 +280,8 @@ defmodule Cldr.Number.System do
   number system for the given locale as demonstrated in the third example.
 
   """
-  @spec system_name_from(system_name, Locale.locale_name() | LanguageTag.t(), Cldr.backend()) :: atom
+  @spec system_name_from(system_name, Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
+          atom
   def system_name_from(system_name, locale, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, number_system} <- validate_number_system_or_type(system_name, backend),
@@ -561,7 +568,7 @@ defmodule Cldr.Number.System do
       {:ok, number_system}
     else
       {:error, _} ->
-        with {:ok, number_system} <- Cldr.validate_number_system_type(number_system, backend)do
+        with {:ok, number_system} <- Cldr.validate_number_system_type(number_system, backend) do
           {:ok, number_system}
         else
           {:error, _reason} -> {:error, Cldr.unknown_number_system_error(number_system)}

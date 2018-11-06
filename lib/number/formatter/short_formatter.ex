@@ -72,7 +72,8 @@ defmodule Cldr.Number.Formatter.Short do
     end
   end
 
-  @spec short_format_string(number, atom, Locale.name(), atom, Cldr.backend(), Map.t()) :: List.t()
+  @spec short_format_string(number, atom, Locale.name(), atom, Cldr.backend(), Map.t()) ::
+          List.t()
   defp short_format_string(number, style, locale, number_system, backend, options) do
     case Format.formats_for(locale, number_system, backend) do
       {:ok, formats} ->
@@ -87,7 +88,12 @@ defmodule Cldr.Number.Formatter.Short do
               {number, format}
           end
 
-        Formatter.Decimal.to_string(number, format, backend, digits(options, options[:fractional_digits]))
+        Formatter.Decimal.to_string(
+          number,
+          format,
+          backend,
+          digits(options, options[:fractional_digits])
+        )
 
       {:error, _} = error ->
         error
@@ -104,7 +110,8 @@ defmodule Cldr.Number.Formatter.Short do
     options
   end
 
-  defp choose_short_format(number, _rules, backend, options) when is_number(number) and number < 1000 do
+  defp choose_short_format(number, _rules, backend, options)
+       when is_number(number) and number < 1000 do
     format =
       options[:locale]
       |> Format.formats_for!(options[:number_system], backend)

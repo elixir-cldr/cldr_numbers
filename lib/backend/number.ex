@@ -86,7 +86,6 @@ defmodule Cldr.Number.Backend.Number do
         possible.
         """
 
-
         @doc """
         Returns a number formatted into a string according to a format pattern and options.
 
@@ -264,7 +263,7 @@ defmodule Cldr.Number.Backend.Number do
             "The locale \\"he\\" with number system \\"hebr\\" does not define a format :standard."}}
         ```
         """
-        @spec to_string(number | Decimal.t, Keyword.t() | Map.t()) ::
+        @spec to_string(number | Decimal.t(), Keyword.t() | Map.t()) ::
                 {:ok, String.t()} | {:error, {atom, String.t()}}
         def to_string(number, options \\ default_options()) do
           Cldr.Number.to_string(number, unquote(backend), options)
@@ -296,9 +295,10 @@ defmodule Cldr.Number.Backend.Number do
             "12 345"
 
         """
-        @spec to_string!(number | Decimal.t(), Keyword.t() | Map.t()) :: String.t() | Exception.t()
+        @spec to_string!(number | Decimal.t(), Keyword.t() | Map.t()) ::
+                String.t() | Exception.t()
         def to_string!(number, options \\ default_options()) do
-          Cldr.Number.to_string(number, unquote(backend), options)
+          Cldr.Number.to_string!(number, unquote(backend), options)
         end
 
         def default_options do

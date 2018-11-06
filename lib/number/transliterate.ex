@@ -112,5 +112,4 @@ defmodule Cldr.Number.Transliterate do
     |> Enum.map(&Map.get(map, &1, &1))
     |> Enum.join()
   end
-
 end

@@ -315,7 +315,11 @@ defmodule Cldr.Number.Format do
       :decimal_long, :decimal_short, :percent, :scientific, :standard]}
 
   """
-  @spec format_styles_for(LanguageTag.t() | Locale.locale_name(), System.system_name(), Cldr.backend()) :: [
+  @spec format_styles_for(
+          LanguageTag.t() | Locale.locale_name(),
+          System.system_name(),
+          Cldr.backend()
+        ) :: [
           atom,
           ...
         ]
@@ -398,8 +402,11 @@ defmodule Cldr.Number.Format do
        :scientific, :standard]}
 
   """
-  @spec decimal_format_styles_for(LanguageTag.t() | Locale.locale_name(), System.system_name(), Cldr.backend()) ::
-          [atom, ...]
+  @spec decimal_format_styles_for(
+          LanguageTag.t() | Locale.locale_name(),
+          System.system_name(),
+          Cldr.backend()
+        ) :: [atom, ...]
 
   def decimal_format_styles_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, styles} <- format_styles_for(locale, number_system, backend),
@@ -408,7 +415,8 @@ defmodule Cldr.Number.Format do
     end
   end
 
-  def decimal_format_styles_for(locale_name, number_system, backend) when is_binary(locale_name) do
+  def decimal_format_styles_for(locale_name, number_system, backend)
+      when is_binary(locale_name) do
     with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
       decimal_format_styles_for(locale, number_system, backend)
     end

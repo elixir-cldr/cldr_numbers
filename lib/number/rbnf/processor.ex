@@ -10,7 +10,6 @@ defmodule Cldr.Rbnf.Processor do
     cardinal_module = Module.concat(backend, Number.Cardinal)
     spellout_module = Module.concat(backend, Rbnf.Spellout)
 
-
     quote location: :keep do
       alias Cldr.Number
       alias Cldr.Digits
@@ -166,7 +165,6 @@ defmodule Cldr.Rbnf.Processor do
         |> add_function_to_exports(access, env.module, locale)
         |> Code.eval_quoted([], env)
     end)
-
   end
 
   defp iterate_rules(rule_group_type, backend, fun) do
@@ -179,6 +177,7 @@ defmodule Cldr.Rbnf.Processor do
             # IO.puts "Locale: #{inspect locale_name}: Group: #{inspect rule_group}: Rule: #{inspect rule}"
             fun.(rule_group, locale_name, access, rule)
           end
+
           fun.(rule_group, locale_name, access, :redirect)
           fun.(rule_group, locale_name, access, :error)
         end
@@ -282,7 +281,7 @@ defmodule Cldr.Rbnf.Processor do
   # Get the AST of the rule body
   defp rule_body(locale_name, rule_group, rule, parsed, _backend) do
     locale =
-      Cldr.Config.all_language_tags
+      Cldr.Config.all_language_tags()
       |> Map.get(locale_name)
 
     quote location: :keep do
@@ -329,8 +328,7 @@ defmodule Cldr.Rbnf.Processor do
   end
 
   defmacro __before_compile__(env) do
-    module =
-      env.module
+    module = env.module
 
     backend =
       module
@@ -342,14 +340,15 @@ defmodule Cldr.Rbnf.Processor do
 
     all_rule_sets =
       rule_sets
-      |> Map.values
-      |> List.flatten
-      |> Enum.uniq
-      |> Enum.sort
+      |> Map.values()
+      |> List.flatten()
+      |> Enum.uniq()
+      |> Enum.sort()
 
     rule_sets = Macro.escape(rule_sets)
 
-    quote location: :keep, bind_quoted: [rule_sets: rule_sets, all_rule_sets: all_rule_sets, backend: backend] do
+    quote location: :keep,
+          bind_quoted: [rule_sets: rule_sets, all_rule_sets: all_rule_sets, backend: backend] do
       # All rule sets for a locale
       def rule_sets(%Cldr.LanguageTag{rbnf_locale_name: rbnf_locale_name}) do
         rule_sets(rbnf_locale_name)
@@ -371,7 +370,7 @@ defmodule Cldr.Rbnf.Processor do
       # the number
       for rule_group <- all_rule_sets do
         def unquote(rule_group)(number, locale_name) when is_binary(locale_name) do
-          with {:ok, locale} <- Cldr.validate_locale(locale_name, unquote(backend)) do
+          with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             unquote(rule_group)(number, locale)
           end
         end

@@ -240,7 +240,10 @@ defmodule Cldr.Number.Format.Compiler do
   def formatting_pipeline(meta) do
     first_stage(:absolute_value)
     |> stage_if_not(:multiply_by_factor, match?(%{multiplier: 1}, meta))
-    |> stage_if_not(:round_to_significant_digits, match?(%{significant_digits: %{min: 0, max: 0}}, meta))
+    |> stage_if_not(
+      :round_to_significant_digits,
+      match?(%{significant_digits: %{min: 0, max: 0}}, meta)
+    )
     |> stage_if_not(:round_to_nearest, match?(%{rounding: 0}, meta))
     |> stage(:set_exponent)
     |> stage(:round_fractional_digits)
@@ -248,7 +251,10 @@ defmodule Cldr.Number.Format.Compiler do
     |> stage(:adjust_leading_zeros)
     |> stage(:adjust_trailing_zeros)
     |> stage_if_not(:set_max_integer_digits, match?(%{integer_digits: %{max: 0}}, meta))
-    |> stage_if_not(:apply_grouping, match?(%{grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}}}, meta))
+    |> stage_if_not(
+      :apply_grouping,
+      match?(%{grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}}}, meta)
+    )
     |> stage(:reassemble_number_string)
     |> stage(:transliterate)
     |> stage(:assemble_format)

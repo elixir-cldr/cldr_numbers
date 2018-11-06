@@ -10,8 +10,8 @@ defmodule Cldr.Number.Backend.System do
         Returns the number systems available for a locale
         or `{:error, message}` if the locale is not known.
 
-        * `locale` is any valid locale name returned by `#{inspect backend}.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `#{inspect backend}.Locale.new!/1`
+        * `locale` is any valid locale name returned by `#{inspect(backend)}.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by `#{inspect(backend)}.Locale.new!/1`
 
         ## Examples
 
@@ -32,8 +32,8 @@ defmodule Cldr.Number.Backend.System do
         Returns the number systems available for a locale
         or `{:error, message}` if the locale is not known.
 
-        * `locale` is any valid locale name returned by `#{inspect backend}.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `#{inspect backend}.Locale.new!/1`
+        * `locale` is any valid locale name returned by `#{inspect(backend)}.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by `#{inspect(backend)}.Locale.new!/1`
 
         ## Examples
 
@@ -63,7 +63,7 @@ defmodule Cldr.Number.Backend.System do
 
           def number_system_names_for(unquote(locale_name)) do
             with {:ok, systems} <- number_systems_for(unquote(locale_name)) do
-              {:ok, Map.values(systems) |> Enum.uniq}
+              {:ok, Map.values(systems) |> Enum.uniq()}
             end
           end
 
@@ -73,7 +73,7 @@ defmodule Cldr.Number.Backend.System do
 
           def number_system_types_for(unquote(locale_name)) do
             with {:ok, systems} <- number_systems_for(unquote(locale_name)) do
-              {:ok, Map.keys(systems) |> Enum.uniq}
+              {:ok, Map.keys(systems) |> Enum.uniq()}
             end
           end
 

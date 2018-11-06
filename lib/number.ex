@@ -282,7 +282,7 @@ defmodule Cldr.Number do
       "The locale \\"he\\" with number system \\"hebr\\" does not define a format :standard."}}
   ```
   """
-  @spec to_string(number | Decimal.t, Cldr.backend(), Keyword.t() | Map.t()) ::
+  @spec to_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
   def to_string(number, backend, options \\ []) do
     {format, options} =
@@ -325,7 +325,7 @@ defmodule Cldr.Number do
 
   """
   @spec to_string!(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
-    String.t() | Exception.t()
+          String.t() | Exception.t()
 
   def to_string!(number, backend, options) do
     case to_string(number, backend, options) do
@@ -551,7 +551,8 @@ defmodule Cldr.Number do
     |> Map.merge(options, fun)
   end
 
-  defp resolve_standard_format(%{format: format} = options, _backend) when format in @short_format_styles do
+  defp resolve_standard_format(%{format: format} = options, _backend)
+       when format in @short_format_styles do
     options
   end
 

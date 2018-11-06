@@ -6,7 +6,13 @@ defmodule Cldr.Number.Backend.Format do
 
     number_system = Module.concat(backend, Number.System)
 
-    quote location: :keep, bind_quoted: [module: module, backend: backend, config: config, number_system: number_system] do
+    quote location: :keep,
+          bind_quoted: [
+            module: module,
+            backend: backend,
+            config: config,
+            number_system: number_system
+          ] do
       defmodule Number.Format do
         @moduledoc """
         Functions to manage the collection of number patterns defined in Cldr.
@@ -71,7 +77,7 @@ defmodule Cldr.Number.Backend.Format do
 
         """
         @format_list Cldr.Config.decimal_format_list(config)
-        @spec decimal_format_list :: [Cldr.Number.Format.format, ...]
+        @spec decimal_format_list :: [Cldr.Number.Format.format(), ...]
         def decimal_format_list do
           unquote(Macro.escape(@format_list))
         end
@@ -312,7 +318,8 @@ defmodule Cldr.Number.Backend.Format do
         @spec formats_for(LanguageTag.t() | binary(), atom | String.t()) :: Map.t()
         def formats_for(%LanguageTag{} = locale, number_system) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale),
-               {:ok, system_name} <- System.system_name_from(number_system, locale, unquote(backend)),
+               {:ok, system_name} <-
+                 System.system_name_from(number_system, locale, unquote(backend)),
                {:ok, formats} <- all_formats_for(locale) do
             {:ok, Map.get(formats, system_name)}
           end

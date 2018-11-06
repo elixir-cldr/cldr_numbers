@@ -97,12 +97,12 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   def multiply_by_factor(%Decimal{} = number, %{multiplier: factor}, _backend, _options)
-       when is_integer(factor) do
+      when is_integer(factor) do
     Decimal.mult(number, Decimal.new(factor))
   end
 
   def multiply_by_factor(number, %{multiplier: factor}, _backend, _options)
-       when is_number(number) and is_integer(factor) do
+      when is_number(number) and is_integer(factor) do
     number * factor
   end
 
@@ -117,16 +117,21 @@ defmodule Cldr.Number.Formatter.Decimal do
   # digit rounding as well as decimal precision rounding.  Its likely
   # not a good idea to combine the two in a format mask and results
   # are unspecified if you do.
-  def round_to_significant_digits(number, %{significant_digits: %{min: 0, max: 0}}, _backend, _options) do
+  def round_to_significant_digits(
+        number,
+        %{significant_digits: %{min: 0, max: 0}},
+        _backend,
+        _options
+      ) do
     number
   end
 
   def round_to_significant_digits(
-         number,
-         %{significant_digits: %{min: _min, max: max}},
-         _backend,
-         _options
-       ) do
+        number,
+        %{significant_digits: %{min: _min, max: max}},
+        _backend,
+        _options
+      ) do
     Math.round_significant(number, max)
   end
 
@@ -134,13 +139,13 @@ defmodule Cldr.Number.Formatter.Decimal do
   # if `rounding: 5` then we round to the nearest multiple of 5.  The appropriate rounding
   # mode is used.
   def round_to_nearest(number, %{rounding: rounding}, _backend, %{rounding_mode: _rounding_mode})
-       when rounding == 0 do
+      when rounding == 0 do
     number
   end
 
   def round_to_nearest(%Decimal{} = number, %{rounding: rounding}, _backend, %{
-         rounding_mode: rounding_mode
-       }) do
+        rounding_mode: rounding_mode
+      }) do
     rounding = Decimal.new(rounding)
 
     number
@@ -150,7 +155,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   def round_to_nearest(number, %{rounding: rounding}, _backend, %{rounding_mode: rounding_mode})
-       when is_float(number) do
+      when is_float(number) do
     number
     |> Kernel./(rounding)
     |> Math.round(0, rounding_mode)
@@ -158,7 +163,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   def round_to_nearest(number, %{rounding: rounding}, _backend, %{rounding_mode: rounding_mode})
-       when is_integer(number) do
+      when is_integer(number) do
     number
     |> Kernel./(rounding)
     |> Math.round(0, rounding_mode)
@@ -182,24 +187,29 @@ defmodule Cldr.Number.Formatter.Decimal do
   # applied after setting the exponent since we may have either
   # the original number or its coef/exponentform.
   def round_fractional_digits({number, exponent}, _meta, _backend, _options)
-       when is_integer(number) do
+      when is_integer(number) do
     {number, exponent}
   end
 
   # Don't round if we're in exponential mode.  This is probably incorrect since
   # we're not following the 'significant digits' processing rule for
   # exponent numbers.
-  def round_fractional_digits({number, exponent}, %{exponent_digits: exponent_digits}, _backend, _options)
-       when exponent_digits > 0 do
+  def round_fractional_digits(
+        {number, exponent},
+        %{exponent_digits: exponent_digits},
+        _backend,
+        _options
+      )
+      when exponent_digits > 0 do
     {number, exponent}
   end
 
   def round_fractional_digits(
-         {number, exponent},
-         %{fractional_digits: %{max: max, min: _min}},
-         _backend,
-         %{rounding_mode: rounding_mode}
-       ) do
+        {number, exponent},
+        %{fractional_digits: %{max: max, min: _min}},
+        _backend,
+        %{rounding_mode: rounding_mode}
+      ) do
     number = Math.round(number, max, rounding_mode)
     {number, exponent}
   end
@@ -224,11 +234,11 @@ defmodule Cldr.Number.Formatter.Decimal do
   # Remove all the leading zeros from an integer and add back what
   # is required for the format
   def adjust_leading_zeros(
-         {sign, integer, fraction, exponent_sign, exponent},
-         %{integer_digits: integer_digits},
-         _backend,
-         _options
-       ) do
+        {sign, integer, fraction, exponent_sign, exponent},
+        %{integer_digits: integer_digits},
+        _backend,
+        _options
+      ) do
     integer =
       if (count = integer_digits[:min] - length(integer)) > 0 do
         :lists.duplicate(count, ?0) ++ integer
@@ -240,11 +250,11 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   def adjust_trailing_zeros(
-         {sign, integer, fraction, exponent_sign, exponent},
-         %{fractional_digits: fraction_digits},
-         _backend,
-         _options
-       ) do
+        {sign, integer, fraction, exponent_sign, exponent},
+        %{fractional_digits: fraction_digits},
+        _backend,
+        _options
+      ) do
     fraction = do_trailing_zeros(fraction, fraction_digits[:min] - length(fraction))
     {sign, integer, fraction, exponent_sign, exponent}
   end
@@ -264,11 +274,11 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   def set_max_integer_digits(
-         {sign, integer, fraction, exponent_sign, exponent},
-         %{integer_digits: %{max: max}},
-         _backend,
-         _options
-       ) do
+        {sign, integer, fraction, exponent_sign, exponent},
+        %{integer_digits: %{max: max}},
+        _backend,
+        _options
+      ) do
     integer = do_max_integer_digits(integer, length(integer) - max)
     {sign, integer, fraction, exponent_sign, exponent}
   end
@@ -286,11 +296,11 @@ defmodule Cldr.Number.Formatter.Decimal do
   # There may be one or two different groupings for the integer part
   # and one grouping for the fraction part.
   def apply_grouping(
-         {sign, integer, [] = fraction, exponent_sign, exponent},
-         %{grouping: groups},
-         backend,
-         %{locale: locale, minimum_grouping_digits: minimum_grouping_digits}
-       ) do
+        {sign, integer, [] = fraction, exponent_sign, exponent},
+        %{grouping: groups},
+        backend,
+        %{locale: locale, minimum_grouping_digits: minimum_grouping_digits}
+      ) do
     integer =
       do_grouping(
         integer,
@@ -303,11 +313,15 @@ defmodule Cldr.Number.Formatter.Decimal do
     {sign, integer, fraction, exponent_sign, exponent}
   end
 
-  def apply_grouping({sign, integer, fraction, exponent_sign, exponent}, %{grouping: groups},
-      backend,
-      %{
-         locale: locale, minimum_grouping_digits: minimum_grouping_digits
-       }) do
+  def apply_grouping(
+        {sign, integer, fraction, exponent_sign, exponent},
+        %{grouping: groups},
+        backend,
+        %{
+          locale: locale,
+          minimum_grouping_digits: minimum_grouping_digits
+        }
+      ) do
     integer =
       do_grouping(
         integer,
@@ -365,7 +379,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   def do_grouping(number, %{first: first, rest: rest}, length, _, _direction)
-       when first == rest and length <= first do
+      when first == rest and length <= first do
     number
   end
 
@@ -422,11 +436,11 @@ defmodule Cldr.Number.Formatter.Decimal do
   @exponent_sign Compiler.placeholder(:exponent_sign)
   @minus_placeholder Compiler.placeholder(:minus)
   def reassemble_number_string(
-         {_sign, integer, fraction, exponent_sign, exponent},
-         meta,
-         _backend,
-         _options
-       ) do
+        {_sign, integer, fraction, exponent_sign, exponent},
+        meta,
+        _backend,
+        _options
+      ) do
     integer = if integer == [], do: ['0'], else: integer
     fraction = if fraction == [], do: fraction, else: [@decimal_separator, fraction]
 
@@ -575,21 +589,21 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   # For no significant digits
   def adjust_fraction_for_significant_digits(
-         %{significant_digits: %{max: 0, min: 0}} = meta,
-         _number
-       ) do
+        %{significant_digits: %{max: 0, min: 0}} = meta,
+        _number
+      ) do
     meta
   end
 
   # No fractional digits for an integer
   def adjust_fraction_for_significant_digits(%{significant_digits: _} = meta, number)
-       when is_integer(number) do
+      when is_integer(number) do
     meta
   end
 
   # Decimal version of an integer => exponent > 0
   def adjust_fraction_for_significant_digits(%{significant_digits: _} = meta, %Decimal{exp: exp})
-       when exp >= 0 do
+      when exp >= 0 do
     meta
   end
 
@@ -610,12 +624,20 @@ defmodule Cldr.Number.Formatter.Decimal do
   @doc false
   def define_to_string(backend) do
     config = Module.get_attribute(backend, :config)
+
     for format <- Cldr.Config.decimal_format_list(config) do
       case Compiler.compile(format) do
         {:ok, meta, formatting_pipeline} ->
           quote do
             def to_string(number, unquote(format), options) when is_map(options) do
-              meta = Decimal.update_meta(unquote(Macro.escape(meta)), number, unquote(backend), options)
+              meta =
+                Decimal.update_meta(
+                  unquote(Macro.escape(meta)),
+                  number,
+                  unquote(backend),
+                  options
+                )
+
               backend = unquote(backend)
               unquote(formatting_pipeline)
             end

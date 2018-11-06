@@ -101,7 +101,7 @@ defmodule Cldr.Number.String do
     [""]
   end
 
-  if Version.compare(System.version, "1.6.0") in [:gt, :eq] do
+  if Version.compare(System.version(), "1.6.0") in [:gt, :eq] do
     def chunk_string(string, size, :forward) do
       string
       |> String.to_charlist()

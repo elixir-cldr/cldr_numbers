@@ -12,7 +12,7 @@ defmodule Cldr.Clause do
 
     clauses
     |> Enum.map(format_clause_fun)
-    |> Enum.join
+    |> Enum.join()
   end
 
   defp blame_match(%{match?: true, node: node}, _), do: Macro.to_string(node)

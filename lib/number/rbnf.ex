@@ -77,7 +77,7 @@ defmodule Cldr.Rbnf do
   def for_all_locales(backend) do
     known_rbnf_locale_names =
       Module.get_attribute(backend, :config)
-      |> Cldr.Config.known_rbnf_locale_names
+      |> Cldr.Config.known_rbnf_locale_names()
 
     Enum.map(known_rbnf_locale_names, fn locale_name ->
       locale =

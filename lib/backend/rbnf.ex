@@ -107,5 +107,3 @@ defmodule Cldr.Number.Backend.Rbnf do
     end
   end
 end
-
-
