@@ -63,7 +63,8 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Example
 
-            #=> #{inspect(__MODULE__)}.Format.decimal_format_list ["#", "#,##,##0%",
+            #=> #{inspect(__MODULE__)}.Format.decimal_format_list
+            ["#", "#,##,##0%",
             "#,##,##0.###", "#,##,##0.00¤", "#,##,##0.00¤;(#,##,##0.00¤)",
             "#,##,##0 %", "#,##0%", "#,##0.###", "#,##0.00 ¤",
             "#,##0.00 ¤;(#,##0.00 ¤)", "#,##0.00¤", "#,##0.00¤;(#,##0.00¤)",

@@ -79,13 +79,13 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_systems_for Cldr.Locale.new!("en")
+      iex> Cldr.Number.System.number_systems_for "en", TestBackend.Cldr
       {:ok, %{default: :latn, native: :latn}}
 
-      iex> Cldr.Number.System.number_systems_for Cldr.Locale.new!("th")
+      iex> Cldr.Number.System.number_systems_for "th", TestBackend.Cldr
       {:ok, %{default: :latn, native: :thai}}
 
-      iex> Cldr.Number.System.number_systems_for Cldr.Locale.new!("zz")
+      iex> Cldr.Number.System.number_systems_for "zz", TestBackend.Cldr
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
   """
@@ -103,10 +103,10 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_systems_for! Cldr.Locale.new!("en")
+      iex> Cldr.Number.System.number_systems_for! "en", TestBackend.Cldr
       %{default: :latn, native: :latn}
 
-      iex> Cldr.Number.System.number_systems_for! Cldr.Locale.new!("th")
+      iex> Cldr.Number.System.number_systems_for! "th", TestBackend.Cldr
       %{default: :latn, native: :thai}
 
   """
@@ -137,23 +137,23 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("th"), :latn
+      iex> Cldr.Number.System.number_system_for "th", :latn, TestBackend.Cldr
       {:ok, %{digits: "0123456789", type: :numeric}}
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :default
+      iex> Cldr.Number.System.number_system_for "en", :default, TestBackend.Cldr
       {:ok, %{digits: "0123456789", type: :numeric}}
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("he"), :traditional
+      iex> Cldr.Number.System.number_system_for "he", :traditional, TestBackend.Cldr
       {:ok, %{rules: "hebrew", type: :algorithmic}}
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :finance
+      iex> Cldr.Number.System.number_system_for "en", :finance, TestBackend.Cldr
       {
         :error,
         {Cldr.UnknownNumberSystemError,
           "The number system :finance is unknown for the locale named \\"en\\". Valid number systems are %{default: :latn, native: :latn}"}
       }
 
-      iex> Cldr.Number.System.number_system_for Cldr.Locale.new!("en"), :native
+      iex> Cldr.Number.System.number_system_for "en", :native, TestBackend.Cldr
       {:ok, %{digits: "0123456789", type: :numeric}}
 
   """
@@ -180,16 +180,16 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new!("en")
+      iex> Cldr.Number.System.number_system_names_for("en", TestBackend.Cldr)
       {:ok, [:latn]}
 
-      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new!("th")
+      iex> Cldr.Number.System.number_system_names_for("th", TestBackend.Cldr)
       {:ok, [:latn, :thai]}
 
-      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new!("he")
+      iex> Cldr.Number.System.number_system_names_for("he", TestBackend.Cldr)
       {:ok, [:latn, :hebr]}
 
-      iex> Cldr.Number.System.number_system_names_for Cldr.Locale.new!("zz")
+      iex> Cldr.Number.System.number_system_names_for("zz", TestBackend.Cldr)
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
   """
@@ -213,13 +213,13 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_system_names_for!("en")
+      iex> Cldr.Number.System.number_system_names_for!("en", TestBackend.Cldr)
       [:latn]
 
-      iex> Cldr.Number.System.number_system_names_for!("th")
+      iex> Cldr.Number.System.number_system_names_for!("th", TestBackend.Cldr)
       [:latn, :thai]
 
-      iex> Cldr.Number.System.number_system_names_for!("he")
+      iex> Cldr.Number.System.number_system_names_for!("he", TestBackend.Cldr)
       [:latn, :hebr]
 
   """
@@ -261,16 +261,16 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      ex> Cldr.Number.System.system_name_from(:default, Cldr.Locale.new!( "en"))
+      ex> Cldr.Number.System.system_name_from(:default, "en", TestBackend.Cldr)
       {:ok, :latn}
 
-      iex> Cldr.Number.System.system_name_from("latn", Cldr.Locale.new!("en"))
+      iex> Cldr.Number.System.system_name_from("latn", "en", TestBackend.Cldr)
       {:ok, :latn}
 
-      iex> Cldr.Number.System.system_name_from(:native, Cldr.Locale.new!("en"))
+      iex> Cldr.Number.System.system_name_from(:native, "en", TestBackend.Cldr)
       {:ok, :latn}
 
-      iex> Cldr.Number.System.system_name_from(:nope, Cldr.Locale.new!("en"))
+      iex> Cldr.Number.System.system_name_from(:nope, "en", TestBackend.Cldr)
       {
         :error,
         {Cldr.UnknownNumberSystemError, "The number system :nope is unknown"}
@@ -314,13 +314,13 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-    iex> Cldr.Number.System.system_name_from!(:default, Cldr.Locale.new!( "en"))
+    iex> Cldr.Number.System.system_name_from!(:default, "en", TestBackend.Cldr)
     :latn
 
-    iex> Cldr.Number.System.system_name_from!("latn", Cldr.Locale.new!("en"))
+    iex> Cldr.Number.System.system_name_from!("latn", "en", TestBackend.Cldr)
     :latn
 
-    iex> Cldr.Number.System.system_name_from!(:traditional, Cldr.Locale.new!("he"))
+    iex> Cldr.Number.System.system_name_from!(:traditional, "he", TestBackend.Cldr)
     :hebr
 
   """

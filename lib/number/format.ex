@@ -109,7 +109,7 @@ defmodule Cldr.Number.Format do
           {:ok, [String.t(), ...]} | {:error, {Exception.t(), String.t()}}
 
   def decimal_format_list_for(locale, backend) do
-    backend.decimal_format_list_for(locale)
+    Module.concat(backend, Number.Format).decimal_format_list_for(locale)
   end
 
   @doc """
@@ -123,7 +123,7 @@ defmodule Cldr.Number.Format do
 
   ## Examples
 
-      Cldr.Number.Format.all_formats_for("en")
+      Cldr.Number.Format.all_formats_for("en", TestBackend.Cldr)
       #=> {:ok, %{latn: %Cldr.Number.Format{
         accounting: "¤#,##0.00;(¤#,##0.00)",
         currency: "¤#,##0.00",
@@ -192,7 +192,7 @@ defmodule Cldr.Number.Format do
 
   ## Examples
 
-      iex> Cldr.Number.Format.minimum_grouping_digits_for("en")
+      iex> Cldr.Number.Format.minimum_grouping_digits_for("en", TestBackend.Cldr)
       {:ok, 1}
 
   """
@@ -214,7 +214,7 @@ defmodule Cldr.Number.Format do
 
   ## Examples
 
-      iex> Cldr.Number.Format.minimum_grouping_digits_for!(Cldr.Locale.new!("en"))
+      iex> Cldr.Number.Format.minimum_grouping_digits_for!("en", TestBackend.Cldr)
       1
 
       Cldr.Number.Format.minimum_grouping_digits_for!(:invalid)
@@ -239,7 +239,7 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      Cldr.Number.Format.formats_for "fr", :native, Test.Cldr
+      Cldr.Number.Format.formats_for "fr", :native, TestBackend.Cldr
       #=> %Cldr.Number.Format{
         accounting: "#,##0.00 ¤;(#,##0.00 ¤)",
         currency: "#,##0.00 ¤",
@@ -310,7 +310,7 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      iex> Cldr.Number.Format.format_styles_for("en")
+      iex> Cldr.Number.Format.format_styles_for("en", :latn, TestBackend.Cldr)
       {:ok, [:accounting, :currency, :currency_long, :currency_short,
       :decimal_long, :decimal_short, :percent, :scientific, :standard]}
 
@@ -356,7 +356,7 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      iex> Cldr.Number.Format.short_format_styles_for("he")
+      iex> Cldr.Number.Format.short_format_styles_for("he", :latn, TestBackend.Cldr)
       {:ok, [:currency_short, :decimal_long, :decimal_short]}
 
   """
@@ -397,7 +397,7 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      iex> Cldr.Number.Format.decimal_format_styles_for("en")
+      iex> Cldr.Number.Format.decimal_format_styles_for("en", :latn, TestBackend.Cldr)
       {:ok, [:accounting, :currency, :currency_long, :percent,
        :scientific, :standard]}
 
@@ -441,13 +441,13 @@ defmodule Cldr.Number.Format do
 
   ## Examples
 
-      iex> Cldr.Number.Format.format_system_types_for("pl")
+      iex> Cldr.Number.Format.format_system_types_for("pl", TestBackend.Cldr)
       {:ok, [:default, :native]}
 
-      iex> Cldr.Number.Format.format_system_types_for("ru")
+      iex> Cldr.Number.Format.format_system_types_for("ru", TestBackend.Cldr)
       {:ok, [:default, :native]}
 
-      iex> Cldr.Number.Format.format_system_types_for("th")
+      iex> Cldr.Number.Format.format_system_types_for("th", TestBackend.Cldr)
       {:ok, [:default, :native]}
 
   """
@@ -477,10 +477,10 @@ defmodule Cldr.Number.Format do
 
   ## Examples
 
-      iex> Cldr.Number.Format.format_system_names_for("th")
+      iex> Cldr.Number.Format.format_system_names_for("th", TestBackend.Cldr)
       {:ok, [:latn, :thai]}
 
-      iex> Cldr.Number.Format.format_system_names_for("pl")
+      iex> Cldr.Number.Format.format_system_names_for("pl", TestBackend.Cldr)
       {:ok, [:latn]}
 
   """

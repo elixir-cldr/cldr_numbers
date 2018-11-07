@@ -131,8 +131,15 @@ defmodule Cldr.Number.Backend.Transliterate do
         # For when the number system is provided as a string. We generate functions using
         # atom format so we need to convert but only to existing atoms
         def transliterate(sequence, locale, number_system) when is_binary(number_system) do
-          {:ok, system} = Config.system_name_from(number_system, locale)
-          transliterate(sequence, locale, system)
+          with {:ok, system} <- Config.system_name_from(number_system, locale) do
+            transliterate(sequence, locale, system)
+          end
+        end
+
+        def transliterate(sequence, locale_name, number_system) when is_binary(locale_name) do
+          with {:ok, locale} <- Module.concat(unquote(backend), :Locale).new(locale_name) do
+            transliterate(sequence, locale, number_system)
+          end
         end
 
         # We can only transliterate if the target {locale, number_system} has defined
@@ -143,12 +150,6 @@ defmodule Cldr.Number.Backend.Transliterate do
             |> String.graphemes()
             |> Enum.map(&transliterate_char(&1, locale, number_system))
             |> List.to_string()
-          end
-        end
-
-        def transliterate(sequence, locale_name, number_system) when is_binary(locale_name) do
-          with {:ok, locale} <- Module.concat(unquote(backend), :Locale).new(locale_name) do
-            transliterate(sequence, locale, number_system)
           end
         end
 
@@ -222,11 +223,11 @@ defmodule Cldr.Number.Backend.Transliterate do
               unquote(grapheme)
             end
           end
+        end
 
-          # Any unknown mapping gets returned as is
-          defp transliterate_char(digit, _locale, unquote(name)) do
-            digit
-          end
+        # Any unknown mapping gets returned as is
+        defp transliterate_char(digit, _locale, _name) do
+          digit
         end
 
         @doc """
