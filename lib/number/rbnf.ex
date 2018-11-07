@@ -115,13 +115,13 @@ defmodule Cldr.Rbnf do
     # Returns all the rules in rbnf without any tagging for rulegroup or set.
     # This is helpful for testing only.
     @doc false
-    def all_rules do
+    def all_rules(backend) do
       # Get sets from groups
       # Get rules from set
       # Get the list of rules
-      known_locale_names()
-      |> Enum.map(&Cldr.Locale.new!/1)
-      |> Enum.map(&for_locale!/1)
+      known_locale_names(backend)
+      |> Enum.map(&Cldr.Locale.new!(&1, backend))
+      |> Enum.map(&for_locale!(&1, backend))
       |> Enum.flat_map(&Map.values/1)
       |> Enum.flat_map(&Map.values/1)
       |> Enum.flat_map(& &1.rules)
@@ -129,8 +129,8 @@ defmodule Cldr.Rbnf do
 
     # Returns a list of unique rule definitions.  Used for testing.
     @doc false
-    def all_rule_definitions do
-      all_rules()
+    def all_rule_definitions(backend) do
+      all_rules(backend)
       |> Enum.map(& &1.definition)
       |> Enum.uniq()
     end

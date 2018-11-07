@@ -464,51 +464,22 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.to_system 123456, :hebr
+      iex> Cldr.Number.System.to_system 123456, :hebr, TestBackend.Cldr
       {:ok, "ק׳׳ת׳"}
 
-      iex> Cldr.Number.System.to_system 123, :hans
+      iex> Cldr.Number.System.to_system 123, :hans, TestBackend.Cldr
       {:ok, "一百二十三"}
 
-      iex> Cldr.Number.System.to_system 123, :hant
+      iex> Cldr.Number.System.to_system 123, :hant, TestBackend.Cldr
       {:ok, "一百二十三"}
 
-      iex> Cldr.Number.System.to_system 123, :hansfin
+      iex> Cldr.Number.System.to_system 123, :hansfin, TestBackend.Cldr
       {:ok, "壹佰贰拾叁"}
 
   """
-  @spec to_system(Math.number_or_decimal(), atom) :: String.t()
-  def to_system(number, system_name)
-
-  for {system, definition} <- @number_systems do
-    if definition.type == :numeric do
-      def to_system(number, unquote(system)) do
-        string =
-          number
-          |> to_string
-          |> Cldr.Number.Transliterate.transliterate_digits(:latn, unquote(system))
-
-        {:ok, string}
-      end
-    else
-      {module, function, locale_name} = Cldr.Config.rbnf_rule_function(definition.rules)
-
-      if function_exported?(module, function, 2) do
-        locale = Locale.new!(locale_name)
-
-        def to_system(number, unquote(system)) do
-          with {:ok, _locale} <- Cldr.validate_locale(unquote(Macro.escape(locale))) do
-            {:ok, unquote(module).unquote(function)(number, unquote(Macro.escape(locale)))}
-          else
-            {:error, reason} -> {:error, reason}
-          end
-        end
-      end
-    end
-  end
-
-  def to_system(_number, system) do
-    {:error, Cldr.unknown_number_system_error(system)}
+  @spec to_system(Math.number_or_decimal(), atom, Cldr.backend()) :: {:ok, binary()}
+  def to_system(number, system_name, backend) do
+    Module.concat(backend, Number.System).to_system(number, system_name)
   end
 
   @doc """
@@ -527,18 +498,19 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.to_system! 123, :hans
+      iex> Cldr.Number.System.to_system! 123, :hans, TestBackend.Cldr
       "一百二十三"
 
-      iex> Cldr.Number.System.to_system! 123, :hant
+      iex> Cldr.Number.System.to_system! 123, :hant, TestBackend.Cldr
       "一百二十三"
 
-      iex> Cldr.Number.System.to_system! 123, :hansfin
+      iex> Cldr.Number.System.to_system! 123, :hansfin, TestBackend.Cldr
       "壹佰贰拾叁"
 
   """
-  def to_system!(number, system_name) do
-    case to_system(number, system_name) do
+  @spec to_system!(Math.number_or_decimal(), atom, Cldr.backend()) :: binary() | no_return()
+  def to_system!(number, system_name, backend) do
+    case to_system(number, system_name, backend) do
       {:ok, string} -> string
       {:error, {exception, reason}} -> raise exception, reason
     end

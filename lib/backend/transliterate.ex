@@ -161,7 +161,9 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         # Functions to transliterate the symbols
         for locale_name <- Config.known_locale_names(config),
-            {name, symbols} <- Config.number_symbols_for!(locale_name) do
+            {name, symbols} <- Config.number_symbols_for!(locale_name),
+            !is_nil(symbols) do
+
           # Mapping for the grouping separator
           defp transliterate_char(
                  unquote(Compiler.placeholder(:group)),

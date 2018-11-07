@@ -189,63 +189,63 @@ defmodule Cldr.Number do
 
   ## Examples
 
-      iex> Cldr.Number.to_string 12345
+      iex> Cldr.Number.to_string 12345, TestBackend.Cldr
       {:ok, "12,345"}
 
-      iex> Cldr.Number.to_string 12345, locale: "fr"
+      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, locale: "fr"
       {:ok, "12 345"}
 
-      iex> Cldr.Number.to_string 1345.32, currency: :EUR, locale: "es", minimum_grouping_digits: 1
+      iex> Cldr.Number.to_string 1345.32, TestBackend.Cldr, currency: :EUR, locale: "es", minimum_grouping_digits: 1
       {:ok, "1.345,32 €"}
 
-      iex> Cldr.Number.to_string 1345.32, currency: :EUR, locale: "es"
+      iex> Cldr.Number.to_string 1345.32, TestBackend.Cldr, currency: :EUR, locale: "es"
       {:ok, "1345,32 €"}
 
-      iex> Cldr.Number.to_string 12345, locale: "fr", currency: "USD"
+      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, locale: "fr", currency: "USD"
       {:ok, "12 345,00 $US"}
 
-      iex> Cldr.Number.to_string 12345, format: "#E0"
+      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, format: "#E0"
       {:ok, "1.2345E4"}
 
-      iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB"
+      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, format: :accounting, currency: "THB"
       {:ok, "THB12,345.00"}
 
-      iex> Cldr.Number.to_string -12345, format: :accounting, currency: "THB"
+      iex> Cldr.Number.to_string -12345, TestBackend.Cldr, format: :accounting, currency: "THB"
       {:ok, "(THB12,345.00)"}
 
-      iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB",
+      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, format: :accounting, currency: "THB",
       ...> locale: "th"
       {:ok, "฿12,345.00"}
 
-      iex> Cldr.Number.to_string 12345, format: :accounting, currency: "THB",
+      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, format: :accounting, currency: "THB",
       ...> locale: "th", number_system: :native
       {:ok, "฿๑๒,๓๔๕.๐๐"}
 
-      iex> Cldr.Number.to_string 1244.30, format: :long
+      iex> Cldr.Number.to_string 1244.30, TestBackend.Cldr, format: :long
       {:ok, "1 thousand"}
 
-      iex> Cldr.Number.to_string 1244.30, format: :long, currency: "USD"
+      iex> Cldr.Number.to_string 1244.30, TestBackend.Cldr, format: :long, currency: "USD"
       {:ok, "1,244 US dollars"}
 
-      iex> Cldr.Number.to_string 1244.30, format: :short
+      iex> Cldr.Number.to_string 1244.30, TestBackend.Cldr, format: :short
       {:ok, "1K"}
 
-      iex> Cldr.Number.to_string 1244.30, format: :short, currency: "EUR"
+      iex> Cldr.Number.to_string 1244.30, TestBackend.Cldr, format: :short, currency: "EUR"
       {:ok, "€1K"}
 
-      iex> Cldr.Number.to_string 1234, format: :spellout
+      iex> Cldr.Number.to_string 1234, TestBackend.Cldr, format: :spellout
       {:ok, "one thousand two hundred thirty-four"}
 
-      iex> Cldr.Number.to_string 1234, format: :spellout_verbose
+      iex> Cldr.Number.to_string 1234, TestBackend.Cldr, format: :spellout_verbose
       {:ok, "one thousand two hundred and thirty-four"}
 
-      iex> Cldr.Number.to_string 1989, format: :spellout_year
+      iex> Cldr.Number.to_string 1989, TestBackend.Cldr, format: :spellout_year
       {:ok, "nineteen eighty-nine"}
 
-      iex> Cldr.Number.to_string 123, format: :ordinal
+      iex> Cldr.Number.to_string 123, TestBackend.Cldr, format: :ordinal
       {:ok, "123rd"}
 
-      iex(4)> Cldr.Number.to_string 123, format: :roman
+      iex(4)> Cldr.Number.to_string 123, TestBackend.Cldr, format: :roman
       {:ok, "CXXIII"}
 
   ## Errors
@@ -256,7 +256,7 @@ defmodule Cldr.Number do
     * A format cannot be compiled. In this case the error tuple will look like:
 
   ```
-      iex> Cldr.Number.to_string(12345, format: "0#")
+      iex> Cldr.Number.to_string(12345, TestBackend.Cldr, format: "0#")
       {:error, {Cldr.FormatCompileError,
         "Decimal format compiler: syntax error before: \\"#\\""}}
   ```
@@ -266,7 +266,7 @@ defmodule Cldr.Number do
       symbol placeholder. In this case the error return looks like:
 
   ```
-      iex> Cldr.Number.to_string(12345, format: :accounting)
+      iex> Cldr.Number.to_string(12345, TestBackend.Cldr, format: :accounting)
       {:error, {Cldr.FormatError, "currency format \\"¤#,##0.00;(¤#,##0.00)\\" requires that " <>
       "options[:currency] be specified"}}
   ```
@@ -277,7 +277,7 @@ defmodule Cldr.Number do
       return looks like:
 
   ```
-      iex> Cldr.Number.to_string(1234, locale: Cldr.Locale.new!("he"), number_system: "hebr")
+      iex> Cldr.Number.to_string(1234, TestBackend.Cldr, locale: "he", number_system: "hebr")
       {:error, {Cldr.UnknownFormatError,
       "The locale \\"he\\" with number system \\"hebr\\" does not define a format :standard."}}
   ```
@@ -327,7 +327,7 @@ defmodule Cldr.Number do
   @spec to_string!(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
           String.t() | Exception.t()
 
-  def to_string!(number, backend, options) do
+  def to_string!(number, backend, options \\ []) do
     case to_string(number, backend, options) do
       {:error, {exception, message}} ->
         raise exception, message
@@ -339,36 +339,35 @@ defmodule Cldr.Number do
 
   # For ordinal numbers
   @format :digits_ordinal
-  defp to_string(number, :ordinal, backend, options) do
-    rule_sets = Module.concat(backend, Rbnf.Ordinal).rule_sets(options[:locale])
-
+  defp to_string(number, :ordinal, backend, %{locale: locale}) do
+    rule_sets = Module.concat(backend, Rbnf.Ordinal).rule_sets(locale)
     if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Ordinal).digits_ordinal(number, options[:locale])
+      Module.concat(backend, Rbnf.Ordinal).digits_ordinal(number, locale)
     else
-      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], @format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(locale, @format)}
     end
   end
 
   # For spellout numbers
   @format :spellout_cardinal
-  defp to_string(number, :spellout, backend, options) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
+  defp to_string(number, :spellout, backend, %{locale: locale}) do
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(locale)
 
     if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_cardinal(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_cardinal(number, locale)
     else
-      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], @format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(locale, @format)}
     end
   end
 
   # For spellout numbers
-  defp to_string(number, :spellout_numbering = format, backend, options) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
+  defp to_string(number, :spellout_numbering = format, backend, %{locale: locale}) do
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(locale)
 
     if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_numbering(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_numbering(number, locale)
     else
-      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
     end
   end
 
@@ -477,16 +476,18 @@ defmodule Cldr.Number do
 
   ## Examples
 
-      iex> Cldr.Number.to_number_system 123, :hant
+      iex> Cldr.Number.to_number_system 123, :hant, TestBackend.Cldr
       {:ok, "一百二十三"}
 
-      iex> Cldr.Number.to_number_system 123, :hebr
+      iex> Cldr.Number.to_number_system 123, :hebr, TestBackend.Cldr
       {:ok, "ק׳"}
 
   """
-  @spec to_number_system(number, atom) :: String.t() | {:error, {Exception.t(), String.t()}}
-  def to_number_system(number, system) do
-    Cldr.Number.System.to_system(number, system)
+  @spec to_number_system(number, atom, Cldr.backend()) ::
+    String.t() | {:error, {Exception.t(), String.t()}}
+
+  def to_number_system(number, system, backend) do
+    Cldr.Number.System.to_system(number, system, backend)
   end
 
   @doc """
@@ -502,12 +503,15 @@ defmodule Cldr.Number do
 
   ## Example
 
-      iex> Cldr.Number.to_number_system! 123, :hant
+      iex> Cldr.Number.to_number_system! 123, :hant, TestBackend.Cldr
       "一百二十三"
 
   """
-  def to_number_system!(number, system) do
-    Cldr.Number.System.to_system!(number, system)
+  @spec to_number_system(number, atom, Cldr.backend()) ::
+    String.t() | no_return()
+
+  def to_number_system!(number, system, backend) do
+    Cldr.Number.System.to_system!(number, system, backend)
   end
 
   @doc """

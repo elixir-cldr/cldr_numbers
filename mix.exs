@@ -80,7 +80,7 @@ defmodule CldrNumbers.Mixfile do
     }
   end
 
-  defp elixirc_paths(:test), do: ["lib", "mix", "test"]
+  defp elixirc_paths(:test), do: ["lib", "test"]
   defp elixirc_paths(:dev), do: ["lib", "mix"]
   defp elixirc_paths(_), do: ["lib"]
 end

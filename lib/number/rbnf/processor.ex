@@ -174,7 +174,6 @@ defmodule Cldr.Rbnf.Processor do
       for {locale_name, _rule_group} <- all_rules do
         for {rule_group, %{access: access, rules: rules}} <- all_rules[locale_name] do
           for rule <- rules do
-            # IO.puts "Locale: #{inspect locale_name}: Group: #{inspect rule_group}: Rule: #{inspect rule}"
             fun.(rule_group, locale_name, access, rule)
           end
 
@@ -236,7 +235,7 @@ defmodule Cldr.Rbnf.Processor do
   defp define_rule(0, "undefined", rule_group, locale_name, body) do
     quote location: :keep do
       def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)})
-          when is_integer(number) and number == 0,
+          when is_integer(number),
           do: unquote(body)
     end
   end
@@ -352,7 +351,6 @@ defmodule Cldr.Rbnf.Processor do
       # All rule sets for a locale
       def rule_sets(%Cldr.LanguageTag{rbnf_locale_name: rbnf_locale_name}) do
         rule_sets(rbnf_locale_name)
-        |> Map.get(rbnf_locale_name)
       end
 
       def rule_sets(rbnf_locale_name) when is_binary(rbnf_locale_name) do
