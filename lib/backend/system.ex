@@ -312,7 +312,7 @@ defmodule Cldr.Number.Backend.System do
           Cldr.Number.System.system_name_from(system_name, locale, unquote(backend))
         end
 
-        @spec number_systems_like(LanguageTag.t() | Locale.locale_name(), system_name) ::
+        @spec number_systems_like(LanguageTag.t() | Locale.locale_name(), Cldr.Number.System.system_name) ::
                 {:ok, List.t()} | {:error, tuple}
 
         def number_systems_like(locale, number_system) do
