@@ -2,7 +2,7 @@ defmodule Cldr.Rbnf.TestSupport do
   def rbnf_tests(fun) when is_function(fun) do
     # Come back later an investigate why we get different results
     locales =
-      Cldr.known_locale_names()
+      TestBackend.Cldr.known_locale_names
       |> List.delete("ru")
       |> List.delete("be")
       |> List.delete("es")
@@ -33,15 +33,15 @@ defmodule Cldr.Rbnf.TestSupport do
             json_string
             |> Jason.decode!()
 
-          locale = Cldr.Locale.new!(locale_name)
+          locale = TestBackend.Cldr.Locale.new!(locale_name)
 
-          if Cldr.known_rbnf_locale_name?(locale_name) do
-            rbnf_data = Cldr.Rbnf.for_locale!(locale)
+          if Cldr.known_rbnf_locale_name?(locale_name, TestBackend.Cldr) do
+            rbnf_data = Cldr.Rbnf.for_locale!(locale, TestBackend.Cldr)
 
             Enum.each(Map.keys(json_data), fn rule_group ->
               if rbnf_data[String.to_existing_atom(rule_group)] do
                 module =
-                  "Elixir.Cldr.Rbnf.#{rule_group}"
+                  "Elixir.TestBackend.Cldr.Rbnf.#{rule_group}"
                   |> String.replace("Rules", "")
                   |> String.to_atom()
 
@@ -53,7 +53,7 @@ defmodule Cldr.Rbnf.TestSupport do
 
                   name =
                     "#{module}.#{function} for locale #{inspect(locale_name)}"
-                    |> String.replace("−", "-")
+                    |> String.replace("_", "-")
 
                   fun.(name, tests, module, function, locale)
                 end)

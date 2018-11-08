@@ -6,12 +6,15 @@ defmodule Doc.Test do
   doctest Cldr.Number.Format
   doctest Cldr.Number.Symbol
   doctest Cldr.Number.System
-  # doctest Cldr.Number.Transliterate
-  # doctest Cldr.Number.Format.Compiler
-  # doctest Cldr.Number.Formatter.Decimal
-  # doctest Cldr.Number.Formatter.Short
-  # doctest Cldr.Number.Formatter.Currency
-  # doctest Cldr.Rbnf.Ordinal
-  # doctest Cldr.Rbnf.Spellout
-  # doctest Cldr.Rbnf.NumberSystem
+  doctest Cldr.Number.Transliterate
+  doctest Cldr.Number.Format.Compiler
+  doctest Cldr.Number.Formatter.Decimal
+  doctest Cldr.Number.Formatter.Short
+  doctest Cldr.Number.Formatter.Currency
+
+  doctest TestBackend.Cldr.Number.System
+  doctest TestBackend.Cldr.Number.Symbol
+  doctest TestBackend.Cldr.Rbnf.Ordinal
+  doctest TestBackend.Cldr.Rbnf.Spellout
+  doctest TestBackend.Cldr.Rbnf.NumberSystem
 end

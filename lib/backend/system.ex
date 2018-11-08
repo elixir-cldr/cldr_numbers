@@ -15,13 +15,13 @@ defmodule Cldr.Number.Backend.System do
 
         ## Examples
 
-            iex> #{inspect(__MODULE__)}.number_systems_for Cldr.Locale.new!("en")
+            iex> #{inspect(__MODULE__)}.number_systems_for "en"
             {:ok, %{default: :latn, native: :latn}}
 
-            iex> #{inspect(__MODULE__)}.number_systems_for Cldr.Locale.new!("th")
+            iex> #{inspect(__MODULE__)}.number_systems_for "th"
             {:ok, %{default: :latn, native: :thai}}
 
-            iex> #{inspect(__MODULE__)}.number_systems_for Cldr.Locale.new!("zz")
+            iex> #{inspect(__MODULE__)}.number_systems_for "zz"
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
         """
@@ -37,10 +37,10 @@ defmodule Cldr.Number.Backend.System do
 
         ## Examples
 
-            iex> #{inspect(__MODULE__)}.number_system_names_for Cldr.Locale.new!("en")
+            iex> #{inspect(__MODULE__)}.number_system_names_for "en"
             {:ok, [:latn]}
 
-            iex> #{inspect(__MODULE__)}.number_system_names_for Cldr.Locale.new!("zz")
+            iex> #{inspect(__MODULE__)}.number_system_names_for "zz"
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
         """
@@ -84,6 +84,66 @@ defmodule Cldr.Number.Backend.System do
 
         def number_systems_for(locale) do
           {:error, Cldr.Locale.locale_error(locale)}
+        end
+
+        def number_systems_for!(locale) do
+          case number_systems_for(locale) do
+            {:ok, systems} -> systems
+            {:error, {exception, reason}} -> raise exception, reason
+          end
+        end
+
+        def number_system_names_for!(locale) do
+          case number_system_names_for(locale) do
+            {:ok, names} -> names
+            {:error, {exception, reason}} -> raise exception, reason
+          end
+        end
+
+        @doc """
+        Returns the actual number system from a number system type.
+
+        * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
+
+        * `system_name` is any number system name returned by
+          `Cldr.known_number_systems/0` or a number system type
+          returned by `Cldr.known_number_system_types/0`
+
+        This function will decode a number system type into the actual
+        number system.  If the number system provided can't be decoded
+        it is returned as is.
+
+        ## Examples
+
+            iex> Cldr.Number.System.number_system_for "th", :latn, TestBackend.Cldr
+            {:ok, %{digits: "0123456789", type: :numeric}}
+
+            iex> Cldr.Number.System.number_system_for "en", :default, TestBackend.Cldr
+            {:ok, %{digits: "0123456789", type: :numeric}}
+
+            iex> Cldr.Number.System.number_system_for "he", :traditional, TestBackend.Cldr
+            {:ok, %{rules: "hebrew", type: :algorithmic}}
+
+            iex> Cldr.Number.System.number_system_for "en", :finance, TestBackend.Cldr
+            {
+              :error,
+              {Cldr.UnknownNumberSystemError,
+                "The number system :finance is unknown for the locale named \\"en\\". Valid number systems are %{default: :latn, native: :latn}"}
+            }
+
+            iex> Cldr.Number.System.number_system_for "en", :native, TestBackend.Cldr
+            {:ok, %{digits: "0123456789", type: :numeric}}
+
+        """
+        @spec number_system_for(Locale.name() | LanguageTag.t(), System.name()) ::
+          {:ok, [atom(), ...]} | {:error, {Exception.t, String.t}}
+
+        def number_system_for(locale, system_name) do
+          with {:ok, locale} <- unquote(backend).validate_locale(locale),
+               {:ok, system_name} <- system_name_from(system_name, locale) do
+            {:ok, Map.get(Cldr.Number.System.number_systems(), system_name)}
+          end
         end
 
         def number_system_names_for(locale) do
@@ -200,6 +260,63 @@ defmodule Cldr.Number.Backend.System do
             {:ok, string} -> string
             {:error, {exception, reason}} -> raise exception, reason
           end
+        end
+
+        @doc """
+        Returns a number system name for a given locale and number system reference.
+
+        * `system_name` is any number system name returned by
+          `#{inspect backend}.known_number_systems/0` or a number system type
+          returned by `#{inspect backend}.known_number_system_types/0`
+
+        * `locale` is any valid locale name returned by `#{inspect backend}.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by `#{inspect backend}.Locale.new!/1`
+
+        Number systems can be references in one of two ways:
+
+        * As a number system type such as :default, :native, :traditional and
+          :finance. This allows references to a number system for a locale in a
+          consistent fashion for a given use
+
+        * WIth the number system name directly, such as :latn, :arab or any of the
+          other 70 or so
+
+        This function dereferences the supplied `system_name` and returns the
+        actual system name.
+
+        ## Examples
+
+            ex> #{inspect(__MODULE__)}.system_name_from(:default, "en")
+            {:ok, :latn}
+
+            iex> #{inspect(__MODULE__)}.system_name_from("latn", "en")
+            {:ok, :latn}
+
+            iex> #{inspect(__MODULE__)}.system_name_from(:native, "en")
+            {:ok, :latn}
+
+            iex> #{inspect(__MODULE__)}.system_name_from(:nope, "en")
+            {
+              :error,
+              {Cldr.UnknownNumberSystemError, "The number system :nope is unknown"}
+            }
+
+        Note that return value is not guaranteed to be a valid
+        number system for the given locale as demonstrated in the third example.
+
+        """
+        @spec system_name_from(Cldr.Number.System.system_name(), Locale.locale_name() | LanguageTag.t()) ::
+          {:ok, atom} | {:error, {Exception.t, String.t}}
+
+        def system_name_from(system_name, locale) do
+          Cldr.Number.System.system_name_from(system_name, locale, unquote(backend))
+        end
+
+        @spec number_systems_like(LanguageTag.t() | Locale.locale_name(), system_name) ::
+                {:ok, List.t()} | {:error, tuple}
+
+        def number_systems_like(locale, number_system) do
+          Cldr.Number.System.number_systems_like(locale, number_system, unquote(backend))
         end
       end
     end

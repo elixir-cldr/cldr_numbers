@@ -1,6 +1,6 @@
 defmodule Rbnf.Test do
   use ExUnit.Case
-  alias Cldr.Locale
+  alias TestBackend.Cldr
 
   test "rbnf spellout" do
     assert {:ok, "twenty-five thousand three hundred forty"} =
@@ -16,29 +16,29 @@ defmodule Rbnf.Test do
     assert {:ok, "123,456th"} = Cldr.Number.to_string(123_456, format: :ordinal)
 
     assert {:ok, "123 456e"} =
-             Cldr.Number.to_string(123_456, format: :ordinal, locale: Locale.new!("fr"))
+             Cldr.Number.to_string(123_456, format: :ordinal, locale: "fr")
   end
 
   test "rbnf improper fraction" do
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(123.456, Locale.new!("en")) ==
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(123.456, "en") ==
              "one hundred and twenty-three point four five six"
 
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-123.456, Locale.new!("en")) ==
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-123.456, "en") ==
              "minus one hundred and twenty-three point four five six"
 
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-0.456, Locale.new!("en")) ==
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-0.456, "en") ==
              "minus zero point four five six"
 
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(0.456, Locale.new!("en")) ==
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(0.456, "en") ==
              "zero point four five six"
 
-    assert Cldr.Rbnf.Spellout.spellout_cardinal(0.456, Locale.new!("en")) ==
+    assert Cldr.Rbnf.Spellout.spellout_cardinal(0.456, "en") ==
              "zero point four five six"
 
-    assert Cldr.Rbnf.Spellout.spellout_cardinal(0, Locale.new!("en")) == "zero"
-    assert Cldr.Rbnf.Spellout.spellout_ordinal(0, Locale.new!("en")) == "zeroth"
-    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.0, Locale.new!("en")) == "0"
-    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.1, Locale.new!("en")) == "0.1"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal(0, "en") == "zero"
+    assert Cldr.Rbnf.Spellout.spellout_ordinal(0, "en") == "zeroth"
+    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.0, "en") == "0"
+    assert Cldr.Rbnf.Spellout.spellout_ordinal(0.1, "en") == "0.1"
   end
 
   test "decimal rbnf for decimal integers" do
@@ -48,7 +48,7 @@ defmodule Rbnf.Test do
              Cldr.Number.to_string(
                Decimal.new(123_456),
                format: :ordinal,
-               locale: Locale.new!("fr")
+               locale: "fr"
              )
 
     assert {:ok, "one hundred and twenty-three thousand, four hundred and fifty-sixth"} =
@@ -57,8 +57,8 @@ defmodule Rbnf.Test do
     assert {:ok, "twenty-five thousand three hundred forty"} =
              Cldr.Number.to_string(Decimal.new(25_340), format: :spellout)
 
-    assert Cldr.Rbnf.Spellout.spellout_cardinal(Decimal.new(0), Locale.new!("en")) == "zero"
-    assert Cldr.Rbnf.Spellout.spellout_ordinal(Decimal.new(0), Locale.new!("en")) == "zeroth"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal(Decimal.new(0), "en") == "zero"
+    assert Cldr.Rbnf.Spellout.spellout_ordinal(Decimal.new(0), "en") == "zeroth"
   end
 
   test "roman numerals" do
@@ -82,17 +82,16 @@ defmodule Rbnf.Test do
   end
 
   test "no rule is available for number" do
-    assert Cldr.Rbnf.Spellout.spellout_numbering_year(-24, Cldr.Locale.new!("zh-Hant")) ==
-             {
-               :error,
-               {
-                 Cldr.Rbnf.NoRuleForNumber,
-                 "rule group :spellout_numbering_year for locale \"zh-Hant\" does not know how to process -24"
-               }
-             }
+    assert Cldr.Rbnf.Spellout.spellout_numbering_year(-24, "zh-Hant") ==
+      {:error,
+        {
+          :'Elixir.Cldr.Rbnf.NoRuleForNumber',
+          "rule group :spellout_numbering_year for locale \"zh-Hant\" does not know how to process -24"
+        }
+      }
   end
 
-  Cldr.Rbnf.TestSupport.rbnf_tests(fn name, tests, module, function, locale ->
+  :'Elixir.Cldr.Rbnf.TestSupport'.rbnf_tests(fn name, tests, module, function, locale ->
     test name do
       Enum.each(unquote(Macro.escape(tests)), fn {test_data, test_result} ->
         if apply(unquote(module), unquote(function), [

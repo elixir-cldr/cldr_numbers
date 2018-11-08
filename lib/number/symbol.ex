@@ -127,7 +127,8 @@ defmodule Cldr.Number.Symbol do
     end
   end
 
-  defp symbols_return(nil, locale, number_system) do
+  @doc false
+  def symbols_return(nil, locale, number_system) do
     {
       :error,
       {
@@ -138,7 +139,8 @@ defmodule Cldr.Number.Symbol do
     }
   end
 
-  defp symbols_return(symbols, _locale, _number_system) do
+  @doc false
+  def symbols_return(symbols, _locale, _number_system) do
     {:ok, symbols}
   end
 end

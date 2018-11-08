@@ -12,9 +12,9 @@ defmodule Cldr.Number.Backend.Symbol do
 
         ## Options
 
-        * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`.  The
-          default is `Cldr.get_current_locale/0`.
+        * `locale` is any valid locale name returned by `#{inspect backend}.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by `#{inspect backend}.Locale.new!/`.  The
+          default is `#{inspect backend}.get_current_locale/0`.
 
         ## Example:
 
@@ -67,6 +67,16 @@ defmodule Cldr.Number.Backend.Symbol do
 
           def number_symbols_for(%LanguageTag{cldr_locale_name: unquote(locale)}) do
             {:ok, unquote(Macro.escape(symbols))}
+          end
+        end
+
+        def number_symbols_for(locale, number_system) do
+          with {:ok, system_name} <-
+                 unquote(backend).Number.System.system_name_from(number_system, locale),
+               {:ok, symbols} <- number_symbols_for(locale) do
+            symbols
+            |> Map.get(system_name)
+            |> Cldr.Number.Symbol.symbols_return(locale, number_system)
           end
         end
 

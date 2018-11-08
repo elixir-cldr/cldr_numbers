@@ -5,19 +5,19 @@ defmodule Cldr.Number.Formatter.Short do
   This is best explained by some
   examples:
 
-      iex> Cldr.Number.to_string 123, format: :short
+      iex> Cldr.Number.to_string 123, TestBackend.Cldr, format: :short
       {:ok, "123"}
 
-      iex> Cldr.Number.to_string 1234, format: :short
+      iex> Cldr.Number.to_string 1234, TestBackend.Cldr, format: :short
       {:ok, "1K"}
 
-      iex> Cldr.Number.to_string 523456789, format: :short
+      iex> Cldr.Number.to_string 523456789, TestBackend.Cldr, format: :short
       {:ok, "523M"}
 
-      iex> Cldr.Number.to_string 7234567890, format: :short
+      iex> Cldr.Number.to_string 7234567890, TestBackend.Cldr, format: :short
       {:ok, "7B"}
 
-      iex> Cldr.Number.to_string 7234567890, format: :long
+      iex> Cldr.Number.to_string 7234567890, TestBackend.Cldr, format: :long
       {:ok, "7 billion"}
 
   These formats are compact representations however they do lose
@@ -27,13 +27,13 @@ defmodule Cldr.Number.Formatter.Short do
   is retrieved from the currency definition itself.  You can see the difference
   in the following examples:
 
-      iex> Cldr.Number.to_string 1234, format: :short, currency: "EUR"
+      iex> Cldr.Number.to_string 1234, TestBackend.Cldr, format: :short, currency: "EUR"
       {:ok, "€1K"}
 
-      iex> Cldr.Number.to_string 1234, format: :short, currency: "EUR", fractional_digits: 2
+      iex> Cldr.Number.to_string 1234, TestBackend.Cldr, format: :short, currency: "EUR", fractional_digits: 2
       {:ok, "€1.23K"}
 
-      iex> Cldr.Number.to_string 1234, format: :short, currency: "JPY"
+      iex> Cldr.Number.to_string 1234, TestBackend.Cldr, format: :short, currency: "JPY"
       {:ok, "¥1K"}
 
   **This module is not part of the public API and is subject

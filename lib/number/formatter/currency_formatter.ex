@@ -7,16 +7,16 @@ defmodule Cldr.Number.Formatter.Currency do
 
   To explain the difference, look at the following examples:
 
-      iex> Cldr.Number.to_string 123, format: :currency, currency: "USD"
+      iex> Cldr.Number.to_string 123, TestBackend.Cldr, format: :currency, currency: "USD"
       {:ok, "$123.00"}
 
-      iex> Cldr.Number.to_string 123, format: :long, currency: "USD"
+      iex> Cldr.Number.to_string 123, TestBackend.Cldr, format: :long, currency: "USD"
       {:ok, "123 US dollars"}
 
   In the first example the format is defined by a decimal mask. In this example
   the format mask comes from:
 
-      iex> {:ok, formats} = Cldr.Number.Format.all_formats_for("en")
+      iex> {:ok, formats} = Cldr.Number.Format.all_formats_for("en", TestBackend.Cldr)
       ...> formats.latn.currency
       "¤#,##0.00"
 
@@ -24,7 +24,7 @@ defmodule Cldr.Number.Formatter.Currency do
   a language translation of the currency name.  In this example the format
   comes from:
 
-      iex> {:ok, formats} = Cldr.Number.Format.all_formats_for("en")
+      iex> {:ok, formats} = Cldr.Number.Format.all_formats_for("en", TestBackend.Cldr)
       ...> formats.latn.currency_long
       %{one: [0, " ", 1], other: [0, " ", 1]}
 

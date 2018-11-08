@@ -115,49 +115,37 @@ defmodule Cldr.Number.Backend.Transliterate do
           end
         end
 
-        # Translate the number system type to a system and invoke the real
-        # transliterator
-        for locale_name <- Config.known_locale_names(config),
-            {system_type, number_system} <- Config.number_systems_for!(locale_name) do
-          def transliterate(
-                sequence,
-                %LanguageTag{cldr_locale_name: unquote(locale_name)},
-                unquote(system_type)
-              ) do
-            transliterate(sequence, unquote(locale_name), unquote(number_system))
+        # We can only transliterate if the target {locale, number_system} has defined
+        # digits.  Some systems don't have digits, just rules.
+        for {number_system, %{digits: _digits}} <- System.systems_with_digits() do
+          def transliterate(sequence, locale, unquote(number_system)) do
+            sequence
+            |> String.graphemes()
+            |> Enum.map(&transliterate_char(&1, locale, unquote(number_system)))
+            |> List.to_string()
           end
         end
 
-        # For when the number system is provided as a string. We generate functions using
-        # atom format so we need to convert but only to existing atoms
-        def transliterate(sequence, locale, number_system) when is_binary(number_system) do
-          with {:ok, system} <- Config.system_name_from(number_system, locale) do
-            transliterate(sequence, locale, system)
-          end
-        end
-
+        # String locale name needs validation
         def transliterate(sequence, locale_name, number_system) when is_binary(locale_name) do
           with {:ok, locale} <- Module.concat(unquote(backend), :Locale).new(locale_name) do
             transliterate(sequence, locale, number_system)
           end
         end
 
-        # We can only transliterate if the target {locale, number_system} has defined
-        # digits.  Some systems don't have digits, just rules.
-        for {name, %{digits: _digits}} <- System.systems_with_digits() do
-          def transliterate(sequence, locale, number_system = unquote(name)) do
-            sequence
-            |> String.graphemes()
-            |> Enum.map(&transliterate_char(&1, locale, number_system))
-            |> List.to_string()
+        # For when the system name is not known (because its probably a system type
+        # like :default, or :native)
+        def transliterate(sequence, locale_name, number_system) do
+          with {:ok, system_name} <- System.system_name_from(number_system, locale_name, unquote(backend)) do
+            transliterate(sequence, locale_name, system_name)
           end
         end
 
-        def transliterate(_digit, locale, number_system) do
-          raise Cldr.UnknownLocaleError,
-                "Locale/number system #{inspect(locale)}/" <>
-                  "#{inspect(number_system)} is not known or the number " <>
-                  "system does not have digits (it may be algorithmic)"
+        def transliterate!(sequence, locale, number_system) do
+          case transliterate(sequence, locale, number_system) do
+            {:error, {exception, reason}} -> raise exception, reason
+            string -> string
+          end
         end
 
         # Functions to transliterate the symbols
