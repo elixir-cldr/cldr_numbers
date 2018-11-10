@@ -57,7 +57,7 @@ defmodule Cldr.Number.Backend.Symbol do
         for locale <- Cldr.Config.known_locale_names(config) do
           symbols =
             locale
-            |> Cldr.Config.get_locale()
+            |> Cldr.Config.get_locale(config)
             |> Map.get(:number_symbols)
             |> Enum.map(fn
               {k, nil} -> {k, nil}

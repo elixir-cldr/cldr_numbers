@@ -37,10 +37,10 @@ defmodule Cldr.Rbnf do
     {:error, rbnf_locale_error(language_tag)}
   end
 
-  def for_locale(%LanguageTag{rbnf_locale_name: rbnf_locale_name}, _backend) do
+  def for_locale(%LanguageTag{rbnf_locale_name: rbnf_locale_name}, backend) do
     rbnf_data =
       rbnf_locale_name
-      |> Cldr.Config.get_locale()
+      |> Cldr.Config.get_locale(backend)
       |> Map.get(:rbnf)
 
     {:ok, rbnf_data}
@@ -75,14 +75,13 @@ defmodule Cldr.Rbnf do
   @doc false
   @spec for_all_locales(Cldr.backend()) :: %{}
   def for_all_locales(backend) do
-    known_rbnf_locale_names =
-      Module.get_attribute(backend, :config)
-      |> Cldr.Config.known_rbnf_locale_names()
+    config = Module.get_attribute(backend, :config)
+    known_rbnf_locale_names = Cldr.Config.known_rbnf_locale_names(config)
 
     Enum.map(known_rbnf_locale_names, fn locale_name ->
       locale =
         locale_name
-        |> Cldr.Config.get_locale()
+        |> Cldr.Config.get_locale(config)
         |> Map.get(:rbnf)
 
       Enum.map(locale, fn {group, sets} ->
