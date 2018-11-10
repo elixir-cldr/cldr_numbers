@@ -1,5 +1,5 @@
 defmodule Cldr.Clause do
-  @Moduledoc false
+  @moduledoc false
 
   def functions(module, function, args) do
     {:ok, kind, clauses} = Exception.blame_mfa(module, function, args)
