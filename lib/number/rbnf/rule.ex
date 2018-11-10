@@ -1,8 +1,8 @@
 defmodule Cldr.Rbnf.Rule do
   @moduledoc """
   Tokenizer and Parser for RBNF rules.
-  """
 
+  """
   defstruct [:base_value, :radix, :definition, :range, :divisor]
   alias Cldr.Rbnf.Rule
 

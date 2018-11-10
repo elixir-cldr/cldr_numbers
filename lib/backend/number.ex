@@ -1,4 +1,6 @@
 defmodule Cldr.Number.Backend.Number do
+  @moduledoc false
+
   def define_number_module(config) do
     backend = config.backend
 

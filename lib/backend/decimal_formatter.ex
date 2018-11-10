@@ -1,4 +1,6 @@
 defmodule Cldr.Number.Backend.Decimal.Formatter do
+  @moduledoc false
+
   def define_number_module(config) do
     alias Cldr.Number.Formatter.Decimal
 

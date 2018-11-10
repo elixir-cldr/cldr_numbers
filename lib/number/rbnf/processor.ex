@@ -1,8 +1,8 @@
-# credo:disable-for-this-file
 defmodule Cldr.Rbnf.Processor do
   @moduledoc """
   Macro to define the interpreter for the compiled RBNF rules specific to a rule group (Ordinal,
   Spellout, NumberingSystem)
+
   """
   defmacro __using__(opts) do
     backend = opts[:backend]

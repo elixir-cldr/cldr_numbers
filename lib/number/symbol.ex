@@ -2,6 +2,7 @@ defmodule Cldr.Number.Symbol do
   @moduledoc """
   Functions to manage the symbol definitions for a locale and
   number system.
+
   """
 
   require Cldr

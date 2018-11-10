@@ -1,7 +1,5 @@
 defmodule Cldr.Number.String do
-  @moduledoc """
-  String helper functions
-  """
+  @moduledoc false
 
   @doc """
   Returns a regex which matches all latin1 characters

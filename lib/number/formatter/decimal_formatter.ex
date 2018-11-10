@@ -1,22 +1,23 @@
 defmodule Cldr.Number.Formatter.Decimal do
-  @moduledoc false
-  # Formats a number according to a locale-specific predefined format or a user-defined format.
-  #
-  # As a performance optimization, all decimal formats known at compile time are
-  # compiled into function that roughly halves the time to format a number
-  # compared to a non-precompiled format.
-  #
-  # The available format styles for a locale can be returned by:
-  #
-  #     iex> Cldr.Number.Format.decimal_format_styles_for("en")
-  #     {:ok, [:accounting, :currency, :currency_long, :percent, :scientific, :standard]}
-  #
-  # This allows a number to be formatted in a locale-specific way but using
-  # a standard method of describing the purpose of the format.
-  #
-  # **This module is not part of the public API and is subject
-  # to change at any time.**
+  @moduledoc """
+  Formats a number according to a locale-specific predefined format or a user-defined format.
 
+  As a performance optimization, all decimal formats known at compile time are
+  compiled into function that roughly halves the time to format a number
+  compared to a non-precompiled format.
+
+  The available format styles for a locale can be returned by:
+
+      iex> Cldr.Number.Format.decimal_format_styles_for("en")
+      {:ok, [:accounting, :currency, :currency_long, :percent, :scientific, :standard]}
+
+  This allows a number to be formatted in a locale-specific way but using
+  a standard method of describing the purpose of the format.
+
+  **This module is not part of the public API and is subject
+  to change at any time.**
+
+  """
   import Cldr.Number.Symbol, only: [number_symbols_for: 3]
   import Cldr.Math, only: [power_of_10: 1]
 

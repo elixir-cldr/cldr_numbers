@@ -1,4 +1,6 @@
 defmodule Cldr.Clause do
+  @Moduledoc false
+
   def functions(module, function, args) do
     {:ok, kind, clauses} = Exception.blame_mfa(module, function, args)
     formatted_clauses(function, kind, clauses, &blame_match/2)

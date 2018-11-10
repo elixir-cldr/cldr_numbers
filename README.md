@@ -1,6 +1,5 @@
 # Number and Currency Localization and Formatting
 ![Build Status](http://sweatbox.noexpectations.com.au:8080/buildStatus/icon?job=cldr_numbers)
-![Deps Status](https://beta.hexfaktor.org/badge/all/github/kipcole9/cldr_numbers.svg)
 [![Hex pm](http://img.shields.io/hexpm/v/ex_cldr_numbers.svg?style=flat)](https://hex.pm/packages/ex_cldr_numbers)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://github.com/kipcole9/cldr_numbers/blob/master/LICENSE)
 
