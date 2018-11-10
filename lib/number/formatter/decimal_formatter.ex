@@ -8,7 +8,7 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   The available format styles for a locale can be returned by:
 
-      iex> Cldr.Number.Format.decimal_format_styles_for("en")
+      iex> Cldr.Number.Format.decimal_format_styles_for("en", :latn, TestBackend.Cldr)
       {:ok, [:accounting, :currency, :currency_long, :percent, :scientific, :standard]}
 
   This allows a number to be formatted in a locale-specific way but using
