@@ -145,7 +145,7 @@ defmodule Cldr.Number.Backend.Number do
           `Cldr.Number.System.number_system_names_for/1`. The default is `:default`.
 
         * `:locale`: determines the locale in which the number is formatted. See
-          `Cldr.known_locale_names/0`. The default is`Cldr.get_current_locale/0` which is the
+          `Cldr.known_locale_names/0`. The default is`Cldr.get_locale/0` which is the
           locale currently in affect for this `Process` and which is set by
           `Cldr.put_locale/1`.
 
@@ -311,7 +311,7 @@ defmodule Cldr.Number.Backend.Number do
             minimum_grouping_digits: 0,
             rounding_mode: :half_even,
             number_system: :default,
-            locale: unquote(backend).get_current_locale()
+            locale: unquote(backend).get_locale()
           ]
         end
       end

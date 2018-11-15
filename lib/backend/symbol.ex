@@ -16,7 +16,7 @@ defmodule Cldr.Number.Backend.Symbol do
 
         * `locale` is any valid locale name returned by `#{inspect backend}.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by `#{inspect backend}.Locale.new!/`.  The
-          default is `#{inspect backend}.get_current_locale/0`.
+          default is `#{inspect backend}.get_locale/0`.
 
         ## Example:
 
@@ -54,7 +54,7 @@ defmodule Cldr.Number.Backend.Symbol do
 
         """
         @spec number_symbols_for(LanguageTag.t() | Locale.locale_name()) :: Keyword.t()
-        def number_symbols_for(locale \\ unquote(backend).get_current_locale())
+        def number_symbols_for(locale \\ unquote(backend).get_locale())
 
         for locale <- Cldr.Config.known_locale_names(config) do
           symbols =

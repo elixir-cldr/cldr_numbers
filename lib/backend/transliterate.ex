@@ -64,7 +64,7 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         * `sequence` is the string to be transliterated.
 
-        * `locale` is any known locale, defaulting to `Cldr.get_current_locale/0`.
+        * `locale` is any known locale, defaulting to `Cldr.get_locale/0`.
 
         * `number_system` is any known number system. If expressed as a `string` it
           is the actual name of a known number system. If epressed as an `atom` it is
@@ -103,7 +103,7 @@ defmodule Cldr.Number.Backend.Transliterate do
         @spec transliterate(String.t(), LanguageTag.t(), String.t()) :: String.t()
         def transliterate(
               sequence,
-              locale \\ unquote(backend).get_current_locale(),
+              locale \\ unquote(backend).get_locale(),
               number_system \\ System.default_number_system_type()
             )
 

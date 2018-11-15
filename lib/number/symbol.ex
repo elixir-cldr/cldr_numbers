@@ -32,7 +32,7 @@ defmodule Cldr.Number.Symbol do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`.  The
-    default is `Cldr.get_current_locale/1`.
+    default is `Cldr.get_locale/1`.
 
   ## Example:
 
@@ -81,7 +81,7 @@ defmodule Cldr.Number.Symbol do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`.  The
-    default is `Cldr.get_current_locale/1`.
+    default is `Cldr.get_locale/1`.
 
   * `number_system` is any number system name returned by
     `Cldr.known_number_systems/0` or a number system type

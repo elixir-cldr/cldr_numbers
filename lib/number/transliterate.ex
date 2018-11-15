@@ -50,7 +50,7 @@ defmodule Cldr.Number.Transliterate do
 
   * `sequence` is the string to be transliterated.
 
-  * `locale` is any known locale, defaulting to `Cldr.get_current_locale/0`.
+  * `locale` is any known locale, defaulting to `Cldr.get_locale/0`.
 
   * `number_system` is any known number system. If expressed as a `string` it
     is the actual name of a known number system. If epressed as an `atom` it is

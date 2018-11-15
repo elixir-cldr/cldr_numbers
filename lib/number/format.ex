@@ -89,7 +89,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+    is `Cldr.get_locale/0`
 
   This function exists to allow the decimal formatter to precompile all
   the known formats at compile time. Its use is not otherwise recommended.
@@ -119,7 +119,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+    is `Cldr.get_locale/0`
 
   ## Examples
 
@@ -160,7 +160,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_current_locale/1`
+    is `Cldr.get_locale/1`
 
   ## Returns
 
@@ -182,7 +182,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+    is `Cldr.get_locale/0`
 
   ## Returns
 
@@ -210,7 +210,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+    is `Cldr.get_locale/0`
 
   ## Examples
 
@@ -232,7 +232,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+    is `Cldr.get_locale/0`
 
   * `number_system` is any valid number system or number system type returned
     by `Cldr.Number.System.number_systems_for/1`
@@ -275,7 +275,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+    is `Cldr.get_locale/0`
 
   * `number_system` is any valid number system or number system type returned
     by `Cldr.Number.System.number_systems_for/1`
@@ -296,7 +296,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+    is `Cldr.get_locale/0`
 
   * `number_system` is any valid number system or number system type returned
     by `Cldr.Number.System.number_systems_for/1`
@@ -349,7 +349,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+    is `Cldr.get_locale/0`
 
   * `number_system` is any valid number system or number system type returned
     by `Cldr.Number.System.number_systems_for/1`
@@ -390,7 +390,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+    is `Cldr.get_locale/0`
 
   * `number_system` is any valid number system or number system type returned
     by `Cldr.Number.System.number_systems_for/1`
@@ -429,7 +429,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+    is `Cldr.get_locale/0`
 
   A number system type is an identifier that categorises number systems
   that comprise a site of digits or rules for transliterating or translating
@@ -473,7 +473,7 @@ defmodule Cldr.Number.Format do
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-    is `Cldr.get_current_locale/0`
+    is `Cldr.get_locale/0`
 
   ## Examples
 
