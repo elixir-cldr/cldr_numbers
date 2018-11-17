@@ -580,12 +580,12 @@ defmodule Cldr.Number.Format.Compiler do
   #
   # Significant Digits Examples
   #
-  # Pattern  | Min sign. digits  | Max sign. digits  | Number    | Output
+  # Pattern | Min sign. digits  | Max sign. digits  | Number    | Output
   # ------- | ----------------- | ----------------- | --------- | ------
-  # @@@      | 3                  | 3                  | 12345      | 12300
-  # @@@      | 3                  | 3                  | 0.12345    | 0.123
-  # @@##    | 2                  | 4                  | 3.14159    | 3.142
-  # @@##    | 2                  | 4                  | 1.23004    | 1.23
+  # @@@     | 3                 | 3                 | 12345      | 12300
+  # @@@     | 3                 | 3                 | 0.12345    | 0.123
+  # @@##    | 2                 | 4                 | 3.14159    | 3.142
+  # @@##    | 2                 | 4                 | 1.23004    | 1.23
   #
   # * In order to enable significant digits formatting, use a pattern containing
   #   the '@' pattern character.

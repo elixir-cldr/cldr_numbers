@@ -473,25 +473,70 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   def do_assemble_format(number_string, number, meta, format, backend, options) do
-    system = options[:number_system]
-    locale = options[:locale]
-    currency = options[:currency]
-    {:ok, symbols} = number_symbols_for(locale, system, backend)
+    {:ok, symbols} = number_symbols_for(options[:locale], options[:number_system], backend)
+    options = Map.put(options, :symbols, symbols)
+    assemble_parts(format, number_string, number, backend, meta, options)
+  end
 
-    Enum.map(format, fn token ->
-      case token do
-        {:format, _format} -> number_string
-        {:pad, _} -> padding_string(meta, number_string)
-        {:plus, _} -> symbols.plus_sign
-        {:minus, _} -> if number_string == "0", do: "", else: symbols.minus_sign
-        {:currency, type} -> currency_symbol(currency, number, type, locale, backend)
-        {:percent, _} -> symbols.percent_sign
-        {:permille, _} -> symbols.per_mille
-        {:literal, literal} -> literal
-        {:quote, _char} -> "'"
-        {:quoted_char, char} -> char
-      end
-    end)
+  defp assemble_parts([{:format, _}, {:currency, type} | rest], number_string, number, backend, meta, options) do
+    symbol = currency_symbol(options[:currency], number, type, options[:locale], backend)
+    [number_string, symbol | assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  defp assemble_parts([{:currency, type}, {:format, _} | rest], number_string, number, backend, meta, options) do
+    symbol = currency_symbol(options[:currency], number, type, options[:locale], backend)
+    [symbol, number_string, assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  defp assemble_parts([], _number_string, _number, _backend, _meta, _options) do
+    []
+  end
+
+  defp assemble_parts([{:currency, type} | rest], number_string, number, backend, meta, options) do
+    symbol = currency_symbol(options[:currency], number, type, options[:locale], backend)
+    [symbol | assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  defp assemble_parts([{:format, _} | rest], number_string, number, backend, meta, options) do
+    [number_string | assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  defp assemble_parts([{:pad, _} | rest], number_string, number, backend, meta, options) do
+    [padding_string(meta, number_string) |
+      assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  defp assemble_parts([{:plus, _} | rest], number_string, number, backend, meta, options) do
+    [options[:symbols].plus_sign |
+      assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  defp assemble_parts([{:minus, _} | rest], number_string, number, backend, meta, options) do
+    sign = if number_string == "0", do: "", else: options[:symbols].minus_sign
+    [ sign | assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  defp assemble_parts([{:percent, _} | rest], number_string, number, backend, meta, options) do
+    [options[:symbols].percent_sign |
+      assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  defp assemble_parts([{:permille, _} | rest], number_string, number, backend, meta, options) do
+    [options[:symbols].per_mille |
+      assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  defp assemble_parts([{:literal, literal} | rest], number_string, number, backend, meta, options) do
+    [literal |
+      assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  defp assemble_parts([{:quote, _} | rest], number_string, number, backend, meta, options) do
+    ["'" | assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  defp assemble_parts([{:quoted_char, char} | rest], number_string, number, backend, meta, options) do
+    [char | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
   # Calculate the padding by subtracting the length of the number
