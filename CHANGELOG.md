@@ -11,5 +11,8 @@ This is the changelog for Cldr v2.0.0-rc.1 released on _____, 2018.  For older c
 ### To do before final release
 
 * [ ] Format ranges as well as numbers
-* [ ] Implement currency spacing rules
+* [x] Implement currency spacing rules
 * [ ] Revisit "engineering notation"
+* [ ] Revisit Cldr.validate_number_system (the contract needs clarification but should follow the Cldr.validate_locale principoles) This is an update to the base `ex_cldr` package, not numbers.
+* [ ] Add Cldr.Number.Format.Options struct to hold the options structure for `to_string/2`
+* [ ] When `to_string/2` is passed options that are the struct, don't do any further validation.  The validation process is quite expensive and therefore by creating a validated options struct that can be reused we can optimize performance (benchmark this too)

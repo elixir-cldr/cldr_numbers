@@ -258,46 +258,9 @@ defmodule Cldr.Number.Backend.Format do
         @spec currency_spacing(LanguageTag.t() | Cldr.Locale.locale_name(), System.system_name()) ::
                 {:ok, Map.t()} | {:ok, nil}
 
-        # def currency_spacing(locale, number_system) do
-        #   with {:ok, formats} <- formats_for(locale, number_system) do
-        #     Map.get(formats, :currency_spacing) do
-        #   end
-        # end
-
-        # TODO delete this when we get the right locales
-        # sorted out
         def currency_spacing(locale, number_system) do
           with {:ok, formats} <- formats_for(locale, number_system) do
-            spacing = Map.get(formats, :currency_spacing)
-
-            unless is_nil(spacing) do
-              before = spacing[:before_currency]
-
-              before =
-                if before[:surrounding_match] == "[:digit:]" do
-                  Map.put(before, :surrounding_match, "[[:digit:]]")
-                else
-                  before
-                end
-
-              aft = spacing[:after_currency]
-
-              aft =
-                if aft[:surrounding_match] == "[:digit:]" do
-                  Map.put(aft, :surrounding_match, "[[:digit:]]")
-                else
-                  aft
-                end
-
-              spacing =
-                spacing
-                |> Map.put(:before_currency, before)
-                |> Map.put(:after_currency, aft)
-
-              spacing
-            else
-              nil
-            end
+            Map.get(formats, :currency_spacing)
           end
         end
 
