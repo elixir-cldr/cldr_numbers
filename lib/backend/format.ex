@@ -251,6 +251,57 @@ defmodule Cldr.Number.Backend.Format do
         end
 
         @doc """
+        Returns the currency space for a given locale and
+        number system.
+
+        """
+        @spec currency_spacing(LanguageTag.t() | Cldr.Locale.locale_name(), System.system_name()) ::
+                {:ok, Map.t()} | {:ok, nil}
+
+        # def currency_spacing(locale, number_system) do
+        #   with {:ok, formats} <- formats_for(locale, number_system) do
+        #     Map.get(formats, :currency_spacing) do
+        #   end
+        # end
+
+        # TODO delete this when we get the right locales
+        # sorted out
+        def currency_spacing(locale, number_system) do
+          with {:ok, formats} <- formats_for(locale, number_system) do
+            spacing = Map.get(formats, :currency_spacing)
+
+            unless is_nil(spacing) do
+              before = spacing[:before_currency]
+
+              before =
+                if before[:surrounding_match] == "[:digit:]" do
+                  Map.put(before, :surrounding_match, "[[:digit:]]")
+                else
+                  before
+                end
+
+              aft = spacing[:after_currency]
+
+              aft =
+                if aft[:surrounding_match] == "[:digit:]" do
+                  Map.put(aft, :surrounding_match, "[[:digit:]]")
+                else
+                  aft
+                end
+
+              spacing =
+                spacing
+                |> Map.put(:before_currency, before)
+                |> Map.put(:after_currency, aft)
+
+              spacing
+            else
+              nil
+            end
+          end
+        end
+
+        @doc """
         Returns the decimal formats defined for a given locale.
 
         ## Arguments
@@ -319,8 +370,10 @@ defmodule Cldr.Number.Backend.Format do
 
         """
         @spec formats_for(LanguageTag.t() | binary(), atom | String.t()) :: Map.t()
-        def formats_for(locale \\ unquote(backend).default_locale(),
-            number_system \\ Cldr.Number.System.default_number_system_type())
+        def formats_for(
+              locale \\ unquote(backend).default_locale(),
+              number_system \\ Cldr.Number.System.default_number_system_type()
+            )
 
         def formats_for(%LanguageTag{} = locale, number_system) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale),
@@ -337,11 +390,13 @@ defmodule Cldr.Number.Backend.Format do
           end
         end
 
-        def formats_for!(locale \\ unquote(backend).default_locale(),
-            number_system \\ Cldr.Number.System.default_number_system_type())
+        def formats_for!(
+              locale \\ unquote(backend).default_locale(),
+              number_system \\ Cldr.Number.System.default_number_system_type()
+            )
 
         def formats_for!(locale_name, number_system) do
-          case  formats_for(locale_name, number_system) do
+          case formats_for(locale_name, number_system) do
             {:ok, formats} -> formats
             {:error, {exception, reason}} -> raise exception, reason
           end

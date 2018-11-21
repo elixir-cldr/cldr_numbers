@@ -478,14 +478,60 @@ defmodule Cldr.Number.Formatter.Decimal do
     assemble_parts(format, number_string, number, backend, meta, options)
   end
 
-  defp assemble_parts([{:format, _}, {:currency, type} | rest], number_string, number, backend, meta, options) do
+  defp assemble_parts(
+         [{:format, _}, {:currency, type} | rest],
+         number_string,
+         number,
+         backend,
+         meta,
+         %{currency_spacing: spacing} = options
+       )
+       when not is_nil(spacing) do
     symbol = currency_symbol(options[:currency], number, type, options[:locale], backend)
-    [number_string, symbol | assemble_parts(rest, number_string, number, backend, meta, options)]
+    before_spacing = spacing[:before_currency]
+
+    if before_currency_match?(number_string, symbol, before_spacing) do
+      [
+        number_string,
+        before_spacing[:insert_between],
+        symbol
+        | assemble_parts(rest, number_string, number, backend, meta, options)
+      ]
+    else
+      [
+        number_string,
+        symbol
+        | assemble_parts(rest, number_string, number, backend, meta, options)
+      ]
+    end
   end
 
-  defp assemble_parts([{:currency, type}, {:format, _} | rest], number_string, number, backend, meta, options) do
+  defp assemble_parts(
+         [{:currency, type}, {:format, _} | rest],
+         number_string,
+         number,
+         backend,
+         meta,
+         %{currency_spacing: spacing} = options
+       )
+       when not is_nil(spacing) do
     symbol = currency_symbol(options[:currency], number, type, options[:locale], backend)
-    [symbol, number_string, assemble_parts(rest, number_string, number, backend, meta, options)]
+    after_spacing = spacing[:after_currency]
+
+    if after_currency_match?(number_string, symbol, after_spacing) do
+      [
+        symbol,
+        after_spacing[:insert_between],
+        number_string
+        | assemble_parts(rest, number_string, number, backend, meta, options)
+      ]
+    else
+      [
+        symbol,
+        number_string
+        | assemble_parts(rest, number_string, number, backend, meta, options)
+      ]
+    end
   end
 
   defp assemble_parts([], _number_string, _number, _backend, _meta, _options) do
@@ -502,40 +548,54 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   defp assemble_parts([{:pad, _} | rest], number_string, number, backend, meta, options) do
-    [padding_string(meta, number_string) |
-      assemble_parts(rest, number_string, number, backend, meta, options)]
+    [
+      padding_string(meta, number_string)
+      | assemble_parts(rest, number_string, number, backend, meta, options)
+    ]
   end
 
   defp assemble_parts([{:plus, _} | rest], number_string, number, backend, meta, options) do
-    [options[:symbols].plus_sign |
-      assemble_parts(rest, number_string, number, backend, meta, options)]
+    [
+      options[:symbols].plus_sign
+      | assemble_parts(rest, number_string, number, backend, meta, options)
+    ]
   end
 
   defp assemble_parts([{:minus, _} | rest], number_string, number, backend, meta, options) do
     sign = if number_string == "0", do: "", else: options[:symbols].minus_sign
-    [ sign | assemble_parts(rest, number_string, number, backend, meta, options)]
+    [sign | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
   defp assemble_parts([{:percent, _} | rest], number_string, number, backend, meta, options) do
-    [options[:symbols].percent_sign |
-      assemble_parts(rest, number_string, number, backend, meta, options)]
+    [
+      options[:symbols].percent_sign
+      | assemble_parts(rest, number_string, number, backend, meta, options)
+    ]
   end
 
   defp assemble_parts([{:permille, _} | rest], number_string, number, backend, meta, options) do
-    [options[:symbols].per_mille |
-      assemble_parts(rest, number_string, number, backend, meta, options)]
+    [
+      options[:symbols].per_mille
+      | assemble_parts(rest, number_string, number, backend, meta, options)
+    ]
   end
 
   defp assemble_parts([{:literal, literal} | rest], number_string, number, backend, meta, options) do
-    [literal |
-      assemble_parts(rest, number_string, number, backend, meta, options)]
+    [literal | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
   defp assemble_parts([{:quote, _} | rest], number_string, number, backend, meta, options) do
     ["'" | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
-  defp assemble_parts([{:quoted_char, char} | rest], number_string, number, backend, meta, options) do
+  defp assemble_parts(
+         [{:quoted_char, char} | rest],
+         number_string,
+         number,
+         backend,
+         meta,
+         options
+       ) do
     [char | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
@@ -693,5 +753,15 @@ defmodule Cldr.Number.Formatter.Decimal do
           raise Cldr.FormatCompileError, "#{message} compiling #{inspect(format)}"
       end
     end
+  end
+
+  defp before_currency_match?(number_string, symbol, spacing) do
+    String.match?(number_string, Regex.compile!(spacing[:surrounding_match] <> "$", "u")) &&
+      String.match?(symbol, Regex.compile!("^" <> spacing[:currency_match], "u"))
+  end
+
+  defp after_currency_match?(number_string, symbol, spacing) do
+    String.match?(number_string, Regex.compile!("^" <> spacing[:surrounding_match], "u")) &&
+      String.match?(symbol, Regex.compile!(spacing[:currency_match] <> "$", "u"))
   end
 end

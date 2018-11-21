@@ -226,6 +226,21 @@ defmodule Cldr.Number.Format do
   end
 
   @doc """
+  Returns the currency space for a given locale and
+  number system.
+
+  """
+  @spec currency_spacing(
+          LanguageTag.t() | Cldr.Locale.locale_name(),
+          System.system_name(),
+          Cldr.backend()
+        ) :: {:ok, Map.t()} | {:ok, nil}
+
+  def currency_spacing(locale, number_system, backend) do
+    backend.currency_spacing(locale, number_system)
+  end
+
+  @doc """
   Return the predfined formats for a given `locale` and `number_system`.
 
   ## Arguments

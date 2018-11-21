@@ -11,7 +11,7 @@ defmodule Number.Format.Test do
 
     test "formatted #{inspect(value)} == #{inspect(result)} with args: #{inspect(args)}" do
       assert {:ok, unquote(result)} =
-        TestBackend.Cldr.Number.to_string(unquote(value), unquote(Macro.escape(new_args)))
+               TestBackend.Cldr.Number.to_string(unquote(value), unquote(Macro.escape(new_args)))
     end
   end)
 
@@ -45,11 +45,9 @@ defmodule Number.Format.Test do
 
   test "that an rbnf format request fails if the locale doesn't define the ruleset" do
     assert TestBackend.Cldr.Number.to_string(123, format: :spellout_ordinal_verbose, locale: "zh") ==
-      {:error,
-        {Cldr.Rbnf.NoRuleForNumber,
-          "rule group :spellout_ordinal_verbose for locale \"zh\" does not know how to process 123"
-        }
-      }
+             {:error,
+              {Cldr.Rbnf.NoRuleForNumber,
+               "rule group :spellout_ordinal_verbose for locale \"zh\" does not know how to process 123"}}
   end
 
   test "that we get default formats_for" do

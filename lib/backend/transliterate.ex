@@ -138,7 +138,8 @@ defmodule Cldr.Number.Backend.Transliterate do
         # For when the system name is not known (because its probably a system type
         # like :default, or :native)
         def transliterate(sequence, locale_name, number_system) do
-          with {:ok, system_name} <- System.system_name_from(number_system, locale_name, unquote(backend)) do
+          with {:ok, system_name} <-
+                 System.system_name_from(number_system, locale_name, unquote(backend)) do
             transliterate(sequence, locale_name, system_name)
           end
         end
@@ -154,7 +155,6 @@ defmodule Cldr.Number.Backend.Transliterate do
         for locale_name <- Config.known_locale_names(config),
             {name, symbols} <- Config.number_symbols_for!(locale_name, config),
             !is_nil(symbols) do
-
           # Mapping for the grouping separator
           defp transliterate_char(
                  unquote(Compiler.placeholder(:group)),

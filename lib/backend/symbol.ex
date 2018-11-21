@@ -14,9 +14,9 @@ defmodule Cldr.Number.Backend.Symbol do
 
         ## Options
 
-        * `locale` is any valid locale name returned by `#{inspect backend}.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `#{inspect backend}.Locale.new!/`.  The
-          default is `#{inspect backend}.get_locale/0`.
+        * `locale` is any valid locale name returned by `#{inspect(backend)}.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by `#{inspect(backend)}.Locale.new!/`.  The
+          default is `#{inspect(backend)}.get_locale/0`.
 
         ## Example:
 

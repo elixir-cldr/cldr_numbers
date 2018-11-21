@@ -2,7 +2,7 @@ defmodule Cldr.Rbnf.TestSupport do
   def rbnf_tests(fun) when is_function(fun) do
     # Come back later an investigate why we get different results
     locales =
-      TestBackend.Cldr.known_locale_names
+      TestBackend.Cldr.known_locale_names()
       |> List.delete("ru")
       |> List.delete("be")
       |> List.delete("es")

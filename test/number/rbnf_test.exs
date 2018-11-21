@@ -15,8 +15,7 @@ defmodule Rbnf.Test do
   test "rbnf ordinal" do
     assert {:ok, "123,456th"} = Cldr.Number.to_string(123_456, format: :ordinal)
 
-    assert {:ok, "123 456e"} =
-             Cldr.Number.to_string(123_456, format: :ordinal, locale: "fr")
+    assert {:ok, "123 456e"} = Cldr.Number.to_string(123_456, format: :ordinal, locale: "fr")
   end
 
   test "rbnf improper fraction" do
@@ -29,11 +28,9 @@ defmodule Rbnf.Test do
     assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(-0.456, "en") ==
              "minus zero point four five six"
 
-    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(0.456, "en") ==
-             "zero point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal_verbose(0.456, "en") == "zero point four five six"
 
-    assert Cldr.Rbnf.Spellout.spellout_cardinal(0.456, "en") ==
-             "zero point four five six"
+    assert Cldr.Rbnf.Spellout.spellout_cardinal(0.456, "en") == "zero point four five six"
 
     assert Cldr.Rbnf.Spellout.spellout_cardinal(0, "en") == "zero"
     assert Cldr.Rbnf.Spellout.spellout_ordinal(0, "en") == "zeroth"
@@ -83,15 +80,14 @@ defmodule Rbnf.Test do
 
   test "no rule is available for number" do
     assert Cldr.Rbnf.Spellout.spellout_numbering_year(-24, "zh-Hant") ==
-      {:error,
-        {
-          :'Elixir.Cldr.Rbnf.NoRuleForNumber',
-          "rule group :spellout_numbering_year for locale \"zh-Hant\" does not know how to process -24"
-        }
-      }
+             {:error,
+              {
+                :"Elixir.Cldr.Rbnf.NoRuleForNumber",
+                "rule group :spellout_numbering_year for locale \"zh-Hant\" does not know how to process -24"
+              }}
   end
 
-  :'Elixir.Cldr.Rbnf.TestSupport'.rbnf_tests(fn name, tests, module, function, locale ->
+  :"Elixir.Cldr.Rbnf.TestSupport".rbnf_tests(fn name, tests, module, function, locale ->
     test name do
       Enum.each(unquote(Macro.escape(tests)), fn {test_data, test_result} ->
         if apply(unquote(module), unquote(function), [

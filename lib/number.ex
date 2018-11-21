@@ -84,7 +84,6 @@ defmodule Cldr.Number do
   alias Cldr.Number.Formatter
   alias Cldr.Number.Format.Compiler
   alias Cldr.Number.Format
-  alias Cldr.Locale
 
   @type format_type ::
           :standard
@@ -284,13 +283,15 @@ defmodule Cldr.Number do
   """
   @spec to_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
-  def to_string(number, backend, options \\ []) do
-    {format, options} =
-      options
-      |> normalize_options(Module.concat(backend, Number).default_options(), backend)
-      |> detect_negative_number(number)
 
-    with :ok <- currency_format_has_code(format, currency_format?(format), options[:currency]) do
+  def to_string(number, backend, options \\ []) do
+    with {:ok, options} <- merge_default_options(backend, options),
+         {:ok, options} <- validate_locale(backend, options),
+         {:ok, options} <- validate_number_system(backend, options),
+         {:ok, options} <- normalize_options(backend, options),
+         {:ok, options} <- validate_currency_options(backend, options) do
+      {format, options} = detect_negative_number(number, options)
+
       case to_string(number, format, backend, options) do
         {:error, reason} -> {:error, reason}
         string -> {:ok, string}
@@ -341,6 +342,7 @@ defmodule Cldr.Number do
   @format :digits_ordinal
   defp to_string(number, :ordinal, backend, %{locale: locale}) do
     rule_sets = Module.concat(backend, Rbnf.Ordinal).rule_sets(locale)
+
     if rule_sets && @format in rule_sets do
       Module.concat(backend, Rbnf.Ordinal).digits_ordinal(number, locale)
     else
@@ -484,7 +486,7 @@ defmodule Cldr.Number do
 
   """
   @spec to_number_system(number, atom, Cldr.backend()) ::
-    String.t() | {:error, {Exception.t(), String.t()}}
+          String.t() | {:error, {Exception.t(), String.t()}}
 
   def to_number_system(number, system, backend) do
     Cldr.Number.System.to_system(number, system, backend)
@@ -507,8 +509,7 @@ defmodule Cldr.Number do
       "一百二十三"
 
   """
-  @spec to_number_system(number, atom, Cldr.backend()) ::
-    String.t() | no_return()
+  @spec to_number_system(number, atom, Cldr.backend()) :: String.t() | no_return()
 
   def to_number_system!(number, system, backend) do
     Cldr.Number.System.to_system!(number, system, backend)
@@ -527,20 +528,60 @@ defmodule Cldr.Number do
   """
   defdelegate precision(number), to: Cldr.Digits, as: :number_of_digits
 
+  defp validate_locale(backend, options) do
+    with {:ok, locale} <- backend.validate_locale(options[:locale]) do
+      options = Map.put(options, :locale, locale)
+      {:ok, options}
+    end
+  end
+
+  defp validate_number_system(backend, options) do
+    locale = options[:locale]
+    number_system = options[:number_system]
+
+    with {:ok, system} <- Cldr.Number.System.system_name_from(number_system, locale, backend) do
+      options = Map.put(options, :number_system, system)
+      {:ok, options}
+    end
+  end
+
+  defp validate_currency_options(backend, options) do
+    format = options[:format]
+    currency = options[:currency]
+    currency_format? = currency_format?(format)
+
+    with {:ok, _currency} <- currency_format_has_code(format, currency_format?, currency) do
+      options = Map.put(options, :currency_spacing, currency_spacing(backend, options))
+      {:ok, options}
+    end
+  end
+
+  defp currency_spacing(backend, options) do
+    module = Module.concat(backend, Number.Format)
+    module.currency_spacing(options[:locale], options[:number_system])
+  end
+
   # Merge options and default options with supplied options always
   # the winner.  If :currency is specified then the default :format
   # will be format: currency
-  defp normalize_options(options, defaults, backend) do
-    options =
-      defaults
+  defp merge_default_options(backend, options) do
+    new_options =
+      Module.concat(backend, Number).default_options()
       |> merge(options, fn _k, _v1, v2 -> v2 end)
-      |> canonicalize_locale(backend)
       |> adjust_for_currency(options[:currency], options[:format])
+
+    {:ok, new_options}
+  end
+
+  defp normalize_options(backend, options) do
+    options =
+      options
+      |> Map.new()
       |> set_currency_digits
       |> resolve_standard_format(backend)
       |> adjust_short_forms
 
-    {options[:format], options}
+    {:ok, options}
   end
 
   defp merge(defaults, options, fun) when is_list(options) do
@@ -572,6 +613,8 @@ defmodule Cldr.Number do
     |> check_options(:long, !options[:currency], :decimal_long)
   end
 
+  # If no format is specified but a currency is,
+  # force the format to be :currency
   defp adjust_for_currency(options, currency, nil) when not is_nil(currency) do
     Map.put(options, :format, :currency)
   end
@@ -580,6 +623,8 @@ defmodule Cldr.Number do
     options
   end
 
+  # We use the option `:cash` to decide if we
+  # want to use cash digits or accounting digits
   defp set_currency_digits(%{cash: true} = options) do
     options
     |> Map.delete(:cash)
@@ -601,12 +646,6 @@ defmodule Cldr.Number do
     |> Map.put(:currency_digits, :accounting)
   end
 
-  defp canonicalize_locale(%{locale: locale} = options, backend) when is_binary(locale) do
-    Map.put(options, :locale, Locale.new!(options[:locale], backend))
-  end
-
-  defp canonicalize_locale(options, _backend), do: options
-
   defp lookup_standard_format(format, backend, options) when is_atom(format) do
     with {:ok, formats} <- Format.formats_for(options[:locale], options[:number_system], backend) do
       Map.get(formats, options[:format]) || format
@@ -627,18 +666,18 @@ defmodule Cldr.Number do
     end
   end
 
-  defp detect_negative_number({format, options}, number)
+  defp detect_negative_number(number, options)
        when (is_float(number) or is_integer(number)) and number < 0 do
-    {format, Map.put(options, :pattern, :negative)}
+    {options[:format], Map.put(options, :pattern, :negative)}
   end
 
-  defp detect_negative_number({format, options}, %Decimal{sign: sign})
+  defp detect_negative_number(%Decimal{sign: sign}, options)
        when sign < 0 do
-    {format, Map.put(options, :pattern, :negative)}
+    {options[:format], Map.put(options, :pattern, :negative)}
   end
 
-  defp detect_negative_number({format, options}, _number) do
-    {format, Map.put(options, :pattern, :positive)}
+  defp detect_negative_number(_number, options) do
+    {options[:format], Map.put(options, :pattern, :positive)}
   end
 
   defp currency_format_has_code(format, true, nil) do
@@ -652,14 +691,11 @@ defmodule Cldr.Number do
   end
 
   defp currency_format_has_code(_format, true, currency) do
-    case Cldr.validate_currency(currency) do
-      {:error, _} = error -> error
-      {:ok, _} -> :ok
-    end
+    Cldr.validate_currency(currency)
   end
 
-  defp currency_format_has_code(_format, _boolean, _currency) do
-    :ok
+  defp currency_format_has_code(_format, _boolean, currency) do
+    {:ok, currency}
   end
 
   defp currency_format?(format) when is_atom(format) do

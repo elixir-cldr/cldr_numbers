@@ -303,6 +303,10 @@ defmodule Cldr.Number.Backend.Number do
           Cldr.Number.to_string!(number, unquote(backend), options)
         end
 
+        def validate_number_system(number_system, locale) do
+          Cldr.Number.System.system_name_from(number_system, locale, unquote(backend))
+        end
+
         def default_options do
           [
             format: :standard,
