@@ -207,10 +207,10 @@ defmodule Cldr.Number do
       {:ok, "1.2345E4"}
 
       iex> Cldr.Number.to_string 12345, TestBackend.Cldr, format: :accounting, currency: "THB"
-      {:ok, "THB12,345.00"}
+      {:ok, "THB 12,345.00"}
 
       iex> Cldr.Number.to_string -12345, TestBackend.Cldr, format: :accounting, currency: "THB"
-      {:ok, "(THB12,345.00)"}
+      {:ok, "(THB 12,345.00)"}
 
       iex> Cldr.Number.to_string 12345, TestBackend.Cldr, format: :accounting, currency: "THB",
       ...> locale: "th"
@@ -278,7 +278,7 @@ defmodule Cldr.Number do
   ```
       iex> Cldr.Number.to_string(1234, TestBackend.Cldr, locale: "he", number_system: "hebr")
       {:error, {Cldr.UnknownFormatError,
-      "The locale \\"he\\" with number system \\"hebr\\" does not define a format :standard."}}
+      "The locale \\"he\\" with number system :hebr does not define a format :standard."}}
   ```
   """
   @spec to_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
