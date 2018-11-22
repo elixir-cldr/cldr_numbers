@@ -8,8 +8,18 @@ This is the changelog for Cldr v2.0.0 released on November 22nd, 2018.  For olde
 
 * The public API is now based upon functions defined on a backend module. Therefore calls to functions such as `Cldr.Number.to_string/2` should be replaced with calls to `MyApp.Cldr.Number.to_string/2` (assuming your configured backend module is called `MyApp.Cldr`).
 
-### To do before final release
+### Enhancements
 
-* [ ] Revisit Cldr.Number.validate_number_system (the contract needs clarification but should follow the Cldr.validate_locale principles) This is an update to the base `ex_cldr` package, not numbers.
-* [ ] Add Cldr.Number.Format.Options struct to hold the options structure for `to_string/2`
-* [ ] When `to_string/2` is passed options that are the struct, don't do any further validation.  The validation process is quite expensive and therefore by creating a validated options struct that can be reused we can optimize performance (benchmark this too)
+* Adds `Cldr.Number.validate_number_system/3` and `<backend>.Number.validate_number_system/2` that are now the canonical way to validate and return a number system from either a number system binary or atom, or from a number system name.
+
+* `Cldr.Number.{Ordinal, Cardinal}.pluralize/3` now support ranges, not just numbers
+
+* Currency spacing is now applied for currency formatting.  Depending on the locale, some text may be placed between the current symbol and the number.  This enhanced readibility, it does not change the number formatting itself.  For example you can see below that for the locale "en", when the currency symbol is text, a non-breaking space is introduced between it and the number.
+
+```
+iex> TestBackend.Cldr.Number.to_string 2345, currency: :USD, format: "¤#,##0.00"
+{:ok, "$2,345.00"}
+
+iex> TestBackend.Cldr.Number.to_string 2345, currency: :USD, format: "¤¤#,##0.00"
+{:ok, "USD 2,345.00"}
+```

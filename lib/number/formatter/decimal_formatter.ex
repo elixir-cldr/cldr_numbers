@@ -730,7 +730,6 @@ defmodule Cldr.Number.Formatter.Decimal do
   @doc false
   def define_to_string(backend) do
     config = Module.get_attribute(backend, :config)
-
     for format <- Cldr.Config.decimal_format_list(config) do
       case Compiler.compile(format) do
         {:ok, meta, formatting_pipeline} ->

@@ -88,6 +88,9 @@ defmodule Cldr.Number.Backend.Number do
         possible.
         """
 
+        alias Cldr.Number.System
+        alias Cldr.Locale
+
         @doc """
         Return a valid number system from a provided locale and number
         system name or type.
@@ -121,12 +124,12 @@ defmodule Cldr.Number.Backend.Number do
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
         """
-        @spec validate_number_system(Cldr.Locale.locale_name() | Cldr.LanguageTag.t(),
-          Cldr.Number.System.system_name() | Cldr.Number.System.types())
-            :: {:ok, Cldr.Number.System.system_name()} | {:error, {Exception.t, String.t}}
+        @spec validate_number_system(Locale.locale_name() | Cldr.LanguageTag.t(),
+          System.system_name() | System.types())
+            :: {:ok, System.system_name()} | {:error, {Exception.t, String.t}}
 
         def validate_number_system(locale, number_system) do
-          Cldr.Number.System.system_name_from(number_system, locale, unquote(backend))
+          System.system_name_from(number_system, locale, unquote(backend))
         end
 
         @doc """
