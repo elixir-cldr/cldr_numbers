@@ -89,6 +89,47 @@ defmodule Cldr.Number.Backend.Number do
         """
 
         @doc """
+        Return a valid number system from a provided locale and number
+        system name or type.
+
+        The number system or number system type must be valid for the
+        given locale.  If a number system type is provided, the
+        underlying number system is returned.
+
+        ## Arguments
+
+        * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
+          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
+
+        * `system_name` is any number system name returned by
+          `Cldr.known_number_systems/0` or a number system type
+          returned by `Cldr.known_number_system_types/0`
+
+        ## Examples
+
+            iex> #{inspect(__MODULE__)}.validate_number_system "en", :latn
+            {:ok, :latn}
+
+            iex> #{inspect(__MODULE__)}.validate_number_system "en", :default
+            {:ok, :latn}
+
+            iex> #{inspect(__MODULE__)}.validate_number_system "en", :unknown
+            {:error,
+             {Cldr.UnknownNumberSystemError, "The number system :unknown is unknown"}}
+
+            iex> #{inspect(__MODULE__)}.validate_number_system "zz", :default
+            {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
+
+        """
+        @spec validate_number_system(Cldr.Locale.locale_name() | Cldr.LanguageTag.t(),
+          Cldr.Number.System.system_name() | Cldr.Number.System.types())
+            :: {:ok, Cldr.Number.System.system_name()} | {:error, {Exception.t, String.t}}
+
+        def validate_number_system(locale, number_system) do
+          Cldr.Number.System.system_name_from(number_system, locale, unquote(backend))
+        end
+
+        @doc """
         Returns a number formatted into a string according to a format pattern and options.
 
         ## Arguments
@@ -301,10 +342,6 @@ defmodule Cldr.Number.Backend.Number do
                 String.t() | Exception.t()
         def to_string!(number, options \\ default_options()) do
           Cldr.Number.to_string!(number, unquote(backend), options)
-        end
-
-        def validate_number_system(number_system, locale) do
-          Cldr.Number.System.system_name_from(number_system, locale, unquote(backend))
         end
 
         def default_options do

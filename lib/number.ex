@@ -104,6 +104,50 @@ defmodule Cldr.Number do
   ]
 
   @doc """
+  Return a valid number system from a provided locale and number
+  system name or type.
+
+  The number system or number system type must be valid for the
+  given locale.  If a number system type is provided, the
+  underlying number system is returned.
+
+  ## Arguments
+
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
+
+  * `system_name` is any number system name returned by
+    `Cldr.known_number_systems/0` or a number system type
+    returned by `Cldr.known_number_system_types/0`
+
+  * `backend` is any module that includes `use Cldr` and therefore
+    is a `Cldr` backend module
+
+  ## Examples
+
+      iex> Cldr.Number.validate_number_system "en", :latn, TestBackend.Cldr
+      {:ok, :latn}
+
+      iex> Cldr.Number.validate_number_system "en", :default, TestBackend.Cldr
+      {:ok, :latn}
+
+      iex> Cldr.Number.validate_number_system "en", :unknown, TestBackend.Cldr
+      {:error,
+       {Cldr.UnknownNumberSystemError, "The number system :unknown is unknown"}}
+
+      iex> Cldr.Number.validate_number_system "zz", :default, TestBackend.Cldr
+      {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
+
+  """
+  @spec validate_number_system(Cldr.Locale.locale_name() | Cldr.LanguageTag.t(),
+    Cldr.Number.System.system_name() | Cldr.Number.System.types(), Cldr.backend())
+      :: {:ok, Cldr.Number.System.system_name()} | {:error, {Exception.t, String.t}}
+
+  def validate_number_system(locale, number_system, backend) do
+    Cldr.Number.System.system_name_from(number_system, locale, backend)
+  end
+
+  @doc """
   Returns a number formatted into a string according to a format pattern and options.
 
   ## Arguments
