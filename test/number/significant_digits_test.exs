@@ -41,18 +41,18 @@ defmodule Significant.Digits.Test do
   end
 
   test "round decimal 0.12345 to 3 significant digits and return 0.123" do
-    assert Decimal.new(0.123) == Cldr.Math.round_significant(Decimal.new(0.12345), 3)
+    assert Decimal.new("0.123") == Cldr.Math.round_significant(Decimal.new("0.12345"), 3)
   end
 
   test "round decimal 3.14159 to 4 significant digits and return 3.142" do
-    assert Decimal.new(3.142) == Cldr.Math.round_significant(Decimal.new(3.14159), 4)
+    assert Decimal.new("3.142") == Cldr.Math.round_significant(Decimal.new("3.14159"), 4)
   end
 
   test "round decimal 1.23004 to 4 significant digits and return 1.23" do
-    assert Decimal.new(1.23) == Cldr.Math.round_significant(Decimal.new(1.23004), 4)
+    assert Decimal.new("1.23") == Cldr.Math.round_significant(Decimal.new("1.23004"), 4)
   end
 
   test "round negative decimal -1.23004 to 4 significant digits and return 1.23" do
-    assert Decimal.new(-1.23) == Cldr.Math.round_significant(Decimal.new(-1.23004), 4)
+    assert Decimal.new("-1.23") == Cldr.Math.round_significant(Decimal.new("-1.23004"), 4)
   end
 end
