@@ -1,3 +1,28 @@
+# Changelog for Cldr_Numbers v2.1.0
+
+This is the changelog for Cldr v2.1.0 released on _______, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+## Enhancements
+
+* Added `Cldr.Number.to_at_least/3`, `Cldr.Number.to_at_most/3`, `Cldr.Number.to_range/3` and `Cldr.Number.to_approximately/3` to format numbers in way that conveys the relevant intent. These functions are also defined one each backend. For example, in the `"en"` locale:
+
+```
+iex> TestBackend.Cldr.Number.to_at_least 1234
+{:ok, "1,234+"}
+
+iex> TestBackend.Cldr.Number.to_at_most 1234
+{:ok, "≤1,234"}
+
+iex> TestBackend.Cldr.Number.to_approximately 1234
+{:ok, "~1,234"}
+
+iex> TestBackend.Cldr.Number.to_range 1234..5678
+{:ok, "1,234–5,678"}
+```
+
+* Refactored options for `Cldr.Numbers.to_string/3` and other functions that use the common number formatting options structure.  Options are now parsed and contained in a `Cldr.Number.Format.Options` struct. A user-visible benefit is that if passing a `Cldr.Number.Format.Options` struct to `Cldr.Number.to_string/3` then no further validation or normalization will be performed.  Therefore if you are formatting in a tight loop and using common options, saving the options in advance will yield some performance improvement.  A `Cldr.Number.Format.Options` struct can be returned by called `Cldr.Number.Format.Options.validate_options(backend, options)`.
+
+
 # Changelog for Cldr_Numbers v2.0.0
 
 This is the changelog for Cldr v2.0.0 released on November 22nd, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)

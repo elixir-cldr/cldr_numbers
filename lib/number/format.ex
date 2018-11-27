@@ -43,7 +43,7 @@ defmodule Cldr.Number.Format do
   @format_styles [:standard, :currency, :accounting, :scientific, :percent] ++
                    @short_format_styles
 
-  defstruct @format_styles ++ [:currency_spacing]
+  defstruct @format_styles ++ [:currency_spacing, :other]
 
   require Cldr
   alias Cldr.Number.System
@@ -330,6 +330,7 @@ defmodule Cldr.Number.Format do
       :decimal_long, :decimal_short, :percent, :scientific, :standard]}
 
   """
+  @reject_styles [:__struct__ , :currency_spacing, :other]
   @spec format_styles_for(
           LanguageTag.t() | Locale.locale_name(),
           System.system_name(),
@@ -344,7 +345,7 @@ defmodule Cldr.Number.Format do
         :ok,
         formats
         |> Map.to_list()
-        |> Enum.reject(fn {k, v} -> is_nil(v) || k == :__struct__ || k == :currency_spacing end)
+        |> Enum.reject(fn {k, v} -> is_nil(v) || k in @reject_styles end)
         |> Enum.into(%{})
         |> Map.keys()
       }
@@ -426,7 +427,7 @@ defmodule Cldr.Number.Format do
   def decimal_format_styles_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, styles} <- format_styles_for(locale, number_system, backend),
          {:ok, short_styles} <- short_format_styles_for(locale, number_system, backend) do
-      {:ok, styles -- short_styles -- [:currency_long, :currency_spacing]}
+      {:ok, styles -- short_styles -- [:currency_long, :currency_spacing, :other]}
     end
   end
 

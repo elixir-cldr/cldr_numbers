@@ -38,10 +38,11 @@ defmodule Cldr.Number.Formatter.Currency do
 
   alias Cldr.Number.{Format, System}
   alias Cldr.{Substitution, Currency}
+  alias Cldr.Number.Format.Options
 
   def to_string(number, :currency_long, backend, options) do
-    locale = options[:locale]
-    number_system = System.system_name_from!(options[:number_system], locale, backend)
+    locale = options.locale
+    number_system = System.system_name_from!(options.number_system, locale, backend)
     cardinal = Module.concat(backend, Number.Cardinal)
 
     if !(formats = Format.formats_for!(locale, number_system, backend).currency_long) do
@@ -51,13 +52,14 @@ defmodule Cldr.Number.Formatter.Currency do
             "locale #{inspect(locale)} and number system #{inspect(number_system)}."
     end
 
-    {:ok, currency} = Currency.currency_for_code(options[:currency], backend, locale: locale)
+    {:ok, currency} = Currency.currency_for_code(options.currency, backend, locale: locale)
     currency_string = cardinal.pluralize(number, locale, currency.count)
 
     options =
       options
       |> Map.put(:format, :standard)
-      |> set_fractional_digits(options[:fractional_digits])
+      |> set_fractional_digits(options.fractional_digits)
+      |> Options.resolve_standard_format(backend)
 
     number_string = Cldr.Number.to_string!(number, backend, options)
     format = cardinal.pluralize(number, locale, formats)

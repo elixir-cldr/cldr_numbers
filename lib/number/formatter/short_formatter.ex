@@ -64,16 +64,17 @@ defmodule Cldr.Number.Formatter.Short do
   # fractional digits, that yields "12 K".
 
   def to_string(number, style, backend, options) do
-    locale = options[:locale] || backend.default_locale()
+    locale = options.locale || backend.default_locale()
 
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
-         {:ok, number_system} <- System.system_name_from(options[:number_system], locale, backend) do
+         {:ok, number_system} <- System.system_name_from(options.number_system, locale, backend) do
       short_format_string(number, style, locale, number_system, backend, options)
     end
   end
 
   @spec short_format_string(number, atom, Locale.name(), atom, Cldr.backend(), Map.t()) ::
           List.t()
+
   defp short_format_string(number, style, locale, number_system, backend, options) do
     case Format.formats_for(locale, number_system, backend) do
       {:ok, formats} ->
@@ -88,12 +89,8 @@ defmodule Cldr.Number.Formatter.Short do
               {number, format}
           end
 
-        Formatter.Decimal.to_string(
-          number,
-          format,
-          backend,
-          digits(options, options[:fractional_digits])
-        )
+        options = digits(options, options.fractional_digits)
+        Formatter.Decimal.to_string(number, format, backend, options)
 
       {:error, _} = error ->
         error
@@ -113,8 +110,8 @@ defmodule Cldr.Number.Formatter.Short do
   defp choose_short_format(number, _rules, backend, options)
        when is_number(number) and number < 1000 do
     format =
-      options[:locale]
-      |> Format.formats_for!(options[:number_system], backend)
+      options.locale
+      |> Format.formats_for!(options.number_system, backend)
       |> Map.get(standard_or_currency(options))
 
     {number, format}
@@ -132,7 +129,7 @@ defmodule Cldr.Number.Formatter.Short do
       |> trunc
       |> rem(range)
 
-    {range, Module.concat(backend, Number.Cardinal).pluralize(mod, options[:locale], rule)}
+    {range, Module.concat(backend, Number.Cardinal).pluralize(mod, options.locale, rule)}
   end
 
   defp choose_short_format(%Decimal{} = number, rules, backend, options) do
@@ -143,7 +140,7 @@ defmodule Cldr.Number.Formatter.Short do
   end
 
   defp standard_or_currency(options) do
-    if options[:currency] do
+    if options.currency do
       :currency
     else
       :standard

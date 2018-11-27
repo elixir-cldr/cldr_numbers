@@ -82,8 +82,7 @@ defmodule Cldr.Number do
   """
 
   alias Cldr.Number.Formatter
-  alias Cldr.Number.Format.Compiler
-  alias Cldr.Number.Format
+  alias Cldr.Number.Format.Options
 
   @type format_type ::
           :standard
@@ -96,12 +95,8 @@ defmodule Cldr.Number do
           | :scientific
           | :currency
 
-  @short_format_styles [
-    :currency_short,
-    :currency_long,
-    :decimal_short,
-    :decimal_long
-  ]
+  @short_format_styles Options.short_format_styles()
+  @root_locale Map.get(Cldr.Config.all_language_tags(), "root")
 
   @doc """
   Return a valid number system from a provided locale and number
@@ -153,6 +148,9 @@ defmodule Cldr.Number do
   ## Arguments
 
   * `number` is an integer, float or Decimal to be formatted
+
+  * `backend` is any `Cldr` backend. That is, any module that
+    contains `use Cldr`
 
   * `options` is a keyword list defining how the number is to be formatted. The
     valid options are:
@@ -328,18 +326,20 @@ defmodule Cldr.Number do
   @spec to_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
 
-  def to_string(number, backend, options \\ []) do
-    with {:ok, options} <- merge_default_options(backend, options),
-         {:ok, options} <- validate_locale(backend, options),
-         {:ok, options} <- validate_number_system(backend, options),
-         {:ok, options} <- normalize_options(backend, options),
-         {:ok, options} <- validate_currency_options(backend, options) do
-      {format, options} = detect_negative_number(number, options)
+  def to_string(number, backend, options \\ [])
 
-      case to_string(number, format, backend, options) do
-        {:error, reason} -> {:error, reason}
-        string -> {:ok, string}
-      end
+  def to_string(number, backend, %Options{} = options) do
+    {format, options} = detect_negative_number(number, options)
+
+    case to_string(number, format, backend, options) do
+      {:error, reason} -> {:error, reason}
+      string -> {:ok, string}
+    end
+  end
+
+  def to_string(number, backend, options) do
+    with {:ok, options} <- Options.validate_options(backend, options) do
+      to_string(number, backend, options)
     end
   end
 
@@ -420,51 +420,50 @@ defmodule Cldr.Number do
   # For spellout numbers
   @format :spellout_cardinal_verbose
   defp to_string(number, :spellout_verbose, backend, options) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
 
     if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_cardinal_verbose(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_cardinal_verbose(number, options.locale)
     else
-      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], @format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, @format)}
     end
   end
 
   # For spellout years
   @format :spellout_numbering_year
   defp to_string(number, :spellout_year, backend, options) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
 
     if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_numbering_year(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_numbering_year(number, options.locale)
     else
-      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], @format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, @format)}
     end
   end
 
   # For spellout ordinal
   defp to_string(number, :spellout_ordinal = format, backend, options) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
 
     if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_ordinal(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_ordinal(number, options.locale)
     else
-      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, format)}
     end
   end
 
   # For spellout ordinal verbose
   defp to_string(number, :spellout_ordinal_verbose = format, backend, options) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options[:locale])
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
 
     if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_ordinal_verbose(number, options[:locale])
+      Module.concat(backend, Rbnf.Spellout).spellout_ordinal_verbose(number, options.locale)
     else
-      {:error, Cldr.Rbnf.rbnf_rule_error(options[:locale], format)}
+      {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, format)}
     end
   end
 
   # For Roman numerals
-  @root_locale Map.get(Cldr.Config.all_language_tags(), "root")
   defp to_string(number, :roman, backend, _options) do
     Module.concat(backend, Rbnf.NumberSystem).roman_upper(number, @root_locale)
   end
@@ -497,16 +496,141 @@ defmodule Cldr.Number do
   end
 
   defp to_string(_number, format, _backend, options) when is_atom(format) do
-    cldr_locale_name = Map.get(options[:locale], :cldr_locale_name)
+    cldr_locale_name = options.locale.cldr_locale_name
 
     {
       :error,
       {
         Cldr.UnknownFormatError,
         "The locale #{inspect(cldr_locale_name)} with number system " <>
-          "#{inspect(options[:number_system])} does not define a format " <> "#{inspect(format)}."
+          "#{inspect(options.number_system)} does not define a format " <> "#{inspect(format)}."
       }
     }
+  end
+
+  @doc """
+  Formats a number and applies the `:at_least` format for
+  a locale and number system.
+
+  ## Arguments
+
+  * `number` is an integer, float or Decimal to be formatted
+
+  * `backend` is any `Cldr` backend. That is, any module that
+    contains `use Cldr`
+
+  * `options` is a keyword list defining how the number is to be formatted.
+    See `Cldr.Number.to_string/3` for a description of the available
+    options.
+
+  ## Example
+
+      iex> Cldr.Number.to_at_least 1234, TestBackend.Cldr
+      {:ok, "1,234+"}
+
+  """
+  def to_at_least(number, backend, options \\ []) do
+    other_format(number, :at_least, backend, options)
+  end
+
+  @doc """
+  Formats a number and applies the `:at_most` format for
+  a locale and number system.
+
+  ## Arguments
+
+  * `number` is an integer, float or Decimal to be formatted
+
+  * `backend` is any `Cldr` backend. That is, any module that
+    contains `use Cldr`
+
+  * `options` is a keyword list defining how the number is to be formatted.
+    See `Cldr.Number.to_string/3` for a description of the available
+    options.
+
+  ## Example
+
+      iex> Cldr.Number.to_at_most 1234, TestBackend.Cldr
+      {:ok, "≤1,234"}
+
+  """
+  def to_at_most(number, backend, options \\ []) do
+    other_format(number, :at_most, backend, options)
+  end
+
+  @doc """
+  Formats a number and applies the `:approximately` format for
+  a locale and number system.
+
+  ## Arguments
+
+  * `number` is an integer, float or Decimal to be formatted
+
+  * `backend` is any `Cldr` backend. That is, any module that
+    contains `use Cldr`
+
+  * `options` is a keyword list defining how the number is to be formatted.
+    See `Cldr.Number.to_string/3` for a description of the available
+    options.
+
+  ## Example
+
+      iex> Cldr.Number.to_approximately 1234, TestBackend.Cldr
+      {:ok, "~1,234"}
+
+  """
+  def to_approximately(number, backend, options \\ []) do
+    other_format(number, :approximately, backend, options)
+  end
+
+  @doc """
+  Formats the first and last numbers of a range and applies
+  the `:range` format for a locale and number system.
+
+  ## Arguments
+
+  * `number` is an integer, float or Decimal to be formatted
+
+  * `backend` is any `Cldr` backend. That is, any module that
+    contains `use Cldr`
+
+  * `options` is a keyword list defining how the number is to be formatted.
+    See `Cldr.Number.to_string/3` for a description of the available
+    options.
+
+  ## Example
+
+      iex> Cldr.Number.to_range 1234..5678, TestBackend.Cldr
+      {:ok, "1,234–5,678"}
+
+  """
+  def to_range(%Range{first: first, last: last}, backend, options \\ []) do
+    with {:ok, options} <- Options.validate_options(backend, options),
+         {:ok, format} <- Options.validate_other_format(:range, backend, options),
+         {:ok, first_formatted_number} <- to_string(first, backend, options),
+         {:ok, last_formatted_number} <- to_string(last, backend, options) do
+
+      final_format =
+        [first_formatted_number, last_formatted_number]
+        |> Cldr.Substitution.substitute(format)
+        |> :erlang.iolist_to_binary
+
+      {:ok, final_format}
+    end
+  end
+
+  defp other_format(number, other_format, backend, options) do
+    with {:ok, options} <- Options.validate_options(backend, options),
+         {:ok, format} <- Options.validate_other_format(other_format, backend, options),
+         {:ok, formatted_number} <- to_string(number, backend, options) do
+
+      final_format =
+        formatted_number
+        |> Cldr.Substitution.substitute(format)
+        |> :erlang.iolist_to_binary
+
+      {:ok, final_format}
+    end
   end
 
   @doc """
@@ -572,185 +696,17 @@ defmodule Cldr.Number do
   """
   defdelegate precision(number), to: Cldr.Digits, as: :number_of_digits
 
-  defp validate_locale(backend, options) do
-    with {:ok, locale} <- backend.validate_locale(options[:locale]) do
-      options = Map.put(options, :locale, locale)
-      {:ok, options}
-    end
-  end
-
-  defp validate_number_system(backend, options) do
-    locale = options[:locale]
-    number_system = options[:number_system]
-
-    with {:ok, system} <- Cldr.Number.System.system_name_from(number_system, locale, backend) do
-      options = Map.put(options, :number_system, system)
-      {:ok, options}
-    end
-  end
-
-  defp validate_currency_options(backend, options) do
-    format = options[:format]
-    currency = options[:currency]
-    currency_format? = currency_format?(format)
-
-    with {:ok, _currency} <- currency_format_has_code(format, currency_format?, currency) do
-      options = Map.put(options, :currency_spacing, currency_spacing(backend, options))
-      {:ok, options}
-    end
-  end
-
-  defp currency_spacing(backend, options) do
-    module = Module.concat(backend, Number.Format)
-    module.currency_spacing(options[:locale], options[:number_system])
-  end
-
-  # Merge options and default options with supplied options always
-  # the winner.  If :currency is specified then the default :format
-  # will be format: currency
-  defp merge_default_options(backend, options) do
-    new_options =
-      Module.concat(backend, Number).default_options()
-      |> merge(options, fn _k, _v1, v2 -> v2 end)
-      |> adjust_for_currency(options[:currency], options[:format])
-
-    {:ok, new_options}
-  end
-
-  defp normalize_options(backend, options) do
-    options =
-      options
-      |> Map.new()
-      |> set_currency_digits
-      |> resolve_standard_format(backend)
-      |> adjust_short_forms
-
-    {:ok, options}
-  end
-
-  defp merge(defaults, options, fun) when is_list(options) do
-    defaults
-    |> Keyword.merge(options, fun)
-    |> Cldr.Map.from_keyword()
-  end
-
-  defp merge(defaults, options, fun) when is_map(options) do
-    defaults
-    |> Cldr.Map.from_keyword()
-    |> Map.merge(options, fun)
-  end
-
-  defp resolve_standard_format(%{format: format} = options, _backend)
-       when format in @short_format_styles do
-    options
-  end
-
-  defp resolve_standard_format(options, backend) do
-    Map.put(options, :format, lookup_standard_format(options[:format], backend, options))
-  end
-
-  defp adjust_short_forms(options) do
-    options
-    |> check_options(:short, options[:currency], :currency_short)
-    |> check_options(:long, options[:currency], :currency_long)
-    |> check_options(:short, !options[:currency], :decimal_short)
-    |> check_options(:long, !options[:currency], :decimal_long)
-  end
-
-  # If no format is specified but a currency is,
-  # force the format to be :currency
-  defp adjust_for_currency(options, currency, nil) when not is_nil(currency) do
-    Map.put(options, :format, :currency)
-  end
-
-  defp adjust_for_currency(options, _currency, _format) do
-    options
-  end
-
-  # We use the option `:cash` to decide if we
-  # want to use cash digits or accounting digits
-  defp set_currency_digits(%{cash: true} = options) do
-    options
-    |> Map.delete(:cash)
-    |> Map.put(:currency_digits, :cash)
-  end
-
-  defp set_currency_digits(%{cash: false} = options) do
-    options
-    |> Map.delete(:cash)
-    |> Map.put(:currency_digits, :accounting)
-  end
-
-  defp set_currency_digits(%{currency_digits: _mode} = options) do
-    options
-  end
-
-  defp set_currency_digits(options) do
-    options
-    |> Map.put(:currency_digits, :accounting)
-  end
-
-  defp lookup_standard_format(format, backend, options) when is_atom(format) do
-    with {:ok, formats} <- Format.formats_for(options[:locale], options[:number_system], backend) do
-      Map.get(formats, options[:format]) || format
-    end
-  end
-
-  defp lookup_standard_format(format, _backend, _options) when is_binary(format) do
-    format
-  end
-
-  # if the format is :short or :long then we set the full format name
-  # based upon whether there is a :currency set in options or not.
-  defp check_options(options, format, check, finally) do
-    if options[:format] == format && check do
-      Map.put(options, :format, finally)
-    else
-      options
-    end
-  end
-
   defp detect_negative_number(number, options)
        when (is_float(number) or is_integer(number)) and number < 0 do
-    {options[:format], Map.put(options, :pattern, :negative)}
+    {options.format, Map.put(options, :pattern, :negative)}
   end
 
   defp detect_negative_number(%Decimal{sign: sign}, options)
        when sign < 0 do
-    {options[:format], Map.put(options, :pattern, :negative)}
+    {options.format, Map.put(options, :pattern, :negative)}
   end
 
   defp detect_negative_number(_number, options) do
-    {options[:format], Map.put(options, :pattern, :positive)}
-  end
-
-  defp currency_format_has_code(format, true, nil) do
-    {
-      :error,
-      {
-        Cldr.FormatError,
-        "currency format #{inspect(format)} requires that " <> "options[:currency] be specified"
-      }
-    }
-  end
-
-  defp currency_format_has_code(_format, true, currency) do
-    Cldr.validate_currency(currency)
-  end
-
-  defp currency_format_has_code(_format, _boolean, currency) do
-    {:ok, currency}
-  end
-
-  defp currency_format?(format) when is_atom(format) do
-    format == :currency_short
-  end
-
-  defp currency_format?(format) when is_binary(format) do
-    format && String.contains?(format, Compiler.placeholder(:currency))
-  end
-
-  defp currency_format?(_format) do
-    false
+    {options.format, Map.put(options, :pattern, :positive)}
   end
 end

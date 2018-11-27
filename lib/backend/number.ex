@@ -347,6 +347,95 @@ defmodule Cldr.Number.Backend.Number do
           Cldr.Number.to_string!(number, unquote(backend), options)
         end
 
+        @doc """
+        Formats a number and applies the `:at_least` format for
+        a locale and number system.
+
+        ## Arguments
+
+        * `number` is an integer, float or Decimal to be formatted
+
+        * `options` is a keyword list defining how the number is to be formatted.
+          See `Cldr.Number.to_string/3` for a description of the available
+          options.
+
+        ## Example
+
+            iex> #{inspect(__MODULE__)}.to_at_least 1234
+            {:ok, "1,234+"}
+
+        """
+        def to_at_least(number, backend, options \\ []) do
+         Cldr.Number.to_at_least(number, unquote(backend), options)
+        end
+
+        @doc """
+        Formats a number and applies the `:at_most` format for
+        a locale and number system.
+
+        ## Arguments
+
+        * `number` is an integer, float or Decimal to be formatted
+
+        * `options` is a keyword list defining how the number is to be formatted.
+          See `Cldr.Number.to_string/3` for a description of the available
+          options.
+
+        ## Example
+
+            iex> #{inspect(__MODULE__)}.to_at_most 1234
+            {:ok, "≤1,234"}
+
+        """
+        def to_at_most(number, backend, options \\ []) do
+          Cldr.Number.to_at_most(number, unquote(backend), options)
+        end
+
+        @doc """
+        Formats a number and applies the `:approximately` format for
+        a locale and number system.
+
+        ## Arguments
+
+        * `number` is an integer, float or Decimal to be formatted
+
+        * `options` is a keyword list defining how the number is to be formatted.
+          See `Cldr.Number.to_string/3` for a description of the available
+          options.
+
+        ## Example
+
+            iex> #{inspect(__MODULE__)}.to_approximately 1234
+            {:ok, "~1,234"}
+
+        """
+        def to_approximately(number, options \\ []) do
+          Cldr.Number.to_approximately(number, unquote(backend), options)
+        end
+
+        @doc """
+        Formats the first and last numbers of a range and applies
+        the `:range` format for a locale and number system.
+
+        ## Arguments
+
+        * `number` is an integer, float or Decimal to be formatted
+
+        * `options` is a keyword list defining how the number is to be formatted.
+          See `Cldr.Number.to_string/3` for a description of the available
+          options.
+
+        ## Example
+
+            iex> #{inspect(__MODULE__)}.to_range 1234..5678
+            {:ok, "1,234–5,678"}
+
+        """
+        def to_range(range, options \\ []) do
+          Cldr.Number.to_range(range, unquote(backend), options)
+        end
+
+        @doc false
         def default_options do
           [
             format: :standard,

@@ -48,9 +48,9 @@ defmodule Cldr.Number.Formatter.Decimal do
   @doc false
   def update_meta(meta, number, backend, options) do
     meta
-    |> adjust_fraction_for_currency(options[:currency], options[:currency_digits], backend)
+    |> adjust_fraction_for_currency(options.currency, options.currency_digits, backend)
     |> adjust_fraction_for_significant_digits(number)
-    |> adjust_for_fractional_digits(options[:fractional_digits])
+    |> adjust_for_fractional_digits(options.fractional_digits)
     |> Map.put(:number, number)
   end
 
@@ -468,12 +468,12 @@ defmodule Cldr.Number.Formatter.Decimal do
   # the currency sign, percent and permille characters.
   def assemble_format(number_string, meta, backend, options) do
     number_string
-    |> do_assemble_format(meta.number, meta, meta.format[options[:pattern]], backend, options)
+    |> do_assemble_format(meta.number, meta, meta.format[options.pattern], backend, options)
     |> :erlang.iolist_to_binary()
   end
 
   def do_assemble_format(number_string, number, meta, format, backend, options) do
-    {:ok, symbols} = number_symbols_for(options[:locale], options[:number_system], backend)
+    {:ok, symbols} = number_symbols_for(options.locale, options.number_system, backend)
     options = Map.put(options, :symbols, symbols)
     assemble_parts(format, number_string, number, backend, meta, options)
   end
@@ -487,7 +487,7 @@ defmodule Cldr.Number.Formatter.Decimal do
          %{currency_spacing: spacing} = options
        )
        when not is_nil(spacing) do
-    symbol = currency_symbol(options[:currency], number, type, options[:locale], backend)
+    symbol = currency_symbol(options.currency, number, type, options.locale, backend)
     before_spacing = spacing[:before_currency]
 
     if before_currency_match?(number_string, symbol, before_spacing) do
@@ -515,7 +515,7 @@ defmodule Cldr.Number.Formatter.Decimal do
          %{currency_spacing: spacing} = options
        )
        when not is_nil(spacing) do
-    symbol = currency_symbol(options[:currency], number, type, options[:locale], backend)
+    symbol = currency_symbol(options.currency, number, type, options.locale, backend)
     after_spacing = spacing[:after_currency]
 
     if after_currency_match?(number_string, symbol, after_spacing) do
@@ -539,7 +539,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   defp assemble_parts([{:currency, type} | rest], number_string, number, backend, meta, options) do
-    symbol = currency_symbol(options[:currency], number, type, options[:locale], backend)
+    symbol = currency_symbol(options.currency, number, type, options.locale, backend)
     [symbol | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
@@ -556,26 +556,26 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   defp assemble_parts([{:plus, _} | rest], number_string, number, backend, meta, options) do
     [
-      options[:symbols].plus_sign
+      options.symbols.plus_sign
       | assemble_parts(rest, number_string, number, backend, meta, options)
     ]
   end
 
   defp assemble_parts([{:minus, _} | rest], number_string, number, backend, meta, options) do
-    sign = if number_string == "0", do: "", else: options[:symbols].minus_sign
+    sign = if number_string == "0", do: "", else: options.symbols.minus_sign
     [sign | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
   defp assemble_parts([{:percent, _} | rest], number_string, number, backend, meta, options) do
     [
-      options[:symbols].percent_sign
+      options.symbols.percent_sign
       | assemble_parts(rest, number_string, number, backend, meta, options)
     ]
   end
 
   defp assemble_parts([{:permille, _} | rest], number_string, number, backend, meta, options) do
     [
-      options[:symbols].per_mille
+      options.symbols.per_mille
       | assemble_parts(rest, number_string, number, backend, meta, options)
     ]
   end
