@@ -19,7 +19,6 @@ defmodule CldrNumbers.Mixfile do
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
       package: package(),
-      cldr_provider: {Cldr.Number.Backend, :define_number_modules, []}
     ]
   end
 
@@ -37,7 +36,7 @@ defmodule CldrNumbers.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 2.0"},
+      {:ex_cldr, "~> 2.1"},
       {:ex_cldr_currencies, "~> 2.0"},
       {:decimal, "~> 1.5"},
       {:jason, "~> 1.0", optional: true},
