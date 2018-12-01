@@ -4,7 +4,7 @@ This is the changelog for Cldr v2.1.0 released on December 1st, 2018.  For older
 
 ## Enhancements
 
-* Added `Cldr.Number.to_at_least/3`, `Cldr.Number.to_at_most/3`, `Cldr.Number.to_range/3` and `Cldr.Number.to_approximately/3` to format numbers in way that conveys the relevant intent. These functions are also defined one each backend. For example, in the `"en"` locale:
+* Added `Cldr.Number.to_at_least_string/3`, `Cldr.Number.to_at_most_string/3`, `Cldr.Number.to_range_string/3` and `Cldr.Number.to_approx_string/3` to format numbers in way that conveys the relevant intent. These functions are also defined one each backend. For example, in the `"en"` locale:
 
 ```
 iex> TestBackend.Cldr.Number.to_at_least_string 1234
