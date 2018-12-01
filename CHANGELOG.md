@@ -7,16 +7,16 @@ This is the changelog for Cldr v2.1.0 released on _______, 2018.  For older chan
 * Added `Cldr.Number.to_at_least/3`, `Cldr.Number.to_at_most/3`, `Cldr.Number.to_range/3` and `Cldr.Number.to_approximately/3` to format numbers in way that conveys the relevant intent. These functions are also defined one each backend. For example, in the `"en"` locale:
 
 ```
-iex> TestBackend.Cldr.Number.to_at_least 1234
+iex> TestBackend.Cldr.Number.to_at_least_string 1234
 {:ok, "1,234+"}
 
-iex> TestBackend.Cldr.Number.to_at_most 1234
+iex> TestBackend.Cldr.Number.to_at_most_string 1234
 {:ok, "≤1,234"}
 
-iex> TestBackend.Cldr.Number.to_approximately 1234
+iex> TestBackend.Cldr.Number.to_approx_string 1234
 {:ok, "~1,234"}
 
-iex> TestBackend.Cldr.Number.to_range 1234..5678
+iex> TestBackend.Cldr.Number.to_range_string 1234..5678
 {:ok, "1,234–5,678"}
 ```
 
