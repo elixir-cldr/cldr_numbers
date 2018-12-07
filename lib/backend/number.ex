@@ -235,10 +235,10 @@ defmodule Cldr.Number.Backend.Number do
             {:ok, "1.2345E4"}
 
             iex> #{inspect(__MODULE__)}.to_string 12345, format: :accounting, currency: "THB"
-            {:ok, "THB12,345.00"}
+            {:ok, "THB 12,345.00"}
 
             iex> #{inspect(__MODULE__)}.to_string -12345, format: :accounting, currency: "THB"
-            {:ok, "(THB12,345.00)"}
+            {:ok, "(THB 12,345.00)"}
 
             iex> #{inspect(__MODULE__)}.to_string 12345, format: :accounting, currency: "THB",
             ...> locale: "th"
@@ -283,7 +283,7 @@ defmodule Cldr.Number.Backend.Number do
           * A format cannot be compiled. In this case the error tuple will look like:
 
         ```
-            iex> Cldr.Number.to_string(12345, format: "0#")
+            iex> #{inspect(__MODULE__)}.to_string(12345, format: "0#")
             {:error, {Cldr.FormatCompileError,
               "Decimal format compiler: syntax error before: \\"#\\""}}
         ```
@@ -293,7 +293,7 @@ defmodule Cldr.Number.Backend.Number do
             symbol placeholder. In this case the error return looks like:
 
         ```
-            iex> Cldr.Number.to_string(12345, format: :accounting)
+            iex> #{inspect(__MODULE__)}.to_string(12345, format: :accounting)
             {:error, {Cldr.FormatError, "currency format \\"¤#,##0.00;(¤#,##0.00)\\" requires that " <>
             "options[:currency] be specified"}}
         ```
@@ -304,9 +304,9 @@ defmodule Cldr.Number.Backend.Number do
             return looks like:
 
         ```
-            iex> Cldr.Number.to_string(1234, locale: Cldr.Locale.new!("he"), number_system: "hebr")
+            iex> #{inspect(__MODULE__)}.to_string(1234, locale: "he", number_system: "hebr")
             {:error, {Cldr.UnknownFormatError,
-            "The locale \\"he\\" with number system \\"hebr\\" does not define a format :standard."}}
+              "The locale \\"he\\" with number system :hebr does not define a format :standard."}}
         ```
         """
         @spec to_string(number | Decimal.t(), Keyword.t() | Map.t()) ::
@@ -361,12 +361,14 @@ defmodule Cldr.Number.Backend.Number do
 
         ## Example
 
-            iex> #{inspect(__MODULE__)}.to_at_least 1234
+            iex> #{inspect(__MODULE__)}.to_at_least_string 1234
             {:ok, "1,234+"}
 
         """
-        def to_at_least(number, backend, options \\ []) do
-         Cldr.Number.to_at_least(number, unquote(backend), options)
+        @spec to_at_least_string(number | Decimal.t(), Keyword.t() | Map.t()) ::
+                {:ok, String.t()} | {:error, {atom, String.t()}}
+        def to_at_least_string(number, options \\ []) do
+         Cldr.Number.to_at_least_string(number, unquote(backend), options)
         end
 
         @doc """
@@ -383,12 +385,14 @@ defmodule Cldr.Number.Backend.Number do
 
         ## Example
 
-            iex> #{inspect(__MODULE__)}.to_at_most 1234
+            iex> #{inspect(__MODULE__)}.to_at_most_string 1234
             {:ok, "≤1,234"}
 
         """
-        def to_at_most(number, backend, options \\ []) do
-          Cldr.Number.to_at_most(number, unquote(backend), options)
+        @spec to_at_most_string(number | Decimal.t(), Keyword.t() | Map.t()) ::
+                {:ok, String.t()} | {:error, {atom, String.t()}}
+        def to_at_most_string(number, options \\ []) do
+          Cldr.Number.to_at_most_string(number, unquote(backend), options)
         end
 
         @doc """
@@ -405,12 +409,14 @@ defmodule Cldr.Number.Backend.Number do
 
         ## Example
 
-            iex> #{inspect(__MODULE__)}.to_approximately 1234
+            iex> #{inspect(__MODULE__)}.to_approx_string 1234
             {:ok, "~1,234"}
 
         """
-        def to_approximately(number, options \\ []) do
-          Cldr.Number.to_approximately(number, unquote(backend), options)
+        @spec to_approx_string(number | Decimal.t(), Keyword.t() | Map.t()) ::
+                {:ok, String.t()} | {:error, {atom, String.t()}}
+        def to_approx_string(number, options \\ []) do
+          Cldr.Number.to_approx_string(number, unquote(backend), options)
         end
 
         @doc """
@@ -427,12 +433,14 @@ defmodule Cldr.Number.Backend.Number do
 
         ## Example
 
-            iex> #{inspect(__MODULE__)}.to_range 1234..5678
+            iex> #{inspect(__MODULE__)}.to_range_string 1234..5678
             {:ok, "1,234–5,678"}
 
         """
-        def to_range(range, options \\ []) do
-          Cldr.Number.to_range(range, unquote(backend), options)
+        @spec to_range_string(number | Decimal.t(), Keyword.t() | Map.t()) ::
+                {:ok, String.t()} | {:error, {atom, String.t()}}
+        def to_range_string(range, options \\ []) do
+          Cldr.Number.to_range_string(range, unquote(backend), options)
         end
 
         @doc false

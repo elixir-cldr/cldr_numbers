@@ -525,11 +525,13 @@ defmodule Cldr.Number do
 
   ## Example
 
-      iex> Cldr.Number.to_at_least 1234, TestBackend.Cldr
+      iex> Cldr.Number.to_at_least_string 1234, TestBackend.Cldr
       {:ok, "1,234+"}
 
   """
-  def to_at_least(number, backend, options \\ []) do
+  @spec to_at_least_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
+          {:ok, String.t()} | {:error, {atom, String.t()}}
+  def to_at_least_string(number, backend, options \\ []) do
     other_format(number, :at_least, backend, options)
   end
 
@@ -550,11 +552,13 @@ defmodule Cldr.Number do
 
   ## Example
 
-      iex> Cldr.Number.to_at_most 1234, TestBackend.Cldr
+      iex> Cldr.Number.to_at_most_string 1234, TestBackend.Cldr
       {:ok, "≤1,234"}
 
   """
-  def to_at_most(number, backend, options \\ []) do
+  @spec to_at_most_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
+          {:ok, String.t()} | {:error, {atom, String.t()}}
+  def to_at_most_string(number, backend, options \\ []) do
     other_format(number, :at_most, backend, options)
   end
 
@@ -575,11 +579,13 @@ defmodule Cldr.Number do
 
   ## Example
 
-      iex> Cldr.Number.to_approximately 1234, TestBackend.Cldr
+      iex> Cldr.Number.to_approx_string 1234, TestBackend.Cldr
       {:ok, "~1,234"}
 
   """
-  def to_approximately(number, backend, options \\ []) do
+  @spec to_approx_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
+          {:ok, String.t()} | {:error, {atom, String.t()}}
+  def to_approx_string(number, backend, options \\ []) do
     other_format(number, :approximately, backend, options)
   end
 
@@ -600,11 +606,13 @@ defmodule Cldr.Number do
 
   ## Example
 
-      iex> Cldr.Number.to_range 1234..5678, TestBackend.Cldr
+      iex> Cldr.Number.to_range_string 1234..5678, TestBackend.Cldr
       {:ok, "1,234–5,678"}
 
   """
-  def to_range(%Range{first: first, last: last}, backend, options \\ []) do
+  @spec to_range_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
+          {:ok, String.t()} | {:error, {atom, String.t()}}
+  def to_range_string(%Range{first: first, last: last}, backend, options \\ []) do
     with {:ok, options} <- Options.validate_options(backend, options),
          {:ok, format} <- Options.validate_other_format(:range, backend, options),
          {:ok, first_formatted_number} <- to_string(first, backend, options),
