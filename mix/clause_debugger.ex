@@ -1,12 +1,17 @@
 defmodule Cldr.Clause do
   @moduledoc false
 
-  def functions(module, function, args) do
-    {:ok, kind, clauses} = Exception.blame_mfa(module, function, args)
-    formatted_clauses(function, kind, clauses, &blame_match/2)
+  def match(module, function, args) do
+    case Exception.blame_mfa(module, function, args) do
+      {:ok, kind, clauses} ->
+        formatted_clauses(function, kind, clauses, &blame_match/2)
+      :error ->
+        raise ArgumentError, "Function #{inspect module}.#{inspect function}/#{length(args)} " <>
+        "is not known."
+    end
   end
 
-  def formatted_clauses(function, kind, clauses, ast_fun) do
+  defp formatted_clauses(function, kind, clauses, ast_fun) do
     format_clause_fun = fn {args, guards} ->
       code = Enum.reduce(guards, {function, [], args}, &{:when, [], [&2, &1]})
       "    #{kind} " <> Macro.to_string(code, ast_fun) <> "\n"
@@ -17,7 +22,9 @@ defmodule Cldr.Clause do
     |> Enum.join()
   end
 
-  defp blame_match(%{match?: true, node: node}, _), do: Macro.to_string(node)
-  defp blame_match(%{match?: false, node: node}, _), do: "-" <> Macro.to_string(node) <> "-"
+  defp blame_match(%{match?: true, node: node}, _),
+    do: Macro.to_string(node)
+  defp blame_match(%{match?: false, node: node}, _),
+    do: IO.ANSI.red() <> Macro.to_string(node) <> IO.ANSI.reset()
   defp blame_match(_, string), do: string
 end
