@@ -19,6 +19,10 @@ defmodule Number.Format.Test do
     assert {:ok, "xxx"} = TestBackend.Cldr.Number.to_string(1234, format: "xxx")
   end
 
+  test "formatted float with rounding" do
+    assert {:ok, "1.40"} == TestBackend.Cldr.Number.to_string(1.4, fractional_digits: 2)
+  end
+
   test "a currency format with no currency returns an error" do
     assert {:error, _message} = TestBackend.Cldr.Number.to_string(1234, format: :currency)
   end

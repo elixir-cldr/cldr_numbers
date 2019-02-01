@@ -1,7 +1,6 @@
 defmodule Cldr.FunctionClause do
   @moduledoc """
   Format function clauses using Exception.blame/3
-
   """
 
   @doc """
@@ -14,10 +13,13 @@ defmodule Cldr.FunctionClause do
 
   """
   @spec match(module(), atom(), [any(), ...]) :: binary()
-  def match(module, function, args) when is_list(args) do
+  def match(module, function, args) do
     case Exception.blame_mfa(module, function, args) do
-      {:ok, kind, clauses} -> formatted_clauses(function, kind, clauses, &blame_match/2)
-      _error -> "No known function clauses match #{inspect module}.#{function}/#{length(args)}"
+      {:ok, kind, clauses} ->
+        formatted_clauses(function, kind, clauses, &blame_match/2)
+      :error ->
+        raise ArgumentError, "Function #{inspect module}.#{inspect function}/#{length(args)} " <>
+        "is not known."
     end
   end
 

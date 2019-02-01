@@ -167,6 +167,7 @@ defmodule Cldr.Number.Formatter.Short do
   # TODO: We can precompute these at compile time which would
   # save this lookup
   defp adjustment(range, number_of_zeros) do
-    range / Math.power_of_10(number_of_zeros - 1)
+    (range / Math.power_of_10(number_of_zeros - 1))
+    |> trunc
   end
 end
