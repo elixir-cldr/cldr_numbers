@@ -168,7 +168,7 @@ defmodule Cldr.Number.Format do
 
   * raises an exception
 
-  See `Cldr.Number.Format.all_formats_for/1` for further information.
+  See `Cldr.Number.Format.all_formats_for/2` for further information.
 
   """
   def all_formats_for!(locale, backend) do
@@ -250,7 +250,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/0`
 
   * `number_system` is any valid number system or number system type returned
-    by `Cldr.Number.System.number_systems_for/1`
+    by `Cldr.Number.System.number_systems_for/2`
 
   ## Example
 
@@ -293,7 +293,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/0`
 
   * `number_system` is any valid number system or number system type returned
-    by `Cldr.Number.System.number_systems_for/1`
+    by `Cldr.Number.System.number_systems_for/2`
 
   """
   @spec formats_for!(LanguageTag.t(), System.system_name(), Cldr.backend()) :: Map.t() | none()
@@ -314,7 +314,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/0`
 
   * `number_system` is any valid number system or number system type returned
-    by `Cldr.Number.System.number_systems_for/1`
+    by `Cldr.Number.System.number_systems_for/2`
 
   Format styles standardise the access to a format defined for a common
   use.  These types are `:standard`, `:currency`, `:accounting`, `:scientific`
@@ -368,7 +368,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/0`
 
   * `number_system` is any valid number system or number system type returned
-    by `Cldr.Number.System.number_systems_for/1`
+    by `Cldr.Number.System.number_systems_for/2`
 
   ## Example
 
@@ -409,7 +409,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/0`
 
   * `number_system` is any valid number system or number system type returned
-    by `Cldr.Number.System.number_systems_for/1`
+    by `Cldr.Number.System.number_systems_for/2`
 
   ## Example
 

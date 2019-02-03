@@ -27,7 +27,7 @@ defmodule Cldr.Rbnf do
   @doc """
   Returns {:ok, rbnf_rules} for a `locale` or `{:error, {Cldr.NoRbnf, info}}`
 
-  * `locale` is any locale name returned by `Cldr.Rbnf.known_locale_names/0`.
+  * `locale` is any locale name returned by `Cldr.Rbnf.known_locale_names/1`.
     or a `Cldr.LanguageTag`
 
   """

@@ -159,7 +159,7 @@ defmodule Cldr.Number do
 
   * `format`: the format style or a format string defining how the number is
     formatted. See `Cldr.Number.Format` for how format strings can be constructed.
-    See `Cldr.Number.Format.format_styles_for/1` to return available format styles
+    See `Cldr.Number.Format.format_styles_for/3` to return available format styles
     for a locale. The default `format` is `:standard`.
 
   * If `:format` is set to `:long` or `:short` then the formatting depends on
@@ -198,9 +198,9 @@ defmodule Cldr.Number do
     should be used to define the separators and digits for the formatted
     number. If `number_system` is an `atom` then `number_system` is
     interpreted as a number system. See
-    `Cldr.Number.System.number_systems_for/1`. If the `:number_system` is
+    `Cldr.Number.System.number_systems_for/2`. If the `:number_system` is
     `binary` then it is interpreted as a number system name. See
-    `Cldr.Number.System.number_system_names_for/1`. The default is `:default`.
+    `Cldr.Number.System.number_system_names_for/2`. The default is `:default`.
 
   * `:locale`: determines the locale in which the number is formatted. See
     `Cldr.known_locale_names/0`. The default is`Cldr.get_locale/0` which is the
@@ -649,12 +649,12 @@ defmodule Cldr.Number do
 
   @doc """
   Converts a number from the latin digits `0..9` into
-  another number system.  Returns `{:ok, sttring}` or
+  another number system.  Returns `{:ok, string}` or
   `{:error, reason}`.
 
   * `number` is an integer, float.  Decimal is supported only for
-  `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/2`
-  for further information.
+    `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
+    for further information.
 
   * `system` is any number system returned by `Cldr.Number.System.known_number_systems/0`
 
@@ -680,8 +680,8 @@ defmodule Cldr.Number do
   or raises an exception on error.
 
   * `number` is an integer, float.  Decimal is supported only for
-  `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/2`
-  for further information.
+    `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
+    for further information.
 
   * `system` is any number system returned by `Cldr.Number.System.known_number_systems/0`
 
@@ -691,7 +691,7 @@ defmodule Cldr.Number do
       "一百二十三"
 
   """
-  @spec to_number_system(number, atom, Cldr.backend()) :: String.t() | no_return()
+  @spec to_number_system!(number, atom, Cldr.backend()) :: String.t() | no_return()
 
   def to_number_system!(number, system, backend) do
     Cldr.Number.System.to_system!(number, system, backend)

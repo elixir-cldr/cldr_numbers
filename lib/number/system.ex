@@ -449,7 +449,7 @@ defmodule Cldr.Number.System do
   * `:numeric` in which the number system defines
     a direct mapping between the latin digits `0..9`
     into a the number system equivalent.  In this case,
-  ` to_system/2` invokes `Cldr.Number.Transliterate.transliterate_digits/3`
+  ` to_system/3` invokes `Cldr.Number.Transliterate.transliterate_digits/3`
     for the given number.
 
   * `:algorithmic` in which the number system
@@ -493,7 +493,7 @@ defmodule Cldr.Number.System do
     `Cldr.known_number_systems/0` or a number system type
     returned by `Cldr.known_number_system_types/0`
 
-  See `Cldr.Number.System.to_string/2` for further
+  See `Cldr.Number.to_string/3` for further
   information.
 
   ## Examples
@@ -556,7 +556,7 @@ defmodule Cldr.Number.System do
     * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
       or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
 
-    * `valid_number_systems` is a map returned by `Cldr.Number.System.number_systems_for/1`
+    * `valid_number_systems` is a map returned by `Cldr.Number.System.number_systems_for/2`
 
   ## Examples
 
