@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.1.1
+
+This is the changelog for Cldr v2.1.1 released on February 3rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+## Bug Fixes
+
+* Formats `Decimal.new("-0")` the same as `Decimal.new("0")` which is to say without the sign.  Although the [Decimal standard](http://speleotrove.com/decimal/damisc.html#refcotot) upon which the [Decimal](https://github.com/ericmj/decimal) library is based allos for `-0`, formatting this as a string with the sign is not consistent with the output for integers and floats.  Consistency is, in this case, considered to be the correct approach.
+
 # Changelog for Cldr_Numbers v2.1.0
 
 This is the changelog for Cldr v2.1.0 released on December 1st, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)

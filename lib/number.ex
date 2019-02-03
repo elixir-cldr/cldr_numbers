@@ -328,6 +328,12 @@ defmodule Cldr.Number do
 
   def to_string(number, backend, options \\ [])
 
+  # Decimal -0 is formatted like 0, without the sign
+  def to_string(%Decimal{coef: 0, sign: -1} = number, backend, options) do
+    %Decimal{number | sign: 1}
+    |> to_string(backend, options)
+  end
+
   def to_string(number, backend, %Options{} = options) do
     {format, options} = detect_negative_number(number, options)
 

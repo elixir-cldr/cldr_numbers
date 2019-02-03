@@ -27,6 +27,11 @@ defmodule Number.Format.Test do
     assert {:error, _message} = TestBackend.Cldr.Number.to_string(1234, format: :currency)
   end
 
+  test "that -0 is formatted as 0" do
+    number = Decimal.new("-0")
+    assert TestBackend.Cldr.Number.to_string(number) == {:ok, "0"}
+  end
+
   test "minimum_grouping digits delegates to Cldr.Number.Symbol" do
     assert TestBackend.Cldr.Number.Format.minimum_grouping_digits_for!("en") == 1
   end
