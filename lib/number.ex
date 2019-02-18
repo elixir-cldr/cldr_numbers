@@ -328,6 +328,12 @@ defmodule Cldr.Number do
 
   def to_string(number, backend, options \\ [])
 
+  # Decimal -0 is formatted like 0, without the sign
+  def to_string(%Decimal{coef: 0, sign: -1} = number, backend, options) do
+    %Decimal{number | sign: 1}
+    |> to_string(backend, options)
+  end
+
   def to_string(number, backend, %Options{} = options) do
     {format, options} = detect_negative_number(number, options)
 
@@ -643,12 +649,12 @@ defmodule Cldr.Number do
 
   @doc """
   Converts a number from the latin digits `0..9` into
-  another number system.  Returns `{:ok, sttring}` or
+  another number system.  Returns `{:ok, string}` or
   `{:error, reason}`.
 
   * `number` is an integer, float.  Decimal is supported only for
-  `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
-  for further information.
+    `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
+    for further information.
 
   * `system` is any number system returned by `Cldr.known_number_systems/0`
 
@@ -674,8 +680,13 @@ defmodule Cldr.Number do
   or raises an exception on error.
 
   * `number` is an integer, float.  Decimal is supported only for
+<<<<<<< HEAD
   `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
   for further information.
+=======
+    `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
+    for further information.
+>>>>>>> 1d31c3647841988131eb472f99619752f5f518e6
 
   * `system` is any number system returned by `Cldr.Number.System.known_number_systems/0`
 

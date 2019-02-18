@@ -449,7 +449,7 @@ defmodule Cldr.Number.System do
   * `:numeric` in which the number system defines
     a direct mapping between the latin digits `0..9`
     into a the number system equivalent.  In this case,
-  ` to_system/2` invokes `Cldr.Number.Transliterate.transliterate_digits/3`
+  ` to_system/3` invokes `Cldr.Number.Transliterate.transliterate_digits/3`
     for the given number.
 
   * `:algorithmic` in which the number system
