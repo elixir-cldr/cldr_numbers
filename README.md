@@ -71,7 +71,7 @@ then retrieve `ex_cldr_numbers` from [hex](https://hex.pm/packages/ex_cldr_numbe
 
 CLDR defines many different ways to format a number for different uses and defines a set of formats categorised by common pupose to make it easier to express the same intent across many different locales that represent many different territories, cultures, number systems and scripts.
 
-See `MyApp.Cldr.Number`, `MyApp.Cldr.Number.to_string/2` and `MyApp.Cldr.Number.to_number_system/2`.
+See `MyApp.Cldr.Number`, `MyApp.Cldr.Number.to_string/2` and `Cldr.Number.to_number_system/3`.
 
 ### Primary Public API
 
@@ -328,29 +328,29 @@ iex> MyApp.Cldr.Number.to_string 12345, format: :roman_lower
 
 #### Converting numbers to non-latin number systems
 
-Some number systems, such as Hebrew and Chinese, do not use the digits 0 through 9 in the their native number system.  RBNF defines rules for these and other number systems that can provide number system conversion.  `MyApp.Cldr.Number.to_string/2` does not support number systems without digits defined therefore another mechanism is required to output numbers in these algorithmic number systems.  To support number system conversion, the function `MyApp.Cldr.Number.to_number_system/2` is provided.  Note that no formatting is supported, this is a number system conversion only.
+Some number systems, such as Hebrew and Chinese, do not use the digits 0 through 9 in the their native number system.  RBNF defines rules for these and other number systems that can provide number system conversion.  `MyApp.Cldr.Number.to_string/2` does not support number systems without digits defined therefore another mechanism is required to output numbers in these algorithmic number systems.  To support number system conversion, the function `Cldr.Number.to_number_system/3` is provided.  Note that no formatting is supported, this is a number system conversion only.
 
 For example, to output a number in the `:hans` numbering system (Chinese) and the Hebrew number system:
 
 ```elixir
-iex> MyApp.Cldr.Number.to_number_system 123, :hans
+iex> Cldr.Number.to_number_system 123, :hans, MyApp.Cldr
 {:ok, "一百二十三"}
 
-iex> MyApp.Cldr.Number.to_number_system 123, :hebr
+iex> Cldr.Number.to_number_system 123, :hebr, MyApp.Cldr
 {:ok, "ק׳"}
 ```
 
-`MyApp.Cldr.Number.to_number_system/2` supports the conversion between numeric number systems (those with digits 0 through 9) in addition to algorithmic number systems (those supported by rules-based number formatting).  For example, outputting to the `:thai` number system:
+`Cldr.Number.to_number_system/3` supports the conversion between numeric number systems (those with digits 0 through 9) in addition to algorithmic number systems (those supported by rules-based number formatting).  For example, outputting to the `:thai` number system:
 
 ```elixir
-iex> MyApp.Cldr.Number.to_number_system 123, :thai
+iex> Cldr.Number.to_number_system 123, :thai, MyApp.Cldr
 {:ok, "๑๒๓"}
 ```
 
-The known number systems in `Cldr` can be returned by the function `MyApp.Cldr.Number.System.known_number_systems/0`:
+The known number systems in `Cldr` can be returned by the function `Cldr.Number.System.known_number_systems/0`:
 
 ```elixir
-iex> MyApp.Cldr.Number.System.known_number_systems
+iex> Cldr.Number.System.known_number_systems
 [:adlm, :ahom, :arab, :arabext, :armn, :armnlow, :bali, :beng, :bhks, :brah,
  :cakm, :cham, :cyrl, :deva, :ethi, :fullwide, :geor, :grek, :greklow, :gujr,
  :guru, :hanidays, :hanidec, :hans, :hansfin, :hant, :hantfin, :hebr, :hmng,

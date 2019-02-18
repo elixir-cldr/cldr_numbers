@@ -33,13 +33,16 @@ defmodule Cldr.Number.Backend.Transliterate do
         run time.
 
         To configure these transliteration pairs, add the to the `use Cldr` configuration
-        in a backend module:`:
+        in a backend module:
 
-            use Cldr,
-              precompile_transliterations: [{:latn, :arab}, {:arab, :thai}]
+            defmodule MyApp.Cldr do
+              use Cldr,
+                precompile_transliterations: [{:latn, :arab}, {:arab, :thai}]
+              end
+            end
 
         Where each tuple in the list configures one transliteration map.  In this example, two maps are
-        configured: from :latn to :thai and from :arab to :thai.
+        configured: from `:latn` to `:thai` and from `:arab` to `:thai`.
 
         A list of configurable number systems is returned by `Cldr.Number.System.systems_with_digits/0`.
 
@@ -74,7 +77,7 @@ defmodule Cldr.Number.Backend.Transliterate do
           standard). See `#{inspect(backend)}.Number.System.number_systems_for/1` for a locale to
           see what number system types are defined. The default is `:default`.
 
-        For available number systems see `#{inspect(backend)}.Number.System.number_systems/1`
+        For available number systems see `Cldr.Number.System.number_systems/0`
         and `#{inspect(backend)}.Number.System.number_systems_for/1`.  Also see
         `#{inspect(backend)}.Number.Symbol.number_symbols_for/1`.
 

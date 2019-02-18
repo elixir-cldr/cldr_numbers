@@ -1,4 +1,4 @@
-defmodule TestBackend.Cldr do
+defmodule MyApp.Cldr do
   @moduledoc false
 
   use Cldr,
