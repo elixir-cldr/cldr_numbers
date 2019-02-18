@@ -250,11 +250,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/1`
 
   * `number_system` is any valid number system or number system type returned
-<<<<<<< HEAD
     by `Cldr.Number.System.number_systems_for/2` or `Cldr.Number.System.number_system_names_for/2`
-=======
-    by `Cldr.Number.System.number_systems_for/2`
->>>>>>> 1d31c3647841988131eb472f99619752f5f518e6
 
   ## Example
 

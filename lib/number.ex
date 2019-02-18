@@ -680,13 +680,8 @@ defmodule Cldr.Number do
   or raises an exception on error.
 
   * `number` is an integer, float.  Decimal is supported only for
-<<<<<<< HEAD
-  `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
-  for further information.
-=======
     `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
     for further information.
->>>>>>> 1d31c3647841988131eb472f99619752f5f518e6
 
   * `system` is any number system returned by `Cldr.Number.System.known_number_systems/0`
 
