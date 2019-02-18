@@ -137,10 +137,10 @@ defmodule Cldr.Number.Backend.Format do
         ## Arguments
 
         * `locale` is any valid locale name returned by
-          `#{inspect(backend)}.known_locale_names/1`
+          `#{inspect(backend)}.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by
-          `#{inspect(backend)}.Locale.new!/2`. The default
-          is `#{inspect(backend)}.get_locale/1`
+          `#{inspect(backend)}.Locale.new!/1`. The default
+          is `#{inspect(backend)}.get_locale/0`
 
         ## Returns
 
@@ -224,9 +224,9 @@ defmodule Cldr.Number.Backend.Format do
         ## Arguments
 
         * `locale` is any valid locale name returned by
-          `#{inspect(backend)}.known_locale_names/1`
-          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-          is `#{inspect(backend)}.get_locale/1`
+          `#{inspect(backend)}.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by `#{inspect(backend)}.Locale.new!/1`. The default
+          is `#{inspect(backend)}.get_locale/0`
 
         ## Returns
 
@@ -270,10 +270,10 @@ defmodule Cldr.Number.Backend.Format do
         ## Arguments
 
         * `locale` is any valid locale name returned by
-          `#{inspect(backend)}.known_locale_names/1`
+          `#{inspect(backend)}.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by
-          `#{inspect(backend)}.Locale.new!/2`. The default
-          is `#{inspect(backend)}.get_locale/1`
+          `#{inspect(backend)}.Locale.new!/1`. The default
+          is `#{inspect(backend)}.get_locale/0`
 
         ## Returns
 
@@ -300,12 +300,12 @@ defmodule Cldr.Number.Backend.Format do
         ## Arguments
 
         * `locale` is any valid locale name returned by
-          `#{inspect(backend)}.known_locale_names/0`
+          `#{inspect backend}.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`.
-          The default is `#{inspect(backend)}.get_locale/0`
+          The default is `#{inspect backend}.get_locale/0`
 
         * `number_system` is any valid number system or number system type returned
-          by `#{inspect(backend)}.Number.System.number_systems_for/1`
+          by `#{inspect backend}.Number.System.number_systems_for/1`
 
         ## Example
 

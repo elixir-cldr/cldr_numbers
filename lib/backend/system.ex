@@ -239,10 +239,10 @@ defmodule Cldr.Number.Backend.System do
         * `number` is a `float`, `integer` or `Decimal`
 
         * `system_name` is any number system name returned by
-          `Cldr.known_number_systems/0` or a number system type
-          returned by `Cldr.known_number_system_types/0`
+          `#{inspect backend}.known_number_systems/0` or a number system type
+          returned by `#{inspect backend}.known_number_system_types/0`
 
-        See `Cldr.Number.System.to_string/2` for further
+        See `#{inspect(__MODULE__)}.to_system/2` for further
         information.
 
         ## Examples

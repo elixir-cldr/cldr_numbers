@@ -56,12 +56,12 @@ defmodule Cldr.Number.Transliterate do
     is the actual name of a known number system. If epressed as an `atom` it is
     used as a key to look up a number system for the locale (the usual keys are
     `:default` and `:native` but :traditional and :finance are also part of the
-    standard). See `Cldr.Number.System.number_systems_for/1` for a locale to
+    standard). See `Cldr.Number.System.number_systems_for/2` for a locale to
     see what number system types are defined. The default is `:default`.
 
   For available number systems see `Cldr.Number.System.number_systems/0`
-  and `Cldr.Number.System.number_systems_for/1`.  Also see
-  `Cldr.Number.Symbol.number_symbols_for/1`.
+  and `Cldr.Number.System.number_systems_for/2`.  Also see
+  `Cldr.Number.Symbol.number_symbols_for/2`.
 
 
   ## Examples

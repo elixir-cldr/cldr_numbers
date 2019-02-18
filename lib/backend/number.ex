@@ -145,7 +145,7 @@ defmodule Cldr.Number.Backend.Number do
 
         * `format`: the format style or a format string defining how the number is
           formatted. See `Cldr.Number.Format` for how format strings can be constructed.
-          See `Cldr.Number.Format.format_styles_for/1` to return available format styles
+          See `Cldr.Number.Format.format_styles_for/3` to return available format styles
           for a locale. The default `format` is `:standard`.
 
         * If `:format` is set to `:long` or `:short` then the formatting depends on
@@ -183,10 +183,9 @@ defmodule Cldr.Number.Backend.Number do
         * `:number_system`: determines which of the number systems for a locale
           should be used to define the separators and digits for the formatted
           number. If `number_system` is an `atom` then `number_system` is
-          interpreted as a number system. See
-          `Cldr.Number.System.number_systems_for/1`. If the `:number_system` is
+          interpreted as a number system. If the `:number_system` is
           `binary` then it is interpreted as a number system name. See
-          `Cldr.Number.System.number_system_names_for/1`. The default is `:default`.
+          `Cldr.Number.System.number_system_names_for/2`. The default is `:default`.
 
         * `:locale`: determines the locale in which the number is formatted. See
           `Cldr.known_locale_names/0`. The default is`Cldr.get_locale/0` which is the
@@ -324,7 +323,7 @@ defmodule Cldr.Number.Backend.Number do
         * `number` is an integer, float or Decimal to be formatted
 
         * `options` is a keyword list defining how the number is to be formatted. See
-          `Cldr.Number.to_string/2`
+          `#{inspect(__MODULE__)}.to_string/2`
 
         ## Returns
 
@@ -356,7 +355,7 @@ defmodule Cldr.Number.Backend.Number do
         * `number` is an integer, float or Decimal to be formatted
 
         * `options` is a keyword list defining how the number is to be formatted.
-          See `Cldr.Number.to_string/3` for a description of the available
+          See `#{inspect(__MODULE__)}.to_string/2` for a description of the available
           options.
 
         ## Example

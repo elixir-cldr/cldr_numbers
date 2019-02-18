@@ -490,10 +490,10 @@ defmodule Cldr.Number.System do
   * `number` is a `float`, `integer` or `Decimal`
 
   * `system_name` is any number system name returned by
-    `Cldr.known_number_systems/0` or a number system type
+    `Cldr.known_number_systems/1` or a number system type
     returned by `Cldr.known_number_system_types/0`
 
-  See `Cldr.Number.System.to_string/2` for further
+  See `Cldr.Number.System.to_system/3` for further
   information.
 
   ## Examples
@@ -556,7 +556,7 @@ defmodule Cldr.Number.System do
     * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
       or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
 
-    * `valid_number_systems` is a map returned by `Cldr.Number.System.number_systems_for/1`
+    * `valid_number_systems` is a map returned by `Cldr.Number.System.number_systems_for/2`
 
   ## Examples
 
