@@ -34,6 +34,9 @@ defmodule Cldr.Number.Symbol do
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`.  The
     default is `Cldr.get_locale/1`.
 
+  * `backend` is any module that includes `use Cldr` and therefore
+    is a `Cldr` backend module
+
   ## Example:
 
       iex> Cldr.Number.Symbol.number_symbols_for("th", TestBackend.Cldr)
@@ -87,6 +90,9 @@ defmodule Cldr.Number.Symbol do
     `Cldr.known_number_systems/0` or a number system type
     returned by `Cldr.known_number_system_types/0`
 
+  * `backend` is any module that includes `use Cldr` and therefore
+    is a `Cldr` backend module
+
   ## Example
 
       iex> Cldr.Number.Symbol.number_symbols_for("th", "thai", TestBackend.Cldr)
@@ -126,6 +132,72 @@ defmodule Cldr.Number.Symbol do
     with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
       number_symbols_for(locale, number_system, backend)
     end
+  end
+
+  @doc """
+  Returns a list of all decimal symbols defined
+  by the locales configured in the given backend as
+  a list.
+
+  ## Arguments
+
+  * `backend` is any module that includes `use Cldr` and therefore
+    is a `Cldr` backend module
+
+  """
+  def all_decimal_symbols(backend) do
+    Module.concat(backend, Number.Symbol).all_decimal_symbols
+  end
+
+  @doc """
+  Returns a list of all grouping symbols defined
+  by the locales configured in the given backend as
+  a list.
+
+  ## Arguments
+
+  * `backend` is any module that includes `use Cldr` and therefore
+    is a `Cldr` backend module
+
+  """
+  def all_grouping_symbols(backend) do
+    Module.concat(backend, Number.Symbol).all_grouping_symbols
+  end
+
+  @doc """
+  Returns a list of all decimal symbols defined
+  by the locales configured in the given backend as
+  a string.
+
+  This string can be used as a character class
+  when builing a regular expression.
+
+  ## Arguments
+
+  * `backend` is any module that includes `use Cldr` and therefore
+    is a `Cldr` backend module
+
+  """
+  def all_decimal_symbols_class(backend) do
+    Module.concat(backend, Number.Symbol).all_decimal_symbols_class
+  end
+
+  @doc """
+  Returns a list of all grouping symbols defined
+  by the locales configured in the given backend as
+  a string.
+
+  This string can be used as a character class
+  when builing a regular expression.
+
+  ## Arguments
+
+  * `backend` is any module that includes `use Cldr` and therefore
+    is a `Cldr` backend module
+
+  """
+  def all_grouping_symbols_class(backend) do
+    Module.concat(backend, Number.Symbol).all_grouping_symbols_class
   end
 
   @doc false

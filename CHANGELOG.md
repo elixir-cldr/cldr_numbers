@@ -1,10 +1,26 @@
+# Changelog for Cldr_Numbers v2.2.0
+
+This is the changelog for Cldr v2.2.0 released on Febriuary 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+## Bug Fixes
+
+* Fix generating an error tuple when the number system is a binary
+
+* Fix `@doc` errors
+
+## Enhancements
+
+* Adds `Cldr.Number.Symbol.all_decimal_symbols/1` and `Cldr.Number.Symbol.all_grouping_symbols/1` that support parsing of numbers.  The symbols are returned as a list.
+
+* Adds `Cldr.Number.Symbol.all_decimal_symbols_class/1` and `Cldr.Number.Symbol.all_grouping_symbols_class/1`. The symbols are returned as a `String.t` which can then be used to define a character class when building a regex.
+
 # Changelog for Cldr_Numbers v2.1.1
 
 This is the changelog for Cldr v2.1.1 released on February 3rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
 
 ## Bug Fixes
 
-* Formats `Decimal.new("-0")` the same as `Decimal.new("0")` which is to say without the sign.  Although the [Decimal standard](http://speleotrove.com/decimal/damisc.html#refcotot) upon which the [Decimal](https://github.com/ericmj/decimal) library is based allos for `-0`, formatting this as a string with the sign is not consistent with the output for integers and floats.  Consistency is, in this case, considered to be the correct approach.
+* Formats `Decimal.new("-0")` the same as `Decimal.new("0")` which is to say without the sign.  Although the [Decimal standard](http://speleotrove.com/decimal/damisc.html#refcotot) upon which the [Decimal](https://github.com/ericmj/decimal) library is based allows for `-0`, formatting this as a string with the sign is not consistent with the output for integers and floats.  Consistency is, in this case, considered to be the correct approach.
 
 * Fix documentation errors
 
@@ -17,16 +33,16 @@ This is the changelog for Cldr v2.1.0 released on December 1st, 2018.  For older
 * Added `Cldr.Number.to_at_least_string/3`, `Cldr.Number.to_at_most_string/3`, `Cldr.Number.to_range_string/3` and `Cldr.Number.to_approx_string/3` to format numbers in way that conveys the relevant intent. These functions are also defined one each backend. For example, in the `"en"` locale:
 
 ```
-iex> TestBackend.Cldr.Number.to_at_least_string 1234
+iex> MyApp.Cldr.Number.to_at_least_string 1234
 {:ok, "1,234+"}
 
-iex> TestBackend.Cldr.Number.to_at_most_string 1234
+iex> MyApp.Cldr.Number.to_at_most_string 1234
 {:ok, "≤1,234"}
 
-iex> TestBackend.Cldr.Number.to_approx_string 1234
+iex> MyApp.Cldr.Number.to_approx_string 1234
 {:ok, "~1,234"}
 
-iex> TestBackend.Cldr.Number.to_range_string 1234..5678
+iex> MyApp.Cldr.Number.to_range_string 1234..5678
 {:ok, "1,234–5,678"}
 ```
 
@@ -51,9 +67,9 @@ This is the changelog for Cldr v2.0.0 released on November 22nd, 2018.  For olde
 * Currency spacing is now applied for currency formatting.  Depending on the locale, some text may be placed between the current symbol and the number.  This enhanced readibility, it does not change the number formatting itself.  For example you can see below that for the locale "en", when the currency symbol is text, a non-breaking space is introduced between it and the number.
 
 ```
-iex> TestBackend.Cldr.Number.to_string 2345, currency: :USD, format: "¤#,##0.00"
+iex> MyApp.Cldr.Number.to_string 2345, currency: :USD, format: "¤#,##0.00"
 {:ok, "$2,345.00"}
 
-iex> TestBackend.Cldr.Number.to_string 2345, currency: :USD, format: "¤¤#,##0.00"
+iex> MyApp.Cldr.Number.to_string 2345, currency: :USD, format: "¤¤#,##0.00"
 {:ok, "USD 2,345.00"}
 ```

@@ -562,8 +562,7 @@ defmodule Cldr.Number.System do
 
 
   """
-  def unknown_number_system_for_locale_error(number_system, locale, valid_number_systems)
-      when is_atom(number_system) do
+  def unknown_number_system_for_locale_error(number_system, locale, valid_number_systems) do
     {
       Cldr.UnknownNumberSystemError,
       "The number system #{inspect(number_system)} is unknown " <>

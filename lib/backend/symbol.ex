@@ -8,6 +8,22 @@ defmodule Cldr.Number.Backend.Symbol do
 
     quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
       defmodule Number.Symbol do
+        all_symbols =
+          for locale <- Cldr.Config.known_locale_names(config) do
+            symbols =
+              locale
+              |> Cldr.Config.get_locale(config)
+              |> Map.get(:number_symbols)
+              |> Enum.map(fn
+                {number_system, nil} -> {number_system, nil}
+                {number_system, symbols} -> {number_system, struct(Cldr.Number.Symbol, symbols)}
+              end)
+              |> Enum.into(%{})
+
+            {locale, symbols}
+          end
+          |> Map.new
+
         @doc """
         Returns a map of `Cldr.Number.Symbol.t` structs of the number symbols for each
         of the number systems of a locale.
@@ -56,17 +72,7 @@ defmodule Cldr.Number.Backend.Symbol do
         @spec number_symbols_for(LanguageTag.t() | Locale.locale_name()) :: Keyword.t()
         def number_symbols_for(locale \\ unquote(backend).get_locale())
 
-        for locale <- Cldr.Config.known_locale_names(config) do
-          symbols =
-            locale
-            |> Cldr.Config.get_locale(config)
-            |> Map.get(:number_symbols)
-            |> Enum.map(fn
-              {k, nil} -> {k, nil}
-              {k, v} -> {k, struct(Cldr.Number.Symbol, v)}
-            end)
-            |> Enum.into(%{})
-
+        for {locale, symbols} <- all_symbols do
           def number_symbols_for(%LanguageTag{cldr_locale_name: unquote(locale)}) do
             {:ok, unquote(Macro.escape(symbols))}
           end
@@ -90,6 +96,68 @@ defmodule Cldr.Number.Backend.Symbol do
 
         def number_symbols_for(locale) do
           {:error, Cldr.Locale.locale_error(locale)}
+        end
+
+        all_decimal_symbols =
+          for {_locale, locale_symbols} <- all_symbols,
+              {_number_system, symbols} <- locale_symbols,
+              !is_nil(symbols) do
+            symbols.decimal
+          end
+          |> Enum.uniq
+
+        all_grouping_symbols =
+          for {_locale, locale_symbols} <- all_symbols,
+              {_number_system, symbols} <- locale_symbols,
+              !is_nil(symbols) do
+            symbols.group
+          end
+          |> Enum.uniq
+
+        @doc """
+        Returns a list of all decimal symbols defined
+        by the locales configured in this backend as
+        a list.
+
+        """
+        def all_decimal_symbols do
+          unquote(Macro.escape(all_decimal_symbols))
+        end
+
+        @doc """
+        Returns a list of all grouping symbols defined
+        by the locales configured in this backend as
+        a list.
+
+        """
+        def all_grouping_symbols do
+          unquote(all_grouping_symbols)
+        end
+
+        @doc """
+        Returns a list of all decimal symbols defined
+        by the locales configured in this backend as
+        a string.
+
+        This string can be used as a character class
+        when builing a regular expression.
+
+        """
+        def all_decimal_symbols_class do
+          unquote(all_decimal_symbols)
+        end
+
+        @doc """
+        Returns a list of all grouping symbols defined
+        by the locales configured in this backend as
+        a string.
+
+        This string can be used as a character class
+        when builing a regular expression.
+
+        """
+        def all_grouping_symbols_class do
+          unquote(Enum.join(all_grouping_symbols))
         end
       end
     end
