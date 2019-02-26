@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.3.0
+
+This is the changelog for Cldr v2.2.0 released on Febriuary 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+## Enhancements
+
+* Opens up the formatting pipeline for use by other formatting systems like `printf`.
+
 # Changelog for Cldr_Numbers v2.2.0
 
 This is the changelog for Cldr v2.2.0 released on Febriuary 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
