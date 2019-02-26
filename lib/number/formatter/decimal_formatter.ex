@@ -609,10 +609,10 @@ defmodule Cldr.Number.Formatter.Decimal do
   # an ascii character - it could be any grapheme so we can't use
   # binary pattern matching.
   def padding_string(meta, number_string) do
-    pad_length = meta[:padding_length] - String.length(number_string)
+    pad_length = meta.padding_length - String.length(number_string)
 
     if pad_length > 0 do
-      String.duplicate(meta[:padding_char], pad_length)
+      String.duplicate(meta.padding_char, pad_length)
     else
       @empty_string
     end

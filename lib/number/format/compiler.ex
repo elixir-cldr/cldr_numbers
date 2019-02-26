@@ -214,7 +214,7 @@ defmodule Cldr.Number.Format.Compiler do
   After parsing, reduce the format to a set of metrics
   that can then be used to format a number.
   """
-  def compile(definition) do
+  def compile(definition) when is_binary(definition) do
     case parse(definition) do
       {:ok, format} ->
         meta_data = analyze(format)
@@ -307,12 +307,19 @@ defmodule Cldr.Number.Format.Compiler do
     end
   end
 
-  # Extract the metadata from the format.
-  #
-  # The metadata is used to generate the formatted output.  A numeric format
-  # is optional and in such cases no analysis is required.
+ @doc """
+  Extract the metadata from the format.
 
-  defp analyze(format) do
+  The metadata is used to generate the formatted output.  A numeric format
+  is optional and in such cases no analysis is required.
+  """
+  def analyze(format) when is_binary(format) do
+    with {:ok, parsed} <- parse(format) do
+      analyze(parsed)
+    end
+  end
+
+  def analyze(format) when is_list(format) do
     do_analyse(format, format[:positive][:format])
   end
 
@@ -323,7 +330,7 @@ defmodule Cldr.Number.Format.Compiler do
   defp do_analyse(format, positive_format) do
     format_parts = split_format(positive_format)
 
-    meta = %{
+    meta = %Cldr.Number.Format.Meta{
       integer_digits: %{
         min: required_integer_digits(format_parts),
         max: max_integer_digits(format_parts)
