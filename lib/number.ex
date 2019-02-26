@@ -335,16 +335,14 @@ defmodule Cldr.Number do
   end
 
   def to_string(number, backend, %Options{} = options) do
-    {format, options} = detect_negative_number(number, options)
-
-    case to_string(number, format, backend, options) do
+    case to_string(number, options.format, backend, options) do
       {:error, reason} -> {:error, reason}
       string -> {:ok, string}
     end
   end
 
   def to_string(number, backend, options) do
-    with {:ok, options} <- Options.validate_options(backend, options) do
+    with {:ok, options} <- Options.validate_options(number, backend, options) do
       to_string(number, backend, options)
     end
   end
@@ -619,7 +617,7 @@ defmodule Cldr.Number do
   @spec to_range_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
   def to_range_string(%Range{first: first, last: last}, backend, options \\ []) do
-    with {:ok, options} <- Options.validate_options(backend, options),
+    with {:ok, options} <- Options.validate_options(first, backend, options),
          {:ok, format} <- Options.validate_other_format(:range, backend, options),
          {:ok, first_formatted_number} <- to_string(first, backend, options),
          {:ok, last_formatted_number} <- to_string(last, backend, options) do
@@ -634,7 +632,7 @@ defmodule Cldr.Number do
   end
 
   defp other_format(number, other_format, backend, options) do
-    with {:ok, options} <- Options.validate_options(backend, options),
+    with {:ok, options} <- Options.validate_options(number, backend, options),
          {:ok, format} <- Options.validate_other_format(other_format, backend, options),
          {:ok, formatted_number} <- to_string(number, backend, options) do
 
@@ -710,17 +708,4 @@ defmodule Cldr.Number do
   """
   defdelegate precision(number), to: Cldr.Digits, as: :number_of_digits
 
-  defp detect_negative_number(number, options)
-       when (is_float(number) or is_integer(number)) and number < 0 do
-    {options.format, Map.put(options, :pattern, :negative)}
-  end
-
-  defp detect_negative_number(%Decimal{sign: sign}, options)
-       when sign < 0 do
-    {options.format, Map.put(options, :pattern, :negative)}
-  end
-
-  defp detect_negative_number(_number, options) do
-    {options.format, Map.put(options, :pattern, :positive)}
-  end
 end

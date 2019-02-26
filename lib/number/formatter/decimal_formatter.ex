@@ -41,7 +41,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   """
   @spec to_string(Math.number(), String.t(), CLdr.backend(), Map.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
-  def to_string(number, format, backend, options) do
+  def to_string(number, format, backend, options \\ []) do
     Module.concat(backend, Number.Formatter.Decimal).to_string(number, format, options)
   end
 

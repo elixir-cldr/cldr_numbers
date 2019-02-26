@@ -217,7 +217,7 @@ defmodule Cldr.Number.Format.Compiler do
   def compile(definition) when is_binary(definition) do
     case parse(definition) do
       {:ok, format} ->
-        meta_data = analyze(format)
+        {:ok, meta_data} = format_to_metadata(format)
         {:ok, meta_data, formatting_pipeline(meta_data)}
 
       {:error, {_line, _parser, [message, context]}} ->
@@ -313,21 +313,21 @@ defmodule Cldr.Number.Format.Compiler do
   The metadata is used to generate the formatted output.  A numeric format
   is optional and in such cases no analysis is required.
   """
-  def analyze(format) when is_binary(format) do
+  def format_to_metadata(format) when is_binary(format) do
     with {:ok, parsed} <- parse(format) do
-      analyze(parsed)
+      format_to_metadata(parsed)
+    else
+      {:error, {_line, _parser, [message, context]}} ->
+        {:error, "Decimal format compiler: #{message}#{Enum.join(context)}"}
     end
   end
 
-  def analyze(format) when is_list(format) do
-    do_analyse(format, format[:positive][:format])
+  def format_to_metadata(format) when is_list(format) do
+    metadata = analyse(format, format[:positive][:format])
+    {:ok, metadata}
   end
 
-  # defp do_analyse(format, nil) do
-  #   %{format: format}
-  # end
-
-  defp do_analyse(format, positive_format) do
+  defp analyse(format, positive_format) do
     format_parts = split_format(positive_format)
 
     meta = %Cldr.Number.Format.Meta{

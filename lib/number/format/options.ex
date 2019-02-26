@@ -2,7 +2,7 @@ defmodule Cldr.Number.Format.Options do
   defstruct [
     :currency, :currency_digits, :currency_spacing, :format, :locale,
     :minimum_grouping_digits, :number_system, :pattern,
-    :rounding_mode, :fractional_digits
+    :rounding_mode, :fractional_digits, :symbols
   ]
 
   @short_format_styles [
@@ -16,12 +16,13 @@ defmodule Cldr.Number.Format.Options do
   alias Cldr.Number.Format.Compiler
   alias Cldr.Number.Format
 
-  def validate_options(backend, options) do
+  def validate_options(number, backend, options) do
     with {:ok, options} <- merge_default_options(backend, options),
          {:ok, options} <- validate_locale(backend, options),
          {:ok, options} <- validate_number_system(backend, options),
          {:ok, options} <- normalize_options(backend, options),
-         {:ok, options} <- validate_currency_options(backend, options) do
+         {:ok, options} <- validate_currency_options(backend, options),
+         {:ok, options} <- detect_negative_number(number, options) do
       {:ok, struct(__MODULE__, options)}
     end
   end
@@ -227,5 +228,19 @@ defmodule Cldr.Number.Format.Options do
         }
       end
     end
+  end
+
+  defp detect_negative_number(number, options)
+       when (is_float(number) or is_integer(number)) and number < 0 do
+    {:ok, Map.put(options, :pattern, :negative)}
+  end
+
+  defp detect_negative_number(%Decimal{sign: sign}, options)
+       when sign < 0 do
+    {:ok, Map.put(options, :pattern, :negative)}
+  end
+
+  defp detect_negative_number(_number, options) do
+    {:ok, Map.put(options, :pattern, :positive)}
   end
 end
