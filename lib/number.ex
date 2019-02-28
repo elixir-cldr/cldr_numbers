@@ -499,19 +499,6 @@ defmodule Cldr.Number do
     error
   end
 
-  defp to_string(_number, format, _backend, options) when is_atom(format) do
-    cldr_locale_name = options.locale.cldr_locale_name
-
-    {
-      :error,
-      {
-        Cldr.UnknownFormatError,
-        "The locale #{inspect(cldr_locale_name)} with number system " <>
-          "#{inspect(options.number_system)} does not define a format " <> "#{inspect(format)}."
-      }
-    }
-  end
-
   @doc """
   Formats a number and applies the `:at_least` format for
   a locale and number system.

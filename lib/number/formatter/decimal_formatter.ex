@@ -18,7 +18,6 @@ defmodule Cldr.Number.Formatter.Decimal do
   to change at any time.**
 
   """
-  import Cldr.Number.Symbol, only: [number_symbols_for: 3]
   import Cldr.Math, only: [power_of_10: 1]
 
   alias Cldr.{Currency, Math, Digits}
@@ -467,15 +466,11 @@ defmodule Cldr.Number.Formatter.Decimal do
   # by options[:sign]) we assemble the parts and transliterate
   # the currency sign, percent and permille characters.
   def assemble_format(number_string, meta, backend, options) do
-    number_string
-    |> do_assemble_format(meta.number, meta, meta.format[options.pattern], backend, options)
-    |> :erlang.iolist_to_binary()
-  end
+    format = meta.format[options.pattern]
+    number = meta.number
 
-  def do_assemble_format(number_string, number, meta, format, backend, options) do
-    {:ok, symbols} = number_symbols_for(options.locale, options.number_system, backend)
-    options = Map.put(options, :symbols, symbols)
     assemble_parts(format, number_string, number, backend, meta, options)
+    |> :erlang.iolist_to_binary()
   end
 
   defp assemble_parts(

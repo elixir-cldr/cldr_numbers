@@ -307,7 +307,7 @@ defmodule Cldr.Number.Format.Compiler do
     end
   end
 
- @doc """
+  @doc """
   Extract the metadata from the format.
 
   The metadata is used to generate the formatted output.  A numeric format

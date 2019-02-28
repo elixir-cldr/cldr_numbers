@@ -16,13 +16,16 @@ defmodule Cldr.Number.Format.Options do
   alias Cldr.Number.Format.Compiler
   alias Cldr.Number.Format
 
+  import Cldr.Number.Symbol, only: [number_symbols_for: 3]
+
   def validate_options(number, backend, options) do
     with {:ok, options} <- merge_default_options(backend, options),
          {:ok, options} <- validate_locale(backend, options),
          {:ok, options} <- validate_number_system(backend, options),
          {:ok, options} <- normalize_options(backend, options),
          {:ok, options} <- validate_currency_options(backend, options),
-         {:ok, options} <- detect_negative_number(number, options) do
+         {:ok, options} <- detect_negative_number(number, options),
+         {:ok, options} <- put_number_symbols(backend, options) do
       {:ok, struct(__MODULE__, options)}
     end
   end
@@ -45,6 +48,24 @@ defmodule Cldr.Number.Format.Options do
     with {:ok, system} <- System.system_name_from(number_system, locale, backend) do
       options = Map.put(options, :number_system, system)
       {:ok, options}
+    end
+  end
+
+  def put_number_symbols(backend, options) do
+    with {:ok, symbols} <- number_symbols_for(options.locale, options.number_system, backend) do
+      {:ok, Map.put(options, :symbols, symbols)}
+    else
+      {:error, _} ->
+        cldr_locale_name = options.locale.cldr_locale_name
+        {
+          :error,
+          {
+            Cldr.UnknownFormatError,
+            "The locale #{inspect(cldr_locale_name)} with number system " <>
+              "#{inspect(options.number_system)} does not define a format " <>
+              "#{inspect(options.format)}."
+          }
+        }
     end
   end
 
