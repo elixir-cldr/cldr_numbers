@@ -1,4 +1,4 @@
-defmodule Doc.Test do
+defmodule Cldr.Number.Format.Meta.Test do
   use ExUnit.Case, async: true
 
   test "that we can create a default metadata struct" do
@@ -73,5 +73,11 @@ defmodule Doc.Test do
     assert meta.integer_digits == %{max: 13, min: 12}
     assert meta.fractional_digits == %{max: 15, min: 14}
     assert meta.significant_digits == %{max: 17, min: 16}
+
+    meta =
+      Meta.new
+      |> Meta.put_format([format: "#"], [format: "##"])
+
+    assert meta.format == [positive: [format: "#"], negative: [format: "##"]]
   end
 end

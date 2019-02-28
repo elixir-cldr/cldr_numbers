@@ -190,4 +190,23 @@ defmodule Cldr.Number.Format.Meta do
     Map.put(meta, :grouping, grouping)
   end
 
+  @doc """
+  Set the metadata format.
+
+  Note that this is the parsed format as a simple AST
+  (not the Elixir AST), not a binary representation.
+
+  Its up to each formatting engine to transform its input
+  into this form.
+
+  """
+  def put_format(%__MODULE__{} = meta, positive_format, negative_format) do
+    meta
+    |> Map.put(:format, [positive: positive_format, negative: negative_format])
+  end
+
+  def put_format(%__MODULE__{} = meta, positive_format) do
+    put_format(meta, positive_format, [minus: '-', format: :same_as_positive])
+  end
+
 end

@@ -1,4 +1,4 @@
-defmodule Doc.Test do
+defmodule Cldr.Number.Doc.Test do
   use ExUnit.Case, async: true
 
   doctest Cldr.Number
