@@ -23,6 +23,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   alias Cldr.{Currency, Math, Digits}
   alias Cldr.Number.Format
   alias Cldr.Number.Format.Compiler
+  alias Cldr.Number.Format.Options
 
   @empty_string ""
 
@@ -35,12 +36,25 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   * `format` is a format string.  See `Cldr.Number` for further information.
 
+  * `backend` is any module that includes `use Cldr` and therefore
+    is a `Cldr` backend module
+
   * `options` is a map of options.  See `Cldr.Number.to_string/2` for further information.
 
   """
-  @spec to_string(Math.number(), String.t(), CLdr.backend(), Map.t()) ::
+  def to_string(number, format, backend, options \\ [])
+
+  @spec to_string(Math.number(), String.t(), Cldr.backend(), list()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
-  def to_string(number, format, backend, options \\ []) do
+  def to_string(number, format, backend, options) when is_list(options) do
+    with {:ok, options} <- Options.validate_options(number, backend, options) do
+      Module.concat(backend, Number.Formatter.Decimal).to_string(number, format, options)
+    end
+  end
+
+  @spec to_string(Math.number(), String.t(), Cldr.backend(), Options.t) ::
+          {:ok, String.t()} | {:error, {atom, String.t()}}
+  def to_string(number, format, backend, %Options{} = options) do
     Module.concat(backend, Number.Formatter.Decimal).to_string(number, format, options)
   end
 

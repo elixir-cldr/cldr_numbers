@@ -8,6 +8,12 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
 
     quote location: :keep do
       defmodule Number.Formatter.Decimal do
+
+        alias Cldr.Number.Formatter.Decimal
+        alias Cldr.Number.Format.Compiler
+        alias Cldr.Number.Format.Meta
+        alias Cldr.Number.Format.Options
+
         @doc """
         Formats a number according to a decimal format string.
 
@@ -22,14 +28,19 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
 
         """
 
-        alias Cldr.Number.Formatter.Decimal
-        alias Cldr.Number.Format.Compiler
-        alias Cldr.Number.Format.Meta
-        alias Cldr.Number.Format.Options
-
-        @spec to_string(Math.number(), String.t(), Map.t()) ::
+        @spec to_string(Math.number(), String.t(), list()) ::
                 {:ok, String.t()} | {:error, {atom, String.t()}}
+
         def to_string(number, format, options \\ [])
+
+        def to_string(number, format, options) when is_binary(format) and is_list(options) do
+          with {:ok, options} <- Options.validate_options(number, unquote(backend), options) do
+            to_string(number, format, options)
+          end
+        end
+
+        @spec to_string(Math.number(), String.t(), Options.t()) ::
+                {:ok, String.t()} | {:error, {atom, String.t()}}
 
         # Precompile the known formats and build the formatting pipeline
         # specific to this format thereby optimizing the performance.
