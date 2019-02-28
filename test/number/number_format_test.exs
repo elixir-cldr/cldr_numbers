@@ -1,5 +1,5 @@
 defmodule Number.Format.Test do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   Enum.each(Cldr.Test.Number.Format.test_data(), fn {value, result, args} ->
     new_args =

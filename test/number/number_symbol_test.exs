@@ -1,5 +1,5 @@
 defmodule Number.Symbol.Test do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   test "that we can get number symbols for a known locale" do
     {:ok, symbols} = TestBackend.Cldr.Number.Symbol.number_symbols_for("en", "latn")

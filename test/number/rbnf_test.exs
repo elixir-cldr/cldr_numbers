@@ -1,5 +1,6 @@
 defmodule Rbnf.Test do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
+
   alias TestBackend.Cldr
 
   test "rbnf spellout" do

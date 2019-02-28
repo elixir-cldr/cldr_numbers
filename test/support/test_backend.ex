@@ -4,4 +4,5 @@ defmodule TestBackend.Cldr do
     locales: :all,
     precompile_transliterations: [{:latn, :arab}, {:arab, :thai}, {:arab, :latn}],
     providers: [Cldr.Number]
+
 end

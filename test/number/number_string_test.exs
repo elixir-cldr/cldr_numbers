@@ -1,5 +1,6 @@
 defmodule Number.String.Test do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
+
   alias Cldr.Number
 
   test "that the regexp for latin1 is correct" do

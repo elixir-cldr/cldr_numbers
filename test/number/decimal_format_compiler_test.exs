@@ -1,5 +1,6 @@
 defmodule DecimalFormatCompiler.Test do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
+
   alias Cldr.Number.Format
 
   Enum.each(TestBackend.Cldr.Number.Format.decimal_format_list(), fn format ->

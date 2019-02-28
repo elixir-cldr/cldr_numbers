@@ -1,5 +1,5 @@
 defmodule Split.Format.Test do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   Enum.each(Cldr.Test.Number.Split.Format.test_data(), fn {format, result} ->
     test "that a format splits correctly for #{inspect(format)}" do

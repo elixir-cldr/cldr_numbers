@@ -1,5 +1,6 @@
 defmodule Transliteration.Test do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
+
   import ExUnit.CaptureLog
 
   test "that a dynamic transliteration generates a log message" do

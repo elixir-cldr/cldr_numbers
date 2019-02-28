@@ -1,5 +1,5 @@
 defmodule Number.System.Test do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   test "that number_system_for with a system name returns" do
     {:ok, system} = TestBackend.Cldr.Number.System.number_system_for("en", :latn)

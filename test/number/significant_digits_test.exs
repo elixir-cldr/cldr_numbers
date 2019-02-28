@@ -1,5 +1,5 @@
 defmodule Significant.Digits.Test do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   test "round 1,239,451 to 3 significant digits and return 1,240,000" do
     assert 1_240_000 == Cldr.Math.round_significant(1_239_451, 3)
