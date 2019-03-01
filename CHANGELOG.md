@@ -1,10 +1,10 @@
 # Changelog for Cldr_Numbers v2.3.0
 
-This is the changelog for Cldr v2.2.0 released on Febriuary 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.3.0 released on March 1st, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
 
 ## Enhancements
 
-* Opens up the formatting pipeline for use by other formatting systems like `printf`.
+* Opens up the formatting pipeline for use by other formatting systems like `printf`. This is implemented by the introduction of `Cldr.Number.Format.Meta` to create the abstract metadata struct.  This struct is used for `Cldr.Number.to_string/3` and is now available for use by other libraries. The function `Cldr.Number.Formatter.Decimal.to_string/3` is the primary function that should be used by other libraries.
 
 # Changelog for Cldr_Numbers v2.2.0
 

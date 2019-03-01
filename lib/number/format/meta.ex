@@ -9,7 +9,7 @@ defmodule Cldr.Number.Format.Meta do
   The `:format` is a keyword list that with two
   elements:
 
-  * `:positive` with is a keyword list for
+  * `:positive` which is a keyword list for
     formatting a number >= zero
 
   * `:negative` which is a keyword list for
@@ -79,16 +79,31 @@ defmodule Cldr.Number.Format.Meta do
   * `[literal: "string"]` inserts `string` into the
     format without any processing
 
-  * `[currency: type]` inserts a localised currency
+  * `[currency: 1..4]` inserts a localised currency
     symbol of the given `type`.  A `:currency` must be
     provided as an option to `Cldr.Number.Formatter.Decimal.to_string/3`.
 
-  * `[pad: "char"]` inserts the correct number of `char`
+  * `[pad: "char"]` inserts the correct number of `char`s
     to pad the number format to the width specified by
     `:padding_length` in the `%Meta{}` struct. The `:pad`
     can be anywhere in the format list but it is most
     typically inserted before or after the `:format`
-    keyword.
+    keyword.  The assumption is tha the `char` is a single
+    binary character but this is not checked.
+
+  ## Currency symbol formatting
+
+  Currency are localised and have four ways of being
+  presented.  The different types are defined in the
+  `[currency: type]` keyword where `type` is an integer
+  in the range `1..4`  These types will insert
+  into the final format:
+
+    1. The standard currency symbol like `$`,`¥` or `€`
+    2. The ISO currency code (like `USD` and `JPY`)
+    3. The localised and pluralised currency display name
+       like "Australian dollar" or "Australian dollars"
+    4. The narrow currency symbol if defined for a locale
 
   """
   defstruct [
@@ -295,13 +310,15 @@ defmodule Cldr.Number.Format.Meta do
   end
 
   @doc """
-  Set the metadata format.
+  Set the metadata format for the positive
+  and negative number format.
 
   Note that this is the parsed format as a simple keyword
-  lsit, not a binary representation.
+  list, not a binary representation.
 
   Its up to each formatting engine to transform its input
-  into this form.
+  into this form.  See `Cldr.Number.Format.Meta` module
+  documentation for the available keywords.
 
   """
   @spec put_format(t(), Keyword.t, Keyword.t) :: t()
