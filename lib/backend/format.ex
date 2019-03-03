@@ -172,7 +172,7 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Examples
 
-            iex> #{inspect(__MODULE__)}.Number.Format.minimum_grouping_digits_for("en")
+            iex> #{inspect(__MODULE__)}.minimum_grouping_digits_for("en")
             {:ok, 1}
 
         """
@@ -180,6 +180,33 @@ defmodule Cldr.Number.Backend.Format do
                 {:ok, non_neg_integer} | {:error, {Exception.t(), String.t()}}
 
         def minimum_grouping_digits_for(locale \\ unquote(backend).get_locale())
+
+        @doc """
+        Returns the default grouping for a locale as a map.
+
+        ## Arguments
+
+        * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by
+          `#{inspect(backend)}.Locale.new!/1`. The default
+          is `#{inspect(backend)}.get_locale/0`
+
+        ## Returns
+
+        * `{:ok, grouping}` or
+
+        * `{:error, {exception, message}}`
+
+        ## Examples
+
+            iex> #{inspect(__MODULE__)}.default_grouping_for("en")
+            {:ok, %{fraction: %{first: 3, rest: 3}, integer: %{first: 3, rest: 3}}}
+
+        """
+        @spec default_grouping_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
+                {:ok, map()} | {:error, {Exception.t(), String.t()}}
+
+        def default_grouping_for(locale \\ unquote(backend).get_locale())
 
         for locale_name <- Cldr.Config.known_locale_names(config) do
           locale_data =
@@ -203,6 +230,17 @@ defmodule Cldr.Number.Backend.Format do
           def minimum_grouping_digits_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
             {:ok, unquote(minimum_grouping_digits)}
           end
+
+          default_number_system =
+            locale_data
+            |> get_in([:number_systems, :default])
+
+          standard_format = number_formats[default_number_system].standard
+          {:ok, meta} = Cldr.Number.Format.Compiler.format_to_metadata(standard_format)
+
+          def default_grouping_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
+            {:ok, unquote(Macro.escape(meta.grouping))}
+          end
         end
 
         def all_formats_for(locale_name) when is_binary(locale_name) do
@@ -217,8 +255,14 @@ defmodule Cldr.Number.Backend.Format do
           end
         end
 
+        def default_grouping_for(locale_name) when is_binary(locale_name) do
+          with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
+            default_grouping_for(locale)
+          end
+        end
+
         @doc """
-        Returns the minium grouping digits for a locale.
+        Returns the minium grouping digits for a locale
         or raises on error.
 
         ## Arguments
@@ -236,7 +280,7 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Examples
 
-            iex> #{inspect(__MODULE__)}.Number.Format.minimum_grouping_digits_for!("en")
+            iex> #{inspect(__MODULE__)}.minimum_grouping_digits_for!("en")
             1
 
         """
@@ -245,6 +289,39 @@ defmodule Cldr.Number.Backend.Format do
 
         def minimum_grouping_digits_for!(locale) do
           case minimum_grouping_digits_for(locale) do
+            {:ok, digits} -> digits
+            {:error, {exception, reason}} -> raise exception, reason
+          end
+        end
+
+        @doc """
+        Returns the default grouping for a locale
+        or raises on error.
+
+        ## Arguments
+
+        * `locale` is any valid locale name returned by
+          `#{inspect(backend)}.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by `#{inspect(backend)}.Locale.new!/1`. The default
+          is `#{inspect(backend)}.get_locale/0`
+
+        ## Returns
+
+        * `grouping` as a map or
+
+        * raises an exception
+
+        ## Examples
+
+            iex> #{inspect(__MODULE__)}.default_grouping_for!("en")
+            %{fraction: %{first: 3, rest: 3}, integer: %{first: 3, rest: 3}}
+
+        """
+        @spec default_grouping_for!(LanguageTag.t() | Cldr.Locale.locale_name()) ::
+                map() | no_return()
+
+        def default_grouping_for!(locale) do
+          case default_grouping_for(locale) do
             {:ok, digits} -> digits
             {:error, {exception, reason}} -> raise exception, reason
           end

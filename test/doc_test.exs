@@ -16,6 +16,7 @@ defmodule Cldr.Number.Doc.Test do
   doctest TestBackend.Cldr.Number.System
   doctest TestBackend.Cldr.Number
   doctest TestBackend.Cldr.Number.Symbol
+  doctest TestBackend.Cldr.Number.Format
   doctest TestBackend.Cldr.Number.Transliterate
 
   doctest TestBackend.Cldr.Rbnf.Ordinal
