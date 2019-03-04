@@ -266,7 +266,7 @@ defmodule Cldr.Number.Format do
   ## Examples
 
       iex> Cldr.Number.Format.default_grouping_for("en", MyApp.Cldr)
-      {:ok, %{fraction: %{first: 3, rest: 3}, integer: %{first: 3, rest: 3}}}
+      {:ok, %{fraction: %{first: 0, rest: 0}, integer: %{first: 3, rest: 3}}}
 
   """
   @spec default_grouping_for(LanguageTag.t() | Cldr.Locale.locale_name, Cldr.backend()) ::
@@ -291,7 +291,7 @@ defmodule Cldr.Number.Format do
   ## Examples
 
       iex> Cldr.Number.Format.default_grouping_for!("en", MyApp.Cldr)
-      %{fraction: %{first: 3, rest: 3}, integer: %{first: 3, rest: 3}}
+      %{fraction: %{first: 0, rest: 0}, integer: %{first: 3, rest: 3}}
 
       Cldr.Number.Format.default_grouping_for!(:invalid)
       ** (Cldr.UnknownLocaleError) The locale :invalid is invalid

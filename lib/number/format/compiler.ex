@@ -357,7 +357,7 @@ defmodule Cldr.Number.Format.Compiler do
   # If we have significant digits defined then they take
   # priority over using the default pattern for significant digits
   defp reconcile_significant_and_scientific_digits(meta) do
-    if meta.significant_digits > 0 && meta.exponent_digits > 0 do
+    if meta.significant_digits[:min] > 0 && meta.exponent_digits > 0 do
       %{meta | scientific_rounding: 0}
     else
       meta
@@ -566,13 +566,12 @@ defmodule Cldr.Number.Format.Compiler do
   # Extract the fraction grouping
 
   defp fraction_grouping(format) do
-    [group | _drop] = String.split(format, @grouping_separator)
-    group_size = String.length(group)
-
-    if group_size == 1 do
-      %{first: @max_integer_digits, rest: @max_integer_digits}
-    else
-      %{first: group_size, rest: group_size}
+    case String.split(format, @grouping_separator) do
+      [_] ->
+        %{first: @max_integer_digits, rest: @max_integer_digits}
+      [group | _] ->
+        group_size = String.length(group)
+        %{first: group_size, rest: group_size}
     end
   end
 
@@ -722,7 +721,7 @@ defmodule Cldr.Number.Format.Compiler do
 
   @integer_digits "(?<integer>[@#0-9,]+)"
   @fraction_digits "([.](?<fraction>[#0-9,]+))?"
-  @exponent "(E(?<exponent_sign>[+-])?(?<exponent_digits>[0-9]))?"
+  @exponent "([Ee](?<exponent_sign>[+-])?(?<exponent_digits>[0-9]+))?"
   @format Regex.compile!(@integer_digits <> @fraction_digits <> @exponent)
   def number_match_regex do
     @format

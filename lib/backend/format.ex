@@ -200,7 +200,7 @@ defmodule Cldr.Number.Backend.Format do
         ## Examples
 
             iex> #{inspect(__MODULE__)}.default_grouping_for("en")
-            {:ok, %{fraction: %{first: 3, rest: 3}, integer: %{first: 3, rest: 3}}}
+            {:ok, %{fraction: %{first: 0, rest: 0}, integer: %{first: 3, rest: 3}}}
 
         """
         @spec default_grouping_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
@@ -314,7 +314,7 @@ defmodule Cldr.Number.Backend.Format do
         ## Examples
 
             iex> #{inspect(__MODULE__)}.default_grouping_for!("en")
-            %{fraction: %{first: 3, rest: 3}, integer: %{first: 3, rest: 3}}
+            %{fraction: %{first: 0, rest: 0}, integer: %{first: 3, rest: 3}}
 
         """
         @spec default_grouping_for!(LanguageTag.t() | Cldr.Locale.locale_name()) ::
