@@ -1,6 +1,6 @@
 # Changelog for Cldr_Numbers v2.4.0
 
-This is the changelog for Cldr v2.4.0 released on _____, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.4.0 released on March 4th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
 
 ## Enhancements
 
