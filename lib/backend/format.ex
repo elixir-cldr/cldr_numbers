@@ -333,8 +333,10 @@ defmodule Cldr.Number.Backend.Format do
         number system.
 
         """
-        @spec currency_spacing(LanguageTag.t() | Cldr.Locale.locale_name(), System.system_name()) ::
-                map() | nil | {:error, {module(), String.t}}
+        @spec currency_spacing(
+                LanguageTag.t() | Cldr.Locale.locale_name(),
+                System.system_name()
+              ) :: Map.t() | {:error, {module(), String.t}}
 
         def currency_spacing(locale, number_system) do
           with {:ok, formats} <- formats_for(locale, number_system) do

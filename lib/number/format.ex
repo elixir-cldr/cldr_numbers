@@ -325,7 +325,7 @@ defmodule Cldr.Number.Format do
           LanguageTag.t() | Cldr.Locale.locale_name(),
           System.system_name(),
           Cldr.backend()
-        ) :: {:ok, Map.t()} | {:ok, nil}
+        ) :: map() | {:error, {module(), String.t()}}
 
   def currency_spacing(locale, number_system, backend) do
     backend.currency_spacing(locale, number_system)
