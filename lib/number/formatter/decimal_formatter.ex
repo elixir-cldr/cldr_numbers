@@ -467,7 +467,12 @@ defmodule Cldr.Number.Formatter.Decimal do
 
     exponent =
       if meta.exponent_digits > 0 do
-        [@exponent_separator, exponent_sign, exponent]
+        digits =
+          exponent
+          |> List.to_string
+          |> String.pad_leading(meta.exponent_digits, "0")
+
+        [@exponent_separator, exponent_sign, digits]
       else
         []
       end

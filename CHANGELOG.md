@@ -1,3 +1,15 @@
+# Changelog for Cldr_Numbers v2.4.1
+
+This is the changelog for Cldr v2.4.1 released on March 5th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+## Bug Fixes
+
+* Fix fractional grouping. Previsouly when there was no grouping, the group size was being set to the number of fractional digits.
+
+* Fix scientific precision. Previously the mantissa was not being rounded because the prioritisation of significant digits over exponent digits was not being correctly reconciled.
+
+* Fix formatting precision of an exponent. A format of `0E00` will now format the exponent with two digits.
+
 # Changelog for Cldr_Numbers v2.4.0
 
 This is the changelog for Cldr v2.4.0 released on March 4th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
