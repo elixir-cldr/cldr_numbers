@@ -30,7 +30,9 @@ defmodule Cldr.Number.Format.Options do
 
   import Cldr.Number.Symbol, only: [number_symbols_for: 3]
 
-  @spec validate_options(Cldr.Math.number_or_decimal, Cldr.backend(), [{atom, term}, ...]) :: t
+  @spec validate_options(Cldr.Math.number_or_decimal, Cldr.backend(), list({atom, term})) ::
+    {:ok, t} | {:error, {module(), String.t()}}
+
   def validate_options(number, backend, options) do
     with {:ok, options} <- merge_default_options(backend, options),
          {:ok, options} <- validate_locale(backend, options),
@@ -55,7 +57,9 @@ defmodule Cldr.Number.Format.Options do
     {:ok, new_options}
   end
 
-  @spec validate_locale(Cldr.backend(), t()) :: t()
+  @spec validate_locale(Cldr.backend(), t()) ::
+    {:ok, t()} | {:error, {module(), String.t()}}
+
   defp validate_locale(backend, options) do
     with {:ok, locale} <- backend.validate_locale(options[:locale]) do
       options = Map.put(options, :locale, locale)
@@ -74,7 +78,9 @@ defmodule Cldr.Number.Format.Options do
     {:ok, options}
   end
 
-  @spec validate_number_system(Cldr.backend(), t()) :: t()
+  @spec validate_number_system(Cldr.backend(), t()) ::
+    {:ok, t()} | {:error, {module(), String.t()}}
+
   defp validate_number_system(backend, options) do
     locale = options.locale
     number_system = options.number_system
@@ -85,7 +91,9 @@ defmodule Cldr.Number.Format.Options do
     end
   end
 
-  @spec validate_currency_options(Cldr.backend(), t()) :: t()
+  @spec validate_currency_options(Cldr.backend(), t()) ::
+    {:ok, t()} | {:error, {module(), String.t()}}
+
   defp validate_currency_options(backend, options) do
     format = options.format
     currency = options.currency
@@ -97,7 +105,9 @@ defmodule Cldr.Number.Format.Options do
     end
   end
 
-  @spec detect_negative_number(Cldr.Math.number_or_decimal, t()) :: t()
+  @spec detect_negative_number(Cldr.Math.number_or_decimal, t()) ::
+    {:ok, t()}
+
   defp detect_negative_number(number, options)
        when (is_float(number) or is_integer(number)) and number < 0 do
     {:ok, Map.put(options, :pattern, :negative)}
@@ -112,7 +122,9 @@ defmodule Cldr.Number.Format.Options do
     {:ok, Map.put(options, :pattern, :positive)}
   end
 
-  @spec put_number_symbols(Cldr.backend(), t()) :: t()
+  @spec put_number_symbols(Cldr.backend(), t()) ::
+    {:ok, t()} | {:error, {module(), String.t()}}
+
   defp put_number_symbols(backend, options) do
     with {:ok, symbols} <- number_symbols_for(options.locale, options.number_system, backend) do
       {:ok, Map.put(options, :symbols, symbols)}
@@ -283,7 +295,7 @@ defmodule Cldr.Number.Format.Options do
     end
   end
 
-  @spec short_format_styles() :: short_format_styles
+  @spec short_format_styles() :: list(atom())
   def short_format_styles do
     @short_format_styles
   end

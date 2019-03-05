@@ -82,7 +82,7 @@ defmodule Cldr.Number.Format do
 
   """
 
-  @spec decimal_format_list(Cldr.backend()) :: [format, ...]
+  @spec decimal_format_list(Cldr.backend()) :: list(format())
   def decimal_format_list(backend) do
     Module.concat(backend, Number.Format).decimal_format_list
   end
@@ -114,7 +114,7 @@ defmodule Cldr.Number.Format do
 
   """
   @spec decimal_format_list_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) ::
-          {:ok, [String.t(), ...]} | {:error, {Exception.t(), String.t()}}
+          {:ok, list(String.t())} | {:error, {module(), String.t()}}
 
   def decimal_format_list_for(locale, backend) do
     Module.concat(backend, Number.Format).decimal_format_list_for(locale)
@@ -158,7 +158,7 @@ defmodule Cldr.Number.Format do
   """
 
   @spec all_formats_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) ::
-          {:ok, Map.t()} | {:error, {Exception.t(), String.t()}}
+          {:ok, Map.t()} | {:error, {module(), String.t()}}
 
   def all_formats_for(locale, backend) do
     Module.concat(backend, Number.Format).all_formats_for(locale)
@@ -214,7 +214,7 @@ defmodule Cldr.Number.Format do
 
   """
   @spec minimum_grouping_digits_for(LanguageTag.t(), Cldr.backend()) ::
-          {:ok, non_neg_integer} | {:error, {Exception.t(), String.t()}}
+          {:ok, non_neg_integer} | {:error, {module(), String.t()}}
 
   def minimum_grouping_digits_for(locale, backend) do
     Module.concat(backend, Number.Format).minimum_grouping_digits_for(locale)
@@ -270,7 +270,7 @@ defmodule Cldr.Number.Format do
 
   """
   @spec default_grouping_for(LanguageTag.t() | Cldr.Locale.locale_name, Cldr.backend()) ::
-          {:ok, non_neg_integer} | {:error, {Exception.t(), String.t()}}
+          {:ok, non_neg_integer} | {:error, {module(), String.t()}}
 
   def default_grouping_for(locale, backend) do
     Module.concat(backend, Number.Format).default_grouping_for(locale)
@@ -435,10 +435,8 @@ defmodule Cldr.Number.Format do
           LanguageTag.t() | Locale.locale_name(),
           System.system_name(),
           Cldr.backend()
-        ) :: [
-          atom,
-          ...
-        ]
+        ) :: {:ok, list(atom())} | {:error, {module(), String.t()}}
+
   def format_styles_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, formats} <- formats_for(locale, number_system, backend) do
       {
@@ -482,7 +480,9 @@ defmodule Cldr.Number.Format do
   @isnt_really_a_short_format [:currency_long]
   @short_formats MapSet.new(@short_format_styles -- @isnt_really_a_short_format)
 
-  @spec short_format_styles_for(LanguageTag.t(), binary | atom, Cldr.backend()) :: [atom, ...]
+  @spec short_format_styles_for(LanguageTag.t() | Cldr.Locale.locale_name(), binary | atom, Cldr.backend()) ::
+    {:ok, list(atom())} | {:error, {module(), String.t()}}
+
   def short_format_styles_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, formats} <- format_styles_for(locale, number_system, backend) do
       {
@@ -528,7 +528,7 @@ defmodule Cldr.Number.Format do
           LanguageTag.t() | Locale.locale_name(),
           System.system_name(),
           Cldr.backend()
-        ) :: [atom, ...]
+        ) :: {:ok, list(atom())} | {:error, {module(), String.t()}}
 
   def decimal_format_styles_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, styles} <- format_styles_for(locale, number_system, backend),
@@ -576,7 +576,8 @@ defmodule Cldr.Number.Format do
       {:ok, [:default, :native]}
 
   """
-  @spec format_system_types_for(LanguageTag.t(), Cldr.backend()) :: [atom, ...]
+  @spec format_system_types_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
+      {:ok, Keyword.t()} | {:error, {module(), String.t()}}
 
   def format_system_types_for(%LanguageTag{} = locale, backend) do
     with {:ok, _} <- Cldr.validate_locale(locale, backend) do
@@ -612,7 +613,8 @@ defmodule Cldr.Number.Format do
       {:ok, [:latn]}
 
   """
-  @spec format_system_names_for(LanguageTag.t(), Cldr.backend()) :: [String.t(), ...]
+  @spec format_system_names_for(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.backend()) ::
+    {:ok, list(atom)} | {:error, {module(), String.t()}}
 
   def format_system_names_for(%LanguageTag{} = locale, backend) do
     Cldr.Number.System.number_system_names_for(locale, backend)

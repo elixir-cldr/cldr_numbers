@@ -72,7 +72,9 @@ defmodule Cldr.Number.Symbol do
        }}
 
   """
-  @spec number_symbols_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) :: Keyword.t()
+  @spec number_symbols_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) ::
+    {:ok, map()}| {:error, {module(), String.t()}}
+
   def number_symbols_for(locale, backend) do
     Module.concat(backend, Number.Symbol).number_symbols_for(locale)
   end

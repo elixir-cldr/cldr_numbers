@@ -104,7 +104,9 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         """
 
-        @spec transliterate(String.t(), LanguageTag.t(), String.t()) :: String.t()
+        @spec transliterate(String.t(), LanguageTag.t() | Cldr.Locale.locale_name(), String.t() | atom()) ::
+          String.t() | {:error, {module(), String.t}}
+
         def transliterate(
               sequence,
               locale \\ unquote(backend).get_locale(),

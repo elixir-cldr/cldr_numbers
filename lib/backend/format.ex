@@ -80,7 +80,7 @@ defmodule Cldr.Number.Backend.Format do
 
         """
         @format_list Cldr.Config.decimal_format_list(config)
-        @spec decimal_format_list :: [Cldr.Number.Format.format(), ...]
+        @spec decimal_format_list :: list(Cldr.Number.Format.format())
         def decimal_format_list do
           unquote(Macro.escape(@format_list))
         end
@@ -109,7 +109,7 @@ defmodule Cldr.Number.Backend.Format do
 
         """
         @spec decimal_format_list_for(LanguageTag.t() | Locale.locale_name()) ::
-                {:ok, [String.t(), ...]} | {:error, {Exception.t(), String.t()}}
+                {:ok, list(String.t())} | {:error, {module(), String.t()}}
 
         def decimal_format_list_for(locale \\ unquote(backend).get_locale())
 
@@ -144,13 +144,14 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Returns
 
-        * a list of decimal formats or
+        * `{:ok, map}` where map is a map of decimal formats
+          keyed by number system or
 
         * `{:error, {exception, message}}`
 
         """
         @spec all_formats_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
-                {:ok, non_neg_integer} | {:error, {Exception.t(), String.t()}}
+                {:ok, map()} | {:error, {module(), String.t()}}
 
         def all_formats_for(locale \\ unquote(backend).get_locale())
 
@@ -177,7 +178,7 @@ defmodule Cldr.Number.Backend.Format do
 
         """
         @spec minimum_grouping_digits_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
-                {:ok, non_neg_integer} | {:error, {Exception.t(), String.t()}}
+                {:ok, non_neg_integer} | {:error, {module(), String.t()}}
 
         def minimum_grouping_digits_for(locale \\ unquote(backend).get_locale())
 
@@ -204,7 +205,7 @@ defmodule Cldr.Number.Backend.Format do
 
         """
         @spec default_grouping_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
-                {:ok, map()} | {:error, {Exception.t(), String.t()}}
+                {:ok, map()} | {:error, {module(), String.t()}}
 
         def default_grouping_for(locale \\ unquote(backend).get_locale())
 
@@ -333,7 +334,7 @@ defmodule Cldr.Number.Backend.Format do
 
         """
         @spec currency_spacing(LanguageTag.t() | Cldr.Locale.locale_name(), System.system_name()) ::
-                {:ok, Map.t()} | {:ok, nil}
+                map() | nil | {:error, {module(), String.t}}
 
         def currency_spacing(locale, number_system) do
           with {:ok, formats} <- formats_for(locale, number_system) do
@@ -354,7 +355,8 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Returns
 
-        * a list of decimal formats ot
+        * {:ok, map} where map is a map of decimal formats
+          keyed by number system or
 
         * raises an exception
 
@@ -362,7 +364,7 @@ defmodule Cldr.Number.Backend.Format do
 
         """
         @spec all_formats_for!(LanguageTag.t() | Cldr.Locale.locale_name()) ::
-                non_neg_integer | no_return()
+                map() | no_return()
 
         def all_formats_for!(locale \\ unquote(backend).get_locale()) do
           case all_formats_for(locale) do

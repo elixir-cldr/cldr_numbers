@@ -136,7 +136,7 @@ defmodule Cldr.Number do
   """
   @spec validate_number_system(Cldr.Locale.locale_name() | Cldr.LanguageTag.t(),
     Cldr.Number.System.system_name() | Cldr.Number.System.types(), Cldr.backend())
-      :: {:ok, Cldr.Number.System.system_name()} | {:error, {Exception.t, String.t}}
+      :: {:ok, Cldr.Number.System.system_name()} | {:error, {module(), String.t}}
 
   def validate_number_system(locale, number_system, backend) do
     Cldr.Number.System.system_name_from(number_system, locale, backend)
@@ -374,7 +374,7 @@ defmodule Cldr.Number do
 
   """
   @spec to_string!(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
-          String.t() | Exception.t()
+          String.t() | module()
 
   def to_string!(number, backend, options \\ []) do
     case to_string(number, backend, options) do
@@ -521,7 +521,8 @@ defmodule Cldr.Number do
 
   """
   @spec to_at_least_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
-          {:ok, String.t()} | {:error, {atom, String.t()}}
+          {:ok, String.t()} | {:error, {module(), String.t()}}
+
   def to_at_least_string(number, backend, options \\ []) do
     other_format(number, :at_least, backend, options)
   end
@@ -548,7 +549,8 @@ defmodule Cldr.Number do
 
   """
   @spec to_at_most_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
-          {:ok, String.t()} | {:error, {atom, String.t()}}
+          {:ok, String.t()} | {:error, {module(), String.t()}}
+
   def to_at_most_string(number, backend, options \\ []) do
     other_format(number, :at_most, backend, options)
   end
@@ -575,7 +577,8 @@ defmodule Cldr.Number do
 
   """
   @spec to_approx_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
-          {:ok, String.t()} | {:error, {atom, String.t()}}
+          {:ok, String.t()} | {:error, {module(), String.t()}}
+
   def to_approx_string(number, backend, options \\ []) do
     other_format(number, :approximately, backend, options)
   end
@@ -601,8 +604,9 @@ defmodule Cldr.Number do
       {:ok, "1,234–5,678"}
 
   """
-  @spec to_range_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
-          {:ok, String.t()} | {:error, {atom, String.t()}}
+  @spec to_range_string(Range.t(), Cldr.backend(), Keyword.t() | Map.t()) ::
+          {:ok, String.t()} | {:error, {module(), String.t()}}
+
   def to_range_string(%Range{first: first, last: last}, backend, options \\ []) do
     with {:ok, options} <- Options.validate_options(first, backend, options),
          {:ok, format} <- Options.validate_other_format(:range, backend, options),
@@ -617,6 +621,9 @@ defmodule Cldr.Number do
       {:ok, final_format}
     end
   end
+
+  @spec other_format(number | Decimal.t, :approximately | :at_least | :at_most, Cldr.backend(), Keyword.t) ::
+    {:ok, String.t()} | {:error, {module(), String.t}}
 
   defp other_format(number, other_format, backend, options) do
     with {:ok, options} <- Options.validate_options(number, backend, options),
@@ -653,7 +660,7 @@ defmodule Cldr.Number do
 
   """
   @spec to_number_system(number, atom, Cldr.backend()) ::
-          String.t() | {:error, {Exception.t(), String.t()}}
+          String.t() | {:error, {module(), String.t()}}
 
   def to_number_system(number, system, backend) do
     Cldr.Number.System.to_system(number, system, backend)

@@ -89,7 +89,9 @@ defmodule Cldr.Number.System do
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
   """
-  @spec number_systems_for(Locale.name() | LanguageTag.t(), Cldr.backend()) :: Map.t()
+  @spec number_systems_for(Locale.name() | LanguageTag.t(), Cldr.backend()) ::
+    {:ok, map()} | {:error, {module(), String.t()}}
+
   def number_systems_for(locale, backend) do
     Module.concat(backend, Number.System).number_systems_for(locale)
   end
@@ -110,7 +112,9 @@ defmodule Cldr.Number.System do
       %{default: :latn, native: :thai}
 
   """
-  @spec number_systems_for!(Locale.name() | LanguageTag.t(), Cldr.backend()) :: Map.t()
+  @spec number_systems_for!(Locale.name() | LanguageTag.t(), Cldr.backend()) ::
+    Map.t() | no_return()
+
   def number_systems_for!(locale, backend) do
     case number_systems_for(locale, backend) do
       {:error, {exception, message}} ->
@@ -157,10 +161,9 @@ defmodule Cldr.Number.System do
       {:ok, %{digits: "0123456789", type: :numeric}}
 
   """
-  @spec number_system_for(Locale.name() | LanguageTag.t(), System.name(), Cldr.backend()) :: [
-          atom(),
-          ...
-        ]
+  @spec number_system_for(Locale.name() | LanguageTag.t(), System.name(), Cldr.backend()) ::
+        {:ok, map()} | {:error, {module(), String.t()}}
+
   def number_system_for(locale, system_name, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, system_name} <- system_name_from(system_name, locale, backend) do
@@ -193,7 +196,9 @@ defmodule Cldr.Number.System do
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
   """
-  @spec number_system_names_for(Locale.name() | LanguageTag.t(), Cldr.backend()) :: [atom(), ...]
+  @spec number_system_names_for(Locale.name() | LanguageTag.t(), Cldr.backend()) ::
+    {:ok, list(atom())} | {:error, {module(), String.t()}}
+
   def number_system_names_for(locale, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, systems} <- number_systems_for(locale, backend) do
@@ -223,10 +228,9 @@ defmodule Cldr.Number.System do
       [:latn, :hebr]
 
   """
-  @spec number_system_names_for!(Locale.name() | LanguageTag.t(), Cldr.backend()) :: [
-          system_name,
-          ...
-        ]
+  @spec number_system_names_for!(Locale.name() | LanguageTag.t(), Cldr.backend()) ::
+        list(system_name()) | no_return()
+
   def number_system_names_for!(locale, backend) do
     case number_system_names_for(locale, backend) do
       {:error, {exception, message}} ->
@@ -281,7 +285,8 @@ defmodule Cldr.Number.System do
 
   """
   @spec system_name_from(system_name, Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
-          atom
+          {:ok, atom()} | {:error, {module(), String.t()}}
+
   def system_name_from(system_name, locale, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, number_system} <- validate_number_system_or_type(system_name, backend),
@@ -324,6 +329,9 @@ defmodule Cldr.Number.System do
     :hebr
 
   """
+  @spec system_name_from!(system_name, Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
+          atom() | no_return()
+
   def system_name_from!(system_name, locale, backend) do
     case system_name_from(system_name, locale, backend) do
       {:error, {exception, message}} ->
@@ -343,9 +351,10 @@ defmodule Cldr.Number.System do
   the same digits and separators.  Typically we are comparing to locale "en"
   and number system "latn" since this is what the number formatting routines use
   as placeholders.
+
   """
   @spec number_systems_like(LanguageTag.t() | Locale.locale_name(), system_name, Cldr.backend()) ::
-          {:ok, List.t()} | {:error, tuple}
+          {:ok, list()} | {:error, {module(), String.t}}
 
   def number_systems_like(locale, number_system, backend) do
     with {:ok, _} <- Cldr.validate_locale(locale, backend),
@@ -395,6 +404,8 @@ defmodule Cldr.Number.System do
       {:error, {Cldr.UnknownNumberSystemError, "The number system :nope is not known or does not have digits"}}
 
   """
+  @spec number_system_digits(system_name()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
+
   def number_system_digits(system_name) do
     if system = Map.get(systems_with_digits(), system_name) do
       {:ok, Map.get(system, :digits)}
@@ -420,6 +431,8 @@ defmodule Cldr.Number.System do
       ** (Cldr.UnknownNumberSystemError) The number system :nope is not known or does not have digits
 
   """
+  @spec number_system_digits!(system_name) :: String.t() | no_return()
+
   def number_system_digits!(system_name) do
     case number_system_digits(system_name) do
       {:ok, digits} ->
@@ -477,7 +490,9 @@ defmodule Cldr.Number.System do
       {:ok, "壹佰贰拾叁"}
 
   """
-  @spec to_system(Math.number_or_decimal(), atom, Cldr.backend()) :: {:ok, binary()}
+  @spec to_system(Math.number_or_decimal(), atom, Cldr.backend()) ::
+    {:ok, binary()} | {:error, {module(), String.t}}
+
   def to_system(number, system_name, backend) do
     Module.concat(backend, Number.System).to_system(number, system_name)
   end
@@ -508,7 +523,9 @@ defmodule Cldr.Number.System do
       "壹佰贰拾叁"
 
   """
-  @spec to_system!(Math.number_or_decimal(), atom, Cldr.backend()) :: binary() | no_return()
+  @spec to_system!(Math.number_or_decimal(), atom, Cldr.backend()) ::
+    binary() | no_return()
+
   def to_system!(number, system_name, backend) do
     case to_system(number, system_name, backend) do
       {:ok, string} -> string

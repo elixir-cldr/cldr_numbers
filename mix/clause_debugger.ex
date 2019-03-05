@@ -12,7 +12,7 @@ defmodule Cldr.FunctionClause do
   at compile time.
 
   """
-  @spec match(module(), atom(), [any(), ...]) :: binary()
+  @spec match(module(), atom(), list(any)) :: :ok | no_return()
   def match(module, function, args) do
     case Exception.blame_mfa(module, function, args) do
       {:ok, kind, clauses} ->

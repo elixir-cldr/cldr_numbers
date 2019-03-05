@@ -126,7 +126,7 @@ defmodule Cldr.Number.Backend.Number do
         """
         @spec validate_number_system(Locale.locale_name() | Cldr.LanguageTag.t(),
           System.system_name() | System.types())
-            :: {:ok, System.system_name()} | {:error, {Exception.t, String.t}}
+            :: {:ok, System.system_name()} | {:error, {module(), String.t}}
 
         def validate_number_system(locale, number_system) do
           System.system_name_from(number_system, locale, unquote(backend))
@@ -341,7 +341,7 @@ defmodule Cldr.Number.Backend.Number do
 
         """
         @spec to_string!(number | Decimal.t(), Keyword.t() | Map.t()) ::
-                String.t() | Exception.t()
+                String.t() | module()
         def to_string!(number, options \\ default_options()) do
           Cldr.Number.to_string!(number, unquote(backend), options)
         end
@@ -364,8 +364,9 @@ defmodule Cldr.Number.Backend.Number do
             {:ok, "1,234+"}
 
         """
-        @spec to_at_least_string(number | Decimal.t(), Keyword.t() | Map.t()) ::
-                {:ok, String.t()} | {:error, {atom, String.t()}}
+        @spec to_at_least_string(number | Decimal.t(), Keyword.t() | Keyword.t() | Map.t()) ::
+                {:ok, String.t()} | {:error, {module(), String.t()}}
+
         def to_at_least_string(number, options \\ []) do
          Cldr.Number.to_at_least_string(number, unquote(backend), options)
         end
@@ -388,8 +389,9 @@ defmodule Cldr.Number.Backend.Number do
             {:ok, "≤1,234"}
 
         """
-        @spec to_at_most_string(number | Decimal.t(), Keyword.t() | Map.t()) ::
-                {:ok, String.t()} | {:error, {atom, String.t()}}
+        @spec to_at_most_string(number | Decimal.t(), Keyword.t() | Keyword.t() | Map.t()) ::
+                {:ok, String.t()} | {:error, {module(), String.t()}}
+
         def to_at_most_string(number, options \\ []) do
           Cldr.Number.to_at_most_string(number, unquote(backend), options)
         end
@@ -412,8 +414,9 @@ defmodule Cldr.Number.Backend.Number do
             {:ok, "~1,234"}
 
         """
-        @spec to_approx_string(number | Decimal.t(), Keyword.t() | Map.t()) ::
-                {:ok, String.t()} | {:error, {atom, String.t()}}
+        @spec to_approx_string(number | Decimal.t(), Keyword.t() | Keyword.t() | Map.t()) ::
+                {:ok, String.t()} | {:error, {module(), String.t()}}
+
         def to_approx_string(number, options \\ []) do
           Cldr.Number.to_approx_string(number, unquote(backend), options)
         end
@@ -436,8 +439,9 @@ defmodule Cldr.Number.Backend.Number do
             {:ok, "1,234–5,678"}
 
         """
-        @spec to_range_string(number | Decimal.t(), Keyword.t() | Map.t()) ::
-                {:ok, String.t()} | {:error, {atom, String.t()}}
+        @spec to_range_string(Range.t(), Keyword.t() | Keyword.t() | Map.t()) ::
+                {:ok, String.t()} | {:error, {module(), String.t()}}
+
         def to_range_string(range, options \\ []) do
           Cldr.Number.to_range_string(range, unquote(backend), options)
         end

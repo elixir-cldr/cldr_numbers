@@ -27,7 +27,9 @@ defmodule Cldr.Number.Backend.System do
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
         """
-        @spec number_systems_for(Locale.name() | LanguageTag.t()) :: Map.t()
+        @spec number_systems_for(Locale.name() | LanguageTag.t()) ::
+          {:ok, map()} | {:error, {module(), String.t()}}
+
         def number_systems_for(locale)
 
         @doc """
@@ -46,7 +48,9 @@ defmodule Cldr.Number.Backend.System do
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
         """
-        @spec number_system_names_for(Locale.name() | LanguageTag.t()) :: list(atom())
+        @spec number_system_names_for(Locale.name() | LanguageTag.t()) ::
+          {:ok, list(atom())} | {:error, {module(), String.t()}}
+
         def number_system_names_for(locale)
 
         for locale_name <- Cldr.Config.known_locale_names(config) do
@@ -139,7 +143,7 @@ defmodule Cldr.Number.Backend.System do
 
         """
         @spec number_system_for(Locale.name() | LanguageTag.t(), System.name()) ::
-                {:ok, [atom(), ...]} | {:error, {Exception.t(), String.t()}}
+                {:ok, list(atom())} | {:error, {module(), String.t()}}
 
         def number_system_for(locale, system_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale),
@@ -310,7 +314,7 @@ defmodule Cldr.Number.Backend.System do
         @spec system_name_from(
                 Cldr.Number.System.system_name(),
                 Locale.locale_name() | LanguageTag.t()
-              ) :: {:ok, atom} | {:error, {Exception.t(), String.t()}}
+              ) :: {:ok, atom} | {:error, {module(), String.t()}}
 
         def system_name_from(system_name, locale) do
           Cldr.Number.System.system_name_from(system_name, locale, unquote(backend))

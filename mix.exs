@@ -19,6 +19,10 @@ defmodule CldrNumbers.Mixfile do
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
       package: package(),
+      dialyzer: [
+        ignore_warnings: ".dialyzer_ignore_warnings",
+        plt_add_apps: ~w(gettext inets jason mix plug)a
+      ]
     ]
   end
 
@@ -40,7 +44,8 @@ defmodule CldrNumbers.Mixfile do
       {:ex_cldr_currencies, "~> 2.0"},
       {:decimal, "~> 1.5"},
       {:jason, "~> 1.0", optional: true},
-      {:ex_doc, "~> 0.18", only: [:dev, :release], optional: true}
+      {:ex_doc, "~> 0.18", only: [:dev, :release], optional: true},
+      {:dialyxir, "~> 1.0.0-rc.4", only: [:dev], runtime: false}
     ]
   end
 
