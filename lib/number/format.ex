@@ -158,7 +158,7 @@ defmodule Cldr.Number.Format do
   """
 
   @spec all_formats_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) ::
-          {:ok, Map.t()} | {:error, {module(), String.t()}}
+          {:ok, map()} | {:error, {module(), String.t()}}
 
   def all_formats_for(locale, backend) do
     Module.concat(backend, Number.Format).all_formats_for(locale)
@@ -371,7 +371,7 @@ defmodule Cldr.Number.Format do
         }
 
   """
-  @spec formats_for(LanguageTag.t() | binary(), atom | String.t(), Cldr.backend()) :: Map.t()
+  @spec formats_for(LanguageTag.t() | binary(), atom | String.t(), Cldr.backend()) :: map()
   def formats_for(%LanguageTag{} = locale, number_system, backend) do
     Module.concat(backend, Number.Format).formats_for(locale, number_system)
   end
@@ -393,7 +393,7 @@ defmodule Cldr.Number.Format do
     contains `use Cldr`
 
   """
-  @spec formats_for!(LanguageTag.t(), System.system_name(), Cldr.backend()) :: Map.t() | none()
+  @spec formats_for!(LanguageTag.t(), Cldr.Number.System.system_name(), Cldr.backend()) :: map() | none()
   def formats_for!(locale, number_system, backend) do
     case formats_for(locale, number_system, backend) do
       {:ok, formats} -> formats

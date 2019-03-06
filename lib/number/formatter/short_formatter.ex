@@ -72,8 +72,8 @@ defmodule Cldr.Number.Formatter.Short do
     end
   end
 
-  @spec short_format_string(number, atom, Locale.name(), atom, Cldr.backend(), Map.t()) ::
-          List.t()
+  @spec short_format_string(number, atom, Locale.name(), atom, Cldr.backend(), map()) ::
+          list()
 
   defp short_format_string(number, style, locale, number_system, backend, options) do
     case Format.formats_for(locale, number_system, backend) do

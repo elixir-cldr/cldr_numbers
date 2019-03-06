@@ -13,6 +13,7 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
         alias Cldr.Number.Format.Compiler
         alias Cldr.Number.Format.Meta
         alias Cldr.Number.Format.Options
+        alias Cldr.Math
 
         @doc """
         Formats a number according to a decimal format string.
@@ -28,8 +29,8 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
 
         """
 
-        @spec to_string(Math.number(), String.t(), list()) ::
-                {:ok, String.t()} | {:error, {atom, String.t()}}
+        @spec to_string(Math.number_or_decimal(), String.t() | Meta.t, Keyword.t | Options.t) ::
+                {:ok, String.t()} | {:error, {module(), String.t()}}
 
         def to_string(number, format, options \\ [])
 
@@ -38,9 +39,6 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
             to_string(number, format, options)
           end
         end
-
-        @spec to_string(Math.number(), String.t(), Options.t()) ::
-                {:ok, String.t()} | {:error, {atom, String.t()}}
 
         # Precompile the known formats and build the formatting pipeline
         # specific to this format thereby optimizing the performance.

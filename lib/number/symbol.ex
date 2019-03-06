@@ -5,9 +5,9 @@ defmodule Cldr.Number.Symbol do
 
   """
 
-  require Cldr
   alias Cldr.Locale
   alias Cldr.LanguageTag
+  alias Cldr.Number.System
 
   defstruct [
     :decimal,
@@ -118,7 +118,7 @@ defmodule Cldr.Number.Symbol do
           LanguageTag.t() | Locale.locale_name(),
           System.system_name(),
           Cldr.backend()
-        ) :: {:ok, Map.t()} | {:error, {Cldr.NoNumberSymbols, String.t()}}
+        ) :: {:ok, map()} | {:error, {Cldr.NoNumberSymbols, String.t()}}
 
   def number_symbols_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, system_name} <-

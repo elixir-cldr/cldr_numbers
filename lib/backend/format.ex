@@ -336,7 +336,7 @@ defmodule Cldr.Number.Backend.Format do
         @spec currency_spacing(
                 LanguageTag.t() | Cldr.Locale.locale_name(),
                 System.system_name()
-              ) :: Map.t() | {:error, {module(), String.t}}
+              ) :: map() | {:error, {module(), String.t}}
 
         def currency_spacing(locale, number_system) do
           with {:ok, formats} <- formats_for(locale, number_system) do
@@ -413,7 +413,7 @@ defmodule Cldr.Number.Backend.Format do
               }
 
         """
-        @spec formats_for(LanguageTag.t() | binary(), atom | String.t()) :: Map.t()
+        @spec formats_for(LanguageTag.t() | binary(), atom | String.t()) :: map()
         def formats_for(
               locale \\ unquote(backend).default_locale(),
               number_system \\ Cldr.Number.System.default_number_system_type()

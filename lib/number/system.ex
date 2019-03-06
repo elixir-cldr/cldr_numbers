@@ -14,6 +14,7 @@ defmodule Cldr.Number.System do
   alias Cldr.Locale
   alias Cldr.Number.Symbol
   alias Cldr.LanguageTag
+  alias Cldr.Math
 
   @default_number_system_type :default
 
@@ -51,7 +52,7 @@ defmodule Cldr.Number.System do
       80
 
   """
-  @spec number_systems :: Map.t()
+  @spec number_systems :: map()
   @number_systems Cldr.Config.number_systems()
 
   def number_systems do
@@ -113,7 +114,7 @@ defmodule Cldr.Number.System do
 
   """
   @spec number_systems_for!(Locale.name() | LanguageTag.t(), Cldr.backend()) ::
-    Map.t() | no_return()
+    map() | no_return()
 
   def number_systems_for!(locale, backend) do
     case number_systems_for(locale, backend) do
@@ -161,7 +162,7 @@ defmodule Cldr.Number.System do
       {:ok, %{digits: "0123456789", type: :numeric}}
 
   """
-  @spec number_system_for(Locale.name() | LanguageTag.t(), System.name(), Cldr.backend()) ::
+  @spec number_system_for(Locale.name() | LanguageTag.t(), Cldr.Number.System.system_name(), Cldr.backend()) ::
         {:ok, map()} | {:error, {module(), String.t()}}
 
   def number_system_for(locale, system_name, backend) do

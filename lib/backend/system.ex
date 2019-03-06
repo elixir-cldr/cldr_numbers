@@ -142,7 +142,7 @@ defmodule Cldr.Number.Backend.System do
             {:ok, %{digits: "0123456789", type: :numeric}}
 
         """
-        @spec number_system_for(Locale.name() | LanguageTag.t(), System.name()) ::
+        @spec number_system_for(Locale.name() | LanguageTag.t(), Cldr.Number.System.system_name()) ::
                 {:ok, list(atom())} | {:error, {module(), String.t()}}
 
         def number_system_for(locale, system_name) do
@@ -323,7 +323,7 @@ defmodule Cldr.Number.Backend.System do
         @spec number_systems_like(
                 LanguageTag.t() | Locale.locale_name(),
                 Cldr.Number.System.system_name()
-              ) :: {:ok, List.t()} | {:error, tuple}
+              ) :: {:ok, list()} | {:error, tuple}
 
         def number_systems_like(locale, number_system) do
           Cldr.Number.System.number_systems_like(locale, number_system, unquote(backend))
