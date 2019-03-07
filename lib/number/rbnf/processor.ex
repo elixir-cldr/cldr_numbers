@@ -367,6 +367,7 @@ defmodule Cldr.Rbnf.Processor do
       # is not supported for either the locale or
       # the number
       for rule_group <- all_rule_sets do
+        @dialyzer {:nowarn_function, [{rule_group, 2}]}
         def unquote(rule_group)(number, locale_name) when is_binary(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             unquote(rule_group)(number, locale)
