@@ -108,7 +108,7 @@ defmodule Cldr.Number.Backend.Format do
              "¤000T", "¤00B", "¤00K", "¤00M", "¤00T", "¤0B", "¤0K", "¤0M", "¤0T"]}
 
         """
-        @spec decimal_format_list_for(LanguageTag.t() | Locale.locale_name()) ::
+        @spec decimal_format_list_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
                 {:ok, list(String.t())} | {:error, {module(), String.t()}}
 
         def decimal_format_list_for(locale \\ unquote(backend).get_locale())
@@ -120,6 +120,8 @@ defmodule Cldr.Number.Backend.Format do
             {:ok, unquote(Macro.escape(decimal_formats))}
           end
         end
+
+        @dialyzer {:nowarn_function, decimal_format_list_for: 1}
 
         def decimal_format_list_for(locale_name) when is_binary(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
@@ -244,17 +246,23 @@ defmodule Cldr.Number.Backend.Format do
           end
         end
 
+        @dialyzer {:nowarn_function, all_formats_for: 1}
+
         def all_formats_for(locale_name) when is_binary(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             all_formats_for(locale)
           end
         end
 
+        @dialyzer {:nowarn_function, minimum_grouping_digits_for: 1}
+
         def minimum_grouping_digits_for(locale_name) when is_binary(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             minimum_grouping_digits_for(locale)
           end
         end
+
+        @dialyzer {:nowarn_function, default_grouping_for: 1}
 
         def default_grouping_for(locale_name) when is_binary(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
@@ -338,6 +346,8 @@ defmodule Cldr.Number.Backend.Format do
                 System.system_name()
               ) :: map() | {:error, {module(), String.t}}
 
+        @dialyzer {:nowarn_function, currency_spacing: 2}
+
         def currency_spacing(locale, number_system) do
           with {:ok, formats} <- formats_for(locale, number_system) do
             Map.get(formats, :currency_spacing)
@@ -413,7 +423,11 @@ defmodule Cldr.Number.Backend.Format do
               }
 
         """
-        @spec formats_for(LanguageTag.t() | binary(), atom | String.t()) :: map()
+        @spec formats_for(LanguageTag.t() | binary(), atom | String.t()) ::
+          {:ok, map()} | {:error, {module(), String.t()}}
+
+        @dialyzer {:nowarn_function, formats_for: 2}
+
         def formats_for(
               locale \\ unquote(backend).default_locale(),
               number_system \\ Cldr.Number.System.default_number_system_type()
@@ -433,6 +447,13 @@ defmodule Cldr.Number.Backend.Format do
             formats_for(locale, number_system)
           end
         end
+
+        @dialyzer {:nowarn_function, formats_for!: 0}
+        @dialyzer {:nowarn_function, formats_for!: 1}
+        @dialyzer {:nowarn_function, formats_for!: 2}
+
+        @spec formats_for!(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.Number.System.system_name()) ::
+          map() | no_return()
 
         def formats_for!(
               locale \\ unquote(backend).default_locale(),

@@ -1,3 +1,5 @@
+require Cldr.Number.Backend
+
 defmodule MyApp.Cldr do
   @moduledoc false
 

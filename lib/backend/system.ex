@@ -27,7 +27,7 @@ defmodule Cldr.Number.Backend.System do
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
         """
-        @spec number_systems_for(Locale.name() | LanguageTag.t()) ::
+        @spec number_systems_for(Cldr.Locale.locale_name() | LanguageTag.t()) ::
           {:ok, map()} | {:error, {module(), String.t()}}
 
         def number_systems_for(locale)
@@ -48,7 +48,7 @@ defmodule Cldr.Number.Backend.System do
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
         """
-        @spec number_system_names_for(Locale.name() | LanguageTag.t()) ::
+        @spec number_system_names_for(Cldr.Locale.locale_name() | LanguageTag.t()) ::
           {:ok, list(atom())} | {:error, {module(), String.t()}}
 
         def number_system_names_for(locale)
@@ -142,8 +142,10 @@ defmodule Cldr.Number.Backend.System do
             {:ok, %{digits: "0123456789", type: :numeric}}
 
         """
-        @spec number_system_for(Locale.name() | LanguageTag.t(), Cldr.Number.System.system_name()) ::
+        @spec number_system_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.Number.System.system_name()) ::
                 {:ok, list(atom())} | {:error, {module(), String.t()}}
+
+        @dialyzer {:nowarn_function, number_system_for: 2}
 
         def number_system_for(locale, system_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale),
@@ -207,6 +209,8 @@ defmodule Cldr.Number.Backend.System do
             {:ok, "壹佰贰拾叁"}
 
         """
+        @dialyzer {:nowarn_function, to_system: 2}
+
         for {system, definition} <- Cldr.Config.number_systems() do
           if definition.type == :numeric do
             def to_system(number, unquote(system)) do
@@ -313,7 +317,7 @@ defmodule Cldr.Number.Backend.System do
         """
         @spec system_name_from(
                 Cldr.Number.System.system_name(),
-                Locale.locale_name() | LanguageTag.t()
+                Cldr.Locale.locale_name() | LanguageTag.t()
               ) :: {:ok, atom} | {:error, {module(), String.t()}}
 
         def system_name_from(system_name, locale) do
@@ -321,7 +325,7 @@ defmodule Cldr.Number.Backend.System do
         end
 
         @spec number_systems_like(
-                LanguageTag.t() | Locale.locale_name(),
+                LanguageTag.t() | Cldr.Locale.locale_name(),
                 Cldr.Number.System.system_name()
               ) :: {:ok, list()} | {:error, tuple}
 

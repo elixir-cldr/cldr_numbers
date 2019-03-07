@@ -631,7 +631,7 @@ defmodule Cldr.Number do
          {:ok, formatted_number} <- to_string(number, backend, options) do
 
       final_format =
-        formatted_number
+        [formatted_number]
         |> Cldr.Substitution.substitute(format)
         |> :erlang.iolist_to_binary
 

@@ -124,7 +124,7 @@ defmodule Cldr.Number.Backend.Number do
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
         """
-        @spec validate_number_system(Locale.locale_name() | Cldr.LanguageTag.t(),
+        @spec validate_number_system(Cldr.Locale.locale_name() | Cldr.LanguageTag.t(),
           System.system_name() | System.types())
             :: {:ok, System.system_name()} | {:error, {module(), String.t}}
 

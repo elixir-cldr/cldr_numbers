@@ -1,6 +1,6 @@
 # Changelog for Cldr_Numbers v2.4.1
 
-This is the changelog for Cldr v2.4.1 released on March 5th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.4.1 released on March 7th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
 
 ## Bug Fixes
 
@@ -9,6 +9,8 @@ This is the changelog for Cldr v2.4.1 released on March 5th, 2019.  For older ch
 * Fix scientific precision. Previously the mantissa was not being rounded because the prioritisation of significant digits over exponent digits was not being correctly reconciled.
 
 * Fix formatting precision of an exponent. A format of `0E00` will now format the exponent with two digits.
+
+* Fix o silence dialyzer warnings
 
 # Changelog for Cldr_Numbers v2.4.0
 

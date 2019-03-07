@@ -90,7 +90,7 @@ defmodule Cldr.Number.System do
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
   """
-  @spec number_systems_for(Locale.name() | LanguageTag.t(), Cldr.backend()) ::
+  @spec number_systems_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
     {:ok, map()} | {:error, {module(), String.t()}}
 
   def number_systems_for(locale, backend) do
@@ -113,7 +113,7 @@ defmodule Cldr.Number.System do
       %{default: :latn, native: :thai}
 
   """
-  @spec number_systems_for!(Locale.name() | LanguageTag.t(), Cldr.backend()) ::
+  @spec number_systems_for!(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
     map() | no_return()
 
   def number_systems_for!(locale, backend) do
@@ -162,7 +162,7 @@ defmodule Cldr.Number.System do
       {:ok, %{digits: "0123456789", type: :numeric}}
 
   """
-  @spec number_system_for(Locale.name() | LanguageTag.t(), Cldr.Number.System.system_name(), Cldr.backend()) ::
+  @spec number_system_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.Number.System.system_name(), Cldr.backend()) ::
         {:ok, map()} | {:error, {module(), String.t()}}
 
   def number_system_for(locale, system_name, backend) do
@@ -197,7 +197,7 @@ defmodule Cldr.Number.System do
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
   """
-  @spec number_system_names_for(Locale.name() | LanguageTag.t(), Cldr.backend()) ::
+  @spec number_system_names_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
     {:ok, list(atom())} | {:error, {module(), String.t()}}
 
   def number_system_names_for(locale, backend) do
@@ -229,7 +229,7 @@ defmodule Cldr.Number.System do
       [:latn, :hebr]
 
   """
-  @spec number_system_names_for!(Locale.name() | LanguageTag.t(), Cldr.backend()) ::
+  @spec number_system_names_for!(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
         list(system_name()) | no_return()
 
   def number_system_names_for!(locale, backend) do

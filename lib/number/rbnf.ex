@@ -17,7 +17,6 @@ defmodule Cldr.Rbnf do
   there are rbnf rules defined.
   """
 
-  alias Cldr.Locale
   alias Cldr.LanguageTag
 
   def known_locale_names(backend) do
@@ -31,7 +30,7 @@ defmodule Cldr.Rbnf do
     or a `Cldr.LanguageTag`
 
   """
-  @spec for_locale(Locale.t() | LanguageTag.t(), Cldr.backend()) ::
+  @spec for_locale(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
     {:ok, map()} | {:error, {module(), String.t}}
 
   def for_locale(%LanguageTag{rbnf_locale_name: nil} = language_tag, _backend) do

@@ -349,7 +349,7 @@ defmodule Cldr.Number.Format do
   ## Example
 
       Cldr.Number.Format.formats_for "fr", :native, MyApp.Cldr
-      #=> %Cldr.Number.Format{
+      #=> {:ok, %Cldr.Number.Format{
         accounting: "#,##0.00 ¤;(#,##0.00 ¤)",
         currency: "#,##0.00 ¤",
         percent: "#,##0 %",
@@ -368,11 +368,13 @@ defmodule Cldr.Number.Format do
          {"10000000000000", [one: "00 Bn ¤", other: "00 Bn ¤"]},
          {"100000000000000", [one: "000 Bn ¤", other: "000 Bn ¤"]}],
          ...
-        }
+        }}
 
   """
-  @spec formats_for(LanguageTag.t() | binary(), atom | String.t(), Cldr.backend()) :: map()
-  def formats_for(%LanguageTag{} = locale, number_system, backend) do
+  @spec formats_for(LanguageTag.t() | Locale.locale_name(), atom | String.t(), Cldr.backend()) ::
+    {:ok, map()} | {:error, {module(), String.t()}}
+
+  def formats_for(locale, number_system, backend) do
     Module.concat(backend, Number.Format).formats_for(locale, number_system)
   end
 
@@ -393,7 +395,9 @@ defmodule Cldr.Number.Format do
     contains `use Cldr`
 
   """
-  @spec formats_for!(LanguageTag.t(), Cldr.Number.System.system_name(), Cldr.backend()) :: map() | none()
+  @spec formats_for!(LanguageTag.t(), Cldr.Number.System.system_name(), Cldr.backend()) ::
+    map() | no_return()
+
   def formats_for!(locale, number_system, backend) do
     case formats_for(locale, number_system, backend) do
       {:ok, formats} -> formats
@@ -483,6 +487,8 @@ defmodule Cldr.Number.Format do
   @spec short_format_styles_for(LanguageTag.t() | Cldr.Locale.locale_name(), binary | atom, Cldr.backend()) ::
     {:ok, list(atom())} | {:error, {module(), String.t()}}
 
+  @dialyzer {:nowarn_function, short_format_styles_for: 3}
+
   def short_format_styles_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, formats} <- format_styles_for(locale, number_system, backend) do
       {
@@ -529,6 +535,8 @@ defmodule Cldr.Number.Format do
           System.system_name(),
           Cldr.backend()
         ) :: {:ok, list(atom())} | {:error, {module(), String.t()}}
+
+  @dialyzer {:nowarn_function, decimal_format_styles_for: 3}
 
   def decimal_format_styles_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, styles} <- format_styles_for(locale, number_system, backend),

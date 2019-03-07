@@ -69,8 +69,11 @@ defmodule Cldr.Number.Backend.Symbol do
              }}
 
         """
-        @spec number_symbols_for(LanguageTag.t() | Locale.locale_name()) ::
+        @spec number_symbols_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
           {:ok, map()} | {:error, {module(), String.t()}}
+
+        @dialyzer {:nowarn_function, number_symbols_for: 1}
+        @dialyzer {:nowarn_function, number_symbols_for: 2}
 
         def number_symbols_for(locale \\ unquote(backend).get_locale())
 

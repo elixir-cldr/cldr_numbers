@@ -268,7 +268,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp currency_format?(format) when is_binary(format) do
-    format && String.contains?(format, Compiler.placeholder(:currency))
+    String.contains?(format, Compiler.placeholder(:currency))
   end
 
   defp currency_format?(_format) do
