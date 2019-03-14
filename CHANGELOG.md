@@ -1,10 +1,27 @@
+# Changelog for Cldr_Numbers v2.4.2
+
+This is the changelog for Cldr v2.4.2 released on March 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Enhancements
+
+* Makes generation of documentation for backend modules optional.  This is implemented by the `:generate_docs` option to the backend configuration.  The default is `true`. For example:
+
+```
+defmodule MyApp.Cldr do
+  use Cldr,
+    default_locale: "en-001",
+    locales: ["en", "ja"],
+    gettext: MyApp.Gettext,
+    generate_docs: false
+end
+```
 # Changelog for Cldr_Numbers v2.4.1
 
 This is the changelog for Cldr v2.4.1 released on March 7th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
 
 ## Bug Fixes
 
-* Fix fractional grouping. Previsouly when there was no grouping, the group size was being set to the number of fractional digits.
+* Fix fractional grouping. Previously when there was no grouping, the group size was being set to the number of fractional digits.
 
 * Fix scientific precision. Previously the mantissa was not being rounded because the prioritisation of significant digits over exponent digits was not being correctly reconciled.
 

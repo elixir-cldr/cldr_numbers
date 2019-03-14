@@ -8,6 +8,10 @@ defmodule Cldr.Number.Backend.System do
 
     quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
       defmodule Number.System do
+        unless Cldr.Config.include_module_docs?(config.generate_docs) do
+          @moduledoc false
+        end
+
         @doc """
         Returns the number systems available for a locale
         or `{:error, message}` if the locale is not known.

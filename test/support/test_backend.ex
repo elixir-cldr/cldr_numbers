@@ -6,3 +6,9 @@ defmodule TestBackend.Cldr do
     providers: [Cldr.Number]
 
 end
+
+defmodule NoDoc.Cldr do
+  use Cldr,
+    generate_docs: false
+
+end

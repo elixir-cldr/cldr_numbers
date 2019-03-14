@@ -8,48 +8,52 @@ defmodule Cldr.Number.Backend.Transliterate do
 
     quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
       defmodule Number.Transliterate do
-        @moduledoc """
-        Transliteration for digits and separators.
+        @moduledoc false
+        if Cldr.Config.include_module_docs?(config.generate_docs) do
+          @moduledoc """
+          Transliteration for digits and separators.
 
-        Transliterating a string is an expensive business.  First the string has to
-        be exploded into its component graphemes.  Then for each grapheme we have
-        to map to the equivalent in the other `{locale, number_system}`.  Then we
-        have to reassemble the string.
+          Transliterating a string is an expensive business.  First the string has to
+          be exploded into its component graphemes.  Then for each grapheme we have
+          to map to the equivalent in the other `{locale, number_system}`.  Then we
+          have to reassemble the string.
 
-        Effort is made to short circuit where possible. Transliteration is not
-        required for any `{locale, number_system}` that is the same as `{"en",
-        "latn"}` since the implementation uses this combination for the placeholders during
-        formatting already. When short circuiting is possible (typically the en-*
-        locales with "latn" number_system - the total number of short circuited
-        locales is 211 of the 537 in CLDR) the overall number formatting is twice as
-        fast than when formal transliteration is required.
+          Effort is made to short circuit where possible. Transliteration is not
+          required for any `{locale, number_system}` that is the same as `{"en",
+          "latn"}` since the implementation uses this combination for the placeholders during
+          formatting already. When short circuiting is possible (typically the en-*
+          locales with "latn" number_system - the total number of short circuited
+          locales is 211 of the 537 in CLDR) the overall number formatting is twice as
+          fast than when formal transliteration is required.
 
-        ### Configuring precompilation of digit transliterations
+          ### Configuring precompilation of digit transliterations
 
-        This module includes `Cldr.Number.Transliterate.transliterate_digits/3` which transliterates
-        digits between number systems.  For example from :arabic to :latn.  Since generating a
-        transliteration map is slow, pairs of transliterations can be configured so that the
-        transliteration map is created at compile time and therefore speeding up transliteration at
-        run time.
+          This module includes `Cldr.Number.Transliterate.transliterate_digits/3` which transliterates
+          digits between number systems.  For example from :arabic to :latn.  Since generating a
+          transliteration map is slow, pairs of transliterations can be configured so that the
+          transliteration map is created at compile time and therefore speeding up transliteration at
+          run time.
 
-        To configure these transliteration pairs, add the to the `use Cldr` configuration
-        in a backend module:
+          To configure these transliteration pairs, add the to the `use Cldr` configuration
+          in a backend module:
 
-            defmodule MyApp.Cldr do
-              use Cldr,
-                precompile_transliterations: [{:latn, :arab}, {:arab, :thai}]
+              defmodule MyApp.Cldr do
+                use Cldr,
+                  precompile_transliterations: [{:latn, :arab}, {:arab, :thai}]
+                end
               end
-            end
 
-        Where each tuple in the list configures one transliteration map.  In this example, two maps are
-        configured: from `:latn` to `:thai` and from `:arab` to `:thai`.
+          Where each tuple in the list configures one transliteration map.  In this example, two maps are
+          configured: from `:latn` to `:thai` and from `:arab` to `:thai`.
 
-        A list of configurable number systems is returned by `Cldr.Number.System.systems_with_digits/0`.
+          A list of configurable number systems is returned by `Cldr.Number.System.systems_with_digits/0`.
 
-        If a transliteration is requested between two number pairs that have not been configured for
-        precompilation, a warning is logged.
+          If a transliteration is requested between two number pairs that have not been configured for
+          precompilation, a warning is logged.
 
-        """
+          """
+        end
+
         alias Cldr.Number.System
         alias Cldr.Number.Symbol
         alias Cldr.Number.Format.Compiler

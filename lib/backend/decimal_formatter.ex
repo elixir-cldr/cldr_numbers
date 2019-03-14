@@ -8,6 +8,9 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
 
     quote location: :keep do
       defmodule Number.Formatter.Decimal do
+        unless Cldr.Config.include_module_docs?(unquote(config.generate_docs)) do
+          @moduledoc false
+        end
 
         alias Cldr.Number.Formatter.Decimal
         alias Cldr.Number.Format.Compiler

@@ -8,6 +8,10 @@ defmodule Cldr.Number.Backend.Symbol do
 
     quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
       defmodule Number.Symbol do
+        unless Cldr.Config.include_module_docs?(config.generate_docs) do
+          @moduledoc false
+        end
+
         all_symbols =
           for locale <- Cldr.Config.known_locale_names(config) do
             symbols =
