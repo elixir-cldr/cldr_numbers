@@ -21,7 +21,7 @@ defmodule CldrNumbers.Mixfile do
       package: package(),
       dialyzer: [
         ignore_warnings: ".dialyzer_ignore_warnings",
-        plt_add_apps: ~w(gettext inets jason mix plug)a
+        plt_add_apps: ~w(inets jason mix)a
       ]
     ]
   end
