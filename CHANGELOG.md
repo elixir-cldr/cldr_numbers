@@ -1,3 +1,12 @@
+
+# Changelog for Cldr_Numbers v2.4.3
+
+This is the changelog for Cldr v2.4.2 released on March 20th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix dialyzer warnings
+
 # Changelog for Cldr_Numbers v2.4.2
 
 This is the changelog for Cldr v2.4.2 released on March 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
