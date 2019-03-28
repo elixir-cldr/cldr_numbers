@@ -41,7 +41,7 @@ defmodule CldrNumbers.Mixfile do
   defp deps do
     [
       {:ex_cldr, "~> 2.6"},
-      {:ex_cldr_currencies, "~> 2.2"},
+      {:ex_cldr_currencies, "~> 2.3"},
       {:decimal, "~> 1.5"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.18", only: [:dev, :release], optional: true},
