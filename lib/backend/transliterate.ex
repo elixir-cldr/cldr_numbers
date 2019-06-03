@@ -108,8 +108,12 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         """
 
-        @spec transliterate(String.t(), LanguageTag.t() | Cldr.Locale.locale_name(), String.t() | atom()) ::
-          String.t() | {:error, {module(), String.t}}
+        @spec transliterate(
+                String.t(),
+                LanguageTag.t() | Cldr.Locale.locale_name(),
+                String.t() | atom()
+              ) ::
+                String.t() | {:error, {module(), String.t()}}
 
         def transliterate(
               sequence,
@@ -121,7 +125,11 @@ defmodule Cldr.Number.Backend.Transliterate do
         # as the ones we use in formatting.
         with {:ok, systems} <- Config.known_number_systems_like("en", :latn, config) do
           for {locale, system} <- systems do
-            def transliterate(sequence, unquote(Macro.escape(locale)), unquote(system)) do
+            def transliterate(
+                  sequence,
+                  %LanguageTag{cldr_locale_name: unquote(locale)},
+                  unquote(system)
+                ) do
               sequence
             end
           end

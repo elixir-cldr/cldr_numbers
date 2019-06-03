@@ -4,11 +4,9 @@ defmodule TestBackend.Cldr do
     locales: :all,
     precompile_transliterations: [{:latn, :arab}, {:arab, :thai}, {:arab, :latn}],
     providers: [Cldr.Number]
-
 end
 
 defmodule NoDoc.Cldr do
   use Cldr,
     generate_docs: false
-
 end

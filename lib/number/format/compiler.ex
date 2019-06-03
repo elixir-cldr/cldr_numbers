@@ -569,6 +569,7 @@ defmodule Cldr.Number.Format.Compiler do
     case String.split(format, @grouping_separator) do
       [_] ->
         %{first: @max_integer_digits, rest: @max_integer_digits}
+
       [group | _] ->
         group_size = String.length(group)
         %{first: group_size, rest: group_size}

@@ -30,8 +30,8 @@ defmodule Cldr.Number.Format.Options do
 
   import Cldr.Number.Symbol, only: [number_symbols_for: 3]
 
-  @spec validate_options(Cldr.Math.number_or_decimal, Cldr.backend(), list({atom, term})) ::
-    {:ok, t} | {:error, {module(), String.t()}}
+  @spec validate_options(Cldr.Math.number_or_decimal(), Cldr.backend(), list({atom, term})) ::
+          {:ok, t} | {:error, {module(), String.t()}}
 
   def validate_options(number, backend, options) do
     with {:ok, options} <- merge_default_options(backend, options),
@@ -58,7 +58,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   @spec validate_locale(Cldr.backend(), t()) ::
-    {:ok, t()} | {:error, {module(), String.t()}}
+          {:ok, t()} | {:error, {module(), String.t()}}
 
   defp validate_locale(backend, options) do
     with {:ok, locale} <- backend.validate_locale(options[:locale]) do
@@ -79,7 +79,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   @spec validate_number_system(Cldr.backend(), t()) ::
-    {:ok, t()} | {:error, {module(), String.t()}}
+          {:ok, t()} | {:error, {module(), String.t()}}
 
   defp validate_number_system(backend, options) do
     locale = options.locale
@@ -92,7 +92,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   @spec validate_currency_options(Cldr.backend(), t()) ::
-    {:ok, t()} | {:error, {module(), String.t()}}
+          {:ok, t()} | {:error, {module(), String.t()}}
 
   defp validate_currency_options(backend, options) do
     format = options.format
@@ -105,8 +105,8 @@ defmodule Cldr.Number.Format.Options do
     end
   end
 
-  @spec detect_negative_number(Cldr.Math.number_or_decimal, t()) ::
-    {:ok, t()}
+  @spec detect_negative_number(Cldr.Math.number_or_decimal(), t()) ::
+          {:ok, t()}
 
   defp detect_negative_number(number, options)
        when (is_float(number) or is_integer(number)) and number < 0 do
@@ -123,7 +123,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   @spec put_number_symbols(Cldr.backend(), t()) ::
-    {:ok, t()} | {:error, {module(), String.t()}}
+          {:ok, t()} | {:error, {module(), String.t()}}
 
   defp put_number_symbols(backend, options) do
     with {:ok, symbols} <- number_symbols_for(options.locale, options.number_system, backend) do
@@ -131,6 +131,7 @@ defmodule Cldr.Number.Format.Options do
     else
       {:error, _} ->
         cldr_locale_name = options.locale.cldr_locale_name
+
         {
           :error,
           {
@@ -166,7 +167,7 @@ defmodule Cldr.Number.Format.Options do
 
   @doc false
   def resolve_standard_format(%{format: format} = options, _backend)
-       when format in @short_format_styles do
+      when format in @short_format_styles do
     options
   end
 
@@ -277,11 +278,13 @@ defmodule Cldr.Number.Format.Options do
 
   def validate_other_format(other_type, backend, options) do
     format_module = Module.concat(backend, Number.Format)
+
     with {:ok, formats} <- format_module.formats_for(options.locale, options.number_system) do
       if format = Map.get(formats.other, other_type) do
         {:ok, format}
       else
         locale_name = options.locale.cldr_locale_name
+
         {
           :error,
           {

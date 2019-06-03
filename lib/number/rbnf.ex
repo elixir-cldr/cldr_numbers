@@ -31,7 +31,7 @@ defmodule Cldr.Rbnf do
 
   """
   @spec for_locale(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
-    {:ok, map()} | {:error, {module(), String.t}}
+          {:ok, map()} | {:error, {module(), String.t()}}
 
   def for_locale(%LanguageTag{rbnf_locale_name: nil} = language_tag, _backend) do
     {:error, rbnf_locale_error(language_tag)}

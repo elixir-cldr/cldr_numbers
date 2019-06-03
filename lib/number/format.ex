@@ -269,7 +269,7 @@ defmodule Cldr.Number.Format do
       {:ok, %{fraction: %{first: 0, rest: 0}, integer: %{first: 3, rest: 3}}}
 
   """
-  @spec default_grouping_for(LanguageTag.t() | Cldr.Locale.locale_name, Cldr.backend()) ::
+  @spec default_grouping_for(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.backend()) ::
           {:ok, non_neg_integer} | {:error, {module(), String.t()}}
 
   def default_grouping_for(locale, backend) do
@@ -297,8 +297,8 @@ defmodule Cldr.Number.Format do
       ** (Cldr.UnknownLocaleError) The locale :invalid is invalid
 
   """
-  @spec default_grouping_for!(LanguageTag.t() | Cldr.Locale.locale_name, Cldr.backend()) ::
-    map() | no_return
+  @spec default_grouping_for!(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.backend()) ::
+          map() | no_return
 
   def default_grouping_for!(locale, backend) do
     Module.concat(backend, Number.Format).default_grouping_for!(locale)
@@ -372,7 +372,7 @@ defmodule Cldr.Number.Format do
 
   """
   @spec formats_for(LanguageTag.t() | Locale.locale_name(), atom | String.t(), Cldr.backend()) ::
-    {:ok, map()} | {:error, {module(), String.t()}}
+          {:ok, map()} | {:error, {module(), String.t()}}
 
   def formats_for(locale, number_system, backend) do
     Module.concat(backend, Number.Format).formats_for(locale, number_system)
@@ -396,7 +396,7 @@ defmodule Cldr.Number.Format do
 
   """
   @spec formats_for!(LanguageTag.t(), Cldr.Number.System.system_name(), Cldr.backend()) ::
-    map() | no_return()
+          map() | no_return()
 
   def formats_for!(locale, number_system, backend) do
     case formats_for(locale, number_system, backend) do
@@ -434,7 +434,7 @@ defmodule Cldr.Number.Format do
       :decimal_long, :decimal_short, :percent, :scientific, :standard]}
 
   """
-  @reject_styles [:__struct__ , :currency_spacing, :other]
+  @reject_styles [:__struct__, :currency_spacing, :other]
   @spec format_styles_for(
           LanguageTag.t() | Locale.locale_name(),
           System.system_name(),
@@ -484,8 +484,12 @@ defmodule Cldr.Number.Format do
   @isnt_really_a_short_format [:currency_long]
   @short_formats MapSet.new(@short_format_styles -- @isnt_really_a_short_format)
 
-  @spec short_format_styles_for(LanguageTag.t() | Cldr.Locale.locale_name(), binary | atom, Cldr.backend()) ::
-    {:ok, list(atom())} | {:error, {module(), String.t()}}
+  @spec short_format_styles_for(
+          LanguageTag.t() | Cldr.Locale.locale_name(),
+          binary | atom,
+          Cldr.backend()
+        ) ::
+          {:ok, list(atom())} | {:error, {module(), String.t()}}
 
   @dialyzer {:nowarn_function, short_format_styles_for: 3}
 
@@ -585,7 +589,7 @@ defmodule Cldr.Number.Format do
 
   """
   @spec format_system_types_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
-      {:ok, Keyword.t()} | {:error, {module(), String.t()}}
+          {:ok, Keyword.t()} | {:error, {module(), String.t()}}
 
   def format_system_types_for(%LanguageTag{} = locale, backend) do
     with {:ok, _} <- Cldr.validate_locale(locale, backend) do
@@ -622,7 +626,7 @@ defmodule Cldr.Number.Format do
 
   """
   @spec format_system_names_for(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.backend()) ::
-    {:ok, list(atom)} | {:error, {module(), String.t()}}
+          {:ok, list(atom)} | {:error, {module(), String.t()}}
 
   def format_system_names_for(%LanguageTag{} = locale, backend) do
     Cldr.Number.System.number_system_names_for(locale, backend)

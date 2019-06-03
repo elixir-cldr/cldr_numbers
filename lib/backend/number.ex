@@ -127,9 +127,11 @@ defmodule Cldr.Number.Backend.Number do
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
         """
-        @spec validate_number_system(Cldr.Locale.locale_name() | Cldr.LanguageTag.t(),
-          System.system_name() | System.types())
-            :: {:ok, System.system_name()} | {:error, {module(), String.t}}
+        @spec validate_number_system(
+                Cldr.Locale.locale_name() | Cldr.LanguageTag.t(),
+                System.system_name() | System.types()
+              ) ::
+                {:ok, System.system_name()} | {:error, {module(), String.t()}}
 
         def validate_number_system(locale, number_system) do
           System.system_name_from(number_system, locale, unquote(backend))
@@ -371,7 +373,7 @@ defmodule Cldr.Number.Backend.Number do
                 {:ok, String.t()} | {:error, {module(), String.t()}}
 
         def to_at_least_string(number, options \\ []) do
-         Cldr.Number.to_at_least_string(number, unquote(backend), options)
+          Cldr.Number.to_at_least_string(number, unquote(backend), options)
         end
 
         @doc """

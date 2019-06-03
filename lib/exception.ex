@@ -57,4 +57,3 @@ defmodule Cldr.NoNumberSymbols do
     %__MODULE__{message: message}
   end
 end
-

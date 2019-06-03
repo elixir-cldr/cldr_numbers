@@ -2,32 +2,32 @@ defmodule Cldr.Number.Format.Meta.Test do
   use ExUnit.Case, async: true
 
   test "that we can create a default metadata struct" do
-    assert Cldr.Number.Format.Meta.new ==
-      %Cldr.Number.Format.Meta{
-        exponent_digits: 0,
-        exponent_sign: false,
-        format: [
-          positive: [format: "#"],
-          negative: [minus: '-', format: :same_as_positive]
-        ],
-        fractional_digits: %{max: 0, min: 0},
-        grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}},
-        integer_digits: %{max: 0, min: 1},
-        multiplier: 1,
-        number: 0,
-        padding_char: " ",
-        padding_length: 0,
-        rounding: 0,
-        scientific_rounding: 0,
-        significant_digits: %{max: 0, min: 0}
-      }
+    assert Cldr.Number.Format.Meta.new() ==
+             %Cldr.Number.Format.Meta{
+               exponent_digits: 0,
+               exponent_sign: false,
+               format: [
+                 positive: [format: "#"],
+                 negative: [minus: '-', format: :same_as_positive]
+               ],
+               fractional_digits: %{max: 0, min: 0},
+               grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}},
+               integer_digits: %{max: 0, min: 1},
+               multiplier: 1,
+               number: 0,
+               padding_char: " ",
+               padding_length: 0,
+               rounding: 0,
+               scientific_rounding: 0,
+               significant_digits: %{max: 0, min: 0}
+             }
   end
 
   test "setting the meta fields" do
     alias Cldr.Number.Format.Meta
 
     meta =
-      Meta.new
+      Meta.new()
       |> Meta.put_integer_digits(2)
       |> Meta.put_fraction_digits(3)
       |> Meta.put_significant_digits(4)
@@ -60,12 +60,12 @@ defmodule Cldr.Number.Format.Meta.Test do
       |> Meta.put_integer_grouping(11)
 
     assert meta.grouping == %{
-      fraction: %{first: 10, rest: 10},
-      integer: %{first: 11, rest: 11}
-    }
+             fraction: %{first: 10, rest: 10},
+             integer: %{first: 11, rest: 11}
+           }
 
     meta =
-      Meta.new
+      Meta.new()
       |> Meta.put_integer_digits(12, 13)
       |> Meta.put_fraction_digits(14, 15)
       |> Meta.put_significant_digits(16, 17)
@@ -75,8 +75,8 @@ defmodule Cldr.Number.Format.Meta.Test do
     assert meta.significant_digits == %{max: 17, min: 16}
 
     meta =
-      Meta.new
-      |> Meta.put_format([format: "#"], [format: "##"])
+      Meta.new()
+      |> Meta.put_format([format: "#"], format: "##")
 
     assert meta.format == [positive: [format: "#"], negative: [format: "##"]]
   end

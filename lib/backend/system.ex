@@ -32,7 +32,7 @@ defmodule Cldr.Number.Backend.System do
 
         """
         @spec number_systems_for(Cldr.Locale.locale_name() | LanguageTag.t()) ::
-          {:ok, map()} | {:error, {module(), String.t()}}
+                {:ok, map()} | {:error, {module(), String.t()}}
 
         def number_systems_for(locale)
 
@@ -53,7 +53,7 @@ defmodule Cldr.Number.Backend.System do
 
         """
         @spec number_system_names_for(Cldr.Locale.locale_name() | LanguageTag.t()) ::
-          {:ok, list(atom())} | {:error, {module(), String.t()}}
+                {:ok, list(atom())} | {:error, {module(), String.t()}}
 
         def number_system_names_for(locale)
 
@@ -146,7 +146,10 @@ defmodule Cldr.Number.Backend.System do
             {:ok, %{digits: "0123456789", type: :numeric}}
 
         """
-        @spec number_system_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.Number.System.system_name()) ::
+        @spec number_system_for(
+                Cldr.Locale.locale_name() | LanguageTag.t(),
+                Cldr.Number.System.system_name()
+              ) ::
                 {:ok, list(atom())} | {:error, {module(), String.t()}}
 
         @dialyzer {:nowarn_function, number_system_for: 2}
@@ -251,8 +254,8 @@ defmodule Cldr.Number.Backend.System do
         * `number` is a `float`, `integer` or `Decimal`
 
         * `system_name` is any number system name returned by
-          `#{inspect backend}.known_number_systems/0` or a number system type
-          returned by `#{inspect backend}.known_number_system_types/0`
+          `#{inspect(backend)}.known_number_systems/0` or a number system type
+          returned by `#{inspect(backend)}.known_number_system_types/0`
 
         See `#{inspect(__MODULE__)}.to_system/2` for further
         information.

@@ -32,7 +32,11 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
 
         """
 
-        @spec to_string(Math.number_or_decimal(), String.t() | Meta.t, Keyword.t | Options.t) ::
+        @spec to_string(
+                Math.number_or_decimal(),
+                String.t() | Meta.t(),
+                Keyword.t() | Options.t()
+              ) ::
                 {:ok, String.t()} | {:error, {module(), String.t()}}
 
         def to_string(number, format, options \\ [])

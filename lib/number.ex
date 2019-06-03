@@ -134,9 +134,12 @@ defmodule Cldr.Number do
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
 
   """
-  @spec validate_number_system(Cldr.Locale.locale_name() | Cldr.LanguageTag.t(),
-    Cldr.Number.System.system_name() | Cldr.Number.System.types(), Cldr.backend())
-      :: {:ok, Cldr.Number.System.system_name()} | {:error, {module(), String.t}}
+  @spec validate_number_system(
+          Cldr.Locale.locale_name() | Cldr.LanguageTag.t(),
+          Cldr.Number.System.system_name() | Cldr.Number.System.types(),
+          Cldr.backend()
+        ) ::
+          {:ok, Cldr.Number.System.system_name()} | {:error, {module(), String.t()}}
 
   def validate_number_system(locale, number_system, backend \\ Cldr.default_backend()) do
     Cldr.Number.System.system_name_from(number_system, locale, backend)
@@ -525,7 +528,7 @@ defmodule Cldr.Number do
   @spec to_at_least_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
-  def to_at_least_string(number, backend \\ Cldr.default_backend, options \\ []) do
+  def to_at_least_string(number, backend \\ Cldr.default_backend(), options \\ []) do
     other_format(number, :at_least, backend, options)
   end
 
@@ -611,32 +614,36 @@ defmodule Cldr.Number do
 
   def to_range_string(range, backend \\ Cldr.default_backend(), options \\ []) do
     %Range{first: first, last: last} = range
+
     with {:ok, options} <- Options.validate_options(first, backend, options),
          {:ok, format} <- Options.validate_other_format(:range, backend, options),
          {:ok, first_formatted_number} <- to_string(first, backend, options),
          {:ok, last_formatted_number} <- to_string(last, backend, options) do
-
       final_format =
         [first_formatted_number, last_formatted_number]
         |> Cldr.Substitution.substitute(format)
-        |> :erlang.iolist_to_binary
+        |> :erlang.iolist_to_binary()
 
       {:ok, final_format}
     end
   end
 
-  @spec other_format(number | Decimal.t, :approximately | :at_least | :at_most, Cldr.backend(), Keyword.t) ::
-    {:ok, String.t()} | {:error, {module(), String.t}}
+  @spec other_format(
+          number | Decimal.t(),
+          :approximately | :at_least | :at_most,
+          Cldr.backend(),
+          Keyword.t()
+        ) ::
+          {:ok, String.t()} | {:error, {module(), String.t()}}
 
   defp other_format(number, other_format, backend, options) do
     with {:ok, options} <- Options.validate_options(number, backend, options),
          {:ok, format} <- Options.validate_other_format(other_format, backend, options),
          {:ok, formatted_number} <- to_string(number, backend, options) do
-
       final_format =
         [formatted_number]
         |> Cldr.Substitution.substitute(format)
-        |> :erlang.iolist_to_binary
+        |> :erlang.iolist_to_binary()
 
       {:ok, final_format}
     end
@@ -665,7 +672,7 @@ defmodule Cldr.Number do
   @spec to_number_system(number, atom, Cldr.backend()) ::
           String.t() | {:error, {module(), String.t()}}
 
-  def to_number_system(number, system, backend \\ Cldr.default_backend) do
+  def to_number_system(number, system, backend \\ Cldr.default_backend()) do
     Cldr.Number.System.to_system(number, system, backend)
   end
 
@@ -688,7 +695,7 @@ defmodule Cldr.Number do
   """
   @spec to_number_system!(number, atom, Cldr.backend()) :: String.t() | no_return()
 
-  def to_number_system!(number, system, backend \\ Cldr.default_backend) do
+  def to_number_system!(number, system, backend \\ Cldr.default_backend()) do
     Cldr.Number.System.to_system!(number, system, backend)
   end
 
@@ -704,5 +711,4 @@ defmodule Cldr.Number do
 
   """
   defdelegate precision(number), to: Cldr.Digits, as: :number_of_digits
-
 end

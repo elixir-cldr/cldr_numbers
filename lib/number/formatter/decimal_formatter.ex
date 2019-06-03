@@ -52,7 +52,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     end
   end
 
-  @spec to_string(Math.number_or_decimal(), String.t(), Cldr.backend(), Options.t) ::
+  @spec to_string(Math.number_or_decimal(), String.t(), Cldr.backend(), Options.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
   def to_string(number, format, backend, %Options{} = options) do
     Module.concat(backend, Number.Formatter.Decimal).to_string(number, format, options)
@@ -469,7 +469,7 @@ defmodule Cldr.Number.Formatter.Decimal do
       if meta.exponent_digits > 0 do
         digits =
           exponent
-          |> List.to_string
+          |> List.to_string()
           |> String.pad_leading(meta.exponent_digits, "0")
 
         [@exponent_separator, exponent_sign, digits]
@@ -744,6 +744,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   @doc false
   def define_to_string(backend) do
     config = Module.get_attribute(backend, :config)
+
     for format <- Cldr.Config.decimal_format_list(config) do
       case Compiler.compile(format) do
         {:ok, meta, formatting_pipeline} ->

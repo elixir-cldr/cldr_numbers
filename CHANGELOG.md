@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.6.1
+
+This is the changelog for Cldr v2.6.1 released on June 2nd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Ensure `Cldr.Number.to_string/3` doesn't transliterate is the number systems are compatible for a given locale.  Basically, if the local and number system don't require transliteration from `0..9` to another script (like indian, arabic, ...) then we don't do it.  This improves performance by about 10% for this common case.
+
 # Changelog for Cldr_Numbers v2.6.0
 
 This is the changelog for Cldr v2.6.0 released on March 28th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)

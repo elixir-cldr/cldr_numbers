@@ -17,9 +17,11 @@ defmodule Cldr.FunctionClause do
     case Exception.blame_mfa(module, function, args) do
       {:ok, kind, clauses} ->
         formatted_clauses(function, kind, clauses, &blame_match/2)
+
       :error ->
-        raise ArgumentError, "Function #{inspect module}.#{inspect function}/#{length(args)} " <>
-        "is not known."
+        raise ArgumentError,
+              "Function #{inspect(module)}.#{inspect(function)}/#{length(args)} " <>
+                "is not known."
     end
   end
 
@@ -32,13 +34,14 @@ defmodule Cldr.FunctionClause do
     clauses
     |> Enum.map(format_clause_fun)
     |> Enum.join()
-    |> IO.puts
+    |> IO.puts()
   end
 
   defp blame_match(%{match?: true, node: node}, _),
     do: Macro.to_string(node)
+
   defp blame_match(%{match?: false, node: node}, _),
     do: IO.ANSI.red() <> Macro.to_string(node) <> IO.ANSI.reset()
-  defp blame_match(_, string), do: string
 
+  defp blame_match(_, string), do: string
 end

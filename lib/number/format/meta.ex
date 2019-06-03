@@ -106,27 +106,25 @@ defmodule Cldr.Number.Format.Meta do
     4. The narrow currency symbol if defined for a locale
 
   """
-  defstruct [
-    integer_digits: %{max: 0, min: 1},
-    fractional_digits: %{max: 0, min: 0},
-    significant_digits: %{max: 0, min: 0},
-    exponent_digits: 0,
-    exponent_sign: false,
-    scientific_rounding: 0,
-    grouping: %{
-      fraction: %{first: 0, rest: 0},
-      integer: %{first: 0, rest: 0}
-    },
-    rounding: 0,
-    padding_length: 0,
-    padding_char: " ",
-    multiplier: 1,
-    format: [
-      positive: [format: "#"],
-      negative: [minus: '-', format: :same_as_positive]
-      ],
-    number: 0
-  ]
+  defstruct integer_digits: %{max: 0, min: 1},
+            fractional_digits: %{max: 0, min: 0},
+            significant_digits: %{max: 0, min: 0},
+            exponent_digits: 0,
+            exponent_sign: false,
+            scientific_rounding: 0,
+            grouping: %{
+              fraction: %{first: 0, rest: 0},
+              integer: %{first: 0, rest: 0}
+            },
+            rounding: 0,
+            padding_length: 0,
+            padding_char: " ",
+            multiplier: 1,
+            format: [
+              positive: [format: "#"],
+              negative: [minus: '-', format: :same_as_positive]
+            ],
+            number: 0
 
   @typedoc "Metadata type that drives how to format a number"
   @type t :: %__MODULE__{}
@@ -147,7 +145,8 @@ defmodule Cldr.Number.Format.Meta do
 
   """
   @spec put_integer_digits(t(), non_neg_integer, non_neg_integer) :: t()
-  def put_integer_digits(%__MODULE__{} = meta, min, max \\ 0) when is_integer(min) and is_integer(max) do
+  def put_integer_digits(%__MODULE__{} = meta, min, max \\ 0)
+      when is_integer(min) and is_integer(max) do
     meta
     |> Map.put(:integer_digits, %{min: min, max: max})
   end
@@ -158,7 +157,8 @@ defmodule Cldr.Number.Format.Meta do
 
   """
   @spec put_fraction_digits(t(), non_neg_integer, non_neg_integer) :: t()
-  def put_fraction_digits(%__MODULE__{} = meta, min, max \\ 0) when is_integer(min) and is_integer(max) do
+  def put_fraction_digits(%__MODULE__{} = meta, min, max \\ 0)
+      when is_integer(min) and is_integer(max) do
     meta
     |> Map.put(:fractional_digits, %{min: min, max: max})
   end
@@ -169,7 +169,8 @@ defmodule Cldr.Number.Format.Meta do
 
   """
   @spec put_significant_digits(t(), non_neg_integer, non_neg_integer) :: t()
-  def put_significant_digits(%__MODULE__{} = meta, min, max \\ 0) when is_integer(min) and is_integer(max) do
+  def put_significant_digits(%__MODULE__{} = meta, min, max \\ 0)
+      when is_integer(min) and is_integer(max) do
     meta
     |> Map.put(:significant_digits, %{min: min, max: max})
   end
@@ -260,7 +261,8 @@ defmodule Cldr.Number.Format.Meta do
 
   """
   @spec put_integer_grouping(t(), non_neg_integer, non_neg_integer) :: t()
-  def put_integer_grouping(%__MODULE__{} = meta, first, rest) when is_integer(first) and is_integer(rest) do
+  def put_integer_grouping(%__MODULE__{} = meta, first, rest)
+      when is_integer(first) and is_integer(rest) do
     grouping =
       meta
       |> Map.get(:grouping)
@@ -290,7 +292,8 @@ defmodule Cldr.Number.Format.Meta do
 
   """
   @spec put_fraction_grouping(t(), non_neg_integer, non_neg_integer) :: t()
-  def put_fraction_grouping(%__MODULE__{} = meta, first, rest) when is_integer(first) and is_integer(rest) do
+  def put_fraction_grouping(%__MODULE__{} = meta, first, rest)
+      when is_integer(first) and is_integer(rest) do
     grouping =
       meta
       |> Map.get(:grouping)
@@ -321,15 +324,14 @@ defmodule Cldr.Number.Format.Meta do
   documentation for the available keywords.
 
   """
-  @spec put_format(t(), Keyword.t, Keyword.t) :: t()
+  @spec put_format(t(), Keyword.t(), Keyword.t()) :: t()
   def put_format(%__MODULE__{} = meta, positive_format, negative_format) do
     meta
-    |> Map.put(:format, [positive: positive_format, negative: negative_format])
+    |> Map.put(:format, positive: positive_format, negative: negative_format)
   end
 
-  @spec put_format(t(), Keyword.t) :: t()
+  @spec put_format(t(), Keyword.t()) :: t()
   def put_format(%__MODULE__{} = meta, positive_format) do
-    put_format(meta, positive_format, [minus: '-', format: :same_as_positive])
+    put_format(meta, positive_format, minus: '-', format: :same_as_positive)
   end
-
 end

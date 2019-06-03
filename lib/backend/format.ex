@@ -339,7 +339,7 @@ defmodule Cldr.Number.Backend.Format do
         @spec currency_spacing(
                 LanguageTag.t() | Cldr.Locale.locale_name(),
                 System.system_name()
-              ) :: map() | {:error, {module(), String.t}}
+              ) :: map() | {:error, {module(), String.t()}}
 
         def currency_spacing(locale, number_system) do
           with {:ok, formats} <- formats_for(locale, number_system) do
@@ -384,12 +384,12 @@ defmodule Cldr.Number.Backend.Format do
         ## Arguments
 
         * `locale` is any valid locale name returned by
-          `#{inspect backend}.known_locale_names/0`
+          `#{inspect(backend)}.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`.
-          The default is `#{inspect backend}.get_locale/0`
+          The default is `#{inspect(backend)}.get_locale/0`
 
         * `number_system` is any valid number system or number system type returned
-          by `#{inspect backend}.Number.System.number_systems_for/1`
+          by `#{inspect(backend)}.Number.System.number_systems_for/1`
 
         ## Example
 
@@ -417,7 +417,7 @@ defmodule Cldr.Number.Backend.Format do
 
         """
         @spec formats_for(LanguageTag.t() | binary(), atom | String.t()) ::
-          {:ok, map()} | {:error, {module(), String.t()}}
+                {:ok, map()} | {:error, {module(), String.t()}}
 
         def formats_for(
               locale \\ unquote(backend).default_locale(),
@@ -439,8 +439,11 @@ defmodule Cldr.Number.Backend.Format do
           end
         end
 
-        @spec formats_for!(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.Number.System.system_name()) ::
-          map() | no_return()
+        @spec formats_for!(
+                LanguageTag.t() | Cldr.Locale.locale_name(),
+                Cldr.Number.System.system_name()
+              ) ::
+                map() | no_return()
 
         def formats_for!(
               locale \\ unquote(backend).default_locale(),

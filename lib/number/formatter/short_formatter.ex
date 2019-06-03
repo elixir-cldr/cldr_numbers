@@ -65,11 +65,11 @@ defmodule Cldr.Number.Formatter.Short do
   # "0". The result is formatted according to the normal decimal pattern. With no
   # fractional digits, that yields "12 K".
 
-  @spec to_string(Math.number_or_decimal, atom(), Cldr.backend(), Options.t()) ::
-    {:ok, String.t()} | {:error, {module(), String.t()}}
+  @spec to_string(Math.number_or_decimal(), atom(), Cldr.backend(), Options.t()) ::
+          {:ok, String.t()} | {:error, {module(), String.t()}}
 
   def to_string(number, style, backend, options) do
-     locale = options.locale || backend.default_locale()
+    locale = options.locale || backend.default_locale()
 
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, number_system} <- System.system_name_from(options.number_system, locale, backend) do
@@ -77,8 +77,14 @@ defmodule Cldr.Number.Formatter.Short do
     end
   end
 
-  @spec short_format_string(Math.number_or_decimal, atom, Locale.locale_name() | LanguageTag.t(),
-    System.system_name(), Cldr.backend(), Options.t()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
+  @spec short_format_string(
+          Math.number_or_decimal(),
+          atom,
+          Locale.locale_name() | LanguageTag.t(),
+          System.system_name(),
+          Cldr.backend(),
+          Options.t()
+        ) :: {:ok, String.t()} | {:error, {module(), String.t()}}
 
   defp short_format_string(number, style, locale, number_system, backend, options) do
     case Format.formats_for(locale, number_system, backend) do

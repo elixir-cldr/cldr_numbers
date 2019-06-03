@@ -26,7 +26,7 @@ defmodule Cldr.Number.Backend.Symbol do
 
             {locale, symbols}
           end
-          |> Map.new
+          |> Map.new()
 
         @doc """
         Returns a map of `Cldr.Number.Symbol.t` structs of the number symbols for each
@@ -74,7 +74,7 @@ defmodule Cldr.Number.Backend.Symbol do
 
         """
         @spec number_symbols_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
-          {:ok, map()} | {:error, {module(), String.t()}}
+                {:ok, map()} | {:error, {module(), String.t()}}
 
         @dialyzer {:nowarn_function, number_symbols_for: 1}
         @dialyzer {:nowarn_function, number_symbols_for: 2}
@@ -113,7 +113,7 @@ defmodule Cldr.Number.Backend.Symbol do
               !is_nil(symbols) do
             symbols.decimal
           end
-          |> Enum.uniq
+          |> Enum.uniq()
 
         all_grouping_symbols =
           for {_locale, locale_symbols} <- all_symbols,
@@ -121,7 +121,7 @@ defmodule Cldr.Number.Backend.Symbol do
               !is_nil(symbols) do
             symbols.group
           end
-          |> Enum.uniq
+          |> Enum.uniq()
 
         @doc """
         Returns a list of all decimal symbols defined
