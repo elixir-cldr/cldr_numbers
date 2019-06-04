@@ -46,7 +46,8 @@ defmodule CldrNumbers.Mixfile do
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.18", only: [:dev, :release], optional: true},
       {:dialyxir, "~> 1.0.0-rc.4", only: [:dev], runtime: false},
-      {:exprof, "~> 0.2", only: :dev, runtime: false}
+      {:exprof, "~> 0.2", only: :dev, runtime: false},
+      {:benchee, "~> 1.0", only: :dev, runtime: false}
     ]
   end
 

@@ -372,19 +372,38 @@ defmodule Cldr.Number.Formatter.Decimal do
   # end (:forward direction) whereas for the integer part the dangling
   # group is at the beginning (:reverse direction)
 
+  @group_separator Compiler.placeholder(:group)
+
   # No grouping if the length (number of digits) is less than the
   # minimum grouping size.
-  def do_grouping(number, _, length, min_grouping, _) when length < min_grouping do
+  def do_grouping(number, _, length, min_grouping, :reverse) when length < min_grouping do
     number
   end
 
-  # The case when there is only one grouping. Always true for fraction part.
-  @group_separator Compiler.placeholder(:group)
+  # No grouping when the length of the number is less than the group size
+  def do_grouping(number, %{first: first, rest: first}, length, _, _) when length <= first do
+    number
+  end
+
+  # The case when there is no grouping.
   def do_grouping(number, %{first: 0, rest: 0}, _, _, _) do
     number
   end
 
-  def do_grouping(number, %{first: first, rest: rest}, length, _, :forward) when first == rest do
+  # The common case of grouping in 3's
+  def do_grouping(number, %{first: 3, rest: 3} = grouping, length, min, :reverse) do
+    number
+    |> Enum.reverse
+    |> do_grouping(grouping, length, min, :forward)
+    |> Enum.reverse
+  end
+
+  def do_grouping([a, b, c | rest], %{first: 3, rest: 3} = grouping, _length, min, :forward) do
+    [a, b, c, @group_separator | do_grouping(rest, grouping, length(rest), min, :forward)]
+  end
+
+  # Only one group size
+  def do_grouping(number, %{first: first, rest: first}, length, _, :forward) do
     split_point = div(length, first) * first
     {rest, last_group} = Enum.split(number, split_point)
 
@@ -392,12 +411,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     |> add_last_group(last_group, @group_separator)
   end
 
-  def do_grouping(number, %{first: first, rest: rest}, length, _, _direction)
-      when first == rest and length <= first do
-    number
-  end
-
-  def do_grouping(number, %{first: first, rest: rest}, length, _, :reverse) when first == rest do
+  def do_grouping(number, %{first: first, rest: first}, length, _, :reverse) do
     split_point = length - div(length, first) * first
     {first_group, rest} = Enum.split(number, split_point)
 
