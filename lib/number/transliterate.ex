@@ -89,6 +89,10 @@ defmodule Cldr.Number.Transliterate do
     Module.concat(backend, Number.Transliterate).transliterate(sequence, locale, number_system)
   end
 
+  def transliterate_digits(digits, from_system, from_system) do
+    digits
+  end
+
   def transliterate_digits(digits, from_system, to_system) when is_binary(digits) do
     with {:ok, from} <- System.number_system_digits(from_system),
          {:ok, to} <- System.number_system_digits(to_system) do
