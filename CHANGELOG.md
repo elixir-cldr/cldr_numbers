@@ -1,6 +1,6 @@
 # Changelog for Cldr_Numbers v2.6.3
 
-This is the changelog for Cldr v2.6.1 released on June 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.6.3 released on June 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
 
 ### Bug Fixes
 
@@ -8,11 +8,11 @@ This is the changelog for Cldr v2.6.1 released on June 15th, 2019.  For older ch
 
 # Changelog for Cldr_Numbers v2.6.2
 
-This is the changelog for Cldr v2.6.1 released on June 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.6.2 released on June 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
 
 ### Bug Fixes
 
-* Don't transliterate in `Cldr.Number.transliterate_digits/3` if `from` and `to` number systems are the same.
+* Don't transliterate in `Cldr.Number.Transliterate.transliterate_digits/3` if `from` and `to` number systems are the same.
 
 # Changelog for Cldr_Numbers v2.6.1
 
