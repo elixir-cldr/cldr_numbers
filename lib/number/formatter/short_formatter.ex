@@ -93,6 +93,10 @@ defmodule Cldr.Number.Formatter.Short do
 
         {number, format} =
           case choose_short_format(number, formats, backend, options) do
+            {_range, ["0", _number_of_zeroes]} ->
+              {_, format} = choose_short_format(0, formats, backend, options)
+              {number, format}
+
             {range, [format, number_of_zeros]} ->
               {normalise_number(number, range, number_of_zeros), format}
 

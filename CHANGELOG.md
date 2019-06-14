@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.6.3
+
+This is the changelog for Cldr v2.6.1 released on June 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Correctly interpret the special short format `0` to mean "format as a normal decimal or currency number". Thanks to @epilgrim.  Closes #10
+
 # Changelog for Cldr_Numbers v2.6.2
 
 This is the changelog for Cldr v2.6.1 released on June 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
