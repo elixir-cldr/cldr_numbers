@@ -114,7 +114,7 @@ defmodule Cldr.Test.Number.Format do
       {12, "12 Thai baht", [format: :long, currency: :THB]},
       {12, "12 bahts thaïlandais", [format: :long, currency: :THB, locale: "fr"]},
       {2134, "A$2K", [format: :currency_short, currency: :AUD]},
-      {2134, "2,134 Australian dollars", [format: :currency_long, currency: :AUD]},
+      {2134, "2,134 Australian dollars", [format: :currency_long, currency: :AUD]}
     ]
   end
 end
