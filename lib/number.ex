@@ -329,7 +329,7 @@ defmodule Cldr.Number do
   @spec to_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
 
-  def to_string(number, backend \\ Cldr.default_locale, options \\ [])
+  def to_string(number, backend \\ Cldr.default_backend(), options \\ [])
 
   # No backend supplied, just options
   def to_string(number, options, []) when is_list(options) do
@@ -352,7 +352,7 @@ defmodule Cldr.Number do
     end
   end
 
-  def to_string(number, backend, options) do
+  def to_string(number, backend, options) when is_list(options) do
     with {:ok, options} <- Options.validate_options(number, backend, options) do
       to_string(number, backend, options)
     end

@@ -4,6 +4,8 @@ This is the changelog for Cldr v2.6.4 released on June 16th, 2019.  For older ch
 
 ### Bug Fixes
 
+* Fix the default value for the `backend` parameter for `Cldr.Number.to_string/3`
+
 * Allow `Cldr.Number.to_string/3` to be called as `Cldr.Number.to_string <number>, <options>` as long as there is a default backend configured in `config.exs`.
 
 # Changelog for Cldr_Numbers v2.6.3
