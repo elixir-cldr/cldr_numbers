@@ -12,7 +12,7 @@ defmodule CldrNumbers.Mixfile do
       elixir: "~> 1.5",
       name: "Cldr Numbers",
       description: description(),
-      source_url: "https://github.com/kipcole9/cldr_numbers",
+      source_url: "https://github.com/elixir-cldr/cldr_numbers",
       docs: docs(),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
@@ -82,9 +82,9 @@ defmodule CldrNumbers.Mixfile do
 
   def links do
     %{
-      "GitHub" => "https://github.com/kipcole9/cldr_numbers",
-      "Readme" => "https://github.com/kipcole9/cldr_numbers/blob/v#{@version}/README.md",
-      "Changelog" => "https://github.com/kipcole9/cldr_numbers/blob/v#{@version}/CHANGELOG.md"
+      "GitHub" => "https://github.com/elixir-cldr/cldr_numbers",
+      "Readme" => "https://github.com/elixir-cldr/cldr_numbers/blob/v#{@version}/README.md",
+      "Changelog" => "https://github.com/elixir-cldr/cldr_numbers/blob/v#{@version}/CHANGELOG.md"
     }
   end
 
