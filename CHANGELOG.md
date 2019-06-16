@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.6.4
+
+This is the changelog for Cldr v2.6.4 released on June 16th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Allow `Cldr.Number.to_string/3` to be called as `Cldr.Number.to_string <number>, <options>` as long as there is a default backend configured in `config.exs`.
+
 # Changelog for Cldr_Numbers v2.6.3
 
 This is the changelog for Cldr v2.6.3 released on June 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)

@@ -329,7 +329,12 @@ defmodule Cldr.Number do
   @spec to_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
 
-  def to_string(number, backend \\ Cldr.default_backend(), options \\ [])
+  def to_string(number, backend \\ Cldr.default_locale, options \\ [])
+
+  # No backend supplied, just options
+  def to_string(number, options, []) when is_list(options) do
+    to_string(number, Cldr.default_backend(), options)
+  end
 
   # Decimal -0 is formatted like 0, without the sign
   def to_string(%Decimal{coef: 0, sign: -1} = number, backend, options) do
@@ -337,6 +342,9 @@ defmodule Cldr.Number do
     |> to_string(backend, options)
   end
 
+  # Pre-processed options which is nearly twice as
+  # fast as non-preprocessed.  See
+  # Cldr.Number.Options.validate_options/3
   def to_string(number, backend, %Options{} = options) do
     case to_string(number, options.format, backend, options) do
       {:error, reason} -> {:error, reason}
