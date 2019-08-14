@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.7.0
+
+This is the changelog for Cldr v2.7.0 released on _____, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Enhancements
+
+* An option `:backend` can be passed to `Cldr.Number.to_string/3` and it will be used if being called as `Cldr.Number.to_string/2`
+
 # Changelog for Cldr_Numbers v2.6.4
 
 This is the changelog for Cldr v2.6.4 released on June 16th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)

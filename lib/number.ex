@@ -333,7 +333,8 @@ defmodule Cldr.Number do
 
   # No backend supplied, just options
   def to_string(number, options, []) when is_list(options) do
-    to_string(number, Cldr.default_backend(), options)
+		{backend, options} = Keyword.pop(options, :backend, Cldr.default_backend())
+    to_string(number, backend, options)
   end
 
   # Decimal -0 is formatted like 0, without the sign
