@@ -87,8 +87,7 @@ defmodule Cldr.Number.Format.Compiler do
   values according to other fields in CLDR. The same is true of the - (ASCII
   minus sign) and other special characters listed above.
 
-  Extracted from [Unicode number formats in TR35]
-  (http://unicode.org/reports/tr35/tr35-numbers.html#Number_Formats)
+  Extracted from [Unicode number formats in TR35](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Formats)
   """
 
   import Kernel, except: [length: 1]
