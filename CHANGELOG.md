@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.7.1
+
+This is the changelog for Cldr v2.7.1 released on August 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix `@spec` for `Cldr.Number.to_string/3` and `Cldr.Number.to_string!/3`
+
 # Changelog for Cldr_Numbers v2.7.0
 
 This is the changelog for Cldr v2.7.0 released on August 21st, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)

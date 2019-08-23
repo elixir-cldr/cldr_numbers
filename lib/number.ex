@@ -326,7 +326,7 @@ defmodule Cldr.Number do
       "The locale \\"he\\" with number system :hebr does not define a format :standard."}}
   ```
   """
-  @spec to_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
+  @spec to_string(number | Decimal.t(), Cldr.backend() | Keyword.t() | map(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
 
   def to_string(number, backend \\ Cldr.default_backend(), options \\ [])
@@ -385,8 +385,8 @@ defmodule Cldr.Number do
       "12 345"
 
   """
-  @spec to_string!(number | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
-          String.t() | module()
+  @spec to_string!(number | Decimal.t(), Cldr.backend() | Keyword.t() | map(), Keyword.t() | map()) ::
+          String.t() | no_return()
 
   def to_string!(number, backend \\ Cldr.default_backend(), options \\ [])
 
