@@ -333,7 +333,7 @@ defmodule Cldr.Number do
 
   # No backend supplied, just options
   def to_string(number, options, []) when is_list(options) do
-		{backend, options} = Keyword.pop(options, :backend, Cldr.default_backend())
+		{backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
     to_string(number, backend, options)
   end
 
@@ -537,7 +537,14 @@ defmodule Cldr.Number do
   @spec to_at_least_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
-  def to_at_least_string(number, backend \\ Cldr.default_backend(), options \\ []) do
+  def to_at_least_string(number, backend \\ Cldr.default_backend(), options \\ [])
+
+  def to_at_least_string(number, options, []) when is_list(options) do
+    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
+    to_at_least_string(number, backend, options)
+  end
+
+  def to_at_least_string(number, backend, options) do
     other_format(number, :at_least, backend, options)
   end
 
@@ -565,7 +572,14 @@ defmodule Cldr.Number do
   @spec to_at_most_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
-  def to_at_most_string(number, backend \\ Cldr.default_backend(), options \\ []) do
+  def to_at_most_string(number, backend \\ Cldr.default_backend(), options \\ [])
+
+  def to_at_most_string(number, options, []) when is_list(options) do
+    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
+    to_at_most_string(number, backend, options)
+  end
+
+  def to_at_most_string(number, backend, options) do
     other_format(number, :at_most, backend, options)
   end
 
@@ -593,7 +607,14 @@ defmodule Cldr.Number do
   @spec to_approx_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
-  def to_approx_string(number, backend \\ Cldr.default_backend(), options \\ []) do
+  def to_approx_string(number, backend \\ Cldr.default_backend(), options \\ [])
+
+  def to_approx_string(number, options, []) when is_list(options) do
+    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
+    to_approx_string(number, backend, options)
+  end
+
+  def to_approx_string(number, backend, options) do
     other_format(number, :approximately, backend, options)
   end
 
@@ -621,7 +642,14 @@ defmodule Cldr.Number do
   @spec to_range_string(Range.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
-  def to_range_string(range, backend \\ Cldr.default_backend(), options \\ []) do
+  def to_range_string(number, backend \\ Cldr.default_backend(), options \\ [])
+
+  def to_range_string(number, options, []) when is_list(options) do
+    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
+    to_range_string(number, backend, options)
+  end
+
+  def to_range_string(range, backend, options) do
     %Range{first: first, last: last} = range
 
     with {:ok, options} <- Options.validate_options(first, backend, options),

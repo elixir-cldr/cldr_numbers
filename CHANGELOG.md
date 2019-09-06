@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.7.2
+
+This is the changelog for Cldr v2.7.2 released on September 7th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Call `Keyword.get_lazy/3` when accessing `Cldr.default_locale/0` to avoid exceptions when no default backend is configured but an optional `:backend` has been passed.
+
 # Changelog for Cldr_Numbers v2.7.1
 
 This is the changelog for Cldr v2.7.1 released on August 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
