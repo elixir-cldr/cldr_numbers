@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.8.0
+
+This is the changelog for Cldr v2.8.0 released on October 10th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+
+### Enhancements
+
+* Update [ex_cldr](https://github.com/elixir-cldr/cldr) to version `2.11.0` which encapsulates [CLDR](https://cldr.unicode.org) version `36.0.0` data.
+
 # Changelog for Cldr_Numbers v2.7.2
 
 This is the changelog for Cldr v2.7.2 released on September 7th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
