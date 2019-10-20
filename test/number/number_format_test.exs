@@ -97,4 +97,9 @@ defmodule Number.Format.Test do
       TestBackend.Cldr.Number.to_string!(1234, locale: "he", number_system: :hebr)
     end
   end
+
+  test "setting currency_format: :iso" do
+    assert TestBackend.Cldr.Number.to_string(123, currency: :USD, currency_symbol: :iso) ==
+             {:ok, "USD 123.00"}
+  end
 end

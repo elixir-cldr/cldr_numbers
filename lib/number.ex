@@ -183,6 +183,10 @@ defmodule Cldr.Number do
     is required if `:format` is set to `:currency`.  If `currency` is set
     and no `:format` is set, `:format` will be set to `:currency` as well.
 
+  * `currency_symbol`: Allows overriding a currency format. If set to
+    `:iso` then the ISO currency code will be use instead of the default
+    currency symbol. The default, `:standard`, does not change the format.
+
   * `:cash`: a boolean which indicates whether a number being formatted as a
     `:currency` is to be considered a cash value or not. Currencies can be
     rounded differently depending on whether `:cash` is `true` or `false`.
@@ -333,7 +337,7 @@ defmodule Cldr.Number do
 
   # No backend supplied, just options
   def to_string(number, options, []) when is_list(options) do
-		{backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
+    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
     to_string(number, backend, options)
   end
 
@@ -385,7 +389,11 @@ defmodule Cldr.Number do
       "12 345"
 
   """
-  @spec to_string!(number | Decimal.t(), Cldr.backend() | Keyword.t() | map(), Keyword.t() | map()) ::
+  @spec to_string!(
+          number | Decimal.t(),
+          Cldr.backend() | Keyword.t() | map(),
+          Keyword.t() | map()
+        ) ::
           String.t() | no_return()
 
   def to_string!(number, backend \\ Cldr.default_backend(), options \\ [])

@@ -393,9 +393,9 @@ defmodule Cldr.Number.Formatter.Decimal do
   # The common case of grouping in 3's
   def do_grouping(number, %{first: 3, rest: 3} = grouping, length, min, :reverse) do
     number
-    |> Enum.reverse
+    |> Enum.reverse()
     |> do_grouping(grouping, length, min, :forward)
-    |> Enum.reverse
+    |> Enum.reverse()
   end
 
   def do_grouping([a, b, c | rest], %{first: 3, rest: 3} = grouping, _length, min, :forward) do

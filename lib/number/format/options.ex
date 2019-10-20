@@ -3,6 +3,7 @@ defmodule Cldr.Number.Format.Options do
     :currency,
     :currency_digits,
     :currency_spacing,
+    :currency_symbol,
     :format,
     :locale,
     :minimum_grouping_digits,
@@ -95,14 +96,32 @@ defmodule Cldr.Number.Format.Options do
           {:ok, t()} | {:error, {module(), String.t()}}
 
   defp validate_currency_options(backend, options) do
-    format = options.format
-    currency = options.currency
+    format = Map.get(options, :format)
+    currency = Map.get(options, :currency)
+    currency_symbol = Map.get(options, :currency_symbol, :standard)
     currency_format? = currency_format?(format)
 
     with {:ok, _currency} <- currency_format_has_code(format, currency_format?, currency) do
-      options = Map.put(options, :currency_spacing, currency_spacing(backend, options))
+      options =
+        options
+        |> Map.put(:currency_spacing, currency_spacing(backend, options))
+        |> Map.put(:format, maybe_adjust_currency_symbol(format, currency_symbol))
+
       {:ok, options}
     end
+  end
+
+  @doc false
+  # Sometimes we want the standard format for a currency but we want the
+  # ISO code instead of the currency symbol
+  @currency_placeholder Compiler.placeholder(:currency)
+  @iso_placeholder Compiler.placeholder(:currency) <> Compiler.placeholder(:currency)
+  def maybe_adjust_currency_symbol(format, :iso) when is_binary(format) do
+    String.replace(format, @currency_placeholder, @iso_placeholder)
+  end
+
+  def maybe_adjust_currency_symbol(format, _currency_symbol) do
+    format
   end
 
   @spec detect_negative_number(Cldr.Math.number_or_decimal(), t()) ::
@@ -269,7 +288,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp currency_format?(format) when is_binary(format) do
-    String.contains?(format, Compiler.placeholder(:currency))
+    String.contains?(format, @currency_placeholder)
   end
 
   defp currency_format?(_format) do

@@ -102,7 +102,7 @@ defmodule Cldr.Test.Number.Format do
       {12345, "12K", [format: :short]},
       {1234.5, "1K", [format: :short]},
       {1234.5, "1.234", [format: :short, locale: "de"]},
-      {123456, "123.456", [format: :short, locale: "de"]},
+      {123_456, "123.456", [format: :short, locale: "de"]},
       {12_345_678, "12M", [format: :short]},
       {1_234_567_890, "1B", [format: :short]},
       {1_234_567_890_000, "1T", [format: :short]},

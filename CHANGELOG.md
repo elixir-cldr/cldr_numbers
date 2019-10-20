@@ -1,6 +1,14 @@
+# Changelog for Cldr_Numbers v2.9.0
+
+This is the changelog for Cldr v2.9.0 released on October 20th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Adds option `:currency_symbol` to `Cldr.Number.to_string/2`. This option, when set to `:iso` changes a currency format to force using the ISO currency code instead of the native currency symbol.
+
 # Changelog for Cldr_Numbers v2.8.0
 
-This is the changelog for Cldr v2.8.0 released on October 10th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.8.0 released on October 10th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Enhancements
 
@@ -8,7 +16,7 @@ This is the changelog for Cldr v2.8.0 released on October 10th, 2019.  For older
 
 # Changelog for Cldr_Numbers v2.7.2
 
-This is the changelog for Cldr v2.7.2 released on September 7th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.7.2 released on September 7th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
@@ -16,7 +24,7 @@ This is the changelog for Cldr v2.7.2 released on September 7th, 2019.  For olde
 
 # Changelog for Cldr_Numbers v2.7.1
 
-This is the changelog for Cldr v2.7.1 released on August 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.7.1 released on August 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
@@ -24,7 +32,7 @@ This is the changelog for Cldr v2.7.1 released on August 23rd, 2019.  For older 
 
 # Changelog for Cldr_Numbers v2.7.0
 
-This is the changelog for Cldr v2.7.0 released on August 21st, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.7.0 released on August 21st, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Enhancements
 
@@ -32,7 +40,7 @@ This is the changelog for Cldr v2.7.0 released on August 21st, 2019.  For older 
 
 # Changelog for Cldr_Numbers v2.6.4
 
-This is the changelog for Cldr v2.6.4 released on June 16th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.6.4 released on June 16th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
@@ -42,7 +50,7 @@ This is the changelog for Cldr v2.6.4 released on June 16th, 2019.  For older ch
 
 # Changelog for Cldr_Numbers v2.6.3
 
-This is the changelog for Cldr v2.6.3 released on June 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.6.3 released on June 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
@@ -50,7 +58,7 @@ This is the changelog for Cldr v2.6.3 released on June 15th, 2019.  For older ch
 
 # Changelog for Cldr_Numbers v2.6.2
 
-This is the changelog for Cldr v2.6.2 released on June 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.6.2 released on June 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
@@ -58,7 +66,7 @@ This is the changelog for Cldr v2.6.2 released on June 12th, 2019.  For older ch
 
 # Changelog for Cldr_Numbers v2.6.1
 
-This is the changelog for Cldr v2.6.1 released on June 2nd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.6.1 released on June 2nd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
@@ -66,7 +74,7 @@ This is the changelog for Cldr v2.6.1 released on June 2nd, 2019.  For older cha
 
 # Changelog for Cldr_Numbers v2.6.0
 
-This is the changelog for Cldr v2.6.0 released on March 28th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.6.0 released on March 28th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Enhancements
 
@@ -74,7 +82,7 @@ This is the changelog for Cldr v2.6.0 released on March 28th, 2019.  For older c
 
 # Changelog for Cldr_Numbers v2.5.0
 
-This is the changelog for Cldr v2.5.0 released on March 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.5.0 released on March 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Enhancements
 
@@ -82,7 +90,7 @@ This is the changelog for Cldr v2.5.0 released on March 23rd, 2019.  For older c
 
 # Changelog for Cldr_Numbers v2.4.4
 
-This is the changelog for Cldr v2.4.4 released on March 21st, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.4.4 released on March 21st, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
@@ -90,7 +98,7 @@ This is the changelog for Cldr v2.4.4 released on March 21st, 2019.  For older c
 
 # Changelog for Cldr_Numbers v2.4.3
 
-This is the changelog for Cldr v2.4.3 released on March 20th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.4.3 released on March 20th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
@@ -98,7 +106,7 @@ This is the changelog for Cldr v2.4.3 released on March 20th, 2019.  For older c
 
 # Changelog for Cldr_Numbers v2.4.2
 
-This is the changelog for Cldr v2.4.2 released on March 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.4.2 released on March 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Enhancements
 
@@ -115,7 +123,7 @@ end
 ```
 # Changelog for Cldr_Numbers v2.4.1
 
-This is the changelog for Cldr v2.4.1 released on March 7th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.4.1 released on March 7th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ## Bug Fixes
 
@@ -129,7 +137,7 @@ This is the changelog for Cldr v2.4.1 released on March 7th, 2019.  For older ch
 
 # Changelog for Cldr_Numbers v2.4.0
 
-This is the changelog for Cldr v2.4.0 released on March 4th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.4.0 released on March 4th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ## Enhancements
 
@@ -137,7 +145,7 @@ This is the changelog for Cldr v2.4.0 released on March 4th, 2019.  For older ch
 
 # Changelog for Cldr_Numbers v2.3.0
 
-This is the changelog for Cldr v2.3.0 released on March 1st, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.3.0 released on March 1st, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ## Enhancements
 
@@ -145,7 +153,7 @@ This is the changelog for Cldr v2.3.0 released on March 1st, 2019.  For older ch
 
 # Changelog for Cldr_Numbers v2.2.0
 
-This is the changelog for Cldr v2.2.0 released on Febriuary 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.2.0 released on Febriuary 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ## Bug Fixes
 
@@ -161,7 +169,7 @@ This is the changelog for Cldr v2.2.0 released on Febriuary 24th, 2019.  For old
 
 # Changelog for Cldr_Numbers v2.1.1
 
-This is the changelog for Cldr v2.1.1 released on February 3rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.1.1 released on February 3rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ## Bug Fixes
 
@@ -171,7 +179,7 @@ This is the changelog for Cldr v2.1.1 released on February 3rd, 2019.  For older
 
 # Changelog for Cldr_Numbers v2.1.0
 
-This is the changelog for Cldr v2.1.0 released on December 1st, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.1.0 released on December 1st, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ## Enhancements
 
@@ -195,7 +203,7 @@ iex> MyApp.Cldr.Number.to_range_string 1234..5678
 
 # Changelog for Cldr_Numbers v2.0.0
 
-This is the changelog for Cldr v2.0.0 released on November 22nd, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_numbers/tags)
+This is the changelog for Cldr v2.0.0 released on November 22nd, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ## Breaking Changes
 

@@ -105,6 +105,8 @@ defmodule Cldr.Number.Formatter.Short do
           end
 
         options = digits(options, options.fractional_digits)
+        format = Options.maybe_adjust_currency_symbol(format, options.currency_symbol)
+
         Formatter.Decimal.to_string(number, format, backend, options)
 
       {:error, _} = error ->
