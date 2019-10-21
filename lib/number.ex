@@ -184,7 +184,7 @@ defmodule Cldr.Number do
     and no `:format` is set, `:format` will be set to `:currency` as well.
 
   * `currency_symbol`: Allows overriding a currency format. If set to
-    `:iso` then the ISO currency code will be use instead of the default
+    `:iso` then the ISO currency code will be used instead of the default
     currency symbol. The default, `:standard`, does not change the format.
 
   * `:cash`: a boolean which indicates whether a number being formatted as a
