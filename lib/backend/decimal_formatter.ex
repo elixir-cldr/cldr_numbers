@@ -69,7 +69,14 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
         # and then process. This will be slower than a compiled
         # format since we have to (a) compile the format and (b)
         # execute the full formatting pipeline.
+        require Compiler
+
         def to_string(number, format, %Options{} = options) when is_binary(format) do
+          Compiler.maybe_log_compile_warning(format, unquote(config),
+            "ex_cldr_numbers: number format #{inspect format} is being compiled. " <>
+            "For performance reasons please consider adding this format to the " <>
+            "`precompile_number_formats` list in the backend configuration.")
+
           case Compiler.format_to_metadata(format) do
             {:ok, meta} ->
               meta = Decimal.update_meta(meta, number, unquote(backend), options)

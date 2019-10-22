@@ -161,6 +161,22 @@ defmodule Cldr.Number.Format.Compiler do
   def placeholder(:currency), do: @currency_placeholder
   def placeholder(:exponent_sign), do: @plus_placeholder
 
+  # Log a warning when a number format is being compiled at
+  # runtime, but only once
+  @doc false
+  defmacro maybe_log_compile_warning(format, config, message) do
+    if Code.ensure_loaded?(:persistent_term) && !config.supress_warnings do
+      quote do
+        require Cldr.Macros
+        Cldr.Macros.warn_once(unquote(format), unquote(message))
+      end
+    else
+      quote do
+        nil
+      end
+    end
+  end
+
   @doc """
   Scan a number format definition
 

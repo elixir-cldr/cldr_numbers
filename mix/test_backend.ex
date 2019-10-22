@@ -7,7 +7,8 @@ defmodule MyApp.Cldr do
     default_locale: "en",
     locales: ["en", "zh", "zh-Hant", "it", "fr", "de", "th", "id", "ru", "he", "pl"],
     precompile_transliterations: [{:latn, :arab}, {:arab, :thai}, {:arab, :latn}],
-    providers: [Cldr.Number]
+    providers: [Cldr.Number],
+    supress_warnings: true
 end
 
 defmodule MyApp.Cldr2 do
@@ -17,5 +18,6 @@ defmodule MyApp.Cldr2 do
     default_locale: "en-GB",
     locales: ["en-GB", "hu"],
     precompile_transliterations: [{:latn, :arab}, {:arab, :thai}, {:arab, :latn}],
-    providers: [Cldr.Number]
+    providers: [Cldr.Number],
+    supress_warnings: true
 end
