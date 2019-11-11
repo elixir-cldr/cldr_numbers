@@ -9,7 +9,6 @@ defmodule CldrNumbers.Mixfile do
     [
       app: :ex_cldr_numbers,
       version: @version,
-      licenses: ["Apache-2.0"],
       elixir: "~> 1.5",
       name: "Cldr Numbers",
       description: description(),

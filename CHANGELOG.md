@@ -4,8 +4,6 @@ This is the changelog for Cldr v2.10.0 released on _____, 2019.  For older chang
 
 ### Enhancements
 
-* Add licenses to the package definition in `mix.exs`
-
 * Optionally logs a warning if compiling a number format at runtime. The warning is emitted only once for each format to reduce log clutter. The log warning is emitted if the backend configuration key `:supress_warnings` is set to `false` (this is the default value). The `warn_once` mechanism depends on the availability of the `:persistent_term` module which is only available from OTP 21.2 onwards. On earlier releases of OTP no warning will be emitted.
 
 # Changelog for Cldr_Numbers v2.9.0
