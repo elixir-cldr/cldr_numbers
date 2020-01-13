@@ -20,7 +20,7 @@ defmodule Cldr.FunctionClause do
 
       :error ->
         raise ArgumentError,
-              "Function #{inspect(module)}.#{inspect(function)}/#{length(args)} " <>
+              "Function #{inspect(module)}.#{function}/#{length(args)} " <>
                 "is not known."
     end
   end
