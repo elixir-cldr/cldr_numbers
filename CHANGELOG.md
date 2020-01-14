@@ -1,6 +1,10 @@
 # Changelog for Cldr_Numbers v2.10.0
 
-This is the changelog for Cldr v2.10.0 released on _____, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+This is the changelog for Cldr v2.10.0 released on January 15th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fixes formatting of negative percentages. Actually fixes an issue where the default negative format would be incorrect in many cases. Thanks to @maennchen. Closes #11.
 
 ### Enhancements
 

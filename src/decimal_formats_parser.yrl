@@ -51,9 +51,17 @@ currency_symbol   -> currency_4 : '$1'.
 
 Erlang code.
 
-% If there is no negative pattern then build the default one
-negative(_Positive) ->
-  {negative, [{minus, "-"}, {format, same_as_positive}]}.
+% If there is no negative pattern then build the default one. The default
+% is an exact copy of the positive one except we put `{minus, "-"}`
+% in front of the `format` keyword.
+negative(Positive) ->
+  {negative,
+    lists:foldl(fun
+      ({format, Format}, Negative) -> Negative ++ [{minus, "-"}, {format, Format}];
+      (Element, Negative) -> Negative ++ [Element]
+    end,
+    [], Positive)}.
+% {negative, [{minus, "-"}, {format, same_as_positive}]}.
 
 % Append list items.  Consolidate literals if possible into
 % a single list element.
