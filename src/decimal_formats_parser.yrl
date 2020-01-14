@@ -53,15 +53,13 @@ Erlang code.
 
 % If there is no negative pattern then build the default one. The default
 % is an exact copy of the positive one except we put `{minus, "-"}`
-% in front of the `format` keyword.
+% in front of the `format` token.
 negative(Positive) ->
-  {negative,
-    lists:foldl(fun
-      ({format, Format}, Negative) -> Negative ++ [{minus, "-"}, {format, Format}];
-      (Element, Negative) -> Negative ++ [Element]
-    end,
-    [], Positive)}.
-% {negative, [{minus, "-"}, {format, same_as_positive}]}.
+  {negative, copy_positive(Positive)}.
+
+copy_positive([]) -> [];
+copy_positive([{format, Format} | Rest]) -> [{minus, "-"}, {format, Format} | copy_positive(Rest)];
+copy_positive([Head | Rest]) -> [Head | copy_positive(Rest)].
 
 % Append list items.  Consolidate literals if possible into
 % a single list element.
