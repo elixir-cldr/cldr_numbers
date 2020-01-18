@@ -13,7 +13,7 @@ This is the changelog for Cldr v2.11.0 released on January 19th, 2020.  For olde
   * The locale's `number_system` if it is defined and the option `:number_system` to `MyApp.Cldr.Number.to_string/2` is *not* provided
 
 Examples:
-````
+```
  # Locale defines a number system and no option :number_system is provided
  iex> TestBackend.Cldr.Number.to_string(1234, locale: "th-u-nu-thai")
  {:ok, "๑,๒๓๔"}
