@@ -112,18 +112,31 @@ defmodule Cldr.Number.Format.Options do
 
   defp validate_currency_options(backend, options) do
     format = Map.get(options, :format)
-    currency = Map.get(options, :currency)
+    currency = currency_from_locale_or_options(options)
     currency_symbol = Map.get(options, :currency_symbol, :standard)
     currency_format? = currency_format?(format)
 
     with {:ok, _currency} <- currency_format_has_code(format, currency_format?, currency) do
       options =
         options
+        |> Map.put(:currency, currency)
         |> Map.put(:currency_spacing, currency_spacing(backend, options))
         |> Map.put(:format, maybe_adjust_currency_symbol(format, currency_symbol))
 
       {:ok, options}
     end
+  end
+
+  defp currency_from_locale_or_options(%{currency: currency}) when not is_nil(currency) do
+    currency
+  end
+
+  defp currency_from_locale_or_options(%{locale: %{locale: %{currency: currency}}}) do
+    currency
+  end
+
+  defp currency_from_locale_or_options(_options) do
+    nil
   end
 
   @doc false

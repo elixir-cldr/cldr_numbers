@@ -31,6 +31,24 @@ Examples:
    "The number system :thai is unknown for the locale named \"en\". Valid number systems are %{default: :latn, native: :latn}"}}
 ```
 
+* Uses the currency code defined by the locale if it is specified and the number format requested is `:currency`. The currency code is defined as part of the [U extension](https://unicode.org/reports/tr35/#u_Extension). The order of precedence is:
+
+  * The option `:currency` if it is provided to `MyApp.Cldr.Number.to_string/2`
+
+  * The locale's `currency code` if it is defined and the option `:currency` to `MyApp.Cldr.Number.to_string/2` is *not* provided
+
+Examples:
+```
+ # Use the currency code :AUD specified in the locale
+ iex> MyApp.Cldr.Number.to_string 1234, locale: "en-AU-u-cu-aud", format: :currency
+ {:ok, "A$1,234.00"}
+
+ # Use the current code :USD provided as an option in precedence over the currency code
+ # defined by the locale
+ iex> MyApp.Cldr.Number.to_string 1234, locale: "en-AU-u-cu-aud", format: :currency, currency: :USD
+ {:ok, "$1,234.00"}
+```
+
 # Changelog for Cldr_Numbers v2.10.0
 
 This is the changelog for Cldr v2.10.0 released on January 15th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
