@@ -229,6 +229,25 @@ defmodule Cldr.Number do
     of digits in the integer (or fractional) part of the number then no grouping
     is performed.
 
+  ## Locale extensions affecting formatting
+
+  A locale identifier can specify options that affect number formatting.
+  These options are:
+
+  * `cu`: defines what currency is implied when no curreny is specified in
+    the call to `to_string/2`.
+
+  * `cf`: defines whether to use currency or accounting format for
+    formatting currencies. This overrides the `format: :currency` and `format: :accounting`
+    options.
+
+  * `nu`: defines the number system to be used if none is specified by the `:number_system`
+    option to `to_string/2`
+
+  These keys are part of the [u extension](https://unicode.org/reports/tr35/#u_Extension) and
+  that document should be consulted for details on how to construct a locale identifier with these
+  extensions.
+
   ## Returns
 
   * `{:ok, string}` or
@@ -293,8 +312,14 @@ defmodule Cldr.Number do
       iex> Cldr.Number.to_string 123, TestBackend.Cldr, format: :ordinal
       {:ok, "123rd"}
 
-      iex(4)> Cldr.Number.to_string 123, TestBackend.Cldr, format: :roman
+      iex> Cldr.Number.to_string 123, TestBackend.Cldr, format: :roman
       {:ok, "CXXIII"}
+
+      iex> Cldr.Number.to_string 123, TestBackend.Cldr, locale: "th-u-nu-thai"
+      {:ok, "๑๒๓"}
+
+      iex> Cldr.Number.to_string 123, TestBackend.Cldr, format: :currency, locale: "en-u-cu-thb"
+      {:ok, "THB 123.00"}
 
   ## Errors
 

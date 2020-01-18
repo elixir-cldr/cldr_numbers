@@ -83,12 +83,11 @@ defmodule Cldr.Number.Format.Options do
 
   @spec format_from_locale_or_options(t()) :: t()
 
-  defp format_from_locale_or_options(%{format: format} = options) when format in [:currency, :accounting] do
+  defp format_from_locale_or_options(%{format: format} = options)
+      when format in [:currency, :accounting] do
     case options do
-      %{locale: %{locale: %{currency_format: "standard"}}} ->
-        Map.put(options, :format, :currency)
-      %{locale: %{locale: %{currency_format: "account"}}} ->
-        Map.put(options, :format, :accounting)
+      %{locale: %{locale: %{currency_format: requested_format}}} ->
+        Map.put(options, :format, requested_format)
       _ ->
         options
     end
@@ -99,6 +98,10 @@ defmodule Cldr.Number.Format.Options do
   end
 
   @spec maybe_use_locale_number_system(t()) :: t()
+
+  defp maybe_use_locale_number_system(%{locale: %{locale: %{number_system: nil}}} = options) do
+    options
+  end
 
   defp maybe_use_locale_number_system(%{locale: %{locale: %{number_system: number_system}}} = options) do
     if options.number_system == :default do
