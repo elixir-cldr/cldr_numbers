@@ -75,8 +75,23 @@ defmodule Cldr.Number.Format.Options do
       |> set_currency_digits
       |> resolve_standard_format(backend)
       |> adjust_short_forms
+      |> maybe_use_locale_number_system()
 
     {:ok, options}
+  end
+
+  @spec maybe_use_locale_number_system(t()) :: t()
+
+  defp maybe_use_locale_number_system(%{locale: %{locale: %{number_system: number_system}}} = options) do
+    if options.number_system == :default do
+      Map.put(options, :number_system, number_system)
+    else
+      options
+    end
+  end
+
+  defp maybe_use_locale_number_system(options) do
+    options
   end
 
   @spec validate_number_system(Cldr.backend(), t()) ::

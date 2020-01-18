@@ -1,3 +1,36 @@
+# Changelog for Cldr_Numbers v2.11.0
+
+This is the changelog for Cldr v2.11.0 released on _______, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Uses the number system defined by the locale if it is specified.  The number system is defined as part of the [U extension](https://unicode.org/reports/tr35/#u_Extension). The order of precedence is:
+
+  * :default if no option is provided to `MyApp.Cldr.Number.to_string/2` and no number system is defined in the locale
+
+  * The option `:number_system` if it is provided to `MyApp.Cldr.Number.to_string/2`
+
+  * The locale's `number_system` if it is defined and the option `:number_system` to `MyApp.Cldr.Number.to_string/2` is *not* provided
+
+Examples:
+````
+ # Locale defines a number system and no option :number_system is provided
+ iex> TestBackend.Cldr.Number.to_string(1234, locale: "th-u-nu-thai")
+ {:ok, "๑,๒๓๔"}
+
+ # Locale defines a number system but an option :number_system is also provded which
+ # take precedence
+ iex> MyApp.Cldr.Number.to_string 1234, locale: "th-u-nu-latn", number_system: :thai
+ {:ok, "๑,๒๓๔"}
+
+ # A number system is defined in the locale but it is not supported by the
+ # locale
+ iex> MyApp.Cldr.Number.to_string 1234, locale: "en-AU-u-nu-thai"
+ {:error,
+  {Cldr.UnknownNumberSystemError,
+   "The number system :thai is unknown for the locale named \"en\". Valid number systems are %{default: :latn, native: :latn}"}}
+```
+
 # Changelog for Cldr_Numbers v2.10.0
 
 This is the changelog for Cldr v2.10.0 released on January 15th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
