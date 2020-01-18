@@ -49,6 +49,29 @@ Examples:
  {:ok, "$1,234.00"}
 ```
 
+* Uses the currency format defined by the locale if it is specified and the number format requested is `:currency` or `:accounting`. The currency format is defined as part of the [U extension](https://unicode.org/reports/tr35/#u_Extension). The order of precedence is:
+
+  * The locale's `currency format` if it is defined and the option `:format` to `MyApp.Cldr.Number.to_string/2` is either `:currency` or `:accounting`. Therefore the locales currency format takes precendence over the `:format` argument but only if `:format` is a currency format.
+
+  * The option `:format` in every other case
+
+Examples:
+```
+ # Using in the locale currency format - just happens to be the same as the format option
+ iex> MyApp.Cldr.Number.to_string -1234, locale: "en-AU-u-cu-aud-cf-standard", format: :currency
+ {:ok, "A$-1,234.00"}
+
+ # The locale format takes precedence over the format option
+ iex> MyApp.Cldr.Number.to_string -1234, locale: "en-AU-u-cu-aud-cf-standard", format: :accounting
+ {:ok, "A$-1,234.00"}
+
+ iex> MyApp.Cldr.Number.to_string -1234, locale: "en-AU-u-cu-aud-cf-account", format: :accounting
+ {:ok, "(A$1,234.00)"}
+
+ iex> MyApp.Cldr.Number.to_string -1234, locale: "en-AU-u-cu-aud-cf-account", format: :currency
+ {:ok, "(A$1,234.00)"}
+```
+
 # Changelog for Cldr_Numbers v2.10.0
 
 This is the changelog for Cldr v2.10.0 released on January 15th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
