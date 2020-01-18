@@ -309,7 +309,7 @@ defmodule Cldr.Number do
         "Decimal format compiler: syntax error before: \\"#\\""}}
   ```
 
-    * A currency was not specific for a format type of `format: :currency` or
+    * A currency was not specified for a format type of `format: :currency` or
       `format: :accounting` or any other format that specifies a currency
       symbol placeholder. In this case the error return looks like:
 
