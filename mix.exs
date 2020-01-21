@@ -77,7 +77,8 @@ defmodule CldrNumbers.Mixfile do
       source_ref: "v#{@version}",
       main: "readme",
       extras: ["README.md", "CHANGELOG.md", "LICENSE.md"],
-      logo: "logo.png"
+      logo: "logo.png",
+      skip_undefined_reference_warnings_on: ["changelog"]
     ]
   end
 
