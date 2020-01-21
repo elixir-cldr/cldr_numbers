@@ -81,7 +81,7 @@ defmodule Cldr.Number.Format.Options do
     {:ok, options}
   end
 
-  @spec format_from_locale_or_options(t()) :: t()
+  @spec format_from_locale_or_options(t()) :: map()
 
   defp format_from_locale_or_options(%{format: format} = options)
       when format in [:currency, :accounting] do

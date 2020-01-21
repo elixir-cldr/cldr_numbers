@@ -45,7 +45,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   def to_string(number, format, backend, options \\ [])
 
   @spec to_string(Math.number_or_decimal(), String.t(), Cldr.backend(), list()) ::
-          {:ok, String.t()} | {:error, {atom, String.t()}}
+          {:ok, String.t()} | {:error, {module(), String.t()}}
+
   def to_string(number, format, backend, options) when is_list(options) do
     with {:ok, options} <- Options.validate_options(number, backend, options) do
       Module.concat(backend, Number.Formatter.Decimal).to_string(number, format, options)
@@ -54,6 +55,7 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   @spec to_string(Math.number_or_decimal(), String.t(), Cldr.backend(), Options.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
+
   def to_string(number, format, backend, %Options{} = options) do
     Module.concat(backend, Number.Formatter.Decimal).to_string(number, format, options)
   end

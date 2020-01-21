@@ -1,3 +1,15 @@
+# Changelog for Cldr_Numbers v2.12.0
+
+This is the changelog for Cldr v2.12.0 released on January 21st, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Updates version requirement for `cldr_utils` in order to support versions of `decimal` from `1.6` up to `2.0`.
+
+### Bug fixes
+
+* Fixes an incorrect typespec on `Cldr.Number.Format.format_from_locale_or_options/1` that was causing a dialyzer warning
+
 # Changelog for Cldr_Numbers v2.11.0
 
 This is the changelog for Cldr v2.11.0 released on January 19th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
