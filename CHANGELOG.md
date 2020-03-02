@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.12.1
+
+This is the changelog for Cldr v2.12.1 released on March 2nd, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Use the RBNF format `spellout_numbering` instead of `spellout_cardinal` for the `Cldr.Number.to_string/3` option `format: :spellout` since `spellout_numbering` has a larger locale coverage of RBNF formats.
+
 # Changelog for Cldr_Numbers v2.12.0
 
 This is the changelog for Cldr v2.12.0 released on January 21st, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

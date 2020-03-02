@@ -8,6 +8,36 @@ defmodule Rbnf.Test do
              Cldr.Number.to_string(25_340, format: :spellout)
   end
 
+  test "rbnf spellout in german" do
+    assert {:ok, "fünf­und­zwanzig­tausend­drei­hundert­vierzig"} =
+             Cldr.Number.to_string(25_340, format: :spellout, locale: "de")
+  end
+
+  test "rbnf spellout in french" do
+    assert {:ok, "vingt-cinq mille trois cent quarante"} =
+             Cldr.Number.to_string(25_340, format: :spellout, locale: "fr")
+  end
+
+  test "rbnf spellout in spanish" do
+    assert {:ok, "veinticinco mil trescientos cuarenta"} =
+             Cldr.Number.to_string(25_340, format: :spellout, locale: "es")
+  end
+
+  test "rbnf spellout in mandarin" do
+    assert {:ok, "二万五千三百四十"} =
+             Cldr.Number.to_string(25_340, format: :spellout, locale: "zh")
+  end
+
+  test "rbnf spellout in hebrew" do
+    assert {:ok, "עשרים וחמישה אלף שלוש מאות ארבעים"} =
+             Cldr.Number.to_string(25_340, format: :spellout, locale: "he")
+  end
+
+  test "rbnf spellout in thai" do
+    assert {:ok, "สอง​หมื่น​ห้า​พัน​สาม​ร้อย​สี่​สิบ"} =
+             Cldr.Number.to_string(25_340, format: :spellout, locale: "th")
+  end
+
   test "rbnf spellout ordinal verbose" do
     assert {:ok, "one hundred and twenty-three thousand, four hundred and fifty-sixth"} =
              Cldr.Number.to_string(123_456, format: :spellout_ordinal_verbose)

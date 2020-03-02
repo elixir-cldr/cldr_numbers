@@ -5,7 +5,7 @@ defmodule MyApp.Cldr do
 
   use Cldr,
     default_locale: "en",
-    locales: ["en", "zh", "zh-Hant", "it", "fr", "de", "th", "id", "ru", "he", "pl"],
+    locales: ["en", "zh", "zh-Hant", "it", "fr", "de", "th", "id", "ru", "he", "pl", "es"],
     precompile_transliterations: [{:latn, :arab}, {:arab, :thai}, {:arab, :latn}],
     providers: [Cldr.Number],
     supress_warnings: true

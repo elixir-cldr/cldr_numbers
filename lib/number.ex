@@ -446,35 +446,24 @@ defmodule Cldr.Number do
   end
 
   # For spellout numbers
-  @format :spellout_cardinal
+  @format :spellout_numbering
   defp to_string(number, :spellout, backend, %{locale: locale}) do
     rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(locale)
 
     if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_cardinal(number, locale)
+      Module.concat(backend, Rbnf.Spellout).spellout_numbering(number, locale)
     else
       {:error, Cldr.Rbnf.rbnf_rule_error(locale, @format)}
     end
   end
 
   # For spellout numbers
-  defp to_string(number, :spellout_numbering = format, backend, %{locale: locale}) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(locale)
-
-    if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_numbering(number, locale)
-    else
-      {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
-    end
-  end
-
-  # For spellout numbers
-  @format :spellout_cardinal_verbose
+  @format :spellout_numbering_verbose
   defp to_string(number, :spellout_verbose, backend, options) do
     rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
 
     if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_cardinal_verbose(number, options.locale)
+      Module.concat(backend, Rbnf.Spellout).spellout_numbering_verbose(number, options.locale)
     else
       {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, @format)}
     end
@@ -489,6 +478,18 @@ defmodule Cldr.Number do
       Module.concat(backend, Rbnf.Spellout).spellout_numbering_year(number, options.locale)
     else
       {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, @format)}
+    end
+  end
+
+  # For spellout cardinal
+  @format :spellout_cardinal
+  defp to_string(number, :spellout_cardinal = format, backend, %{locale: locale}) do
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(locale)
+
+    if rule_sets && @format in rule_sets do
+      Module.concat(backend, Rbnf.Spellout).spellout_cardinal(number, locale)
+    else
+      {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
     end
   end
 
