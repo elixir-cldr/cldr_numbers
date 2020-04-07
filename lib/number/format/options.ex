@@ -1,16 +1,21 @@
 defmodule Cldr.Number.Format.Options do
-
+  @moduledoc """
+  Functions to validate and transform
+  options that guide number formatting
+  """
 
   alias Cldr.Number.{System, Symbol, Format}
   alias Cldr.Number.Format.Compiler
   alias Cldr.Currency
   alias Cldr.LanguageTag
 
-  @valid_options [
+  # These are the options set in the
+  # struct guide formatting
+  @options [
     :locale,
     :number_system,
-    :format,
     :currency,
+    :format,
     :currency_digits,
     :currency_spacing,
     :currency_symbol,
@@ -21,6 +26,11 @@ defmodule Cldr.Number.Format.Options do
     :symbols
   ]
 
+  # These are the options that can be supplied
+  # through the api
+  @valid_options @options --
+    [:currency_spacing, :pattern] ++ [:cash]
+
   @short_format_styles [
     :currency_short,
     :currency_long,
@@ -29,15 +39,17 @@ defmodule Cldr.Number.Format.Options do
   ]
 
   @fixed_formats [
-
-
-
-
-
+    :standard,
+    :currency,
+    :accounting
+    :short,
+    :long
   ]
 
-  @type fixed_formats ::
+  @type fixed_formats :: :standard | :currency | :accounting
   @type format :: binary() | fixed_formats()
+  @type short_format_styles ::
+    :currency_short | :currency_long | :decimal_short | :decimal_long
 
   @type t :: %__MODULE__{
     locale: LanguageTag.t()
@@ -54,16 +66,158 @@ defmodule Cldr.Number.Format.Options do
     symbols: Symbol.t()
   }
 
-  @type short_format_styles ::
-    :currency_short | :currency_long | :decimal_short | :decimal_long
 
   defstruct @valid_options
-
 
   import Cldr.Number.Symbol, only: [number_symbols_for: 3]
 
   @spec validate_options(Cldr.Math.number_or_decimal(), Cldr.backend(), list({atom, term})) ::
           {:ok, t} | {:error, {module(), String.t()}}
+
+  def validate_options(number, backend, options) do
+    with {:ok, options} <- ensure_only_valid_keys(@valid_options, options),
+         {:ok, backend} <- Cldr.validate_backend(backend) do
+
+      options =
+        |> Module.concat(backend, Number).default_options()
+        |> Keyword.merge(options)
+        |> Map.new
+
+      Enum.reduce_while(@valid_options, options, fn option, options ->
+        case validate_option(option, options, backend, Map.fetch!(options, option)) do
+          {:ok, result} -> {:cont, Map.put(options, option, result}
+          {error, _} = error -> {:halt, error}
+        end
+      end)
+    end
+  end
+
+  def validate_option(:locale, options, backend, nil) do
+    {:ok, backend.get_locale()}
+  end
+
+  def validate_option(:locale, options, backend, locale) do
+    with {:ok, locale} <- Cldr.validate_locale(locale, backend) do
+      {:ok, locale}
+    end
+  end
+
+  # Number system is extracted from the locale
+  def validate_option(:number_system, options, backend, nil) do
+    number_system =
+      options
+      |> Map.fetch!(:locale)
+      |> System.number_system_from_locale()
+
+    {:ok, number_system}
+  end
+
+  def validate_option(:number_system, options, backend, number_system) do
+    locale = Map.fetch!(options, locale)
+    Cldr.Number.System.system_name_from(number_system, locale, backend)
+  end
+
+  def validate_option(:currency, options, backend, nil) do
+    {:ok, nil}
+  end
+
+  def validate_option(:currency, options, backend, currency) do
+    with {:ok, currency} <- Cldr.validate_currency(currency) do
+      {:ok, currency}
+    end
+  end
+
+  # If a currency code is provided then a currency
+  # format is forced
+  def validate_option(:format, options, backend, nil) do
+    currency = Keyword.get(options, :currency)
+
+    if currency do
+      {:ok, :currency}
+    else
+      {:ok, :standard}
+    end
+  end
+
+  def validate_option(:format, options, backend, :short) do
+    currency = Keyword.get(options, :currency)
+
+    if currency do
+      {:ok, :currency_short}
+    else
+      {:ok, :decimal_short}
+    end
+  end
+
+  def validate_option(:format, options, backend, :long) do
+    currency = Keyword.get(options, :currency)
+
+    if currency do
+      {:ok, :currency_long}
+    else
+      {:ok, :decimal_long}
+    end
+  end
+
+  def validate_option(:format, options, backend, format) do
+    currency = Keyword.get(options, :currency)
+
+    if currency && format not in [:accounting, :currency] do
+      {:ok, :currency}
+    else
+      {:ok, :standard}
+    end
+  end
+
+  # Currency digits is an opaque option that is a proxy
+  # for the `:cash` parameter which is set to true or false
+  def validate_option(:currency_digits, options, backend, nil) do
+    if Keyword.get(options, :cash) do
+      {:ok, :cash}
+    else
+      {:ok, :accounting}
+    end
+  end
+
+  def validate_option(:currency_digits, options, backend, :cash) do
+    {:ok, :cash}
+  end
+
+  def validate_option(:currency_digits, options, backend, :accounting) do
+    {:ok, :accounting}
+  end
+
+  def validate_option(:currency_digits, options, backend, _currency_digits) do
+    if Keyword.get(options, :cash) do
+      {:ok, :cash}
+    else
+      {:ok, :accounting}
+    end
+  end
+
+  # Currency spacing isn't really a user option
+  # Its derived for currency formats only
+  def validate_option(:currency_spacing, options, backend, _spacing) do
+    format = Keyword.fetch!(options, :format)
+
+    if format in [:currency, :accounting] do
+      locale = Keyword.fetch!(options, :locale)
+      number_system = Keyword.fetch!(options, :number_system)
+      module = Module.concat(backend, Number.Format)
+      {:ok, module.currency_spacing(locale, number_system))
+    else
+      {:ok, nil}
+    end
+  end
+
+  def valdiate_option(:currency_symbol, options, backend, nil) do
+    locale = Keyword.get(options, :locale)
+    number_system = Keyword.fetch!(options, :number_system)
+    
+    number_symbols_for(options.locale, options.number_system, backend)
+  end
+
+
 
   def validate_options(number, backend, options) do
     with {:ok, options} <- merge_default_options(backend, options),
