@@ -40,10 +40,15 @@ defmodule CldrNumbers.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 2.13"},
-      {:ex_cldr_currencies, "~> 2.3"},
+      {:ex_cldr, path: "../cldr", override: true},
+      {:ex_cldr_currencies, github: "elixir-cldr/cldr_currencies"},
+      {:cldr_utils, github: "elixir-cldr/cldr_utils", override: true},
+
+      # {:ex_cldr, "~> 2.13"},
+      # {:ex_cldr_currencies, "~> 2.3"},
+      # {:cldr_utils, "~> 2.6"},
+
       {:decimal, "~> 1.6 or ~> 2.0"},
-      {:cldr_utils, "~> 2.6"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.18", only: [:dev, :release], optional: true},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},

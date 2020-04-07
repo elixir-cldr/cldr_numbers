@@ -6,7 +6,13 @@ This is the changelog for Cldr v2.13.0 released on _____, 2020.  For older chang
 
 * `Cldr.Number.to_string/2` now detects the number system from any supplied locale. If provided, the option `:number_system` takes precedence over the number system derived from a locale.
 
-* Add `Cldr.Number.System.number_system_from_locale/2` to extract the number system from a locale.
+* Refines number system detection. The order of precedence is:
+
+    * The `:number_system` option if provided
+
+		* The `:number_system` from the locale if provided
+
+		* The `:number_system` from the current locale for the supplied backend. This locale is retrieved with `backend.get_locale()`
 
 # Changelog for Cldr_Numbers v2.12.1
 
@@ -73,7 +79,7 @@ Examples:
  iex> MyApp.Cldr.Number.to_string 1234, locale: "en-AU-u-cu-aud", format: :currency
  {:ok, "A$1,234.00"}
 
- # Use the current code :USD provided as an option in precedence over the currency code
+ # Use the currency code :USD provided as an option in precedence over the currency code
  # defined by the locale
  iex> MyApp.Cldr.Number.to_string 1234, locale: "en-AU-u-cu-aud", format: :currency, currency: :USD
  {:ok, "$1,234.00"}

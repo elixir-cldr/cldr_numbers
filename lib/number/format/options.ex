@@ -1,20 +1,25 @@
 defmodule Cldr.Number.Format.Options do
-  defstruct [
+
+
+  alias Cldr.Number.{System, Symbol, Format}
+  alias Cldr.Number.Format.Compiler
+  alias Cldr.Currency
+  alias Cldr.LanguageTag
+
+  @valid_options [
+    :locale,
+    :number_system,
+    :format,
     :currency,
     :currency_digits,
     :currency_spacing,
     :currency_symbol,
-    :format,
-    :locale,
     :minimum_grouping_digits,
-    :number_system,
     :pattern,
     :rounding_mode,
     :fractional_digits,
     :symbols
   ]
-
-  @type t :: %__MODULE__{}
 
   @short_format_styles [
     :currency_short,
@@ -23,11 +28,37 @@ defmodule Cldr.Number.Format.Options do
     :decimal_long
   ]
 
-  @type short_format_styles :: :currency_short | :currency_long | :decimal_short | :decimal_long
+  @fixed_formats [
 
-  alias Cldr.Number.System
-  alias Cldr.Number.Format
-  alias Cldr.Number.Format.Compiler
+
+
+
+
+  ]
+
+  @type fixed_formats ::
+  @type format :: binary() | fixed_formats()
+
+  @type t :: %__MODULE__{
+    locale: LanguageTag.t()
+    number_system: System.system_name(),
+    format: format(),
+    currency: Currency.code(),
+    currency_digits: pos_integer(),
+    currency_spacing: list(),
+    currency_symbol: String.t(),
+    minimum_grouping_digits: pos_integer(),
+    pattern: String.t(),
+    rounding_mode: Decimal.rounding(),
+    fractional_digits: pos_integer(),
+    symbols: Symbol.t()
+  }
+
+  @type short_format_styles ::
+    :currency_short | :currency_long | :decimal_short | :decimal_long
+
+  defstruct @valid_options
+
 
   import Cldr.Number.Symbol, only: [number_symbols_for: 3]
 
@@ -86,10 +117,11 @@ defmodule Cldr.Number.Format.Options do
   defp format_from_locale_or_options(%{format: format} = options)
       when format in [:currency, :accounting] do
     case options do
+      %{locale: %{locale: %{currency_format: nil}}} ->
+        options
       %{locale: %{locale: %{currency_format: requested_format}}} ->
         Map.put(options, :format, requested_format)
-      _ ->
-        options
+      _other -> options
     end
   end
 

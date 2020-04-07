@@ -24,6 +24,21 @@ defmodule Cldr.Number.Symbol do
     :time_separator
   ]
 
+  @type t :: %__MODULE__{
+    decimal: String.t(),
+    group: String.t(),
+    exponential: String.t(),
+    infinity: String.t(),
+    list: String.t(),
+    minus_sign: String.t(),
+    nan: String.t(),
+    per_mille: String.t(),
+    percent_sign: String.t(),
+    plus_sign: String.t(),
+    superscripting_exponent: String.t(),
+    time_separator: String.t()
+  }
+
   @doc """
   Returns a map of `Cldr.Number.Symbol.t` structs of the number symbols for each
   of the number systems of a locale.

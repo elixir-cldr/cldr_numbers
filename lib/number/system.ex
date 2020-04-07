@@ -411,14 +411,14 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-    iex> Cldr.Number.System.system_name_from!(:default, "en", TestBackend.Cldr)
-    :latn
+      iex> Cldr.Number.System.system_name_from!(:default, "en", TestBackend.Cldr)
+      :latn
 
-    iex> Cldr.Number.System.system_name_from!("latn", "en", TestBackend.Cldr)
-    :latn
+      iex> Cldr.Number.System.system_name_from!("latn", "en", TestBackend.Cldr)
+      :latn
 
-    iex> Cldr.Number.System.system_name_from!(:traditional, "he", TestBackend.Cldr)
-    :hebr
+      iex> Cldr.Number.System.system_name_from!(:traditional, "he", TestBackend.Cldr)
+      :hebr
 
   """
   @spec system_name_from!(system_name, Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
