@@ -87,11 +87,11 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> {:ok, locale} = Cldr.validate_locale "en-US-u-nu-thai"
+      iex> {:ok, locale} = Cldr.validate_locale "en-US-u-nu-thai", MyApp.Cldr
       iex> Cldr.Number.System.number_system_from_locale locale, MyApp.Cldr
       :thai
 
-      iex> {:ok, locale} = Cldr.validate_locale "en-US"
+      iex> {:ok, locale} = Cldr.validate_locale "en-US", MyApp.Cldr
       iex> Cldr.Number.System.number_system_from_locale locale, MyApp.Cldr
       :latn
 
