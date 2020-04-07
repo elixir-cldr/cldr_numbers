@@ -1,3 +1,13 @@
+# Changelog for Cldr_Numbers v2.13,0
+
+This is the changelog for Cldr v2.13.0 released on _____, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* `Cldr.Number.to_string/2` now detects the number system from any supplied locale. If provided, the option `:number_system` takes precedence over the number system derived from a locale.
+
+* Add `Cldr.Number.System.number_system_from_locale/2` to extract the number system from a locale.
+
 # Changelog for Cldr_Numbers v2.12.1
 
 This is the changelog for Cldr v2.12.1 released on March 2nd, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
