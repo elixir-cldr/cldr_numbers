@@ -262,7 +262,7 @@ defmodule Cldr.Number.Format.Options do
     locale = Map.fetch!(options, :locale)
 
     if Map.fetch!(options, :currency) do
-      {:ok, Map.get(locale.locale, :currency_format) || :currency}
+      {:ok, Currency.currency_format_from_locale(locale)}
     else
       {:ok, :standard}
     end
@@ -289,7 +289,7 @@ defmodule Cldr.Number.Format.Options do
     locale = Map.fetch!(options, :locale)
 
     if Map.get(options, :currency) do
-      {:ok, Map.get(locale.locale, :currency_format) || :currency}
+      {:ok, Currency.currency_format_from_locale(locale)}
     else
       {:ok, format}
     end
