@@ -34,7 +34,8 @@ defmodule CldrNumbers.Mixfile do
 
   defp description do
     """
-    Number and currency localization and formatting functions for the Common Locale Data Repository (CLDR).
+    Number and currency localization and formatting functions for the Common Locale Data
+    Repository (CLDR).
     """
   end
 
@@ -44,9 +45,9 @@ defmodule CldrNumbers.Mixfile do
       {:ex_cldr_currencies, github: "elixir-cldr/cldr_currencies"},
       {:cldr_utils, github: "elixir-cldr/cldr_utils", override: true},
 
-      # {:ex_cldr, "~> 2.13"},
-      # {:ex_cldr_currencies, "~> 2.3"},
-      # {:cldr_utils, "~> 2.6"},
+      # {:ex_cldr, "~> 2.14"},
+      # {:ex_cldr_currencies, "~> 2.5"},
+      # {:cldr_utils, "~> 2.9"},
 
       {:decimal, "~> 1.6 or ~> 2.0"},
       {:jason, "~> 1.0", optional: true},
