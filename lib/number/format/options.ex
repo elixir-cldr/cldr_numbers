@@ -173,9 +173,9 @@ defmodule Cldr.Number.Format.Options do
     other
   end
 
-  def maybe_set_iso_currency_symbol(%{currency_symbol: :iso, format: format} = options) do
-    format = String.replace(format, @currency_placeholder, @iso_placeholder)
-    Map.put(options, :format, format)
+  def maybe_set_iso_currency_symbol(%{format: format} = options) do
+    %{currency_symbol: currency_symbol} = options
+    Map.put(options, :format, maybe_adjust_currency_symbol(format, currency_symbol))
   end
 
   def maybe_set_iso_currency_symbol(other) do
@@ -403,8 +403,6 @@ defmodule Cldr.Number.Format.Options do
     @short_format_styles
   end
 
-  # ========= These two are here for compatibility and need review =========
-
   @doc false
   # Sometimes we want the standard format for a currency but we want the
   # ISO code instead of the currency symbol
@@ -415,6 +413,8 @@ defmodule Cldr.Number.Format.Options do
   def maybe_adjust_currency_symbol(format, _currency_symbol) do
     format
   end
+
+  # ========= This is here for compatibility and needs review =========
 
   def validate_other_format(other_type, backend, options) do
     format_module = Module.concat(backend, Number.Format)
