@@ -334,16 +334,6 @@ defmodule Cldr.Number do
         "Decimal format compiler: syntax error before: \\"#\\""}}
   ```
 
-    * A currency was not specified for a format type of `format: :currency` or
-      `format: :accounting` or any other format that specifies a currency
-      symbol placeholder. In this case the error return looks like:
-
-  ```
-      iex> Cldr.Number.to_string(12345, TestBackend.Cldr, format: :accounting)
-      {:error, {Cldr.FormatError, "currency format \\"¤#,##0.00;(¤#,##0.00)\\" requires that " <>
-      "options[:currency] be specified"}}
-  ```
-
     * The format style requested is not defined for the `locale` and
       `number_system`. This happens typically when the number system is
       `:algorithmic` rather than the more common `:numeric`. In this case the error
@@ -352,7 +342,7 @@ defmodule Cldr.Number do
   ```
       iex> Cldr.Number.to_string(1234, TestBackend.Cldr, locale: "he", number_system: "hebr")
       {:error, {Cldr.UnknownFormatError,
-      "The locale \\"he\\" with number system :hebr does not define a format :standard."}}
+      "The locale \\"he\\" with number system :hebr does not define a format :standard"}}
   ```
   """
   @spec to_string(number | Decimal.t(), Cldr.backend() | Keyword.t() | map(), Keyword.t() | map()) ::

@@ -1,6 +1,12 @@
-# Changelog for Cldr_Numbers v2.13,0
+# Changelog for Cldr_Numbers v2.13.0
 
 This is the changelog for Cldr v2.13.0 released on _____, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Breaking change
+
+* In previous releases, requesting a currency format in `Number.to_string/3` without specifiy an option `:currency` would return an error. In this release, a currency is derived from the locale (either the `:locale` parameter or from `backend.get_locale()`). The affected currency formats are `:currency`, `:accounting`, `:currency_long` and `:currency_short`
+
+* Invalid options passed to `Cldr.Number.to_string/3` will return an error
 
 ### Enhancements
 

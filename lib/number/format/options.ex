@@ -19,11 +19,11 @@ defmodule Cldr.Number.Format.Options do
     :currency_digits,
     :currency_spacing,
     :currency_symbol,
+    :symbols,
     :minimum_grouping_digits,
     :pattern,
     :rounding_mode,
-    :fractional_digits,
-    :symbols
+    :fractional_digits
   ]
 
   # These are the options that can be supplied
@@ -38,38 +38,55 @@ defmodule Cldr.Number.Format.Options do
     :decimal_long
   ]
 
-  @fixed_formats [
-    :standard,
-    :currency,
-    :accounting
-    :short,
-    :long
+  @rounding_modes [
+    :down,
+    :half_up,
+    :half_even,
+    :ceiling,
+    :floor,
+    :half_down,
+    :up
   ]
 
-  @type fixed_formats :: :standard | :currency | :accounting
+  @standard_formats [
+    :standard,
+    :accounting,
+    :currency
+  ]
+
+  @currency_formats [
+    :currency,
+    :accounting,
+    :currency_long,
+    :currency_short
+  ]
+
+  @currency_symbol [
+    :standard,
+    :iso
+  ]
+
+  @type fixed_formats :: :standard | :currency | :accounting | :short | :long
   @type format :: binary() | fixed_formats()
+  @type currency_symbol :: :standard | :iso
   @type short_format_styles ::
     :currency_short | :currency_long | :decimal_short | :decimal_long
 
   @type t :: %__MODULE__{
-    locale: LanguageTag.t()
+    locale: LanguageTag.t(),
     number_system: System.system_name(),
-    format: format(),
     currency: Currency.code(),
+    format: format(),
     currency_digits: pos_integer(),
-    currency_spacing: list(),
-    currency_symbol: String.t(),
+    currency_spacing: map(),
+    symbols: Symbol.t(),
     minimum_grouping_digits: pos_integer(),
     pattern: String.t(),
     rounding_mode: Decimal.rounding(),
     fractional_digits: pos_integer(),
-    symbols: Symbol.t()
   }
 
-
-  defstruct @valid_options
-
-  import Cldr.Number.Symbol, only: [number_symbols_for: 3]
+  defstruct @options
 
   @spec validate_options(Cldr.Math.number_or_decimal(), Cldr.backend(), list({atom, term})) ::
           {:ok, t} | {:error, {module(), String.t()}}
@@ -79,49 +96,161 @@ defmodule Cldr.Number.Format.Options do
          {:ok, backend} <- Cldr.validate_backend(backend) do
 
       options =
-        |> Module.concat(backend, Number).default_options()
+        Module.concat(backend, Number).default_options()
         |> Keyword.merge(options)
         |> Map.new
 
-      Enum.reduce_while(@valid_options, options, fn option, options ->
-        case validate_option(option, options, backend, Map.fetch!(options, option)) do
-          {:ok, result} -> {:cont, Map.put(options, option, result}
-          {error, _} = error -> {:halt, error}
+      Enum.reduce_while(@options, options, fn option, options ->
+        case validate_option(option, options, backend, Map.get(options, option)) do
+          {:ok, result} -> {:cont, Map.put(options, option, result)}
+          {:error, _} = error -> {:halt, error}
         end
       end)
+      |> resolve_standard_format(backend)
+      |> confirm_currency_format_has_currency_code
+      |> set_pattern(number)
+      |> maybe_set_iso_currency_symbol
+      |> structify(__MODULE__)
+      |> wrap_ok
     end
   end
 
-  def validate_option(:locale, options, backend, nil) do
+  def wrap_ok(%__MODULE__{} = options) do
+    {:ok, options}
+  end
+
+  def wrap_ok(other) do
+    other
+  end
+
+  def ensure_only_valid_keys(valid_options, options) do
+    option_keys = Keyword.keys(options)
+
+    if (invalid = (option_keys -- valid_options)) == [] do
+      {:ok, options}
+    else
+      {:error, {ArgumentError, "Invalid options found: #{inspect invalid}"}}
+    end
+  end
+
+  def resolve_standard_format(%{format: format} = options, backend)
+      when format in @standard_formats do
+    locale = Map.fetch!(options, :locale)
+    number_system = Map.fetch!(options, :number_system)
+
+    with {:ok, formats} <- Format.formats_for(locale, number_system, backend) do
+      if resolved_format = Map.get(formats, format, format) do
+        Map.put(options, :format, resolved_format)
+      else
+        {:error,
+          {Cldr.UnknownFormatError,
+            "The locale #{inspect locale.cldr_locale_name} " <>
+            "with number system #{inspect number_system} " <>
+            "does not define a format #{inspect format}"}}
+      end
+    end
+  end
+
+  def resolve_standard_format(other, _backend) do
+    other
+  end
+
+  @currency_placeholder Compiler.placeholder(:currency)
+  @iso_placeholder Compiler.placeholder(:currency) <> Compiler.placeholder(:currency)
+  def confirm_currency_format_has_currency_code(%{format: format, currency: nil} = options)
+      when is_binary(format) do
+    if String.contains?(format, @currency_placeholder) do
+      {:error,
+        {Cldr.FormatError,
+          "currency format #{inspect(format)} requires that " <>
+          "options[:currency] be specified"}}
+    else
+      options
+    end
+  end
+
+  def confirm_currency_format_has_currency_code(other) do
+    other
+  end
+
+  def maybe_set_iso_currency_symbol(%{currency_symbol: :iso, format: format} = options) do
+    format = String.replace(format, @currency_placeholder, @iso_placeholder)
+    Map.put(options, :format, format)
+  end
+
+  def maybe_set_iso_currency_symbol(other) do
+    other
+  end
+
+  def set_pattern(options, number) when is_map(options) and is_number(number) and number < 0 do
+    Map.put(options, :pattern, :negative)
+  end
+
+  def set_pattern(options, %Decimal{sign: sign}) when is_map(options) and sign < 0 do
+    Map.put(options, :pattern, :negative)
+  end
+
+  def set_pattern(options, _number) when is_map(options) do
+    Map.put(options, :pattern, :positive)
+  end
+
+  def set_pattern(other, _number) do
+    other
+  end
+
+  def structify(options, module) when is_map(options) do
+    struct(module, options)
+  end
+
+  def structify(other, _module) do
+    other
+  end
+
+  def validate_option(:locale, _options, backend, nil) do
     {:ok, backend.get_locale()}
   end
 
-  def validate_option(:locale, options, backend, locale) do
+  def validate_option(:locale, _options, backend, locale) do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend) do
       {:ok, locale}
     end
   end
 
   # Number system is extracted from the locale
-  def validate_option(:number_system, options, backend, nil) do
+  def validate_option(:number_system, options, backend, number_system)
+      when is_nil(number_system) or number_system == :default do
     number_system =
       options
       |> Map.fetch!(:locale)
-      |> System.number_system_from_locale()
+      |> System.number_system_from_locale(backend)
 
     {:ok, number_system}
   end
 
   def validate_option(:number_system, options, backend, number_system) do
-    locale = Map.fetch!(options, locale)
-    Cldr.Number.System.system_name_from(number_system, locale, backend)
+    locale = Map.fetch!(options, :locale)
+    System.system_name_from(number_system, locale, backend)
   end
 
-  def validate_option(:currency, options, backend, nil) do
+  def validate_option(:currency, %{format: format, locale: locale}, _backend, nil)
+      when format in @currency_formats do
+    {:ok, Cldr.Currency.currency_from_locale(locale)}
+  end
+
+  def validate_option(:currency, %{format: format, locale: locale}, _backend, nil)
+      when is_binary(format) do
+    if String.contains?(format, @currency_placeholder) do
+      {:ok, Cldr.Currency.currency_from_locale(locale)}
+    else
+      {:ok, nil}
+    end
+  end
+
+  def validate_option(:currency, _options, _backend, nil) do
     {:ok, nil}
   end
 
-  def validate_option(:currency, options, backend, currency) do
+  def validate_option(:currency, _options, _backend, currency) do
     with {:ok, currency} <- Cldr.validate_currency(currency) do
       {:ok, currency}
     end
@@ -129,66 +258,51 @@ defmodule Cldr.Number.Format.Options do
 
   # If a currency code is provided then a currency
   # format is forced
-  def validate_option(:format, options, backend, nil) do
-    currency = Keyword.get(options, :currency)
+  def validate_option(:format, options, _backend, nil) do
+    locale = Map.fetch!(options, :locale)
 
-    if currency do
-      {:ok, :currency}
+    if Map.fetch!(options, :currency) do
+      {:ok, Map.get(locale.locale, :currency_format) || :currency}
     else
       {:ok, :standard}
     end
   end
 
-  def validate_option(:format, options, backend, :short) do
-    currency = Keyword.get(options, :currency)
-
-    if currency do
+  def validate_option(:format, options, _backend, :short) do
+    if Map.get(options, :currency) do
       {:ok, :currency_short}
     else
       {:ok, :decimal_short}
     end
   end
 
-  def validate_option(:format, options, backend, :long) do
-    currency = Keyword.get(options, :currency)
-
-    if currency do
+  def validate_option(:format, options, _backend, :long) do
+    if Map.get(options, :currency) do
       {:ok, :currency_long}
     else
       {:ok, :decimal_long}
     end
   end
 
-  def validate_option(:format, options, backend, format) do
-    currency = Keyword.get(options, :currency)
+  def validate_option(:format, options, _backend, format)
+      when is_atom(format) and format not in [:accounting, :currency_short, :currency_long] do
+    locale = Map.fetch!(options, :locale)
 
-    if currency && format not in [:accounting, :currency] do
-      {:ok, :currency}
+    if Map.get(options, :currency) do
+      {:ok, Map.get(locale.locale, :currency_format) || :currency}
     else
-      {:ok, :standard}
+      {:ok, format}
     end
+  end
+
+  def validate_option(:format, _options, _backend, format) do
+    {:ok, format}
   end
 
   # Currency digits is an opaque option that is a proxy
   # for the `:cash` parameter which is set to true or false
-  def validate_option(:currency_digits, options, backend, nil) do
-    if Keyword.get(options, :cash) do
-      {:ok, :cash}
-    else
-      {:ok, :accounting}
-    end
-  end
-
-  def validate_option(:currency_digits, options, backend, :cash) do
-    {:ok, :cash}
-  end
-
-  def validate_option(:currency_digits, options, backend, :accounting) do
-    {:ok, :accounting}
-  end
-
-  def validate_option(:currency_digits, options, backend, _currency_digits) do
-    if Keyword.get(options, :cash) do
+  def validate_option(:currency_digits, options, _backend, _currency_digits) do
+    if Map.get(options, :cash) do
       {:ok, :cash}
     else
       {:ok, :accounting}
@@ -197,338 +311,109 @@ defmodule Cldr.Number.Format.Options do
 
   # Currency spacing isn't really a user option
   # Its derived for currency formats only
-  def validate_option(:currency_spacing, options, backend, _spacing) do
-    format = Keyword.fetch!(options, :format)
-
-    if format in [:currency, :accounting] do
-      locale = Keyword.fetch!(options, :locale)
-      number_system = Keyword.fetch!(options, :number_system)
-      module = Module.concat(backend, Number.Format)
-      {:ok, module.currency_spacing(locale, number_system))
-    else
-      {:ok, nil}
-    end
-  end
-
-  def valdiate_option(:currency_symbol, options, backend, nil) do
-    locale = Keyword.get(options, :locale)
-    number_system = Keyword.fetch!(options, :number_system)
-    
-    number_symbols_for(options.locale, options.number_system, backend)
-  end
-
-
-
-  def validate_options(number, backend, options) do
-    with {:ok, options} <- merge_default_options(backend, options),
-         {:ok, options} <- validate_locale(backend, options),
-         {:ok, options} <- normalize_options(backend, options),
-         {:ok, options} <- validate_number_system(backend, options),
-         {:ok, options} <- validate_currency_options(backend, options),
-         {:ok, options} <- detect_negative_number(number, options),
-         {:ok, options} <- put_number_symbols(backend, options) do
-      {:ok, struct(__MODULE__, options)}
-    end
-  end
-
-  # Merge options and default options with supplied options always
-  # the winner.  If :currency is specified then the default :format
-  # will be format: currency
-  defp merge_default_options(backend, options) do
-    new_options =
-      Module.concat(backend, Number).default_options()
-      |> merge(options, fn _k, _v1, v2 -> v2 end)
-      |> adjust_for_currency(options[:currency], options[:format])
-
-    {:ok, new_options}
-  end
-
-  @spec validate_locale(Cldr.backend(), t()) ::
-          {:ok, t()} | {:error, {module(), String.t()}}
-
-  defp validate_locale(backend, options) do
-    with {:ok, locale} <- backend.validate_locale(options[:locale]) do
-      options = Map.put(options, :locale, locale)
-      {:ok, options}
-    end
-  end
-
-  defp normalize_options(backend, options) do
-    options =
-      options
-      |> Map.new()
-      |> format_from_locale_or_options
-      |> set_currency_digits
-      |> resolve_standard_format(backend)
-      |> adjust_short_forms
-      |> maybe_use_locale_number_system()
-
-    {:ok, options}
-  end
-
-  @spec format_from_locale_or_options(t()) :: map()
-
-  defp format_from_locale_or_options(%{format: format} = options)
+  def validate_option(:currency_spacing, %{format: format} = options, backend, _spacing)
       when format in [:currency, :accounting] do
-    case options do
-      %{locale: %{locale: %{currency_format: nil}}} ->
-        options
-      %{locale: %{locale: %{currency_format: requested_format}}} ->
-        Map.put(options, :format, requested_format)
-      _other -> options
+    locale = Map.fetch!(options, :locale)
+    number_system = Map.fetch!(options, :number_system)
+    module = Module.concat(backend, Number.Format)
+
+    {:ok, module.currency_spacing(locale, number_system)}
+  end
+
+  def validate_option(:currency_spacing, _options, _backend, _currency_spacing) do
+    {:ok, nil}
+  end
+
+  def validate_option(:currency_symbol, _options, _backend, nil) do
+    {:ok, nil}
+  end
+
+  def validate_option(:currency_symbol, _options, _backend, currency_symbol)
+      when currency_symbol in @currency_symbol do
+    {:ok, currency_symbol}
+  end
+
+  def validate_option(:currency_symbol, _options, _backend, other) do
+    {:error,
+      {ArgumentError,
+        ":currency_symbol must be :standard, :iso or nil. Found #{inspect other}"}}
+  end
+
+  def validate_option(:symbols, options, backend, _any) do
+    locale = Map.fetch!(options, :locale)
+    number_system = Map.fetch!(options, :number_system)
+
+    case Symbol.number_symbols_for(locale, number_system, backend) do
+      {:ok, symbols} -> {:ok, symbols}
+      _other -> {:ok, nil}
     end
   end
 
-  defp format_from_locale_or_options(options) do
-    options
+  def validate_option(:minimum_grouping_digits, _options, _backend, nil) do
+    {:ok, 0}
   end
 
-  @spec maybe_use_locale_number_system(t()) :: t()
-
-  defp maybe_use_locale_number_system(%{locale: %{locale: %{number_system: nil}}} = options) do
-    options
+  def validate_option(:minimum_grouping_digits, _options, _backend, int)
+      when is_integer(int) and int >= 0 do
+    {:ok, int}
   end
 
-  defp maybe_use_locale_number_system(%{locale: %{locale: %{number_system: number_system}}} = options) do
-    if options.number_system == :default do
-      Map.put(options, :number_system, number_system)
-    else
-      options
-    end
+  def validate_option(:minimum_grouping_digits, _options, _backend, other) do
+    {:error,
+      {ArgumentError,
+        ":minimum_grouping_digits must be a positive integer or nil. Found #{inspect other}"}}
   end
 
-  defp maybe_use_locale_number_system(options) do
-    options
+  def validate_option(:fractional_digits, _options, _backend, nil) do
+    {:ok, nil}
   end
 
-  @spec validate_number_system(Cldr.backend(), t()) ::
-          {:ok, t()} | {:error, {module(), String.t()}}
-
-  defp validate_number_system(backend, options) do
-    locale = options.locale
-    number_system = options.number_system
-
-    with {:ok, system} <- System.system_name_from(number_system, locale, backend) do
-      options = Map.put(options, :number_system, system)
-      {:ok, options}
-    end
+  def validate_option(:fractional_digits, _options, _backend, int)
+      when is_integer(int) and int > 0 do
+    {:ok, int}
   end
 
-  @spec validate_currency_options(Cldr.backend(), t()) ::
-          {:ok, t()} | {:error, {module(), String.t()}}
-
-  defp validate_currency_options(backend, options) do
-    format = Map.get(options, :format)
-    currency = currency_from_locale_or_options(options)
-    currency_symbol = Map.get(options, :currency_symbol, :standard)
-    currency_format? = currency_format?(format)
-
-    with {:ok, _currency} <- currency_format_has_code(format, currency_format?, currency) do
-      options =
-        options
-        |> Map.put(:currency, currency)
-        |> Map.put(:format, format)
-        |> Map.put(:currency_spacing, currency_spacing(backend, options))
-        |> Map.put(:format, maybe_adjust_currency_symbol(format, currency_symbol))
-
-      {:ok, options}
-    end
+  def validate_option(:fractional_digits, _options, _backend, other) do
+    {:error,
+      {ArgumentError,
+        ":fractional_digits must be a positive integer or nil. Found #{inspect other}"}}
   end
 
-  defp currency_from_locale_or_options(%{currency: currency}) when not is_nil(currency) do
-    currency
+  def validate_option(:rounding_mode, _options, _backend, nil) do
+    {:ok, :half_even}
   end
 
-  defp currency_from_locale_or_options(%{locale: %{locale: %{currency: currency}}}) do
-    currency
+  def validate_option(:rounding_mode, _options, _backend, rounding_mode)
+      when rounding_mode in @rounding_modes do
+    {:ok, rounding_mode}
   end
 
-  defp currency_from_locale_or_options(_options) do
-    nil
+  def validate_option(:rounding_mode, _options, _backend, other) do
+    {:error,
+      {ArgumentError,
+        ":rounding_mode must be one of #{inspect @rounding_modes}. Found #{inspect other}"}}
   end
+
+  def validate_option(:pattern, _options, _backend, _pattern) do
+    {:ok, nil}
+  end
+
+  @spec short_format_styles() :: list(atom())
+  def short_format_styles do
+    @short_format_styles
+  end
+
+  # ========= These two are here for compatibility and need review =========
 
   @doc false
   # Sometimes we want the standard format for a currency but we want the
   # ISO code instead of the currency symbol
-  @currency_placeholder Compiler.placeholder(:currency)
-  @iso_placeholder Compiler.placeholder(:currency) <> Compiler.placeholder(:currency)
   def maybe_adjust_currency_symbol(format, :iso) when is_binary(format) do
     String.replace(format, @currency_placeholder, @iso_placeholder)
   end
 
   def maybe_adjust_currency_symbol(format, _currency_symbol) do
     format
-  end
-
-  @spec detect_negative_number(Cldr.Math.number_or_decimal(), t()) ::
-          {:ok, t()}
-
-  defp detect_negative_number(number, options)
-       when (is_float(number) or is_integer(number)) and number < 0 do
-    {:ok, Map.put(options, :pattern, :negative)}
-  end
-
-  defp detect_negative_number(%Decimal{sign: sign}, options)
-       when sign < 0 do
-    {:ok, Map.put(options, :pattern, :negative)}
-  end
-
-  defp detect_negative_number(_number, options) do
-    {:ok, Map.put(options, :pattern, :positive)}
-  end
-
-  @spec put_number_symbols(Cldr.backend(), t()) ::
-          {:ok, t()} | {:error, {module(), String.t()}}
-
-  defp put_number_symbols(backend, options) do
-    with {:ok, symbols} <- number_symbols_for(options.locale, options.number_system, backend) do
-      {:ok, Map.put(options, :symbols, symbols)}
-    else
-      {:error, _} ->
-        cldr_locale_name = options.locale.cldr_locale_name
-
-        {
-          :error,
-          {
-            Cldr.UnknownFormatError,
-            "The locale #{inspect(cldr_locale_name)} with number system " <>
-              "#{inspect(options.number_system)} does not define a format " <>
-              "#{inspect(options.format)}."
-          }
-        }
-    end
-  end
-
-  #
-  # Helpers
-  #
-
-  defp currency_spacing(backend, options) do
-    module = Module.concat(backend, Number.Format)
-    module.currency_spacing(options[:locale], options[:number_system])
-  end
-
-  defp merge(defaults, options, fun) when is_list(options) do
-    defaults
-    |> Keyword.merge(options, fun)
-    |> Cldr.Map.from_keyword()
-  end
-
-  defp merge(defaults, options, fun) when is_map(options) do
-    defaults
-    |> Cldr.Map.from_keyword()
-    |> Map.merge(options, fun)
-  end
-
-  @doc false
-  def resolve_standard_format(%{format: format} = options, _backend)
-      when format in @short_format_styles do
-    options
-  end
-
-  def resolve_standard_format(options, backend) do
-    format =
-      options
-      |> Map.get(:format)
-      |> lookup_standard_format(backend, options)
-
-    Map.put(options, :format, format)
-  end
-
-  defp adjust_short_forms(options) do
-    options
-    |> check_options(:short, options[:currency], :currency_short)
-    |> check_options(:long, options[:currency], :currency_long)
-    |> check_options(:short, !options[:currency], :decimal_short)
-    |> check_options(:long, !options[:currency], :decimal_long)
-  end
-
-  # If no format is specified but a currency is,
-  # force the format to be :currency
-  defp adjust_for_currency(options, currency, nil) when not is_nil(currency) do
-    Map.put(options, :format, :currency)
-  end
-
-  defp adjust_for_currency(options, _currency, _format) do
-    options
-  end
-
-  # We use the option `:cash` to decide if we
-  # want to use cash digits or accounting digits
-  defp set_currency_digits(%{cash: true} = options) do
-    options
-    |> Map.delete(:cash)
-    |> Map.put(:currency_digits, :cash)
-  end
-
-  defp set_currency_digits(%{cash: false} = options) do
-    options
-    |> Map.delete(:cash)
-    |> Map.put(:currency_digits, :accounting)
-  end
-
-  defp set_currency_digits(%{currency_digits: _mode} = options) do
-    options
-  end
-
-  defp set_currency_digits(options) do
-    options
-    |> Map.put(:currency_digits, :accounting)
-  end
-
-  @doc false
-  def lookup_standard_format(format, backend, options) when is_atom(format) do
-    locale = Map.get(options, :locale)
-    number_system = Map.get(options, :number_system)
-    options_format = Map.get(options, :format)
-
-    with {:ok, formats} <- Format.formats_for(locale, number_system, backend) do
-      Map.get(formats, format) || options_format
-    end
-  end
-
-  def lookup_standard_format(format, _backend, _options) when is_binary(format) do
-    format
-  end
-
-  # if the format is :short or :long then we set the full format name
-  # based upon whether there is a :currency set in options or not.
-  defp check_options(options, format, check, finally) do
-    if options[:format] == format && check do
-      Map.put(options, :format, finally)
-    else
-      options
-    end
-  end
-
-  defp currency_format_has_code(format, true, nil) do
-    {
-      :error,
-      {
-        Cldr.FormatError,
-        "currency format #{inspect(format)} requires that " <> "options[:currency] be specified"
-      }
-    }
-  end
-
-  defp currency_format_has_code(_format, true, currency) do
-    Cldr.validate_currency(currency)
-  end
-
-  defp currency_format_has_code(_format, _boolean, currency) do
-    {:ok, currency}
-  end
-
-  defp currency_format?(format) when is_atom(format) do
-    format == :currency_short
-  end
-
-  defp currency_format?(format) when is_binary(format) do
-    String.contains?(format, @currency_placeholder)
-  end
-
-  defp currency_format?(_format) do
-    false
   end
 
   def validate_other_format(other_type, backend, options) do
@@ -552,9 +437,6 @@ defmodule Cldr.Number.Format.Options do
       end
     end
   end
+  #
 
-  @spec short_format_styles() :: list(atom())
-  def short_format_styles do
-    @short_format_styles
-  end
 end

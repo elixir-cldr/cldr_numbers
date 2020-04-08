@@ -41,8 +41,8 @@ defmodule Number.Format.Test do
     assert {:ok, "1.40"} == TestBackend.Cldr.Number.to_string(1.4, fractional_digits: 2)
   end
 
-  test "a currency format with no currency returns an error" do
-    assert {:error, _message} = TestBackend.Cldr.Number.to_string(1234, format: :currency)
+  test "a currency format with no currency uses the locales currency" do
+    assert {:ok, "$1,234.00"} = TestBackend.Cldr.Number.to_string(1234, format: :currency)
   end
 
   test "that -0 is formatted as 0" do
@@ -87,7 +87,7 @@ defmodule Number.Format.Test do
                :error,
                {
                  Cldr.UnknownFormatError,
-                 "The locale \"he\" with number system :hebr does not define a format :standard."
+                 "The locale \"he\" with number system :hebr does not define a format :standard"
                }
              }
   end
