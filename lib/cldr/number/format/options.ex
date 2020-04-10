@@ -123,15 +123,20 @@ defmodule Cldr.Number.Format.Options do
     other
   end
 
-  def ensure_only_valid_keys(valid_options, options) do
-    option_keys = Keyword.keys(options)
-
-    if (invalid = (option_keys -- valid_options)) == [] do
-      {:ok, options}
-    else
-      {:error, {ArgumentError, "Invalid options found: #{inspect invalid}"}}
-    end
+  # TODO for ex_cldr_numbers 3.0
+  def ensure_only_valid_keys(_valid_options, options) do
+    {:ok, options}
   end
+
+  # def ensure_only_valid_keys(valid_options, options) do
+  #   option_keys = Keyword.keys(options)
+  #
+  #   if (invalid = (option_keys -- valid_options)) == [] do
+  #     {:ok, options}
+  #   else
+  #     {:error, {ArgumentError, "Invalid options found: #{inspect invalid}"}}
+  #   end
+  # end
 
   def resolve_standard_format(%{format: format} = options, backend)
       when format in @standard_formats do
