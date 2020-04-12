@@ -125,7 +125,7 @@ defmodule Cldr.Number.Format.Compiler do
 
   # Default rounding increment (not the same as rounding decimal
   # digits.  `0` means no rounding increment to be applied.
-  @default_rounding 0
+  @default_round_nearest 0
 
   @doc """
   Returns a number placeholder symbol.
@@ -359,7 +359,7 @@ defmodule Cldr.Number.Format.Compiler do
       exponent_sign: exponent_sign(format_parts),
       scientific_rounding: scientific_rounding(format_parts),
       grouping: grouping(format_parts),
-      rounding: rounding(format_parts),
+      round_nearest: round_nearest(format_parts),
       padding_length: padding_length(format[:positive][:pad], format),
       padding_char: padding_char(format),
       multiplier: multiplier(format),
@@ -712,19 +712,19 @@ defmodule Cldr.Number.Format.Compiler do
   # * In a pattern, digits '1' through '9' specify rounding, but otherwise
   #   behave identically to digit '0'.
 
-  defp rounding(%{"integer" => integer_format, "fraction" => fraction_format}) do
+  defp round_nearest(%{"integer" => integer_format, "fraction" => fraction_format}) do
     format =
       (integer_format <> @decimal_separator <> fraction_format)
       |> String.replace(@rounding_pattern, "")
       |> String.trim_trailing(@decimal_separator)
 
     case Float.parse(format) do
-      :error -> @default_rounding
+      :error -> @default_round_nearest
       {rounding, ""} -> rounding
     end
   end
 
-  defp rounding(_), do: @default_rounding
+  defp round_nearest(_), do: @default_round_nearest
 
   @doc """
   A regular expression that can be used to split either a number format

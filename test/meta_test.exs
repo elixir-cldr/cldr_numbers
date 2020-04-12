@@ -17,7 +17,7 @@ defmodule Cldr.Number.Format.Meta.Test do
                number: 0,
                padding_char: " ",
                padding_length: 0,
-               rounding: 0,
+               round_nearest: 0,
                scientific_rounding: 0,
                significant_digits: %{max: 0, min: 0}
              }
@@ -41,7 +41,7 @@ defmodule Cldr.Number.Format.Meta.Test do
       |> Meta.put_exponent_digits(5)
       |> Meta.put_exponent_sign(true)
       |> Meta.put_scientific_rounding_digits(6)
-      |> Meta.put_rounding_digits(7)
+      |> Meta.put_round_nearest_digits(7)
       |> Meta.put_padding_length(8)
       |> Meta.put_padding_char("Z")
       |> Meta.put_multiplier(9)
@@ -49,7 +49,7 @@ defmodule Cldr.Number.Format.Meta.Test do
     assert meta.exponent_digits == 5
     assert meta.exponent_sign == true
     assert meta.scientific_rounding == 6
-    assert meta.rounding == 7
+    assert meta.round_nearest == 7
     assert meta.padding_length == 8
     assert meta.padding_char == "Z"
     assert meta.multiplier == 9

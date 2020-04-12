@@ -214,11 +214,15 @@ defmodule Cldr.Number do
     locale currently in affect for this `Process` and which is set by
     `Cldr.put_locale/1`.
 
-  * `:fractional_digits` is set to a positive integer value then the number
-    will be rounded to that number of digits and displayed accordingly overriding
+  * If `:fractional_digits` is set to a positive integer value then the number
+    will be rounded to that number of digits and displayed accordingly - overriding
     settings that would be applied by default.  For example, currencies have
     fractional digits defined reflecting each currencies minor unit.  Setting
     `:fractional_digits` will override that setting.
+
+  * If `:round_nearest` is set to a positive integer value then the number
+    will be rounded to nearest increment of that value - overriding
+    settings that would be applied by default.
 
   * `:minimum_grouping_digits` overrides the CLDR definition of minimum grouping
     digits. For example in the locale `es` the number `1234` is formatted by default

@@ -23,7 +23,8 @@ defmodule Cldr.Number.Format.Options do
     :minimum_grouping_digits,
     :pattern,
     :rounding_mode,
-    :fractional_digits
+    :fractional_digits,
+    :round_nearest
   ]
 
   # These are the options that can be supplied
@@ -84,6 +85,7 @@ defmodule Cldr.Number.Format.Options do
     pattern: String.t(),
     rounding_mode: Decimal.rounding(),
     fractional_digits: pos_integer(),
+    round_nearest: pos_integer()
   }
 
   defstruct @options
@@ -382,6 +384,21 @@ defmodule Cldr.Number.Format.Options do
     {:error,
       {ArgumentError,
         ":fractional_digits must be a positive integer or nil. Found #{inspect other}"}}
+  end
+
+  def validate_option(:round_nearest, _options, _backend, nil) do
+    {:ok, nil}
+  end
+
+  def validate_option(:round_nearest, _options, _backend, int)
+      when is_integer(int) and int > 0 do
+    {:ok, int}
+  end
+
+  def validate_option(:round_nearest, _options, _backend, other) do
+    {:error,
+      {ArgumentError,
+        ":round_nearest must be a positive integer or nil. Found #{inspect other}"}}
   end
 
   def validate_option(:rounding_mode, _options, _backend, nil) do

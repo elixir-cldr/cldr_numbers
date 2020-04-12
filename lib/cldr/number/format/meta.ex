@@ -116,7 +116,7 @@ defmodule Cldr.Number.Format.Meta do
               fraction: %{first: 0, rest: 0},
               integer: %{first: 0, rest: 0}
             },
-            rounding: 0,
+            round_nearest: 0,
             padding_length: 0,
             padding_char: " ",
             multiplier: 1,
@@ -198,14 +198,14 @@ defmodule Cldr.Number.Format.Meta do
   end
 
   @doc """
-  Set the number of digits to which the number should
+  Set the increment to which the number should
   be rounded.
 
   """
-  @spec put_integer_digits(t(), non_neg_integer) :: t()
-  def put_rounding_digits(%__MODULE__{} = meta, digits) when is_integer(digits) do
+  @spec put_round_nearest_digits(t(), non_neg_integer) :: t()
+  def put_round_nearest_digits(%__MODULE__{} = meta, digits) when is_integer(digits) do
     meta
-    |> Map.put(:rounding, digits)
+    |> Map.put(:round_nearest, digits)
   end
 
   @doc """

@@ -66,6 +66,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     |> adjust_fraction_for_currency(options.currency, options.currency_digits, backend)
     |> adjust_fraction_for_significant_digits(number)
     |> adjust_for_fractional_digits(options.fractional_digits)
+    |> adjust_for_round_nearest(options.round_nearest)
     |> Map.put(:number, number)
   end
 
@@ -154,12 +155,12 @@ defmodule Cldr.Number.Formatter.Decimal do
   # Round to nearest rounds a number to the nearest increment specified.  For example
   # if `rounding: 5` then we round to the nearest multiple of 5.  The appropriate rounding
   # mode is used.
-  def round_to_nearest(number, %{rounding: rounding}, _backend, %{rounding_mode: _rounding_mode})
+  def round_to_nearest(number, %{round_nearest: rounding}, _backend, %{rounding_mode: _rounding_mode})
       when rounding == 0 do
     number
   end
 
-  def round_to_nearest(%Decimal{} = number, %{rounding: rounding}, _backend, %{
+  def round_to_nearest(%Decimal{} = number, %{round_nearest: rounding}, _backend, %{
         rounding_mode: rounding_mode
       }) do
     rounding = Decimal.new(rounding)
@@ -170,7 +171,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     |> Decimal.mult(rounding)
   end
 
-  def round_to_nearest(number, %{rounding: rounding}, _backend, %{rounding_mode: rounding_mode})
+  def round_to_nearest(number, %{round_nearest: rounding}, _backend, %{rounding_mode: rounding_mode})
       when is_float(number) do
     number
     |> Kernel./(rounding)
@@ -178,7 +179,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     |> Kernel.*(rounding)
   end
 
-  def round_to_nearest(number, %{rounding: rounding}, _backend, %{rounding_mode: rounding_mode})
+  def round_to_nearest(number, %{round_nearest: rounding}, _backend, %{rounding_mode: rounding_mode})
       when is_integer(number) do
     number
     |> Kernel./(rounding)
@@ -705,7 +706,7 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   def do_adjust_fraction(meta, digits, rounding) do
     rounding = power_of_10(-digits) * rounding
-    %{meta | fractional_digits: %{max: digits, min: digits}, rounding: rounding}
+    %{meta | fractional_digits: %{max: digits, min: digits}, round_nearest: rounding}
   end
 
   #
@@ -749,12 +750,25 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   # To allow overriding fractional digits
+  # This causes rounding of the number
   def adjust_for_fractional_digits(meta, nil) do
     meta
   end
 
   def adjust_for_fractional_digits(meta, digits) do
     %{meta | fractional_digits: %{max: digits, min: digits}}
+  end
+
+  # To allow overriding round nearest
+  # which impacts the precision of the number
+  # and is commonly required for currency
+  # formatting
+  def adjust_for_round_nearest(meta, nil) do
+    meta
+  end
+
+  def adjust_for_round_nearest(meta, digits) do
+    %{meta | round_nearest: digits}
   end
 
   @doc false
