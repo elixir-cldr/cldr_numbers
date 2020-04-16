@@ -102,4 +102,12 @@ defmodule Number.Format.Test do
     assert TestBackend.Cldr.Number.to_string(123, currency: :USD, currency_symbol: :iso) ==
              {:ok, "USD 123.00"}
   end
+
+  test "round_nearest to_string parameter" do
+    assert Cldr.Number.to_string(1234, MyApp.Cldr, round_nearest: 5) == {:ok, "1,235"}
+    assert Cldr.Number.to_string(1231, MyApp.Cldr, round_nearest: 5) == {:ok, "1,230"}
+    assert Cldr.Number.to_string(1234, MyApp.Cldr, round_nearest: 10) == {:ok, "1,230"}
+    assert Cldr.Number.to_string(1231, MyApp.Cldr, round_nearest: 10) == {:ok, "1,230"}
+    assert Cldr.Number.to_string(1235, MyApp.Cldr, round_nearest: 10) == {:ok, "1,240"}
+  end
 end

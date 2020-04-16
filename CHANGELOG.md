@@ -4,13 +4,13 @@ This is the changelog for Cldr v2.13.0 released on _____, 2020.  For older chang
 
 ### Breaking change
 
-* In previous releases, requesting a currency format in `Number.to_string/3` without specifiy an option `:currency` would return an error. In this release, a currency is derived from the locale (either the `:locale` parameter or from `backend.get_locale()`). The affected currency formats are `:currency`, `:accounting`, `:currency_long` and `:currency_short`
-
-* Invalid options passed to `Cldr.Number.to_string/3` will return an error
+* In previous releases, requesting a currency format in `Number.to_string/3` without specifying an option `:currency` would return an error. In this release, a currency is derived from the locale (either the `:locale` parameter or from `backend.get_locale()`). The affected currency formats are `:currency`, `:accounting`, `:currency_long` and `:currency_short`
 
 ### Enhancements
 
 * `Cldr.Number.to_string/2` now detects the number system from any supplied locale. If provided, the option `:number_system` takes precedence over the number system derived from a locale.
+
+* Add `:round_nearest` formatting option for `Cldr.Number.to_string/3`. If provided, this option overrides the value defined by the `:format` option.
 
 * Refines number system detection. The order of precedence is:
 
