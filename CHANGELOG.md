@@ -14,11 +14,11 @@ This is the changelog for Cldr v2.13.0 released on May 2nd, 2020.  For older cha
 
 * Refines number system detection. The order of precedence is:
 
-    * The `:number_system` option if provided
+	* The `:number_system` option if provided
 
-		* The `:number_system` from the locale if provided
+	* The `:number_system` from the locale if provided
 
-		* The `:number_system` from the current locale for the supplied backend. This locale is retrieved with `backend.get_locale()`
+	* The `:number_system` from the current locale for the supplied backend. This locale is retrieved with `backend.get_locale()`
 
 # Changelog for Cldr_Numbers v2.12.1
 
