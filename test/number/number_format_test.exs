@@ -110,4 +110,9 @@ defmodule Number.Format.Test do
     assert Cldr.Number.to_string(1231, MyApp.Cldr, round_nearest: 10) == {:ok, "1,230"}
     assert Cldr.Number.to_string(1235, MyApp.Cldr, round_nearest: 10) == {:ok, "1,240"}
   end
+
+  test "fraction digits of 0" do
+    assert Cldr.Number.to_string(50.12, MyApp.Cldr, fractional_digits: 0, currency: :USD) == {:ok, "$50"}
+    assert Cldr.Number.to_string(50.82, MyApp.Cldr, fractional_digits: 0, currency: :USD) == {:ok, "$51"}
+  end
 end

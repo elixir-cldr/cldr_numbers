@@ -376,14 +376,14 @@ defmodule Cldr.Number.Format.Options do
   end
 
   def validate_option(:fractional_digits, _options, _backend, int)
-      when is_integer(int) and int > 0 do
+      when is_integer(int) and int >= 0 do
     {:ok, int}
   end
 
   def validate_option(:fractional_digits, _options, _backend, other) do
     {:error,
       {ArgumentError,
-        ":fractional_digits must be a positive integer or nil. Found #{inspect other}"}}
+        ":fractional_digits must be a an integer >= 0 or nil. Found #{inspect other}"}}
   end
 
   def validate_option(:round_nearest, _options, _backend, nil) do
