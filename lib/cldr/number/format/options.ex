@@ -52,7 +52,8 @@ defmodule Cldr.Number.Format.Options do
   @standard_formats [
     :standard,
     :accounting,
-    :currency
+    :currency,
+    :percent
   ]
 
   @currency_formats [

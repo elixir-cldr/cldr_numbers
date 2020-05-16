@@ -115,4 +115,9 @@ defmodule Number.Format.Test do
     assert Cldr.Number.to_string(50.12, MyApp.Cldr, fractional_digits: 0, currency: :USD) == {:ok, "$50"}
     assert Cldr.Number.to_string(50.82, MyApp.Cldr, fractional_digits: 0, currency: :USD) == {:ok, "$51"}
   end
+
+  test "to_string with :percent format" do
+    assert MyApp.Cldr.Number.to_string!(123.456,format: :percent, fractional_digits: 1) ==
+      "12,345.6%"
+  end
 end

@@ -1,10 +1,18 @@
+# Changelog for Cldr_Numbers v2.13.2
+
+This is the changelog for Cldr v2.13.1 released on May 16th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix regression and allow `:percent` formats in `Cldr.Number.to_string/3`. Thanks to @maennchen. Fixes #13.
+
 # Changelog for Cldr_Numbers v2.13.1
 
 This is the changelog for Cldr v2.13.1 released on May 14th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
-* Fix regression and allow `:fracrtional_digits` to be `0`. Thanks to @coladarci. Fixes #12.
+* Fix regression and allow `:fractional_digits` to be `0`. Thanks to @coladarci. Fixes #12.
 
 # Changelog for Cldr_Numbers v2.13.0
 
