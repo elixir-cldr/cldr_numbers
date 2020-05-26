@@ -705,6 +705,7 @@ defmodule Cldr.Number do
     with {:ok, options} <- Options.validate_options(number, backend, options),
          {:ok, format} <- Options.validate_other_format(other_format, backend, options),
          {:ok, formatted_number} <- to_string(number, backend, options) do
+
       final_format =
         [formatted_number]
         |> Cldr.Substitution.substitute(format)
@@ -762,6 +763,15 @@ defmodule Cldr.Number do
 
   def to_number_system!(number, system, backend \\ Cldr.default_backend()) do
     Cldr.Number.System.to_system!(number, system, backend)
+  end
+
+  @doc """
+  Parse a string into a number and potentially with
+  a current code or symbol
+
+  """
+  def parse(string, options \\ nil) do
+    Cldr.Number.Parser.parse(string, options)
   end
 
   @doc """
