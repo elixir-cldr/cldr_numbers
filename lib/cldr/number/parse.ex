@@ -1,6 +1,7 @@
 defmodule Cldr.Number.Parser do
   @moduledoc """
-  Parse a string into a number and possibly a currency code
+  Functions for parsing numbers and currencies from
+  a string.
 
   """
 
@@ -120,10 +121,10 @@ defmodule Cldr.Number.Parser do
       iex> Cldr.Number.Parser.parse("-1_000_000.34")
       {:ok, -1000000.34}
 
-      iex(12)> Cldr.Number.Parser.parse("1.000", locale: "de", number: :integer)
+      iex> Cldr.Number.Parser.parse("1.000", locale: "de", number: :integer)
       {:ok, 1000}
 
-      iex(11)> Cldr.Number.Parser.parse("＋1.000,34", locale: "de", number: :integer)
+      iex> Cldr.Number.Parser.parse("＋1.000,34", locale: "de", number: :integer)
       {:error, "+1000.34"}
 
   """
@@ -205,6 +206,12 @@ defmodule Cldr.Number.Parser do
     It is recommended to use numbers greater than `0.8` in
     order to reduce false positives.
 
+  ## Returns
+
+  * An ISO4217 currency code as an atom or
+
+  * `{:error, {exception, message}}`
+
   ## Notes
 
   The `:only` and `:except` options accept a list of
@@ -256,6 +263,90 @@ defmodule Cldr.Number.Parser do
     end
   end
 
+  @doc """
+  Resolve a currency from a string
+
+  ## Arguments
+
+  * `list` is any list in which currency
+    names and symbols are expected
+
+  * `options` is a keyword list of options
+
+  ## Options
+
+  * `:backend` is any module() that includes `use Cldr` and therefore
+    is a `Cldr` backend module(). The default is `Cldr.default_backend/0`
+
+  * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
+    The default is `<backend>.get_locale()`
+
+  * `:only` is an `atom` or list of `atoms` representing the
+    currencies or currency types to be considered for a match.
+    The equates to a list of acceptable currencies for parsing.
+    See the notes below for currency types.
+
+  * `:except` is an `atom` or list of `atoms` representing the
+    currencies or currency types to be not considered for a match.
+    This equates to a list of unacceptable currencies for parsing.
+    See the notes below for currency types.
+
+  * `:fuzzy` is a float greater than `0.0` and less than or
+    equal to `1.0` which is used as input to
+    `String.jaro_distance/2` to determine is the provided
+    currency string is *close enough* to a known currency
+    string for it to identify definitively a currency code.
+    It is recommended to use numbers greater than `0.8` in
+    order to reduce false positives.
+
+  ## Returns
+
+  * An ISO417 currency code as an atom or
+
+  * `{:error, {exception, message}}`
+
+  ## Notes
+
+  The `:only` and `:except` options accept a list of
+  currency codes and/or currency types.  The following
+  types are recognised.
+
+  If both `:only` and `:except` are specified,
+  the `:except` entries take priority - that means
+  any entries in `:except` are removed from the `:only`
+  entries.
+
+    * `:all`, the default, considers all currencies
+
+    * `:current` considers those currencies that have a `:to`
+      date of nil and which also is a known ISO4217 currency
+
+    * `:historic` is the opposite of `:current`
+
+    * `:tender` considers currencies that are legal tender
+
+    * `:unannotated` considers currencies that don't have
+      "(some string)" in their names.  These are usually
+      financial instruments.
+
+  ## Examples
+
+      iex> Cldr.Number.Parser.resolve_currency("US dollars")
+      :USD
+
+      iex> Cldr.Number.Parser.resolve_currency("100 eurosports", fuzzy: 0.75)
+      :EUR
+
+      iex> Cldr.Number.Parser.resolve_currency("dollars des États-Unis", locale: "fr")
+      :USD
+
+      iex> Cldr.Number.Parser.resolve_currency("not a known currency", locale: "fr")
+      {:error,
+       {Cldr.UnknownCurrencyError,
+        "The currency \\"not a known currency\\" is unknown or not supported"}}
+
+  """
   def resolve_currency(string, options \\ []) do
     {locale, backend} = Cldr.locale_and_backend_from(options)
     string = String.trim(string)
@@ -323,7 +414,7 @@ defmodule Cldr.Number.Parser do
   end
 
   defp unknown_currency_error(currency) do
-    {Money.UnknownCurrencyError, "The currency #{inspect(currency)} is unknown or not supported"}
+    {Cldr.UnknownCurrencyError, "The currency #{inspect(currency)} is unknown or not supported"}
   end
 
 end

@@ -1,3 +1,17 @@
+# Changelog for Cldr_Numbers v2.14.0
+
+This is the changelog for Cldr v2.14.0 released on _____, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Add `Cldr.Number.Parser.parse/2` to parse numbers in a locale-aware manner
+
+* Add `Cldr.Number.Parser.scan/2` to parse a string into a list of string and numbers
+
+* Add `Cldr.Number.Parser.resolve_currencies/2` to match strings to currency codes in a list
+
+* Add `Cldr.Number.Parser.resolve_currency/2` to match a string to a currency code
+
 # Changelog for Cldr_Numbers v2.13.2
 
 This is the changelog for Cldr v2.13.2 released on May 16th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

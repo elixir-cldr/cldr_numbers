@@ -71,7 +71,7 @@ then retrieve `ex_cldr_numbers` from [hex](https://hex.pm/packages/ex_cldr_numbe
 
 `ex_cldr_numbers` uses the configuration set for the dependency `ex_cldr`.  See the documentation for [ex_cldr](https://hexdocs.pm/ex_cldr)
 
-## Using Cldr_Numbers
+## Formatting Numbers
 
 CLDR defines many different ways to format a number for different uses and defines a set of formats categorised by common pupose to make it easier to express the same intent across many different locales that represent many different territories, cultures, number systems and scripts.
 
@@ -250,7 +250,7 @@ iex> MyApp.Number.to_string 123, format: :currency, locale: "en-u-cu-thb"
 User-defined decimal formats are also supported using the formats described by
 [Unicode technical report TR35](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns).
 
-The formats described therein are supported by `Cldr` with some minor omissions and variations.  Some examples of number formats are:
+The formats described therein are supported by `ex_cldr_numbers` with some minor omissions and variations.  Some examples of number formats are:
 
   | Pattern       | Currency        | Text        |
   | ------------- | :-------------: | ----------: |
@@ -275,8 +275,8 @@ The folllowing table describes the symbols used in a number format string and is
   | @      | Number     | digit                 | Significant digit                                |
   | #      | Number     | digit, *nothing*      | Digit, omit leading/trailing zeros               |
   | .      | Number     | decimal symbol        | Decimal or monetary decimal separator            |
-  | -      | Number     | minus sign            | Minus sign<sup>[1]</sup>                           |
-  | ,      | Number     | grouping separator    | Decimal/monetary grouping separator<sup>[2]</sup>  |
+  | -      | Number     | minus sign            | Minus sign<sup>[1]</sup>                         |
+  | ,      | Number     | grouping separator    | Decimal/monetary grouping separator<sup>[2]</sup |
   | E      | Number     | exponent              | Separates mantissa and exponent for scientific formatting |
   | +      | Exponent   | plus sign             | Prefix positive exponent with plus sign          |
   | %      | Pre/Suffix | percent sign          | Multiply by 100 and show as a percentage         |
@@ -423,3 +423,8 @@ iex> MyApp.Cldr.Rbnf.Ordinal.digits_ordinal 1989, "en"
 #### RBNF Rules with Float numbers
 
 RBNF is primarily oriented towards positive integer numbers.  Whilst the standard caters for negative numbers and fractional numbers the implementation of the rules is incomplete.  Use with care.
+
+## Parsing Numbers from String
+
+To be completed
+
