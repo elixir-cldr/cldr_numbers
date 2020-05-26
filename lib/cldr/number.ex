@@ -766,15 +766,6 @@ defmodule Cldr.Number do
   end
 
   @doc """
-  Parse a string into a number and potentially with
-  a current code or symbol
-
-  """
-  def parse(string, options \\ nil) do
-    Cldr.Number.Parser.parse(string, options)
-  end
-
-  @doc """
   Return the precision (number of digits) of a number
 
   This function delegates to `Cldr.Digits.number_of_digits/1`

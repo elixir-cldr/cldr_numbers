@@ -470,6 +470,193 @@ defmodule Cldr.Number.Backend.Number do
           Cldr.Number.to_range_string(range, unquote(backend), options)
         end
 
+        @doc """
+        Scans a string locale-aware manner and returns
+        a list of strings and numbers.
+
+        ## Arguments
+
+        * `string` is any `String.t`
+
+        * `options` is a keyword list of options
+
+        ## Options
+
+        * `:number` is one of `:integer`, `:float`,
+          `:decimal` or `nil`. The default is `nil`
+          meaning that the type auto-detected as either
+          an `integer` or a `float`.
+
+        * `:locale` is any locale returned by `Cldr.known_locale_names/1`
+          or a `Cldr.LanguageTag.t`. The default is `backend.get_locale/1`.
+
+        ## Returns
+
+        * A list of strings and numbers
+
+        ## Notes
+
+        Number parsing is performed by `Cldr.Number.Parser.parse/2`
+        and any options provided are passed to that function.
+
+        ## Examples
+
+            iex> #{inspect(__MODULE__)}.scan("£1_000_000.34")
+            ["£", 1000000.34]
+
+            iex> #{inspect(__MODULE__)}.scan("I want £1_000_000 dollars")
+            ["I want £", 1000000, " dollars"]
+
+            iex> #{inspect(__MODULE__)}.scan("The prize is 23")
+            ["The prize is ", 23]
+
+            iex> #{inspect(__MODULE__)}.scan("The lottery number is 23 for the next draw")
+            ["The lottery number is ", 23, " for the next draw"]
+
+            iex> #{inspect(__MODULE__)}.scan("The loss is -1.000 euros", locale: "de", number: :integer)
+            ["The loss is ", -1000, " euros"]
+
+        """
+        def scan(string, options \\ []) do
+          options = Keyword.put(options, :backend, unquote(backend))
+          Cldr.Number.Parser.scan(string, options)
+        end
+
+        @doc """
+        Parse a string locale-aware manner and return
+        a number.
+
+        ## Arguments
+
+        * `string` is any `String.t`
+
+        * `options` is a keyword list of options
+
+        ## Options
+
+        * `:number` is one of `:integer`, `:float`,
+          `:decimal` or `nil`. The default is `nil`
+          meaning that the type auto-detected as either
+          an `integer` or a `float`.
+
+        * `:locale` is any locale returned by `Cldr.known_locale_names/1`
+          or a `Cldr.LanguageTag.t`. The default is `backend.get_locale/1`.
+
+        ## Returns
+
+        * A number of the requested or default type or
+
+        * `{:error, string}` if no number could be determined
+
+        ## Notes
+
+        This function parses a string to return a number but
+        in a locale-aware manner. It will normalise grouping
+        characters and decimal separators, different forms of
+        the `+` and `-` symbols that appear in Unicode and
+        strips any `_` characters that might be used for
+        formatting in a string. It then parses the number
+        using the Elixir standard library functions.
+
+        ## Examples
+
+            iex> #{inspect(__MODULE__)}.parse("＋1.000,34", locale: "de")
+            {:ok, 1000.34}
+
+            iex> #{inspect(__MODULE__)}.parse("-1_000_000.34")
+            {:ok, -1000000.34}
+
+            iex> #{inspect(__MODULE__)}.parse("1.000", locale: "de", number: :integer)
+            {:ok, 1000}
+
+            iex> #{inspect(__MODULE__)}.parse("＋1.000,34", locale: "de", number: :integer)
+            {:error, "+1000.34"}
+
+        """
+        def parse(string, options \\ []) do
+          options = Keyword.put(options, :backend, unquote(backend))
+          Cldr.Number.Parser.parse(string, options)
+        end
+
+        @doc """
+        Resolve curencies from strings within
+        a list.
+
+        ## Arguments
+
+        * `list` is any list in which currency
+          names and symbols are expected
+
+        * `options` is a keyword list of options
+
+        ## Options
+
+        * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
+          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
+          The default is `<backend>.get_locale()`
+
+        * `:only` is an `atom` or list of `atoms` representing the
+          currencies or currency types to be considered for a match.
+          The equates to a list of acceptable currencies for parsing.
+          See the notes below for currency types.
+
+        * `:except` is an `atom` or list of `atoms` representing the
+          currencies or currency types to be not considered for a match.
+          This equates to a list of unacceptable currencies for parsing.
+          See the notes below for currency types.
+
+        * `:fuzzy` is a float greater than `0.0` and less than or
+          equal to `1.0` which is used as input to
+          `String.jaro_distance/2` to determine is the provided
+          currency string is *close enough* to a known currency
+          string for it to identify definitively a currency code.
+          It is recommended to use numbers greater than `0.8` in
+          order to reduce false positives.
+
+        ## Notes
+
+        The `:only` and `:except` options accept a list of
+        currency codes and/or currency types.  The following
+        types are recognised.
+
+        If both `:only` and `:except` are specified,
+        the `:except` entries take priority - that means
+        any entries in `:except` are removed from the `:only`
+        entries.
+
+          * `:all`, the default, considers all currencies
+
+          * `:current` considers those currencies that have a `:to`
+            date of nil and which also is a known ISO4217 currency
+
+          * `:historic` is the opposite of `:current`
+
+          * `:tender` considers currencies that are legal tender
+
+          * `:unannotated` considers currencies that don't have
+            "(some string)" in their names.  These are usually
+            financial instruments.
+
+        ## Examples
+
+            iex> #{inspect(__MODULE__)}.scan("100 US dollars")
+            ...> |> #{inspect(__MODULE__)}.resolve_currencies
+            [100, :USD]
+
+            iex> #{inspect(__MODULE__)}.scan("100 eurosports")
+            ...> |> #{inspect(__MODULE__)}.resolve_currencies(fuzzy: 0.8)
+            [100, :EUR]
+
+            iex> #{inspect(__MODULE__)}.scan("100 dollars des États-Unis")
+            ...> |> #{inspect(__MODULE__)}.resolve_currencies(locale: "fr")
+            [100, :USD]
+
+        """
+        def resolve_currencies(list, options \\ []) when is_list(list) and is_list(options) do
+          options = Keyword.put(options, :backend, unquote(backend))
+          Cldr.Number.Parser.resolve_currencies(list, options)
+        end
+
         @doc false
         def default_options do
           [

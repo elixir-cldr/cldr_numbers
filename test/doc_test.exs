@@ -1,6 +1,8 @@
 defmodule Cldr.Number.Doc.Test do
   use ExUnit.Case, async: true
 
+  Application.put_env(:ex_cldr, :default_backend, TestBackend.Cldr)
+
   doctest Cldr.Number
   doctest Cldr.Number.String
   doctest Cldr.Number.Format
@@ -8,6 +10,7 @@ defmodule Cldr.Number.Doc.Test do
   doctest Cldr.Number.System
   doctest Cldr.Number.Transliterate
   doctest Cldr.Number.Format.Compiler
+  doctest Cldr.Number.Parser
 
   doctest Cldr.Number.Formatter.Decimal
   doctest Cldr.Number.Formatter.Short

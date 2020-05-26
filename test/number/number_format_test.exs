@@ -16,21 +16,19 @@ defmodule Number.Format.Test do
   end)
 
   test "to_string with no arguments" do
-    :ok = Application.put_env(:ex_cldr, :default_backend, MyApp.Cldr)
     assert {:ok, "1,234"} = Cldr.Number.to_string(1234)
-    :ok = Application.delete_env(:ex_cldr, :default_backend)
   end
 
   test "to_string with only options" do
-    :ok = Application.put_env(:ex_cldr, :default_backend, MyApp.Cldr)
     assert {:ok, "1.234"} = Cldr.Number.to_string(1234, locale: "de")
-    :ok = Application.delete_env(:ex_cldr, :default_backend)
   end
 
   test "that we raise if no default backend" do
+    :ok = Application.delete_env(:ex_cldr, :default_backend)
     assert_raise Cldr.NoDefaultBackendError, fn ->
       Cldr.Number.to_string(1234)
     end
+    :ok = Application.put_env(:ex_cldr, :default_backend, TestBackend.Cldr)
   end
 
   test "literal-only format returns the literal" do

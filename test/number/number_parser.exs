@@ -15,23 +15,23 @@ defmodule Cldr.Number.Parsing.Test do
       {:ok, 1000.0}
   end
 
-  test "spliting a number string" do
-    assert Cldr.Number.Parser.split("100 australian dollars", backend: TestBackend.Cldr) ==
+  test "scan a number string" do
+    assert Cldr.Number.Parser.scan("100 australian dollars", backend: TestBackend.Cldr) ==
       [100, " australian dollars"]
 
-    assert Cldr.Number.Parser.split("us dollars 100", backend: TestBackend.Cldr) ==
+    assert Cldr.Number.Parser.scan("us dollars 100", backend: TestBackend.Cldr) ==
       ["us dollars ", 100]
   end
 
   test "resolving currency and value" do
      result =
-       Cldr.Number.Parser.split("us dollars 100", backend: TestBackend.Cldr)
+       Cldr.Number.Parser.scan("us dollars 100", backend: TestBackend.Cldr)
        |> Cldr.Number.Parser.resolve_currencies(backend: TestBackend.Cldr)
 
       assert result == [:USD, 100]
 
     result2 =
-      Cldr.Number.Parser.split("$100", backend: TestBackend.Cldr)
+      Cldr.Number.Parser.scan("$100", backend: TestBackend.Cldr)
       |> Cldr.Number.Parser.resolve_currencies(backend: TestBackend.Cldr)
 
     assert result2 == [:USD, 100]
