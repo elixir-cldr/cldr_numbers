@@ -3,7 +3,7 @@ defmodule CldrNumbers.Mixfile do
 
   use Mix.Project
 
-  @version "2.14.0-dev"
+  @version "2.14.0"
 
   def project do
     [
@@ -41,8 +41,7 @@ defmodule CldrNumbers.Mixfile do
 
   defp deps do
     [
-      # {:ex_cldr, "~> 2.14"},
-      {:ex_cldr, path: "../cldr", override: true},
+      {:ex_cldr, "~> 2.15"},
       {:ex_cldr_currencies, "~> 2.5"},
       {:decimal, "~> 1.6 or ~> 2.0"},
       {:jason, "~> 1.0", optional: true},
