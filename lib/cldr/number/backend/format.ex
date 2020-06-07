@@ -94,8 +94,8 @@ defmodule Cldr.Number.Backend.Format do
         ## Arguments
 
         * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`. The default
-          is `Cldr.get_locale/0`
+          or a `Cldr.LanguageTag` struct returned by `#{inspect backend}.Locale.new!/1`.
+          The default is `#{inspect backend}.get_locale/0`
 
         This function exists to allow the decimal formatter to precompile all
         the known formats at compile time. Its use is not otherwise recommended.
@@ -360,7 +360,7 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Returns
 
-        * {:ok, map} where map is a map of decimal formats
+        * `{:ok, map}` where map is a map of decimal formats
           keyed by number system or
 
         * raises an exception
@@ -385,7 +385,7 @@ defmodule Cldr.Number.Backend.Format do
 
         * `locale` is any valid locale name returned by
           `#{inspect(backend)}.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`.
+          or a `Cldr.LanguageTag` struct returned by `#{inspect backend}.Locale.new!/1`.
           The default is `#{inspect(backend)}.get_locale/0`
 
         * `number_system` is any valid number system or number system type returned

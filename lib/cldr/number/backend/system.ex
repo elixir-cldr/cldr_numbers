@@ -114,7 +114,7 @@ defmodule Cldr.Number.Backend.System do
         Returns the actual number system from a number system type.
 
         * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/1`
+          or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
         * `system_name` is any number system name returned by
           `Cldr.known_number_systems/0` or a number system type
