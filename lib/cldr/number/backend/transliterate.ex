@@ -39,8 +39,9 @@ defmodule Cldr.Number.Backend.Transliterate do
 
               defmodule MyApp.Cldr do
                 use Cldr,
-                  precompile_transliterations: [{:latn, :arab}, {:arab, :thai}]
-                end
+                locale: ["en", "fr", "th"],
+                default_locale: "en",
+                precompile_transliterations: [{:latn, :thai}, {:arab, :thai}]
               end
 
           Where each tuple in the list configures one transliteration map.  In this example, two maps are

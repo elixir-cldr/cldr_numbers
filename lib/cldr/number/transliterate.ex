@@ -23,10 +23,14 @@ defmodule Cldr.Number.Transliterate do
   transliteration map is created at compile time and therefore speeding up transliteration at
   run time.
 
-  To configure these transliteration pairs, add the following to your `config.exs`:
+  To configure these transliteration pairs, add the following to your backend configuration:
 
-      config :ex_cldr,
-        precompile_transliterations: [{:latn, :arab}, {:arab, :thai}]
+      defmodule MyApp.Cldr do
+        use Cldr,
+        locale: ["en", "fr", "th"],
+        default_locale: "en",
+        precompile_transliterations: [{:latn, :thai}, {:arab, :thai}]
+      end
 
   Where each tuple in the list configures one transliteration map.  In this example, two maps are
   configured: from :latn to :thai and from :arab to :thai.
@@ -35,6 +39,7 @@ defmodule Cldr.Number.Transliterate do
 
   If a transliteration is requested between two number pairs that have not been configured for
   precompilation, a warning is logged.
+
   """
 
   require Logger

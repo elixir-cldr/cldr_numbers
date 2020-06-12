@@ -1,3 +1,13 @@
+# Changelog for Cldr_Numbers v2.15.0
+
+This is the changelog for Cldr v2.15.0 released on June 12th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Support binary locale name as an argument to `Cldr.Number.System.number_system_from_locale/2`
+
+* `number_system_from_locale/1` to backend modules
+
 # Changelog for Cldr_Numbers v2.14.0
 
 This is the changelog for Cldr v2.14.0 released on May 27th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

@@ -13,6 +13,34 @@ defmodule Cldr.Number.Backend.System do
         end
 
         @doc """
+        Returns the number system from a language tag or
+        locale name.
+
+        ## Arguments
+
+        * `locale` is any language tag returned be `Cldr.Locale.new/2`
+          or a locale name in the list returned by `Cldr.known_locale_names/1`
+
+        ## Returns
+
+        * A number system name as an atom
+
+        ## Examples
+
+            iex> MyApp.Cldr.Number.System.number_system_from_locale "en-US-u-nu-thai"
+            :thai
+
+            iex> MyApp.Cldr.Number.System.number_system_from_locale "en-US"
+            :latn
+
+        """
+        @spec number_system_from_locale(LanguageTag.t()) :: Cldr.Number.System.system_name
+
+        def number_system_from_locale(locale) do
+          Cldr.Number.System.number_system_from_locale(locale, unquote(backend))
+        end
+
+        @doc """
         Returns the number systems available for a locale
         or `{:error, message}` if the locale is not known.
 

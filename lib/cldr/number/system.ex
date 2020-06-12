@@ -72,11 +72,13 @@ defmodule Cldr.Number.System do
   end
 
   @doc """
-  Returns the number system from a language tag.
+  Returns the number system from a language tag
+  or locale name.
 
   ## Arguments
 
   * `locale` is any language tag returned be `Cldr.Locale.new/2`
+    or a locale name in the list returned by `Cldr.known_locale_names/1`
 
   * `backend` is any `Cldr` backend. That is, any module that
     contains `use Cldr`
@@ -87,12 +89,10 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> {:ok, locale} = Cldr.validate_locale "en-US-u-nu-thai", MyApp.Cldr
-      iex> Cldr.Number.System.number_system_from_locale locale, MyApp.Cldr
+      iex> Cldr.Number.System.number_system_from_locale "en-US-u-nu-thai", MyApp.Cldr
       :thai
 
-      iex> {:ok, locale} = Cldr.validate_locale "en-US", MyApp.Cldr
-      iex> Cldr.Number.System.number_system_from_locale locale, MyApp.Cldr
+      iex> Cldr.Number.System.number_system_from_locale "en-US", MyApp.Cldr
       :latn
 
   """
@@ -111,6 +111,12 @@ defmodule Cldr.Number.System do
     locale
     |> number_systems_for!(backend)
     |> Map.fetch!(default_number_system_type())
+  end
+
+  def number_system_from_locale(locale_name, backend) when is_binary(locale_name) do
+    with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
+      number_system_from_locale(locale, backend)
+    end
   end
 
   @doc """
