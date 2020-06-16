@@ -488,7 +488,7 @@ defmodule Cldr.Number.Backend.Number do
           an `integer` or a `float`.
 
         * `:locale` is any locale returned by `Cldr.known_locale_names/1`
-          or a `Cldr.LanguageTag.t`. The default is `backend.get_locale/1`.
+          or a `Cldr.LanguageTag.t`. The default is `#{inspect backend}.get_locale/1`.
 
         ## Returns
 
@@ -540,7 +540,7 @@ defmodule Cldr.Number.Backend.Number do
           an `integer` or a `float`.
 
         * `:locale` is any locale returned by `Cldr.known_locale_names/1`
-          or a `Cldr.LanguageTag.t`. The default is `backend.get_locale/1`.
+          or a `Cldr.LanguageTag.t`. The default is `#{inspect backend}.get_locale/1`.
 
         ## Returns
 
@@ -570,7 +570,7 @@ defmodule Cldr.Number.Backend.Number do
             {:ok, 1000}
 
             iex> #{inspect(__MODULE__)}.parse("＋1.000,34", locale: "de", number: :integer)
-            {:error, "+1000.34"}
+            {:error, "＋1.000,34"}
 
         """
         def parse(string, options \\ []) do
@@ -593,7 +593,7 @@ defmodule Cldr.Number.Backend.Number do
 
         * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
           or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
-          The default is `<backend>.get_locale()`
+          The default is `#{inspect backend}.get_locale()`
 
         * `:only` is an `atom` or list of `atoms` representing the
           currencies or currency types to be considered for a match.
@@ -674,7 +674,7 @@ defmodule Cldr.Number.Backend.Number do
 
         * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
           or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
-          The default is `<backend>.get_locale()`
+          The default is `#{inspect backend}.get_locale()`
 
         * `:only` is an `atom` or list of `atoms` representing the
           currencies or currency types to be considered for a match.

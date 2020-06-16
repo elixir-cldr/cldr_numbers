@@ -1,3 +1,14 @@
+# Changelog for Cldr_Numbers v2.15.1
+
+This is the changelog for Cldr v2.15.1 released on _____, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fixes two number parsing bugs:
+
+  1. A bug whereby decimal and separator symbols would be impacted in non-number strings when using `MyApp.Cldr.Number.scan/2`
+  2. A bug whereby numbers using various localised symbols would not be recognised
+
 # Changelog for Cldr_Numbers v2.15.0
 
 This is the changelog for Cldr v2.15.0 released on June 13th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

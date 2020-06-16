@@ -5,7 +5,7 @@ defmodule Cldr.Number.Parser do
 
   """
 
-  @number_regex ~r/[-+]?[0-9]*\.?[0-9_]+([eE][-+]?[0-9]+)?/
+  @number_format "[-+]?[0-9][0-9,_]*\\.?[0-9_]+([eE][-+]?[0-9]+)?"
 
   @doc """
   Scans a string locale-aware manner and returns
@@ -29,7 +29,7 @@ defmodule Cldr.Number.Parser do
     is `Cldr.default_backend/0`.
 
   * `:locale` is any locale returned by `Cldr.known_locale_names/1`
-    or a `Cldr.LanguageTag.t`. The default is `backend.get_locale/1`.
+    or a `Cldr.LanguageTag.t`. The default is `options[:backend].get_locale/1`.
 
   ## Returns
 
@@ -64,12 +64,14 @@ defmodule Cldr.Number.Parser do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend) do
 
-      normalized = normalize_number_string(string, locale, backend, symbols)
-      number_type = Keyword.get(options, :type)
+      scanner =
+        @number_format
+        |> localize_format_string(locale, backend, symbols)
+        |> Regex.compile!([:unicode])
 
-      @number_regex
-      |> Regex.split(normalized, include_captures: true, trim: true)
-      |> Enum.map(fn element -> parse_number(element, number_type) |> elem(1) end)
+      scanner
+      |> Regex.split(string, include_captures: true, trim: true)
+      |> Enum.map(fn element -> parse(element, options) |> elem(1) end)
     end
   end
 
@@ -95,7 +97,7 @@ defmodule Cldr.Number.Parser do
     is `Cldr.default_backend/0`.
 
   * `:locale` is any locale returned by `Cldr.known_locale_names/1`
-    or a `Cldr.LanguageTag.t`. The default is `backend.get_locale/1`.
+    or a `Cldr.LanguageTag.t`. The default is `options[:backend].get_locale/1`.
 
   ## Returns
 
@@ -125,7 +127,7 @@ defmodule Cldr.Number.Parser do
       {:ok, 1000}
 
       iex> Cldr.Number.Parser.parse("＋1.000,34", locale: "de", number: :integer)
-      {:error, "+1000.34"}
+      {:error, "＋1.000,34"}
 
   """
   def parse(string, options \\ []) when is_binary(string) and is_list(options) do
@@ -134,9 +136,12 @@ defmodule Cldr.Number.Parser do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend) do
 
-      string
-      |> normalize_number_string(locale, backend, symbols)
-      |> parse_number(Keyword.get(options, :number))
+      normalized_string = normalize_number_string(string, locale, backend, symbols)
+
+      case parse_number(normalized_string, Keyword.get(options, :number)) do
+        {:error, _} -> {:error, string}
+        success -> success
+      end
     end
   end
 
@@ -186,7 +191,7 @@ defmodule Cldr.Number.Parser do
 
   * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
-    The default is `<backend>.get_locale()`
+    The default is `options[:backend].get_locale()`
 
   * `:only` is an `atom` or list of `atoms` representing the
     currencies or currency types to be considered for a match.
@@ -280,7 +285,7 @@ defmodule Cldr.Number.Parser do
 
   * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
-    The default is `<backend>.get_locale()`
+    The default is `options[:backend].get_locale()`
 
   * `:only` is an `atom` or list of `atoms` representing the
     currencies or currency types to be considered for a match.
@@ -366,6 +371,7 @@ defmodule Cldr.Number.Parser do
     end
   end
 
+  # Replace localised symbols with canonical forms
   defp normalize_number_string(string, locale, backend, symbols) do
     string
     |> String.replace("_", "")
@@ -374,6 +380,19 @@ defmodule Cldr.Number.Parser do
     |> String.replace(symbols.latn.group, "")
     |> String.replace(symbols.latn.decimal, ".")
     |> String.replace("_", "-")
+  end
+
+  # Replace canonical forms with localised symbols
+  defp localize_format_string(string, locale, backend, symbols) do
+    parse_map = backend.lenient_parse_map(:number, locale.cldr_locale_name)
+    plus_matchers = Map.get(parse_map, "+").source |> String.replace(["[", "]"], "")
+    minus_matchers = Map.get(parse_map, "_").source |> String.replace(["[", "]"], "")
+    grouping_matchers = Map.get(parse_map, ",").source |> String.replace(["[", "]"], "")
+
+    string
+    |> String.replace("[-+]", "[" <> plus_matchers <> minus_matchers <> "]")
+    |> String.replace(",", grouping_matchers <> symbols.latn.group)
+    |> String.replace("\\.", "\\" <> symbols.latn.decimal)
   end
 
   defp find_currency(currency_strings, currency, nil) do

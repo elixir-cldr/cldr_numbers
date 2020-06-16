@@ -37,4 +37,9 @@ defmodule Cldr.Number.Parsing.Test do
     assert result2 == [:USD, 100]
   end
 
+  test "scanning strings that have symbols in them" do
+    assert Cldr.Number.Parser.scan("a string, which I think. Well, sometimes not £1_000_000.34") ==
+      ["a string, which I think. Well, sometimes not £", 1000000.34]
+  end
+
 end
