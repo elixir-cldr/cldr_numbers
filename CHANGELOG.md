@@ -1,6 +1,6 @@
 # Changelog for Cldr_Numbers v2.15.1
 
-This is the changelog for Cldr v2.15.1 released on _____, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+This is the changelog for Cldr v2.15.1 released on June 23rd, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
@@ -8,6 +8,8 @@ This is the changelog for Cldr v2.15.1 released on _____, 2020.  For older chang
 
   1. A bug whereby decimal and separator symbols would be impacted in non-number strings when using `MyApp.Cldr.Number.scan/2`
   2. A bug whereby numbers using various localised symbols would not be recognised
+
+* Fix formatter pipeline generation which was including the `round nearest` pipeline stage even when not required.  Thanks to @jeroenvisser101 for the collaboration. Fixes #14.
 
 # Changelog for Cldr_Numbers v2.15.0
 

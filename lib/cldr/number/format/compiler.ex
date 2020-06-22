@@ -54,7 +54,7 @@ defmodule Cldr.Number.Format.Compiler do
   Symbol | Meaning
   ------ | -------
   0	     | Digit
-  1..9   | '1' through '9' indicate rounding
+  1..9   | '1' through '9' indicate rounding to the nearest `n`
   @	     | Significant digit
   #	     | Digit, omitting leading/trailing zeros
   .	     | Decimal separator or monetary decimal separator
@@ -91,6 +91,7 @@ defmodule Cldr.Number.Format.Compiler do
   """
 
   import Kernel, except: [length: 1]
+  alias Cldr.Number.Format.Meta
 
   # Placeholders in a pattern that will be replaces with
   # locale specific symbols at run time.  There is a later
@@ -254,21 +255,21 @@ defmodule Cldr.Number.Format.Compiler do
   """
   def formatting_pipeline(meta) do
     first_stage(:absolute_value)
-    |> stage_if_not(:multiply_by_factor, match?(%{multiplier: 1}, meta))
+    |> stage_if_not(:multiply_by_factor, match?(%Meta{multiplier: 1}, meta))
     |> stage_if_not(
       :round_to_significant_digits,
-      match?(%{significant_digits: %{min: 0, max: 0}}, meta)
+      match?(%Meta{significant_digits: %{min: 0, max: 0}}, meta)
     )
-    |> stage_if_not(:round_to_nearest, match?(%{rounding: 0}, meta))
+    |> stage_if_not(:round_to_nearest, match?(%Meta{round_nearest: 0}, meta))
     |> stage(:set_exponent)
     |> stage(:round_fractional_digits)
     |> stage(:output_to_tuple)
     |> stage(:adjust_leading_zeros)
     |> stage(:adjust_trailing_zeros)
-    |> stage_if_not(:set_max_integer_digits, match?(%{integer_digits: %{max: 0}}, meta))
+    |> stage_if_not(:set_max_integer_digits, match?(%Meta{integer_digits: %{max: 0}}, meta))
     |> stage_if_not(
       :apply_grouping,
-      match?(%{grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}}}, meta)
+      match?(%Meta{grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}}}, meta)
     )
     |> stage(:reassemble_number_string)
     |> stage(:transliterate)
@@ -345,7 +346,7 @@ defmodule Cldr.Number.Format.Compiler do
   defp analyse(format, positive_format) do
     format_parts = split_format(positive_format)
 
-    meta = %Cldr.Number.Format.Meta{
+    meta = %Meta{
       integer_digits: %{
         min: required_integer_digits(format_parts),
         max: max_integer_digits(format_parts)
@@ -371,7 +372,7 @@ defmodule Cldr.Number.Format.Compiler do
 
   # If we have significant digits defined then they take
   # priority over using the default pattern for significant digits
-  defp reconcile_significant_and_scientific_digits(meta) do
+  defp reconcile_significant_and_scientific_digits(%Meta{} = meta) do
     if meta.significant_digits[:min] > 0 && meta.exponent_digits > 0 do
       %{meta | scientific_rounding: 0}
     else
