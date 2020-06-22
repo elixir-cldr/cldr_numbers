@@ -259,7 +259,7 @@ defmodule Cldr.Number.Format.Compiler do
       :round_to_significant_digits,
       match?(%{significant_digits: %{min: 0, max: 0}}, meta)
     )
-    |> stage_if_not(:round_to_nearest, match?(%{rounding: 0}, meta))
+    |> stage_if_not(:round_to_nearest, match?(%{round_nearest: 0}, meta))
     |> stage(:set_exponent)
     |> stage(:round_fractional_digits)
     |> stage(:output_to_tuple)
