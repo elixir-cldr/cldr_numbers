@@ -539,8 +539,10 @@ defmodule Cldr.Number.Backend.Number do
           meaning that the type auto-detected as either
           an `integer` or a `float`.
 
-        * `:locale` is any locale returned by `Cldr.known_locale_names/1`
-          or a `Cldr.LanguageTag.t`. The default is `#{inspect backend}.get_locale/0`.
+        * `:locale` is any locale returned by
+          `#{inspect backend}.known_locale_names/10`
+          or a `Cldr.LanguageTag.t`. The default is
+          `#{inspect backend}.get_locale/0`.
 
         ## Returns
 
