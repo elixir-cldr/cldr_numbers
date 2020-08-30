@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.15.2
+
+This is the changelog for Cldr v2.15.2 released on August 30th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Removes dialyzer warning when running on Elixir 1.11.  Uses `Logger.warning/2` not `Logger.warn/2` in this case and uses an anonymous function not a string so that dialyzer is happy.
+
 # Changelog for Cldr_Numbers v2.15.1
 
 This is the changelog for Cldr v2.15.1 released on June 23rd, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

@@ -101,7 +101,7 @@ defmodule Cldr.Number.Transliterate do
   def transliterate_digits(digits, from_system, to_system) when is_binary(digits) do
     with {:ok, from} <- System.number_system_digits(from_system),
          {:ok, to} <- System.number_system_digits(to_system) do
-      Logger.warn(
+      log_warning(
         "Transliteration from number system #{inspect(from_system)} to " <>
           "#{inspect(to_system)} requires dynamic generation of a transliteration map for " <>
           "each function call which is slow. Please consider configuring this transliteration pair. " <>
@@ -112,6 +112,16 @@ defmodule Cldr.Number.Transliterate do
       do_transliterate_digits(digits, map)
     else
       {:error, message} -> {:error, message}
+    end
+  end
+
+  if macro_exported?(Logger, :warning, 2) do
+    defp log_warning(message) do
+      Logger.warning(fn -> message end)
+    end
+  else
+    defp log_warning(message) do
+      Logger.warn(message)
     end
   end
 
