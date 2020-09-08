@@ -540,7 +540,7 @@ defmodule Cldr.Number.Backend.Number do
           an `integer` or a `float`.
 
         * `:locale` is any locale returned by
-          `#{inspect backend}.known_locale_names/10`
+          `#{inspect backend}.known_locale_names/0`
           or a `Cldr.LanguageTag.t`. The default is
           `#{inspect backend}.get_locale/0`.
 

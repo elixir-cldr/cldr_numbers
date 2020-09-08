@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.15.3
+
+This is the changelog for Cldr v2.15.3 released on September 5th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix documentation referencing `Cldr.known_locale_names/10` to correctly reference `Cldr.known_locale_names/0`.
+
 # Changelog for Cldr_Numbers v2.15.2
 
 This is the changelog for Cldr v2.15.2 released on August 30th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
