@@ -36,7 +36,7 @@ defmodule Significant.Digits.Test do
 
   # Decimal tests
   test "round decimal 12345 to 3 significant digits and return 12300" do
-    assert Decimal.reduce(Decimal.new(12300)) ==
+    assert Cldr.Decimal.reduce(Decimal.new(12300)) ==
              Cldr.Math.round_significant(Decimal.new(12345), 3)
   end
 

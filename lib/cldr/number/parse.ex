@@ -138,7 +138,7 @@ defmodule Cldr.Number.Parser do
 
       normalized_string = normalize_number_string(string, locale, backend, symbols)
 
-      case parse_number(normalized_string, Keyword.get(options, :number)) do
+      case parse_number(String.trim(normalized_string), Keyword.get(options, :number)) do
         {:error, _} -> {:error, string}
         success -> success
       end
@@ -153,21 +153,21 @@ defmodule Cldr.Number.Parser do
   end
 
   defp parse_number(string, :integer) do
-    case Integer.parse(String.trim(string)) do
+    case Integer.parse(string) do
       {integer, ""} -> {:ok, integer}
       _other -> {:error, string}
     end
   end
 
   defp parse_number(string, :float) do
-    case Float.parse(String.trim(string)) do
+    case Float.parse(string) do
       {float, ""} -> {:ok, float}
       _other -> {:error, string}
     end
   end
 
   defp parse_number(string, :decimal) do
-    case Decimal.parse(String.trim(string)) do
+    case Decimal.parse(string) do
       {:ok, decimal} -> {:ok, decimal}
       :error -> {:error, string}
     end

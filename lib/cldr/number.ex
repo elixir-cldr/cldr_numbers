@@ -141,7 +141,7 @@ defmodule Cldr.Number do
         ) ::
           {:ok, Cldr.Number.System.system_name()} | {:error, {module(), String.t()}}
 
-  def validate_number_system(locale, number_system, backend \\ Cldr.default_backend()) do
+  def validate_number_system(locale, number_system, backend \\ default_backend()) do
     Cldr.Number.System.system_name_from(number_system, locale, backend)
   end
 
@@ -352,11 +352,11 @@ defmodule Cldr.Number do
   @spec to_string(number | Decimal.t(), Cldr.backend() | Keyword.t() | map(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
 
-  def to_string(number, backend \\ Cldr.default_backend(), options \\ [])
+  def to_string(number, backend \\ default_backend(), options \\ [])
 
   # No backend supplied, just options
   def to_string(number, options, []) when is_list(options) do
-    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
+    {backend, options} = Keyword.pop_lazy(options, :backend, &default_backend/0)
     to_string(number, backend, options)
   end
 
@@ -415,7 +415,7 @@ defmodule Cldr.Number do
         ) ::
           String.t() | no_return()
 
-  def to_string!(number, backend \\ Cldr.default_backend(), options \\ [])
+  def to_string!(number, backend \\ default_backend(), options \\ [])
 
   def to_string!(number, backend, options) do
     case to_string(number, backend, options) do
@@ -565,10 +565,10 @@ defmodule Cldr.Number do
   @spec to_at_least_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
-  def to_at_least_string(number, backend \\ Cldr.default_backend(), options \\ [])
+  def to_at_least_string(number, backend \\ default_backend(), options \\ [])
 
   def to_at_least_string(number, options, []) when is_list(options) do
-    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
+    {backend, options} = Keyword.pop_lazy(options, :backend, &default_backend/0)
     to_at_least_string(number, backend, options)
   end
 
@@ -600,10 +600,10 @@ defmodule Cldr.Number do
   @spec to_at_most_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
-  def to_at_most_string(number, backend \\ Cldr.default_backend(), options \\ [])
+  def to_at_most_string(number, backend \\ default_backend(), options \\ [])
 
   def to_at_most_string(number, options, []) when is_list(options) do
-    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
+    {backend, options} = Keyword.pop_lazy(options, :backend, &default_backend/0)
     to_at_most_string(number, backend, options)
   end
 
@@ -635,10 +635,10 @@ defmodule Cldr.Number do
   @spec to_approx_string(number | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
-  def to_approx_string(number, backend \\ Cldr.default_backend(), options \\ [])
+  def to_approx_string(number, backend \\ default_backend(), options \\ [])
 
   def to_approx_string(number, options, []) when is_list(options) do
-    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
+    {backend, options} = Keyword.pop_lazy(options, :backend, &default_backend/0)
     to_approx_string(number, backend, options)
   end
 
@@ -670,10 +670,10 @@ defmodule Cldr.Number do
   @spec to_range_string(Range.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
-  def to_range_string(number, backend \\ Cldr.default_backend(), options \\ [])
+  def to_range_string(number, backend \\ default_backend(), options \\ [])
 
   def to_range_string(number, options, []) when is_list(options) do
-    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend/0)
+    {backend, options} = Keyword.pop_lazy(options, :backend, &default_backend/0)
     to_range_string(number, backend, options)
   end
 
@@ -738,7 +738,7 @@ defmodule Cldr.Number do
   @spec to_number_system(number, atom, Cldr.backend()) ::
           String.t() | {:error, {module(), String.t()}}
 
-  def to_number_system(number, system, backend \\ Cldr.default_backend()) do
+  def to_number_system(number, system, backend \\ default_backend()) do
     Cldr.Number.System.to_system(number, system, backend)
   end
 
@@ -761,7 +761,7 @@ defmodule Cldr.Number do
   """
   @spec to_number_system!(number, atom, Cldr.backend()) :: String.t() | no_return()
 
-  def to_number_system!(number, system, backend \\ Cldr.default_backend()) do
+  def to_number_system!(number, system, backend \\ default_backend()) do
     Cldr.Number.System.to_system!(number, system, backend)
   end
 
@@ -777,4 +777,16 @@ defmodule Cldr.Number do
 
   """
   defdelegate precision(number), to: Cldr.Digits, as: :number_of_digits
+
+  @doc false
+  # TODO remove for Cldr 3.0
+  if Code.ensure_loaded?(Cldr) && function_exported?(Cldr, :default_backend!, 0) do
+    def default_backend do
+      Cldr.default_backend!()
+    end
+  else
+    def default_backend do
+      Cldr.default_backend()
+    end
+  end
 end
