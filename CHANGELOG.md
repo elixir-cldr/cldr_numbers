@@ -6,6 +6,12 @@ This is the changelog for Cldr v2.15.4 released on Septmber 26th, 2020.  For old
 
 * Use `Cldr.default_backend!/1` when available since `Cldr.default_backend/0` is deprecated as of `ex_cldr` verison `2.18.0`.
 
+### Big Fixes
+
+* Use `Cldr.Decimal.compare/2` which works consistently with `Decimal` `1.x` and `2.x`
+
+* Apply compile-time detection of `Decimal` version in order to know the correct return type of `Decimal.parse/1` which differs between `1.x` and `2.x`
+
 # Changelog for Cldr_Numbers v2.15.3
 
 This is the changelog for Cldr v2.15.3 released on September 5th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
