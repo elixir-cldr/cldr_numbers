@@ -42,4 +42,10 @@ defmodule Cldr.Number.Parsing.Test do
       ["a string, which I think. Well, sometimes not £", 1000000.34]
   end
 
+  test "parse a decimal" do
+    {:ok, parsed} = Cldr.Number.Parser.parse("1.000,00",
+      number: :decimal, backend: TestBackend.Cldr, locale: "de")
+    assert Cldr.Decimal.compare(parsed, Decimal.from_float(1000.0)) == :eq
+  end
+
 end

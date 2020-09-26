@@ -1,10 +1,10 @@
-# Changelog for Cldr_Numbers v2.16.0
+# Changelog for Cldr_Numbers v2.15.4
 
-This is the changelog for Cldr v2.16.0 released on _____, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+This is the changelog for Cldr v2.15.4 released on Septmber 26th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Enhancements
 
-* Use `Cldr.default_backend!/1` when available since `Cldr.default_backend/0` is deprecated as of `ex_cldr` verison `2.18.0`
+* Use `Cldr.default_backend!/1` when available since `Cldr.default_backend/0` is deprecated as of `ex_cldr` verison `2.18.0`.
 
 # Changelog for Cldr_Numbers v2.15.3
 
