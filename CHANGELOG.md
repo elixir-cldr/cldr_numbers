@@ -6,7 +6,7 @@ This is the changelog for Cldr v2.15.4 released on Septmber 26th, 2020.  For old
 
 * Use `Cldr.default_backend!/1` when available since `Cldr.default_backend/0` is deprecated as of `ex_cldr` verison `2.18.0`.
 
-### Big Fixes
+### Bug Fixes
 
 * Use `Cldr.Decimal.compare/2` which works consistently with `Decimal` `1.x` and `2.x`
 
