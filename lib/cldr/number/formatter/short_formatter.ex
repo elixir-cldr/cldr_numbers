@@ -166,7 +166,7 @@ defmodule Cldr.Number.Formatter.Short do
 
   @one_thousand Decimal.new(1000)
   defp normalise_number(%Decimal{} = number, range, number_of_zeros) do
-    if Cldr.Math.decimal_compare(number, @one_thousand) == :lt do
+    if Cldr.Decimal.compare(number, @one_thousand) == :lt do
       number
     else
       Decimal.div(number, Decimal.new(adjustment(range, number_of_zeros)))

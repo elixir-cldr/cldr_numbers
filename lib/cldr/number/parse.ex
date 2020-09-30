@@ -166,23 +166,13 @@ defmodule Cldr.Number.Parser do
     end
   end
 
-  decimal_version = Keyword.get(Application.spec(:decimal), :vsn) |> List.to_string
-
-  if Version.match?(decimal_version, "~> 2.0") do
-    defp parse_number(string, :decimal) do
-      case Decimal.parse(string) do
-        {decimal, ""} -> {:ok, decimal}
-        _other -> {:error, string}
-      end
-    end
-  else
-    defp parse_number(string, :decimal) do
-      case Decimal.parse(string) do
-        {:ok, decimal} -> {:ok, decimal}
-        _other -> {:error, string}
-      end
+  defp parse_number(string, :decimal) do
+    case Cldr.Decimal.parse(string) do
+      {decimal, ""} -> {:ok, decimal}
+      _other -> {:error, string}
     end
   end
+
 
   @doc """
   Resolve curencies from strings within

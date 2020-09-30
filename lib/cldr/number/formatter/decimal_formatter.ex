@@ -804,6 +804,21 @@ defmodule Cldr.Number.Formatter.Decimal do
       String.match?(symbol, Regex.compile!("^" <> spacing[:currency_match], "u"))
   end
 
+  # The unicode set "[[:^S:]&[:^Z:]]" isn't a valid Regex for Elixir/Erlang
+  # The following is a subsctitution
+
+  @currency_match_symbol ~r/[\P{S}]$/u
+  @currency_match_separator ~r/[\P{Z}]$/u
+  defp after_currency_match?(number_string, symbol, %{currency_match: "[[:^S:]&[:^Z:]]"} = spacing) do
+    # IO.inspect number_string, label: "Number string"
+    # IO.inspect symbol, label: "Symbol"
+    # IO.inspect String.match?(number_string, Regex.compile!("^" <> spacing[:surrounding_match], "u")), label: "Surrounding match"
+    # IO.inspect String.match?(symbol, @currency_match), label: "Currency match"
+    String.match?(number_string, Regex.compile!("^" <> spacing[:surrounding_match], "u")) &&
+      String.match?(symbol, @currency_match_symbol) &&
+      String.match?(symbol, @currency_match_separator)
+  end
+
   defp after_currency_match?(number_string, symbol, spacing) do
     String.match?(number_string, Regex.compile!("^" <> spacing[:surrounding_match], "u")) &&
       String.match?(symbol, Regex.compile!(spacing[:currency_match] <> "$", "u"))
