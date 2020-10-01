@@ -143,7 +143,7 @@ defmodule Cldr.Number.Backend.Transliterate do
             sequence
             |> String.graphemes()
             |> Enum.map(&transliterate_char(&1, locale, unquote(number_system)))
-            |> List.to_string()
+            |> Elixir.List.to_string()
           end
         end
 
