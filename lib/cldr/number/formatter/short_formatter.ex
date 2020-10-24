@@ -114,6 +114,57 @@ defmodule Cldr.Number.Formatter.Short do
     end
   end
 
+  @doc """
+  Returns the exponent that will be applied
+  when formatting the given number as a short
+  format.
+
+  This function is primarily intended to support
+  pluralization for compact numbers (numbers
+  formatted with the `format: :short` option) since
+  some languages pluralize compact numbers differently
+  to a fully expressed number.
+
+  Such rules are defined for the locale "fr" from
+  CLDR version 38 with the intention that additional
+  rules will be added in later versions.
+
+  ## Examples
+
+      iex> Cldr.Number.Formatter.Short.short_format_exponent 1234
+      1
+
+      iex> Cldr.Number.Formatter.Short.short_format_exponent 12345
+      2
+
+      iex> Cldr.Number.Formatter.Short.short_format_exponent 123456789
+      3
+
+      iex> Cldr.Number.Formatter.Short.short_format_exponent 123456789, locale: "th"
+      3
+
+  """
+  def short_format_exponent(number, options \\ []) do
+    with {locale, backend} = Cldr.locale_and_backend_from(options),
+         number_system = Keyword.get(options, :number_system, :default),
+         {:ok, number_system} <- System.system_name_from(number_system, locale, backend),
+         {:ok, all_formats} <- Format.formats_for(locale, number_system, backend) do
+      formats = Map.fetch!(all_formats, :decimal_short)
+
+      options =
+        options
+        |> Map.new
+        |> Map.put_new(:locale, locale)
+        |> Map.put_new(:number_system, number_system)
+        |> Map.put_new(:currency, nil)
+
+      case choose_short_format(number, formats, backend, options) do
+        {_, [_, exponent]} -> exponent
+        _other -> 0
+      end
+    end
+  end
+
   # For short formats the fractional digits should be 0 unless otherwise specified,
   # even for currencies
   defp digits(options, nil) do
