@@ -1,3 +1,13 @@
+# Changelog for Cldr_Numbers v2.16.0-rc.0
+
+This is the changelog for Cldr v2.16.0-rc.0 released on October 27th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Support [CLDR 38](http://cldr.unicode.org/index/downloads/cldr-38)
+
+* Add `Cldr.Number.Formatter.Short.short_format_exponent/2` to support compact number pluralization that is added to CLDR 38 (for the "fr" locale only in this release)
+
 # Changelog for Cldr_Numbers v2.15.4
 
 This is the changelog for Cldr v2.15.4 released on Septmber 26th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

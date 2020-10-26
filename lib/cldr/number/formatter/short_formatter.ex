@@ -132,19 +132,19 @@ defmodule Cldr.Number.Formatter.Short do
   ## Examples
 
       iex> Cldr.Number.Formatter.Short.short_format_exponent 1234
-      1
+      {1000, 1}
 
       iex> Cldr.Number.Formatter.Short.short_format_exponent 12345
-      2
+      {10000, 2}
 
       iex> Cldr.Number.Formatter.Short.short_format_exponent 123456789
-      3
+      {100000000, 3}
 
       iex> Cldr.Number.Formatter.Short.short_format_exponent 123456789, locale: "th"
-      3
+      {100000000, 3}
 
   """
-  def short_format_exponent(number, options \\ []) do
+  def short_format_exponent(number, options \\ []) when is_list(options) do
     with {locale, backend} = Cldr.locale_and_backend_from(options),
          number_system = Keyword.get(options, :number_system, :default),
          {:ok, number_system} <- System.system_name_from(number_system, locale, backend),
@@ -159,8 +159,8 @@ defmodule Cldr.Number.Formatter.Short do
         |> Map.put_new(:currency, nil)
 
       case choose_short_format(number, formats, backend, options) do
-        {_, [_, exponent]} -> exponent
-        _other -> 0
+        {range, [_, exponent]} -> {range, exponent}
+        {range, _other} -> {range, 0}
       end
     end
   end
