@@ -424,7 +424,37 @@ iex> MyApp.Cldr.Rbnf.Ordinal.digits_ordinal 1989, "en"
 
 RBNF is primarily oriented towards positive integer numbers.  Whilst the standard caters for negative numbers and fractional numbers the implementation of the rules is incomplete.  Use with care.
 
-## Parsing Numbers from String
+## Parsing Numbers from a string
 
-To be completed
+`Cldr.Number.Parser` provides two functions to support the parsing of localised number strings into numbers.  `Cldr.Number.Parser.parse/2` assumes the string is a number only. `Cldr.Number.Parser.scan/2` will attempt to extract numbers from an arbitrary string.
 
+In all cases, the locale-specific number separators are permitted providing a reliable way to extract locale-specific numbers from a string.
+
+### Examples
+
+    iex> Cldr.Number.Parser.parse("＋1.000,34", locale: "de")
+    {:ok, 1000.34}
+
+    iex> Cldr.Number.Parser.parse("-1_000_000.34")
+    {:ok, -1000000.34}
+
+    iex> Cldr.Number.Parser.parse("1.000", locale: "de", number: :integer)
+    {:ok, 1000}
+
+    iex> Cldr.Number.Parser.parse("＋1.000,34", locale: "de", number: :integer)
+    {:error, "＋1.000,34"}
+
+    iex> Cldr.Number.Parser.scan("£1_000_000.34")
+    ["£", 1000000.34]
+
+    iex> Cldr.Number.Parser.scan("I want £1_000_000 dollars")
+    ["I want £", 1000000, " dollars"]
+
+    iex> Cldr.Number.Parser.scan("The prize is 23")
+    ["The prize is ", 23]
+
+    iex> Cldr.Number.Parser.scan("The lottery number is 23 for the next draw")
+    ["The lottery number is ", 23, " for the next draw"]
+
+    iex> Cldr.Number.Parser.scan("The loss is -1.000 euros", locale: "de", number: :integer)
+    ["The loss is ", -1000, " euros"]
