@@ -139,10 +139,10 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_systems_for "en", TestBackend.Cldr
+      iex> Cldr.Number.System.number_systems_for "en"
       {:ok, %{default: :latn, native: :latn}}
 
-      iex> Cldr.Number.System.number_systems_for "th", TestBackend.Cldr
+      iex> Cldr.Number.System.number_systems_for "th"
       {:ok, %{default: :latn, native: :thai}}
 
       iex> Cldr.Number.System.number_systems_for "zz", TestBackend.Cldr
@@ -156,6 +156,11 @@ defmodule Cldr.Number.System do
     Module.concat(backend, Number.System).number_systems_for(locale)
   end
 
+  @doc false
+  def number_systems_for(locale) when is_binary(locale) do
+    number_systems_for(locale, Cldr.default_backend!)
+  end
+
   @doc """
   Returns the number systems available for a locale
   or raises if the locale is not known.
@@ -166,11 +171,11 @@ defmodule Cldr.Number.System do
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend!/0`.
 
   ## Examples
 
-      iex> Cldr.Number.System.number_systems_for! "en", TestBackend.Cldr
+      iex> Cldr.Number.System.number_systems_for! "en"
       %{default: :latn, native: :latn}
 
       iex> Cldr.Number.System.number_systems_for! "th", TestBackend.Cldr
@@ -188,6 +193,11 @@ defmodule Cldr.Number.System do
       {:ok, systems} ->
         systems
     end
+  end
+
+  @doc false
+  def number_systems_for!(locale) when is_binary(locale) do
+    number_systems_for!(locale, Cldr.default_backend!())
   end
 
   @doc """
