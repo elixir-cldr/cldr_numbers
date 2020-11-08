@@ -89,14 +89,16 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_system_from_locale "en-US-u-nu-thai", MyApp.Cldr
+      iex> Cldr.Number.System.number_system_from_locale "en-US-u-nu-thai"
       :thai
 
-      iex> Cldr.Number.System.number_system_from_locale "en-US", MyApp.Cldr
+      iex> Cldr.Number.System.number_system_from_locale "en-US"
       :latn
 
   """
-  @spec number_system_from_locale(LanguageTag.t(), Cldr.backend()) :: system_name
+  @spec number_system_from_locale(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.backend()) ::
+    system_name
+
   def number_system_from_locale(%LanguageTag{locale: %{number_system: nil}} = locale, backend) do
     locale
     |> number_systems_for!(backend)
@@ -117,6 +119,10 @@ defmodule Cldr.Number.System do
     with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
       number_system_from_locale(locale, backend)
     end
+  end
+
+  def number_system_from_locale(locale_name) when is_binary(locale_name) do
+    number_system_from_locale(locale_name, Cldr.default_backend!())
   end
 
   @doc """

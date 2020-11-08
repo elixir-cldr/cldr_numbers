@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.16.1
+
+This is the changelog for Cldr v2.16.1 released on November 8th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix bug in `Cldr.Number.System.number_system_from/1` to correctly allow a binary language tag without a backend parameter (which will then default to `Cldr.default_backend!/0`)
+
 # Changelog for Cldr_Numbers v2.16.0
 
 This is the changelog for Cldr v2.16.0 released on November 1st, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
