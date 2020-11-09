@@ -314,8 +314,8 @@ defmodule Cldr.Rbnf.Processor do
     function
   end
 
-  defp add_function_to_exports(function, _access, _module, _locale) do
-    function
+  defp add_function_to_exports(other, _access, _module, _locale) do
+    other
   end
 
   def rbnf_rule_error(number, rule_group, locale_name) do
@@ -347,15 +347,24 @@ defmodule Cldr.Rbnf.Processor do
     rule_sets = Macro.escape(rule_sets)
 
     quote location: :keep,
-          bind_quoted: [rule_sets: rule_sets, all_rule_sets: all_rule_sets, backend: backend] do
+          bind_quoted: [
+            rule_sets: rule_sets,
+            all_rule_sets: all_rule_sets,
+            backend: backend,
+            module: module] do
+
+      # A map of rule sets by locale
+      def rule_sets do
+        unquote(Macro.escape(rule_sets))
+      end
+
       # All rule sets for a locale
       def rule_sets(%Cldr.LanguageTag{rbnf_locale_name: rbnf_locale_name}) do
         rule_sets(rbnf_locale_name)
       end
 
       def rule_sets(rbnf_locale_name) when is_binary(rbnf_locale_name) do
-        unquote(Macro.escape(rule_sets))
-        |> Map.get(rbnf_locale_name)
+        Map.get(rule_sets(), rbnf_locale_name)
       end
 
       # All rule sets for all locales
@@ -376,6 +385,14 @@ defmodule Cldr.Rbnf.Processor do
 
         def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: rbnf_locale_name}) do
           {:error, rbnf_rule_error(number, unquote(rule_group), rbnf_locale_name)}
+        end
+
+        # NumberSystem rules are only in the root locale so
+        # lets make it easier to use them by defaulting the locale
+        if hd(Enum.reverse(Module.split(module))) == "NumberSystem" do
+          def unquote(rule_group)(number) do
+            unquote(rule_group)(number, "root")
+          end
         end
       end
     end

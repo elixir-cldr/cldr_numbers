@@ -29,7 +29,7 @@ defmodule Cldr.Number.Backend.Rbnf do
               iex> #{inspect(__MODULE__)}.roman_upper(123, "root")
               "CXXIII"
 
-          This call is equivalent to the call through the public API of:
+          This particular call is equivalent to the call through the public API of:
 
               iex> #{inspect(unquote(backend))}.Number.to_string(123, format: :roman)
               {:ok, "CXXIII"}
