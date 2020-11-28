@@ -118,7 +118,7 @@ defmodule Rbnf.Test do
               }}
   end
 
-  :"Elixir.Cldr.Rbnf.TestSupport".rbnf_tests(fn name, tests, module, function, locale ->
+  Elixir.Cldr.Rbnf.TestSupport.rbnf_tests(fn name, tests, module, function, locale ->
     test name do
       Enum.each(unquote(Macro.escape(tests)), fn {test_data, test_result} ->
         if apply(unquote(module), unquote(function), [

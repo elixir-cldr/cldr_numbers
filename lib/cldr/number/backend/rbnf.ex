@@ -20,9 +20,9 @@ defmodule Cldr.Number.Backend.Rbnf do
           defined in the Unicode CLDR data repository.  Available rules are identified by:
 
               iex> #{inspect(__MODULE__)}.rule_sets("root")
-              [:tamil, :roman_upper, :roman_lower, :hebrew_item, :hebrew_0_99, :hebrew,
-              :greek_upper, :greek_lower, :georgian, :ethiopic_p1, :ethiopic,
-              :cyrillic_lower_1_10, :cyrillic_lower, :armenian_upper, :armenian_lower]
+              [:tamil, :roman_upper, :roman_lower, :hebrew_item,
+               :hebrew, :greek_upper, :greek_lower, :georgian,
+               :ethiopic, :cyrillic_lower, :armenian_upper, :armenian_lower]
 
           A rule can then be invoked on an available rule_set.  For example
 

@@ -641,7 +641,7 @@ defmodule Cldr.Number.System do
   ## Examples
 
       iex> Cldr.Number.System.to_system 123456, :hebr, TestBackend.Cldr
-      {:ok, "ק׳׳ת׳"}
+      {:ok, "קכ״ג׳תנ״ו"}
 
       iex> Cldr.Number.System.to_system 123, :hans, TestBackend.Cldr
       {:ok, "一百二十三"}

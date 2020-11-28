@@ -732,7 +732,7 @@ defmodule Cldr.Number do
       {:ok, "一百二十三"}
 
       iex> Cldr.Number.to_number_system 123, :hebr, TestBackend.Cldr
-      {:ok, "ק׳"}
+      {:ok, "קכ״ג"}
 
   """
   @spec to_number_system(number, atom, Cldr.backend()) ::

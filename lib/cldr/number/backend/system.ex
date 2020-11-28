@@ -237,7 +237,7 @@ defmodule Cldr.Number.Backend.System do
         ## Examples
 
             iex> #{inspect(__MODULE__)}.to_system 123456, :hebr
-            {:ok, "ק׳׳ת׳"}
+            {:ok, "קכ״ג׳תנ״ו"}
 
             iex> #{inspect(__MODULE__)}.to_system 123, :hans
             {:ok, "一百二十三"}
