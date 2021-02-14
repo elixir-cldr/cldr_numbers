@@ -1,3 +1,11 @@
+# Changelog for Cldr_Numbers v2.17.0
+
+This is the changelog for Cldr v2.17.0 released on _____, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Updated to require [ex_cldr version 2.19](https://hex.pm/packages/ex_cldr/2.19.0) which includes [CLDR 39](http://cldr.unicode.org/index/downloads/cldr-39) data.
+
 # Changelog for Cldr_Numbers v2.16.1
 
 This is the changelog for Cldr v2.16.1 released on November 8th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
