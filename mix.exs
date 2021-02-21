@@ -3,7 +3,7 @@ defmodule CldrNumbers.Mixfile do
 
   use Mix.Project
 
-  @version "2.17.0"
+  @version "2.17.0-dev"
 
   def project do
     [
@@ -28,7 +28,7 @@ defmodule CldrNumbers.Mixfile do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :tools]
     ]
   end
 
@@ -47,9 +47,9 @@ defmodule CldrNumbers.Mixfile do
       {:decimal, "~> 1.6 or ~> 2.0"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.18", optional: true, runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:exprof, "~> 0.2", only: :dev, runtime: false},
-      {:benchee, "~> 1.0", only: :dev, runtime: false}
+      {:dialyxir, "~> 1.0", optional: true, only: [:dev], runtime: false},
+      {:exprof, "~> 0.2", optional: true, only: :dev, runtime: false},
+      {:benchee, "~> 1.0", optional: true, only: :dev, runtime: false}
     ]
   end
 
