@@ -477,7 +477,7 @@ defmodule Cldr.Number do
 
   # For spellout cardinal
   @format :spellout_cardinal
-  defp to_string(number, :spellout_cardinal = format, backend, %{locale: locale}) do
+  defp to_string(number, @format = format, backend, %{locale: locale}) do
     rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(locale)
 
     if rule_sets && @format in rule_sets do
@@ -487,7 +487,20 @@ defmodule Cldr.Number do
     end
   end
 
+  # For spellout cardinal
+  @format :spellout_cardinal_verbose
+  defp to_string(number, @format = format, backend, %{locale: locale}) do
+    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(locale)
+
+    if rule_sets && @format in rule_sets do
+      Module.concat(backend, Rbnf.Spellout).spellout_cardinal_verbose(number, locale)
+    else
+      {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
+    end
+  end
+
   # For spellout ordinal
+  @format :spellout_ordinal
   defp to_string(number, :spellout_ordinal = format, backend, options) do
     rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
 
@@ -499,6 +512,7 @@ defmodule Cldr.Number do
   end
 
   # For spellout ordinal verbose
+  @format :spellout_ordinal_verbose
   defp to_string(number, :spellout_ordinal_verbose = format, backend, options) do
     rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
 
