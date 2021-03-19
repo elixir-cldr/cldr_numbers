@@ -144,6 +144,7 @@ defmodule Cldr.Number.Format.Options do
   def resolve_standard_format(%{format: format} = options, backend)
       when format in @standard_formats do
     locale = Map.fetch!(options, :locale)
+    cldr_locale_name = locale.cldr_locale_name
     number_system = Map.fetch!(options, :number_system)
 
     with {:ok, formats} <- Format.formats_for(locale, number_system, backend) do
@@ -152,7 +153,7 @@ defmodule Cldr.Number.Format.Options do
       else
         {:error,
           {Cldr.UnknownFormatError,
-            "The locale #{inspect locale.cldr_locale_name} " <>
+            "The locale #{inspect cldr_locale_name} " <>
             "with number system #{inspect number_system} " <>
             "does not define a format #{inspect format}"}}
       end
