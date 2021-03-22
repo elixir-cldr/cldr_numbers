@@ -371,6 +371,8 @@ defmodule Cldr.Number.Format.Compiler do
     reconcile_significant_and_scientific_digits(meta)
   end
 
+  @dialyzer {:nowarn_function, currency_format?: 1}
+  @spec currency_format?(list() | nil) :: boolean()
   defp currency_format?(format) when is_list(format) do
     positive_format = Keyword.get(format, :positive)
     Keyword.has_key?(positive_format, :currency)
