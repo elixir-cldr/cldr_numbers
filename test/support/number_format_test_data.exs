@@ -130,7 +130,15 @@ defmodule Cldr.Test.Number.Format do
 
       # Specify accounting or currency in the locale
       {-123.4, "$-123.40", [format: :currency, locale: "en-AU-u-cu-aud-cf-currency"]},
-      {-123.4, "($123.40)", [format: :currency, locale: "en-AU-u-cu-aud-cf-account"]}
+      {-123.4, "($123.40)", [format: :currency, locale: "en-AU-u-cu-aud-cf-account"]},
+
+      # Decimal format (not currency format) with currency specified)
+      {123.45, "123$45", [format: "###.###", currency: :USD]},
+      {123.45, "123A$45", [format: "###.###", currency: :AUD]},
+      {123.45, "123€45", [format: "###.###", currency: :EUR]},
+      {123.45, "123$45", [format: "###.###", currency: :AUD, currency_symbol: :narrow]},
+      {123.45, "123AUD45", [format: "###.###", currency: :AUD, currency_symbol: :iso]},
+      {123, "123$00", [format: "###.###", currency: :USD]}
     ]
   end
 end

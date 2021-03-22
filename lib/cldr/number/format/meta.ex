@@ -124,6 +124,7 @@ defmodule Cldr.Number.Format.Meta do
               positive: [format: "#"],
               negative: [minus: '-', format: :same_as_positive]
             ],
+            currency_format?: false,
             number: 0
 
   @typedoc "Metadata type that drives how to format a number"

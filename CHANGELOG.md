@@ -1,3 +1,29 @@
+# Changelog for Cldr_Numbers v2.17.0-rc.1
+
+This is the changelog for Cldr v2.17.0-rc.1 released on March 23rd, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Complies with updated TR35 that makes clear that if a currency is being formatted (detected by the presence of a valid `:currency` option to `Cldr.Number.to_string/2) but the format does *not* have a currency placeholder then the decimal separator is replaced with the currency symbol.  For example:
+
+```elixir
+# Decimal format, no currency specified
+iex> Cldr.Number.to_string 1234.456, format: "###.########"
+{:ok, "1234.456"}
+
+# Decimal format, currency specified
+iex> Cldr.Number.to_string 1234.456, format: "###.########", currency: :AUD
+{:ok, "1234A$46"}
+
+# Decimal format, currency specified with narrow symbol
+iex> Cldr.Number.to_string 1234.456, format: "###.########", currency: :AUD, currency_symbol: :narrow
+{:ok, "1234$46"}
+
+# Decimal format, currency specified with ISO symbol
+iex> Cldr.Number.to_string 1234.456, format: "###.########", currency: :AUD, currency_symbol: :iso
+{:ok, "1234AUD46"}
+```
+
 # Changelog for Cldr_Numbers v2.17.0-rc.0
 
 This is the changelog for Cldr v2.17.0-rc.0 released on March 19th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

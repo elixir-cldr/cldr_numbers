@@ -65,12 +65,13 @@ defmodule Cldr.Number.Format.Options do
 
   @currency_symbol [
     :standard,
-    :iso
+    :iso,
+    :narrow
   ]
 
   @type fixed_formats :: :standard | :currency | :accounting | :short | :long
   @type format :: binary() | fixed_formats()
-  @type currency_symbol :: :standard | :iso
+  @type currency_symbol :: :standard | :iso | :narrow
   @type short_format_styles ::
     :currency_short | :currency_long | :decimal_short | :decimal_long
 
@@ -345,7 +346,7 @@ defmodule Cldr.Number.Format.Options do
   def validate_option(:currency_symbol, _options, _backend, other) do
     {:error,
       {ArgumentError,
-        ":currency_symbol must be :standard, :iso or nil. Found #{inspect other}"}}
+        ":currency_symbol must be :standard, :narrow, :iso or nil. Found #{inspect other}"}}
   end
 
   def validate_option(:symbols, options, backend, _any) do

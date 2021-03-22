@@ -466,35 +466,64 @@ defmodule Cldr.Number.Formatter.Decimal do
   @exponent_separator Compiler.placeholder(:exponent)
   @exponent_sign Compiler.placeholder(:exponent_sign)
   @minus_placeholder Compiler.placeholder(:minus)
-  def reassemble_number_string(
-        {_sign, integer, fraction, exponent_sign, exponent},
-        meta,
-        _backend,
-        _options
-      ) do
-    integer = if integer == [], do: ['0'], else: integer
-    fraction = if fraction == [], do: fraction, else: [@decimal_separator, fraction]
 
-    exponent_sign =
-      cond do
-        exponent_sign < 0 -> @minus_placeholder
-        meta.exponent_sign -> @exponent_sign
-        true -> ''
-      end
-
-    exponent =
-      if meta.exponent_digits > 0 do
-        digits =
-          exponent
-          |> List.to_string()
-          |> String.pad_leading(meta.exponent_digits, "0")
-
-        [@exponent_separator, exponent_sign, digits]
-      else
-        []
-      end
+  def reassemble_number_string(number, meta, backend, options) do
+    {_sign, integer, fraction, exponent_sign, exponent} = number
+    integer = reassemble_integer(integer)
+    fraction = reassemble_fraction(fraction, options, meta, backend)
+    exponent_sign = reassemble_exponent_sign(exponent_sign, meta.exponent_sign)
+    exponent = reassemble_exponent(exponent, meta.exponent_digits, exponent_sign)
 
     :erlang.iolist_to_binary([integer, fraction, exponent])
+  end
+
+  defp reassemble_integer([]), do: [?0]
+  defp reassemble_integer(integer), do: integer
+
+  # When a currency is specified but the format doesn't have
+  # a currency placeholder, TR35 says that the decimal placehodler
+  # is replaced with the currency symbol.
+
+  # Currently there is no way to specify the type of currency symbol
+  # (ie standar, narrow, ISO, code).
+
+  defp reassemble_fraction([] = fraction, _options, _meta, _backend), do: fraction
+
+  defp reassemble_fraction(fraction, %{currency: currency} = options, %{currency_format?: false}, backend)
+      when not is_nil(currency) do
+    {:ok, currency} = Currency.currency_for_code(currency, backend, locale: options.locale)
+
+    symbol =
+      case options.currency_symbol do
+        :standard -> currency.symbol
+        :narrow -> currency.narrow_symbol
+        :iso -> currency.code
+        nil -> currency.symbol
+      end
+
+    [symbol, fraction]
+  end
+
+  defp reassemble_fraction(fraction, _options, _meta, _backend) do
+    [@decimal_separator, fraction]
+  end
+
+  defp reassemble_exponent_sign(exponent_sign, _meta_sign) when exponent_sign < 0,
+    do: @minus_placeholder
+  defp reassemble_exponent_sign(_exponent_sign, true), do: @exponent_sign
+  defp reassemble_exponent_sign(_exponent_sign, _meta_sign), do: []
+
+  defp reassemble_exponent(exponent, exponent_digits, exponent_sign) when exponent_digits > 0 do
+    digits =
+      exponent
+      |> List.to_string()
+      |> String.pad_leading(exponent_digits, "0")
+
+    [@exponent_separator, exponent_sign, digits]
+  end
+
+  defp reassemble_exponent(_exponent, _exponent_digits, _exponent_sign) do
+    []
   end
 
   # Now we can assemble the final format.  Based upon

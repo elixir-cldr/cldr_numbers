@@ -136,9 +136,9 @@ iex> MyApp.Number.to_string 123, locale: "th-u-nu-thai"
 iex> MyApp.Number.to_string 123, format: :currency, locale: "en-u-cu-thb"
 {:ok, "THB 123.00"}
 ```
-### Standard Formatting Styles
+### Standard Formatting
 
-`Cldr` supports the styles of formatting defined by CLDR being:
+`Cldr` supports formatting defined by CLDR being:
 
 *  `:standard` which formats a number if a decimal format commonly used in many locales.  This is the default format.
 
@@ -223,6 +223,28 @@ iex> MyApp.Cldr.Number.to_string 12456.56, format: :long, currency: :USD
 ```
 
 See `MyApp.Cldr.Number.Formatter.Short` and `MyApp.Cldr.Number.Formatter.Currency`.
+
+### Decimal Formatting with Currency Specified
+
+When a currency is specified (detected by the presence of a valid `:currency` option to `Cldr.Number.to_string/2) but the format does *not* have a currency placeholder then the decimal separator is replaced with the currency symbol.  Notice that event though the format specifies three decimal digits for the fractional part, the rounding and precision rules for the currency are applied. For example:
+
+```elixir
+# Decimal format, no currency specified
+iex> Cldr.Number.to_string 1234.456, format: "###.########"
+{:ok, "1234.456"}
+
+# Decimal format, currency specified
+iex> Cldr.Number.to_string 1234.456, format: "###.########", currency: :AUD
+{:ok, "1234A$46"}
+
+# Decimal format, currency specified with narrow symbol
+iex> Cldr.Number.to_string 1234.456, format: "###.########", currency: :AUD, currency_symbol: :narrow
+{:ok, "1234$46"}
+
+# Decimal format, currency specified with ISO symbol
+iex> Cldr.Number.to_string 1234.456, format: "###.########", currency: :AUD, currency_symbol: :iso
+{:ok, "1234AUD46"}
+```
 
 ### Locale extensions affecting formatting
 

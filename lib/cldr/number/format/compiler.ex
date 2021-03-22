@@ -364,10 +364,20 @@ defmodule Cldr.Number.Format.Compiler do
       padding_length: padding_length(format[:positive][:pad], format),
       padding_char: padding_char(format),
       multiplier: multiplier(format),
-      format: format
+      format: format,
+      currency_format?: currency_format?(format)
     }
 
     reconcile_significant_and_scientific_digits(meta)
+  end
+
+  defp currency_format?(format) when is_list(format) do
+    positive_format = Keyword.get(format, :positive)
+    Keyword.has_key?(positive_format, :currency)
+  end
+
+  defp currency_format?(nil) do
+    false
   end
 
   # If we have significant digits defined then they take

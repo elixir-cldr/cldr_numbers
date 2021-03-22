@@ -41,8 +41,8 @@ defmodule CldrNumbers.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 2.20 or 2.20.0-rc.0", override: true},
-      {:ex_cldr_currencies, "~> 2.8"},
+      {:ex_cldr, "~> 2.20 or ~> 2.20-rc"},
+      {:ex_cldr_currencies, "~> 2.9 or ~> 2.9-rc"},
       {:decimal, "~> 1.6 or ~> 2.0"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.18", optional: true, runtime: false},
