@@ -226,7 +226,7 @@ See `MyApp.Cldr.Number.Formatter.Short` and `MyApp.Cldr.Number.Formatter.Currenc
 
 ### Decimal Formatting with Currency Specified
 
-When a currency is specified (detected by the presence of a valid `:currency` option to `Cldr.Number.to_string/2) but the format does *not* have a currency placeholder then the decimal separator is replaced with the currency symbol.  Notice that event though the format specifies three decimal digits for the fractional part, the rounding and precision rules for the currency are applied. For example:
+When a currency is specified (detected by the presence of a valid `:currency` option to `Cldr.Number.to_string/2` but the format does *not* have a currency placeholder then the decimal separator is replaced with the currency symbol.  Notice that event though the format specifies three decimal digits for the fractional part, the rounding and precision rules for the currency are applied. For example:
 
 ```elixir
 # Decimal format, no currency specified

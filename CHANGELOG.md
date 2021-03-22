@@ -4,7 +4,7 @@ This is the changelog for Cldr v2.17.0-rc.1 released on March 23rd, 2021.  For o
 
 ### Bug Fixes
 
-* Complies with updated TR35 that makes clear that if a currency is being formatted (detected by the presence of a valid `:currency` option to `Cldr.Number.to_string/2) but the format does *not* have a currency placeholder then the decimal separator is replaced with the currency symbol.  For example:
+* Complies with updated TR35 that makes clear that if a currency is being formatted (detected by the presence of a valid `:currency` option to `Cldr.Number.to_string/2` but the format does *not* have a currency placeholder then the decimal separator is replaced with the currency symbol.  For example:
 
 ```elixir
 # Decimal format, no currency specified
