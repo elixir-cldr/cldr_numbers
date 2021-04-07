@@ -4,7 +4,7 @@ This is the changelog for Cldr v2.17.0 released on April 8th, 2021.  For older c
 
 ### Enhancements
 
-* Updated to require [ex_cldr version 2.19](https://hex.pm/packages/ex_cldr/2.19.0) which includes [CLDR 39](http://cldr.unicode.org/index/downloads/cldr-39) data.
+* Updated to require [ex_cldr version 2.20](https://hex.pm/packages/ex_cldr/2.20.0) which includes [CLDR 39](http://cldr.unicode.org/index/downloads/cldr-39) data.
 
 # Changelog for Cldr_Numbers v2.16.1
 
