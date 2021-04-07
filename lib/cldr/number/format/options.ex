@@ -152,7 +152,7 @@ defmodule Cldr.Number.Format.Options do
       else
         {:error,
           {Cldr.UnknownFormatError,
-            "The locale #{inspect locale.cldr_locale_name} " <>
+            "The locale #{inspect Map.fetch!(locale, :cldr_locale_name)} " <>
             "with number system #{inspect number_system} " <>
             "does not define a format #{inspect format}"}}
       end
