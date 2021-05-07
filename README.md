@@ -106,6 +106,9 @@ iex> MyApp.Cldr.Number.to_string 12345, format: :accounting, currency: "THB", lo
 iex> MyApp.Cldr.Number.to_string 12345, format: :accounting, currency: "THB", locale: "th", number_system: :native
 {:ok, "THB๑๒,๓๔๕.๐๐"}
 
+iex> MyApp.Cldr.Number.to_string 12345, maximum_integer_digits: 2
+{:ok, "45"}
+
 iex> MyApp.Cldr.Number.to_string 1244.30, format: :long
 {:ok, "1 thousand"}
 
