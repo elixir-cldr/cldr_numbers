@@ -203,6 +203,11 @@ defmodule Cldr.Number.Backend.Number do
           fractional digits defined reflecting each currencies minor unit.  Setting
           `:fractional_digits` will override that setting.
 
+        * If `:maximum_integer_digits` is set to a positive integer value then the
+          numnber is left truncated before formatting. For example if the number `1234`
+          is formatted with the option `maximum_integer_digits: 2`, the number is
+          truncated to `34` and formatted.
+
         * If `:round_nearest` is set to a positive integer value then the number
           will be rounded to nearest increment of that value - overriding
           settings that would be applied by default.
