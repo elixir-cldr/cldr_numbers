@@ -186,6 +186,9 @@ defmodule Cldr.Number.Formatter.Short do
   end
 
   defp choose_short_format(number, rules, backend, options) when is_number(number) do
+    pluralizer =
+      Module.concat(backend, Number.Cardinal)
+
     [range, rule] =
       rules
       |> Enum.filter(fn [range, _rules] -> range <= number end)
@@ -197,7 +200,7 @@ defmodule Cldr.Number.Formatter.Short do
       |> trunc
       |> rem(range)
 
-    {range, Module.concat(backend, Number.Cardinal).pluralize(mod, options.locale, rule)}
+    {range, pluralizer.pluralize(mod, options.locale, rule)}
   end
 
   defp choose_short_format(%Decimal{} = number, rules, backend, options) do

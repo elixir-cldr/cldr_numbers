@@ -90,8 +90,8 @@ defmodule Cldr.Test.Number.Format do
       {1234, "1.234E+3", [format: "#E+0"]},
       {0.000012456, "1.2456E-5", [format: "#E+0"]},
 
-      # Maximum digits
-      {1234, "34", [format: "00"]},
+      # Maximum and minimum digits
+      {1234, "34", [format: "00", maximum_integer_digits: 2]},
       {1, "01.00", [format: "00.00"]},
 
       # Scientific formats with grouping

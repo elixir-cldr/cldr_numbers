@@ -24,6 +24,7 @@ defmodule Cldr.Number.Format.Options do
     :pattern,
     :rounding_mode,
     :fractional_digits,
+    :maximum_integer_digits,
     :round_nearest
   ]
 
@@ -86,6 +87,7 @@ defmodule Cldr.Number.Format.Options do
     pattern: String.t(),
     rounding_mode: Decimal.rounding(),
     fractional_digits: pos_integer(),
+    maximum_integer_digits: pos_integer(),
     round_nearest: pos_integer()
   }
 
@@ -385,6 +387,21 @@ defmodule Cldr.Number.Format.Options do
     {:error,
       {ArgumentError,
         ":fractional_digits must be a an integer >= 0 or nil. Found #{inspect other}"}}
+  end
+
+  def validate_option(:maximum_integer_digits, _options, _backend, nil) do
+    {:ok, nil}
+  end
+
+  def validate_option(:maximum_integer_digits, _options, _backend, int)
+      when is_integer(int) and int >= 0 do
+    {:ok, int}
+  end
+
+  def validate_option(:maximum_integer_digits, _options, _backend, other) do
+    {:error,
+      {ArgumentError,
+        ":maximum_integer_digits must be a an integer >= 0 or nil. Found #{inspect other}"}}
   end
 
   def validate_option(:round_nearest, _options, _backend, nil) do

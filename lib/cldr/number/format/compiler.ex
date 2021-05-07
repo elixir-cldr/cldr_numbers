@@ -266,7 +266,7 @@ defmodule Cldr.Number.Format.Compiler do
     |> stage(:output_to_tuple)
     |> stage(:adjust_leading_zeros)
     |> stage(:adjust_trailing_zeros)
-    |> stage_if_not(:set_max_integer_digits, match?(%Meta{integer_digits: %{max: 0}}, meta))
+    |> stage(:set_max_integer_digits)
     |> stage_if_not(
       :apply_grouping,
       match?(%Meta{grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}}}, meta)
@@ -393,20 +393,8 @@ defmodule Cldr.Number.Format.Compiler do
 
   defp required_integer_digits(_), do: @min_integer_digits
 
-  # If the pattern starts with a non-digit then its no limit on integer
-  # digits.  If the pattern starts with a digit then the maximum number
-  # of digits is the length of the integer pattern.  We can assume there
-  # are no '#'after digits since thats not permitted by the parser.
-
-  @first_is_digit Regex.compile!("^" <> @digits)
-  defp max_integer_digits(%{"compact_integer" => integer_format}) do
-    if Regex.match?(@first_is_digit, integer_format) do
-      String.length(integer_format)
-    else
-      @max_integer_digits
-    end
-  end
-
+  # Maximum integer digits is not limited by the format, but can
+  # be limited by options when formatting
   defp max_integer_digits(_), do: @max_integer_digits
 
   # Extract how many fraction digits must be displayed.

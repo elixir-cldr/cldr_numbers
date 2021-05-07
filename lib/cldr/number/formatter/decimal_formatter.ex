@@ -66,6 +66,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     |> adjust_fraction_for_currency(options.currency, options.currency_digits, backend)
     |> adjust_fraction_for_significant_digits(number)
     |> adjust_for_fractional_digits(options.fractional_digits)
+    |> adjust_for_integer_digits(options.maximum_integer_digits)
     |> adjust_for_round_nearest(options.round_nearest)
     |> Map.put(:number, number)
   end
@@ -757,6 +758,21 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   def adjust_for_fractional_digits(meta, digits) do
     %{meta | fractional_digits: %{max: digits, min: digits}}
+  end
+
+  # To allow overriding fractional digits
+  # This causes rounding of the number
+  def adjust_for_integer_digits(meta, nil) do
+    meta
+  end
+
+  def adjust_for_integer_digits(meta, digits) do
+    integer_digits =
+      meta
+      |> Map.fetch!(:integer_digits)
+      |> Map.put(:max, digits)
+
+    %{meta | integer_digits: integer_digits}
   end
 
   # To allow overriding round nearest
