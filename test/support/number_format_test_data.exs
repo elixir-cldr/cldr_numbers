@@ -117,6 +117,15 @@ defmodule Cldr.Test.Number.Format do
       {12, "12 bahts thaïlandais", [format: :long, currency: :THB, locale: "fr"]},
       {2134, "A$2K", [format: :currency_short, currency: :AUD]},
       {2134, "2,134 Australian dollars", [format: :currency_long, currency: :AUD]},
+      {499_999_999, "500 millions", [format: :long, locale: "fr"]},
+      {500_000_000, "500 millions", [format: :long, locale: "fr"]},
+      {9_900_000_000, "10 milliards", [format: :long, locale: "fr"]},
+      {10_000_000_000, "10 milliards", [format: :long, locale: "fr"]},
+
+      # Notes for future tests in "fr" locale:
+      # millier is used with the number 1 on front and strictly only for 1000 (1 millier).
+      # mille is used for anything between 1001 (Mille 1) and 1999 (Mille 999) and with no number before the word mille.
+      # milles is used for many as the plural form : 3 milles, 4 milles, etc.
 
       # Formats with literals
       {123, "This is a 123.00 format", [format: "This is a #,##0.00 format"]},

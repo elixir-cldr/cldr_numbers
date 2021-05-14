@@ -87,31 +87,16 @@ defmodule Cldr.Number.Formatter.Short do
         ) :: {:ok, String.t()} | {:error, {module(), String.t()}}
 
   defp short_format_string(number, style, locale, number_system, backend, options) do
-    case Format.formats_for(locale, number_system, backend) do
-      {:ok, formats} ->
-        formats = Map.get(formats, style)
+    format_rules =
+      locale
+      |> Format.formats_for!(number_system, backend)
+      |> Map.fetch!(style)
 
-        {number, format} =
-          case choose_short_format(number, formats, backend, options) do
-            {_range, ["0", _number_of_zeroes]} ->
-              {_, format} = choose_short_format(0, formats, backend, options)
-              {number, format}
+    {normalized_number, format} = choose_short_format(number, format_rules, options, backend)
+    options = digits(options, options.fractional_digits)
+    format = Options.maybe_adjust_currency_symbol(format, options.currency_symbol)
 
-            {range, [format, number_of_zeros]} ->
-              {normalise_number(number, range, number_of_zeros), format}
-
-            {_range, format} ->
-              {number, format}
-          end
-
-        options = digits(options, options.fractional_digits)
-        format = Options.maybe_adjust_currency_symbol(format, options.currency_symbol)
-
-        Formatter.Decimal.to_string(number, format, backend, options)
-
-      {:error, _} = error ->
-        error
-    end
+    Formatter.Decimal.to_string(normalized_number, format, backend, options)
   end
 
   @doc """
@@ -150,6 +135,7 @@ defmodule Cldr.Number.Formatter.Short do
          {:ok, number_system} <- System.system_name_from(number_system, locale, backend),
          {:ok, all_formats} <- Format.formats_for(locale, number_system, backend) do
       formats = Map.fetch!(all_formats, :decimal_short)
+      pluralizer = Module.concat(backend, Number.Cardinal)
 
       options =
         options
@@ -158,9 +144,13 @@ defmodule Cldr.Number.Formatter.Short do
         |> Map.put_new(:number_system, number_system)
         |> Map.put_new(:currency, nil)
 
-      case choose_short_format(number, formats, backend, options) do
-        {range, [_, exponent]} -> {range, exponent}
-        {range, _other} -> {range, 0}
+      case get_short_format_rule(number, formats, options, backend) do
+        [range, plural_selectors] ->
+          normalized_number = normalise_number(number, range, plural_selectors.other)
+          [_format, number_of_zeros] = pluralizer.pluralize(normalized_number, options.locale, plural_selectors)
+          {range, number_of_zeros}
+        {number, _format} ->
+          {number, 0}
       end
     end
   end
@@ -175,8 +165,23 @@ defmodule Cldr.Number.Formatter.Short do
     options
   end
 
-  defp choose_short_format(number, _rules, backend, options)
-       when is_number(number) and number < 1000 do
+  defp choose_short_format(number, format_rules, options, backend) do
+    pluralizer = Module.concat(backend, Number.Cardinal)
+
+    case get_short_format_rule(number, format_rules, options, backend) do
+      # Its a short format
+      [range, plural_selectors] ->
+        normalized_number = normalise_number(number, range, plural_selectors.other)
+        [format, _number_of_zeros] = pluralizer.pluralize(normalized_number, options.locale, plural_selectors)
+        {normalized_number, format}
+
+      # Its a standard format
+      {number, format} ->
+        {number, format}
+    end
+  end
+
+  defp get_short_format_rule(number, _format_rules, options, backend) when is_number(number) and number < 1000 do
     format =
       options.locale
       |> Format.formats_for!(options.number_system, backend)
@@ -185,29 +190,28 @@ defmodule Cldr.Number.Formatter.Short do
     {number, format}
   end
 
-  defp choose_short_format(number, rules, backend, options) when is_number(number) do
-    pluralizer =
-      Module.concat(backend, Number.Cardinal)
-
-    [range, rule] =
-      rules
-      |> Enum.filter(fn [range, _rules] -> range <= number end)
-      |> Enum.reverse()
-      |> hd
-
-    mod =
-      number
-      |> trunc
-      |> rem(range)
-
-    {range, pluralizer.pluralize(mod, options.locale, rule)}
+  defp get_short_format_rule(number, format_rules, options, backend) when is_number(number) do
+    format_rules
+    |> Enum.filter(fn [range, _rules] -> range <= number end)
+    |> Enum.reverse()
+    |> hd
+    |> maybe_get_default_format(number, options, backend)
   end
 
-  defp choose_short_format(%Decimal{} = number, rules, backend, options) do
+  defp get_short_format_rule(%Decimal{} = number, format_rules, options, backend) do
     number
     |> Decimal.round(0, :floor)
     |> Decimal.to_integer()
-    |> choose_short_format(rules, backend, options)
+    |> get_short_format_rule(format_rules, options, backend)
+  end
+
+  defp maybe_get_default_format([_range, %{other: ["0", _]}], number, options, backend) do
+    {_, format} = get_short_format_rule(0, [], options, backend)
+    {number, format}
+  end
+
+  defp maybe_get_default_format(rule, _number, _options, _backend) do
+    rule
   end
 
   defp standard_or_currency(options) do
@@ -231,7 +235,11 @@ defmodule Cldr.Number.Formatter.Short do
     number
   end
 
-  defp normalise_number(number, range, number_of_zeros) do
+  defp normalise_number(number, _range, ["0", _number_of_zeros]) do
+    number
+  end
+
+  defp normalise_number(number, range, [_format, number_of_zeros]) do
     number / adjustment(range, number_of_zeros)
   end
 
