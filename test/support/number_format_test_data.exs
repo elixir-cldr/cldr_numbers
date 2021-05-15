@@ -120,7 +120,10 @@ defmodule Cldr.Test.Number.Format do
       {499_999_999, "500 millions", [format: :long, locale: "fr"]},
       {500_000_000, "500 millions", [format: :long, locale: "fr"]},
       {9_900_000_000, "10 milliards", [format: :long, locale: "fr"]},
-      {10_000_000_000, "10 milliards", [format: :long, locale: "fr"]},
+      {1_000, "mille", [format: :long, locale: "fr"]},
+      {1_001, "1 millier", [format: :long, locale: "fr"]},
+      {1_499, "1 millier", [format: :long, locale: "fr"]},
+      {1_500, "2 mille", [format: :long, locale: "fr"]},
 
       # Notes for future tests in "fr" locale:
       # millier is used with the number 1 on front and strictly only for 1000 (1 millier).

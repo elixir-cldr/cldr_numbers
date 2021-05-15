@@ -147,7 +147,8 @@ defmodule Cldr.Number.Formatter.Short do
       case get_short_format_rule(number, formats, options, backend) do
         [range, plural_selectors] ->
           normalized_number = normalise_number(number, range, plural_selectors.other)
-          [_format, number_of_zeros] = pluralizer.pluralize(normalized_number, options.locale, plural_selectors)
+          plural_key = pluralization_key(normalized_number, options)
+          [_format, number_of_zeros] = pluralizer.pluralize(plural_key, options.locale, plural_selectors)
           {range, number_of_zeros}
         {number, _format} ->
           {number, 0}
@@ -172,7 +173,8 @@ defmodule Cldr.Number.Formatter.Short do
       # Its a short format
       [range, plural_selectors] ->
         normalized_number = normalise_number(number, range, plural_selectors.other)
-        [format, _number_of_zeros] = pluralizer.pluralize(normalized_number, options.locale, plural_selectors)
+        plural_key = pluralization_key(normalized_number, options)
+        [format, _number_of_zeros] = pluralizer.pluralize(plural_key, options.locale, plural_selectors)
         {normalized_number, format}
 
       # Its a standard format
@@ -248,5 +250,27 @@ defmodule Cldr.Number.Formatter.Short do
   defp adjustment(range, number_of_zeros) do
     (range / Math.power_of_10(number_of_zeros - 1))
     |> trunc
+  end
+
+  # The pluralization key has to consider when there is an
+  # exact match and when the number would be rounded up. When
+  # rounded up it also has to not be an exact match.
+  defp pluralization_key(number, options) do
+    rounding_mode = Map.get_lazy(options, :rounding_mode, &Cldr.Math.default_rounding_mode/0)
+
+    if (rounded = Cldr.Math.round(number, 0, rounding_mode)) <= number do
+      # Rounded number <= number means that the
+      # pluralization key is the same integer part
+      # so no issue
+      number
+    else
+      # The rounded number is greater than the normalized
+      # number so the plural key is different but not exactly
+      # equal so we add an offset so pluralization works
+      # correctly (we don't want to trigger an exact match;
+      # although this relies on exact matches always being integers
+      # which as of CLDR39 they are).
+      rounded + 0.1
+    end
   end
 end
