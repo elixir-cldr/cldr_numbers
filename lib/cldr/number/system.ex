@@ -89,10 +89,10 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_system_from_locale "en-US-u-nu-thai"
+      iex> Cldr.Number.System.number_system_from_locale "en-US-u-nu-thai", MyApp.Cldr
       :thai
 
-      iex> Cldr.Number.System.number_system_from_locale "en-US"
+      iex> Cldr.Number.System.number_system_from_locale "en-US", MyApp.Cldr
       :latn
 
   """
