@@ -2,7 +2,9 @@
 
 This is the changelog for Cldr v2.18.0 released on May 8th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
-### Big Fixes
+### Bug Fixes
+
+* Fixes short and long number formatting.
 
 * Fixes formatting whent the format string consists only of digits. Previously this would erroneously set both the maximum and minimum integer digits. Now it only sets the minimum integer digits.
 
