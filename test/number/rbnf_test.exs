@@ -33,6 +33,19 @@ defmodule Rbnf.Test do
              Cldr.Number.to_string(25_340, format: :spellout, locale: "he")
   end
 
+  test "rbnf spellout ordinal in de" do
+    assert {:ok, "fünf­und­zwanzig­tausend­drei­hundert­vierzigste"} =
+             Cldr.Number.to_string(25_340, format: :spellout_ordinal, locale: "de")
+  end
+
+  test "rbnf spellout ordinal in ar" do
+    assert {:ok, "خمسة و عشرون ألف و ثلاثة مائة و أربعون"} =
+             Cldr.Number.to_string(25_340, format: :spellout_ordinal_feminine, locale: "ar")
+
+    assert {:ok, "خمسة و عشرون ألف و ثلاثة مائة و أربعون"} =
+            Cldr.Number.to_string(25_340, format: :spellout_ordinal_masculine, locale: "ar")
+  end
+
   test "rbnf spellout in thai" do
     assert {:ok, "สอง​หมื่น​ห้า​พัน​สาม​ร้อย​สี่​สิบ"} =
              Cldr.Number.to_string(25_340, format: :spellout, locale: "th")
@@ -113,7 +126,7 @@ defmodule Rbnf.Test do
     assert Cldr.Rbnf.Spellout.spellout_numbering_year(-24, "zh-Hant") ==
              {:error,
               {
-                :"Elixir.Cldr.Rbnf.NoRuleForNumber",
+                Elixir.Cldr.Rbnf.NoRuleForNumber,
                 "rule group :spellout_numbering_year for locale \"zh-Hant\" does not know how to process -24"
               }}
   end

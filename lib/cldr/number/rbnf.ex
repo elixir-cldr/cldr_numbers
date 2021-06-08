@@ -26,18 +26,17 @@ defmodule Cldr.Rbnf do
   @doc """
   Returns {:ok, rbnf_rules} for a `locale` or `{:error, {Cldr.NoRbnf, info}}`
 
-  * `locale` is any locale name returned by `Cldr.Rbnf.known_locale_names/1`.
-    or a `Cldr.LanguageTag`
+  * `locale` is any `t:Cldr.LanguageTag`
 
   """
-  @spec for_locale(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
+  @spec for_locale(LanguageTag.t()) ::
           {:ok, map()} | {:error, {module(), String.t()}}
 
-  def for_locale(%LanguageTag{rbnf_locale_name: nil} = language_tag, _backend) do
+  def for_locale(%LanguageTag{rbnf_locale_name: nil} = language_tag) do
     {:error, rbnf_locale_error(language_tag)}
   end
 
-  def for_locale(%LanguageTag{rbnf_locale_name: rbnf_locale_name}, backend) do
+  def for_locale(%LanguageTag{rbnf_locale_name: rbnf_locale_name, backend: backend}) do
     rbnf_data =
       rbnf_locale_name
       |> Cldr.Config.get_locale(backend)
@@ -46,9 +45,21 @@ defmodule Cldr.Rbnf do
     {:ok, rbnf_data}
   end
 
+  @doc """
+  Returns {:ok, rbnf_rules} for a `locale` or `{:error, {Cldr.NoRbnf, info}}`
+
+  * `locale` is any locale name returned by `Cldr.Rbnf.known_locale_names/1`
+
+  * `backend` is any module that includes `use Cldr` and therefore
+    is a `Cldr` backend module
+
+  """
+  @spec for_locale(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
+          {:ok, map()} | {:error, {module(), String.t()}}
+
   def for_locale(locale, backend) when is_binary(locale) do
     with {:ok, language_tag} <- Cldr.Locale.canonical_language_tag(locale, backend) do
-      for_locale(language_tag, backend)
+      for_locale(language_tag)
     end
   end
 
@@ -56,16 +67,46 @@ defmodule Cldr.Rbnf do
   Returns rbnf_rules for a `locale` or raises an exception if
   there are no rules.
 
-  * `locale` is any locale name returned by `Cldr.Rbnf.known_locale_names/1`.
-    or a `Cldr.LanguageTag`
+  * `locale` is any `Cldr.LanguageTag`
+
+  * `backend` is any module that includes `use Cldr` and therefore
+    is a `Cldr` backend module
 
   """
-  def for_locale!(locale, backend) do
+  def for_locale!(%LanguageTag{} = locale) do
+    case for_locale(locale) do
+      {:ok, rules} -> rules
+      {:error, {exception, reason}} -> raise exception, reason
+    end
+  end
+
+  @doc """
+  Returns rbnf_rules for a `locale` and `backend` or raises an exception if
+  there are no rules.
+
+  * `locale` is any locale name returned by `Cldr.Rbnf.known_locale_names/1`
+
+  * `backend` is any module that includes `use Cldr` and therefore
+    is a `Cldr` backend module
+
+  """
+  def for_locale!(locale, backend) when is_binary(locale) and is_atom(backend) do
     case for_locale(locale, backend) do
       {:ok, rules} -> rules
       {:error, {exception, reason}} -> raise exception, reason
     end
   end
+
+  def categories_for_locale!(%LanguageTag{} = locale) do
+    locale
+    |> for_locale!()
+    |> Map.keys()
+    |> Enum.map(&map_category/1)
+  end
+
+  defp map_category(:OrdinalRules), do: :Ordinal
+  defp map_category(:NumberSystemRules), do: :NumberSystem
+  defp map_category(:SpelloutRules), do: :Spellout
 
   # Returns a map that merges all rules by the primary dimension of
   # RuleGroup, within which rbnf rules are keyed by locale.
@@ -124,7 +165,7 @@ defmodule Cldr.Rbnf do
       # Get the list of rules
       known_locale_names(backend)
       |> Enum.map(&Cldr.Locale.new!(&1, backend))
-      |> Enum.map(&for_locale!(&1, backend))
+      |> Enum.map(&for_locale!(&1))
       |> Enum.flat_map(&Map.values/1)
       |> Enum.flat_map(&Map.values/1)
       |> Enum.flat_map(& &1.rules)

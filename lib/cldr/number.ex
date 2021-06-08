@@ -493,6 +493,7 @@ defmodule Cldr.Number do
   end
 
   # For spellout ordinal
+  @format :spellout_ordinal
   defp to_string(number, :spellout_ordinal = format, backend, options) do
     rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
 
@@ -504,6 +505,7 @@ defmodule Cldr.Number do
   end
 
   # For spellout ordinal verbose
+  @format :spellout_ordinal_verbose
   defp to_string(number, :spellout_ordinal_verbose = format, backend, options) do
     rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
 
@@ -532,6 +534,27 @@ defmodule Cldr.Number do
   defp to_string(number, format, backend, options)
        when is_atom(format) and format in @short_format_styles do
     Formatter.Short.to_string(number, format, backend, options)
+  end
+
+  # For executing arbitrary RBNF rules that might exist for a given locale
+  defp to_string(_number, format, _backend, %{locale: %{rbnf_locale_name: nil} = locale}) do
+    Cldr.Rbnf.rbnf_rule_error(locale, format)
+  end
+
+  defp to_string(number, format, backend, options) when is_atom(format) do
+    error = Cldr.Rbnf.rbnf_rule_error(options.locale, format)
+    rbnf_locale = options.locale.rbnf_locale_name
+
+    Enum.reduce_while Cldr.Rbnf.categories_for_locale!(options.locale), error, fn category, acc ->
+      format_module = Module.concat([backend, :Rbnf, category])
+      rules = format_module.rule_sets(rbnf_locale)
+
+      if format in rules do
+        {:halt, apply(format_module, format, [number, rbnf_locale])}
+      else
+        {:cont, acc}
+      end
+    end
   end
 
   # For all other formats

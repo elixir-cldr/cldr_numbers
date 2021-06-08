@@ -36,7 +36,7 @@ defmodule Cldr.Rbnf.TestSupport do
           locale = TestBackend.Cldr.Locale.new!(locale_name)
 
           if Cldr.known_rbnf_locale_name?(locale_name, TestBackend.Cldr) do
-            rbnf_data = Cldr.Rbnf.for_locale!(locale, TestBackend.Cldr)
+            rbnf_data = Cldr.Rbnf.for_locale!(locale)
 
             Enum.each(Map.keys(json_data), fn rule_group ->
               if rbnf_data[String.to_existing_atom(rule_group)] do
