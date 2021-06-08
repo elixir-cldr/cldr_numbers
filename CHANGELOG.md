@@ -4,6 +4,8 @@ This is the changelog for Cldr v2.18.1 released on June 8th, 2021.  For older ch
 
 ### Bug Fixes
 
+Thanks to @alaadahmed for the collaboration to fix two bugs in rules based number formatting.
+
 * Fixes RBNF formatting options setting for `:spellout_ordinal`
 
 * Allows any defined RNBF rule for a locale to be invoked as the `:format` option to `Cldr.Number.to_string/3`.
