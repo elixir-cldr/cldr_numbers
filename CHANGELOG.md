@@ -1,4 +1,6 @@
-# Changelog for Cldr_Numbers v2.18.1
+# Changelog
+
+## Cldr_Numbers v2.18.1
 
 This is the changelog for Cldr v2.18.1 released on June 8th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -10,7 +12,7 @@ Thanks to @alaadahmed for the collaboration to fix two bugs in rules based numbe
 
 * Allows any defined RNBF rule for a locale to be invoked as the `:format` option to `Cldr.Number.to_string/3`.
 
-# Changelog for Cldr_Numbers v2.18.0
+## Cldr_Numbers v2.18.0
 
 This is the changelog for Cldr v2.18.0 released on May 8th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -24,7 +26,7 @@ This is the changelog for Cldr v2.18.0 released on May 8th, 2021.  For older cha
 
 * Add option `:maximum_integer_digits` as an option to `Cldr.Number.to_string/2`
 
-# Changelog for Cldr_Numbers v2.17.0
+## Cldr_Numbers v2.17.0
 
 This is the changelog for Cldr v2.17.0 released on April 8th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -32,7 +34,7 @@ This is the changelog for Cldr v2.17.0 released on April 8th, 2021.  For older c
 
 * Updated to require [ex_cldr version 2.20](https://hex.pm/packages/ex_cldr/2.20.0) which includes [CLDR 39](http://cldr.unicode.org/index/downloads/cldr-39) data.
 
-# Changelog for Cldr_Numbers v2.16.1
+## Cldr_Numbers v2.16.1
 
 This is the changelog for Cldr v2.16.1 released on November 8th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -40,7 +42,7 @@ This is the changelog for Cldr v2.16.1 released on November 8th, 2020.  For olde
 
 * Fix bug in `Cldr.Number.System.number_system_from/1` to correctly allow a binary language tag without a backend parameter (which will then default to `Cldr.default_backend!/0`)
 
-# Changelog for Cldr_Numbers v2.16.0
+## Cldr_Numbers v2.16.0
 
 This is the changelog for Cldr v2.16.0 released on November 1st, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -50,7 +52,7 @@ This is the changelog for Cldr v2.16.0 released on November 1st, 2020.  For olde
 
 * Add `Cldr.Number.Formatter.Short.short_format_exponent/2` to support compact number pluralization that is added to CLDR 38 (for the "fr" locale only in this release)
 
-# Changelog for Cldr_Numbers v2.15.4
+## Cldr_Numbers v2.15.4
 
 This is the changelog for Cldr v2.15.4 released on Septmber 26th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -64,7 +66,7 @@ This is the changelog for Cldr v2.15.4 released on Septmber 26th, 2020.  For old
 
 * Apply compile-time detection of `Decimal` version in order to know the correct return type of `Decimal.parse/1` which differs between `1.x` and `2.x`
 
-# Changelog for Cldr_Numbers v2.15.3
+## Cldr_Numbers v2.15.3
 
 This is the changelog for Cldr v2.15.3 released on September 5th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -72,7 +74,7 @@ This is the changelog for Cldr v2.15.3 released on September 5th, 2020.  For old
 
 * Fix documentation referencing `Cldr.known_locale_names/10` to correctly reference `Cldr.known_locale_names/0`.
 
-# Changelog for Cldr_Numbers v2.15.2
+## Cldr_Numbers v2.15.2
 
 This is the changelog for Cldr v2.15.2 released on August 30th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -80,7 +82,7 @@ This is the changelog for Cldr v2.15.2 released on August 30th, 2020.  For older
 
 * Removes dialyzer warning when running on Elixir 1.11.  Uses `Logger.warning/2` not `Logger.warn/2` in this case and uses an anonymous function not a string so that dialyzer is happy.
 
-# Changelog for Cldr_Numbers v2.15.1
+## Cldr_Numbers v2.15.1
 
 This is the changelog for Cldr v2.15.1 released on June 23rd, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -93,7 +95,7 @@ This is the changelog for Cldr v2.15.1 released on June 23rd, 2020.  For older c
 
 * Fix formatter pipeline generation which was including the `round nearest` pipeline stage even when not required.  Thanks to @jeroenvisser101 for the collaboration. Fixes #14.
 
-# Changelog for Cldr_Numbers v2.15.0
+## Cldr_Numbers v2.15.0
 
 This is the changelog for Cldr v2.15.0 released on June 13th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -103,7 +105,7 @@ This is the changelog for Cldr v2.15.0 released on June 13th, 2020.  For older c
 
 * Add `number_system_from_locale/1` to backend modules
 
-# Changelog for Cldr_Numbers v2.14.0
+## Cldr_Numbers v2.14.0
 
 This is the changelog for Cldr v2.14.0 released on May 27th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -117,7 +119,7 @@ This is the changelog for Cldr v2.14.0 released on May 27th, 2020.  For older ch
 
 * Add `Cldr.Number.Parser.resolve_currency/2` to match a string to a currency code
 
-# Changelog for Cldr_Numbers v2.13.2
+## Cldr_Numbers v2.13.2
 
 This is the changelog for Cldr v2.13.2 released on May 16th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -125,7 +127,7 @@ This is the changelog for Cldr v2.13.2 released on May 16th, 2020.  For older ch
 
 * Fix regression and allow `:percent` formats in `Cldr.Number.to_string/3`. Thanks to @maennchen. Fixes #13.
 
-# Changelog for Cldr_Numbers v2.13.1
+## Cldr_Numbers v2.13.1
 
 This is the changelog for Cldr v2.13.1 released on May 14th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -133,7 +135,7 @@ This is the changelog for Cldr v2.13.1 released on May 14th, 2020.  For older ch
 
 * Fix regression and allow `:fractional_digits` to be `0`. Thanks to @coladarci. Fixes #12.
 
-# Changelog for Cldr_Numbers v2.13.0
+## Cldr_Numbers v2.13.0
 
 This is the changelog for Cldr v2.13.0 released on May 2nd, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -155,7 +157,7 @@ This is the changelog for Cldr v2.13.0 released on May 2nd, 2020.  For older cha
 
 	* The `:number_system` from the current locale for the supplied backend. This locale is retrieved with `backend.get_locale()`
 
-# Changelog for Cldr_Numbers v2.12.1
+## Cldr_Numbers v2.12.1
 
 This is the changelog for Cldr v2.12.1 released on March 2nd, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -163,7 +165,7 @@ This is the changelog for Cldr v2.12.1 released on March 2nd, 2020.  For older c
 
 * Use the RBNF format `spellout_numbering` instead of `spellout_cardinal` for the `Cldr.Number.to_string/3` option `format: :spellout` since `spellout_numbering` has a larger locale coverage of RBNF formats.
 
-# Changelog for Cldr_Numbers v2.12.0
+## Cldr_Numbers v2.12.0
 
 This is the changelog for Cldr v2.12.0 released on January 21st, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -175,7 +177,7 @@ This is the changelog for Cldr v2.12.0 released on January 21st, 2020.  For olde
 
 * Fixes an incorrect typespec on `Cldr.Number.Format.format_from_locale_or_options/1` that was causing a dialyzer warning
 
-# Changelog for Cldr_Numbers v2.11.0
+## Cldr_Numbers v2.11.0
 
 This is the changelog for Cldr v2.11.0 released on January 19th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -249,7 +251,7 @@ Examples:
  {:ok, "(A$1,234.00)"}
 ```
 
-# Changelog for Cldr_Numbers v2.10.0
+## Cldr_Numbers v2.10.0
 
 This is the changelog for Cldr v2.10.0 released on January 15th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -261,7 +263,7 @@ This is the changelog for Cldr v2.10.0 released on January 15th, 2020.  For olde
 
 * Optionally logs a warning if compiling a number format at runtime. The warning is emitted only once for each format to reduce log clutter. The log warning is emitted if the backend configuration key `:supress_warnings` is set to `false` (this is the default value). The `warn_once` mechanism depends on the availability of the `:persistent_term` module which is only available from OTP 21.2 onwards. On earlier releases of OTP no warning will be emitted.
 
-# Changelog for Cldr_Numbers v2.9.0
+## Cldr_Numbers v2.9.0
 
 This is the changelog for Cldr v2.9.0 released on October 20th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -269,7 +271,7 @@ This is the changelog for Cldr v2.9.0 released on October 20th, 2019.  For older
 
 * Adds option `:currency_symbol` to `Cldr.Number.to_string/2`. This option, when set to `:iso` changes a currency format to force using the ISO currency code instead of the native currency symbol.
 
-# Changelog for Cldr_Numbers v2.8.0
+## Cldr_Numbers v2.8.0
 
 This is the changelog for Cldr v2.8.0 released on October 10th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -277,7 +279,7 @@ This is the changelog for Cldr v2.8.0 released on October 10th, 2019.  For older
 
 * Update [ex_cldr](https://github.com/elixir-cldr/cldr) to version `2.11.0` which encapsulates [CLDR](https://cldr.unicode.org) version `36.0.0` data.
 
-# Changelog for Cldr_Numbers v2.7.2
+## Cldr_Numbers v2.7.2
 
 This is the changelog for Cldr v2.7.2 released on September 7th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -285,7 +287,7 @@ This is the changelog for Cldr v2.7.2 released on September 7th, 2019.  For olde
 
 * Call `Keyword.get_lazy/3` when accessing `Cldr.default_locale/0` to avoid exceptions when no default backend is configured but an optional `:backend` has been passed.
 
-# Changelog for Cldr_Numbers v2.7.1
+## Cldr_Numbers v2.7.1
 
 This is the changelog for Cldr v2.7.1 released on August 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -293,7 +295,7 @@ This is the changelog for Cldr v2.7.1 released on August 23rd, 2019.  For older 
 
 * Fix `@spec` for `Cldr.Number.to_string/3` and `Cldr.Number.to_string!/3`
 
-# Changelog for Cldr_Numbers v2.7.0
+## Cldr_Numbers v2.7.0
 
 This is the changelog for Cldr v2.7.0 released on August 21st, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -301,7 +303,7 @@ This is the changelog for Cldr v2.7.0 released on August 21st, 2019.  For older 
 
 * An option `:backend` can be passed to `Cldr.Number.to_string/3` and it will be used if being called as `Cldr.Number.to_string/2`.  This means that for a call like `Cldr.Number.to_string(number, backend, options)` which has an option `:backend`, the call can be replaced with `Cldr.Number.to_string(number, options)`.
 
-# Changelog for Cldr_Numbers v2.6.4
+## Cldr_Numbers v2.6.4
 
 This is the changelog for Cldr v2.6.4 released on June 16th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -311,7 +313,7 @@ This is the changelog for Cldr v2.6.4 released on June 16th, 2019.  For older ch
 
 * Allow `Cldr.Number.to_string/3` to be called as `Cldr.Number.to_string <number>, <options>` as long as there is a default backend configured in `config.exs`.
 
-# Changelog for Cldr_Numbers v2.6.3
+## Cldr_Numbers v2.6.3
 
 This is the changelog for Cldr v2.6.3 released on June 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -319,7 +321,7 @@ This is the changelog for Cldr v2.6.3 released on June 15th, 2019.  For older ch
 
 * Correctly interpret the special short format `0` to mean "format as a normal decimal or currency number". Thanks to @epilgrim.  Closes #10
 
-# Changelog for Cldr_Numbers v2.6.2
+## Cldr_Numbers v2.6.2
 
 This is the changelog for Cldr v2.6.2 released on June 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -327,7 +329,7 @@ This is the changelog for Cldr v2.6.2 released on June 12th, 2019.  For older ch
 
 * Don't transliterate in `Cldr.Number.Transliterate.transliterate_digits/3` if `from` and `to` number systems are the same.
 
-# Changelog for Cldr_Numbers v2.6.1
+## Cldr_Numbers v2.6.1
 
 This is the changelog for Cldr v2.6.1 released on June 2nd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -335,7 +337,7 @@ This is the changelog for Cldr v2.6.1 released on June 2nd, 2019.  For older cha
 
 * Ensure `Cldr.Number.to_string/3` doesn't transliterate is the number systems are compatible for a given locale.  Basically, if the local and number system don't require transliteration from `0..9` to another script (like indian, arabic, ...) then we don't do it.  This improves performance by about 10% for this common case.
 
-# Changelog for Cldr_Numbers v2.6.0
+## Cldr_Numbers v2.6.0
 
 This is the changelog for Cldr v2.6.0 released on March 28th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -343,7 +345,7 @@ This is the changelog for Cldr v2.6.0 released on March 28th, 2019.  For older c
 
 * Updates to [CLDR version 35.0.0](http://cldr.unicode.org/index/downloads/cldr-35) released on March 27th 2019.
 
-# Changelog for Cldr_Numbers v2.5.0
+## Cldr_Numbers v2.5.0
 
 This is the changelog for Cldr v2.5.0 released on March 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -351,7 +353,7 @@ This is the changelog for Cldr v2.5.0 released on March 23rd, 2019.  For older c
 
 * Supports `Cldr.default_backend()` as a default for a backend on functions in `Cldr.Number`
 
-# Changelog for Cldr_Numbers v2.4.4
+## Cldr_Numbers v2.4.4
 
 This is the changelog for Cldr v2.4.4 released on March 21st, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -359,7 +361,7 @@ This is the changelog for Cldr v2.4.4 released on March 21st, 2019.  For older c
 
 * Rbnf.Ordinal and Rbnf.Spellout now respect the optional generation of @moduledocs in a backend
 
-# Changelog for Cldr_Numbers v2.4.3
+## Cldr_Numbers v2.4.3
 
 This is the changelog for Cldr v2.4.3 released on March 20th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -367,7 +369,7 @@ This is the changelog for Cldr v2.4.3 released on March 20th, 2019.  For older c
 
 * Fix dialyzer warnings
 
-# Changelog for Cldr_Numbers v2.4.2
+## Cldr_Numbers v2.4.2
 
 This is the changelog for Cldr v2.4.2 released on March 15th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -384,7 +386,7 @@ defmodule MyApp.Cldr do
     generate_docs: false
 end
 ```
-# Changelog for Cldr_Numbers v2.4.1
+## Cldr_Numbers v2.4.1
 
 This is the changelog for Cldr v2.4.1 released on March 7th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -398,7 +400,7 @@ This is the changelog for Cldr v2.4.1 released on March 7th, 2019.  For older ch
 
 * Fix o silence dialyzer warnings
 
-# Changelog for Cldr_Numbers v2.4.0
+## Cldr_Numbers v2.4.0
 
 This is the changelog for Cldr v2.4.0 released on March 4th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -406,7 +408,7 @@ This is the changelog for Cldr v2.4.0 released on March 4th, 2019.  For older ch
 
 * Adds `Cldr.Number.Format.default_grouping_for/2` to return the default grouping of digits for a locale. This is useful for external number formats like [ex_cldr_print](https://github.com/kipcole9/cldr_print).
 
-# Changelog for Cldr_Numbers v2.3.0
+## Cldr_Numbers v2.3.0
 
 This is the changelog for Cldr v2.3.0 released on March 1st, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -414,7 +416,7 @@ This is the changelog for Cldr v2.3.0 released on March 1st, 2019.  For older ch
 
 * Opens up the formatting pipeline for use by other formatting systems like `printf`. This is implemented by the introduction of `Cldr.Number.Format.Meta` to create the abstract metadata struct.  This struct is used for `Cldr.Number.to_string/3` and is now available for use by other libraries. The function `Cldr.Number.Formatter.Decimal.to_string/3` is the primary function that should be used by other libraries.
 
-# Changelog for Cldr_Numbers v2.2.0
+## Cldr_Numbers v2.2.0
 
 This is the changelog for Cldr v2.2.0 released on Febriuary 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -430,7 +432,7 @@ This is the changelog for Cldr v2.2.0 released on Febriuary 24th, 2019.  For old
 
 * Adds `Cldr.Number.Symbol.all_decimal_symbols_class/1` and `Cldr.Number.Symbol.all_grouping_symbols_class/1`. The symbols are returned as a `String.t` which can then be used to define a character class when building a regex.
 
-# Changelog for Cldr_Numbers v2.1.1
+## Cldr_Numbers v2.1.1
 
 This is the changelog for Cldr v2.1.1 released on February 3rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -440,7 +442,7 @@ This is the changelog for Cldr v2.1.1 released on February 3rd, 2019.  For older
 
 * Fix documentation errors
 
-# Changelog for Cldr_Numbers v2.1.0
+## Cldr_Numbers v2.1.0
 
 This is the changelog for Cldr v2.1.0 released on December 1st, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
@@ -464,7 +466,7 @@ iex> MyApp.Cldr.Number.to_range_string 1234..5678
 
 * Refactored options for `Cldr.Numbers.to_string/3` and other functions that use the common number formatting options structure.  Options are now parsed and contained in a `Cldr.Number.Format.Options` struct. A user-visible benefit is that if passing a `Cldr.Number.Format.Options` struct to `Cldr.Number.to_string/3` then no further validation or normalization will be performed.  Therefore if you are formatting in a tight loop and using common options, saving the options in advance will yield some performance improvement.  A `Cldr.Number.Format.Options` struct can be returned by called `Cldr.Number.Format.Options.validate_options(backend, options)`.
 
-# Changelog for Cldr_Numbers v2.0.0
+## Cldr_Numbers v2.0.0
 
 This is the changelog for Cldr v2.0.0 released on November 22nd, 2018.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
