@@ -432,87 +432,16 @@ defmodule Cldr.Number do
     end
   end
 
-  # For ordinal numbers
-  @format :digits_ordinal
-  defp to_string(number, :ordinal, backend, %{locale: locale}) do
-    rule_sets = Module.concat(backend, Rbnf.Ordinal).rule_sets(locale)
+  @format_mapping [
+    {:ordinal, :digits_ordinal, Ordinal},
+    {:spellout, :spellout_numbering, Spellout},
+    {:spellout_verbose, :spellout_numbering_verbose, Spellout},
+    {:spellout_year, :spellout_numbering_year, Spellout},
+  ]
 
-    if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Ordinal).digits_ordinal(number, locale)
-    else
-      {:error, Cldr.Rbnf.rbnf_rule_error(locale, @format)}
-    end
-  end
-
-  # For spellout numbers
-  @format :spellout_numbering
-  defp to_string(number, :spellout, backend, %{locale: locale}) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(locale)
-
-    if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_numbering(number, locale)
-    else
-      {:error, Cldr.Rbnf.rbnf_rule_error(locale, @format)}
-    end
-  end
-
-  # For spellout numbers
-  @format :spellout_numbering_verbose
-  defp to_string(number, :spellout_verbose, backend, options) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
-
-    if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_numbering_verbose(number, options.locale)
-    else
-      {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, @format)}
-    end
-  end
-
-  # For spellout years
-  @format :spellout_numbering_year
-  defp to_string(number, :spellout_year, backend, options) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
-
-    if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_numbering_year(number, options.locale)
-    else
-      {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, @format)}
-    end
-  end
-
-  # For spellout cardinal
-  @format :spellout_cardinal
-  defp to_string(number, :spellout_cardinal = format, backend, %{locale: locale}) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(locale)
-
-    if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_cardinal(number, locale)
-    else
-      {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
-    end
-  end
-
-  # For spellout ordinal
-  @format :spellout_ordinal
-  defp to_string(number, :spellout_ordinal = format, backend, options) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
-
-    if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_ordinal(number, options.locale)
-    else
-      {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, format)}
-    end
-  end
-
-  # For spellout ordinal verbose
-  @format :spellout_ordinal_verbose
-  defp to_string(number, :spellout_ordinal_verbose = format, backend, options) do
-    rule_sets = Module.concat(backend, Rbnf.Spellout).rule_sets(options.locale)
-
-    if rule_sets && @format in rule_sets do
-      Module.concat(backend, Rbnf.Spellout).spellout_ordinal_verbose(number, options.locale)
-    else
-      {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, format)}
+  for {format, function, module} <- @format_mapping do
+    defp to_string(number, unquote(format), backend, options) do
+      evaluate_rule(number, unquote(module), unquote(function), options.locale, backend)
     end
   end
 
@@ -538,18 +467,18 @@ defmodule Cldr.Number do
 
   # For executing arbitrary RBNF rules that might exist for a given locale
   defp to_string(_number, format, _backend, %{locale: %{rbnf_locale_name: nil} = locale}) do
-    Cldr.Rbnf.rbnf_rule_error(locale, format)
+    {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
   end
 
   defp to_string(number, format, backend, options) when is_atom(format) do
-    error = Cldr.Rbnf.rbnf_rule_error(options.locale, format)
+    error = {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, format)}
     rbnf_locale = options.locale.rbnf_locale_name
 
     Enum.reduce_while Cldr.Rbnf.categories_for_locale!(options.locale), error, fn category, acc ->
       format_module = Module.concat([backend, :Rbnf, category])
       rules = format_module.rule_sets(rbnf_locale)
 
-      if format in rules do
+      if rules && format in rules do
         {:halt, apply(format_module, format, [number, rbnf_locale])}
       else
         {:cont, acc}
@@ -567,6 +496,17 @@ defmodule Cldr.Number do
   # locale but its not there.
   defp to_string(_number, {:error, _} = error, _backend, _options) do
     error
+  end
+
+  defp evaluate_rule(number, module, function, locale, backend) do
+    module = Module.concat([backend, :Rbnf, module])
+    rule_sets = module.rule_sets(locale)
+
+    if rule_sets && function in rule_sets do
+      apply(module, function, [number, locale])
+    else
+      {:error, Cldr.Rbnf.rbnf_rule_error(locale, function)}
+    end
   end
 
   @doc """
