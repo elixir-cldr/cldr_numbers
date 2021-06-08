@@ -1,5 +1,5 @@
 defmodule CldrNumbersTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   if function_exported?(Code, :fetch_docs, 1) do
     @modules [

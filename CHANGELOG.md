@@ -1,3 +1,13 @@
+# Changelog for Cldr_Numbers v2.18.1
+
+This is the changelog for Cldr v2.18.1 released on June 8th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fixes RBNF formatting options setting for `:spellout_ordinal`
+
+* Allows any defined RNBF rule for a locale to be invoked as the `:format` option to `Cldr.Number.to_string/3`.
+
 # Changelog for Cldr_Numbers v2.18.0
 
 This is the changelog for Cldr v2.18.0 released on May 8th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

@@ -23,14 +23,6 @@ defmodule Number.Format.Test do
     assert {:ok, "1.234"} = Cldr.Number.to_string(1234, locale: "de")
   end
 
-  test "that we raise if no default backend" do
-    :ok = Application.delete_env(:ex_cldr, :default_backend)
-    assert_raise Cldr.NoDefaultBackendError, fn ->
-      Cldr.Number.to_string(1234)
-    end
-    :ok = Application.put_env(:ex_cldr, :default_backend, TestBackend.Cldr)
-  end
-
   test "literal-only format returns the literal" do
     assert {:ok, "xxx"} = TestBackend.Cldr.Number.to_string(1234, format: "xxx")
   end

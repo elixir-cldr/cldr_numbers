@@ -1,6 +1,7 @@
 defmodule Cldr.Number.Doc.Test do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
 
+  default = Application.get_env(:ex_cldr, :default_backend)
   Application.put_env(:ex_cldr, :default_backend, TestBackend.Cldr)
 
   doctest Cldr.Number
@@ -25,4 +26,6 @@ defmodule Cldr.Number.Doc.Test do
   doctest TestBackend.Cldr.Rbnf.Ordinal
   doctest TestBackend.Cldr.Rbnf.Spellout
   doctest TestBackend.Cldr.Rbnf.NumberSystem
+
+  Application.put_env(:ex_cldr, :default_backend, default)
 end
