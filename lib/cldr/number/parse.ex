@@ -5,7 +5,7 @@ defmodule Cldr.Number.Parser do
 
   """
 
-  @number_format "[-+]?[0-9][0-9,_]*\\.?[0-9_]+([eE][-+]?[0-9]+)?"
+  @number_format "[-+]?[0-9][0-9,_]*(\\.?[0-9_]+([eE][-+]?[0-9]+)?)?"
 
   @doc """
   Scans a string locale-aware manner and returns
@@ -29,7 +29,7 @@ defmodule Cldr.Number.Parser do
     is `Cldr.default_backend/0`.
 
   * `:locale` is any locale returned by `Cldr.known_locale_names/1`
-    or a `Cldr.LanguageTag.t`. The default is `options[:backend].get_locale/1`.
+    or a `t:Cldr.LanguageTag`. The default is `options[:backend].get_locale/1`.
 
   ## Returns
 
@@ -57,6 +57,9 @@ defmodule Cldr.Number.Parser do
       iex> Cldr.Number.Parser.scan("The loss is -1.000 euros", locale: "de", number: :integer)
       ["The loss is ", -1000, " euros"]
 
+      iex> Cldr.Number.Parser.scan "1kg"
+      [1, "kg"]
+
   """
   def scan(string, options \\ []) do
     {locale, backend} = Cldr.locale_and_backend_from(options)
@@ -81,7 +84,7 @@ defmodule Cldr.Number.Parser do
 
   ## Arguments
 
-  * `string` is any `String.t`
+  * `string` is any `t:String`
 
   * `options` is a keyword list of options
 
@@ -115,6 +118,9 @@ defmodule Cldr.Number.Parser do
   formatting in a string. It then parses the number
   using the Elixir standard library functions.
 
+  If the option `:number` is used and the parsed number
+  cannot be coerced to this type then an error is returned.
+
   ## Examples
 
       iex> Cldr.Number.Parser.parse("＋1.000,34", locale: "de")
@@ -126,6 +132,8 @@ defmodule Cldr.Number.Parser do
       iex> Cldr.Number.Parser.parse("1.000", locale: "de", number: :integer)
       {:ok, 1000}
 
+      # 1_000.34 cannot be coerced into an integer
+      # without precision loss so an error is returned.
       iex> Cldr.Number.Parser.parse("＋1.000,34", locale: "de", number: :integer)
       {:error, "＋1.000,34"}
 
@@ -188,10 +196,10 @@ defmodule Cldr.Number.Parser do
   ## Options
 
   * `:backend` is any module() that includes `use Cldr` and therefore
-    is a `Cldr` backend module(). The default is `Cldr.default_backend/0`
+    is a `Cldr` backend module(). The default is `Cldr.default_backend!/0`
 
   * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
-    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
+    or a `t:Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
     The default is `options[:backend].get_locale()`
 
   * `:only` is an `atom` or list of `atoms` representing the
@@ -282,7 +290,7 @@ defmodule Cldr.Number.Parser do
   ## Options
 
   * `:backend` is any module() that includes `use Cldr` and therefore
-    is a `Cldr` backend module(). The default is `Cldr.default_backend/0`
+    is a `Cldr` backend module(). The default is `Cldr.default_backend!/0`
 
   * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`

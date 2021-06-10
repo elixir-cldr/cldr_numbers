@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr_Numbers v2.18.2
+
+This is the changelog for Cldr v2.18.2 released on June 11th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix `Cldr.Number.Parser.scan/2` to correctly parse numbers like `1kg`
+
 ## Cldr_Numbers v2.18.1
 
 This is the changelog for Cldr v2.18.1 released on June 8th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
