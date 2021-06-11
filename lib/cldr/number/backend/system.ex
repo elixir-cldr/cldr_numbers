@@ -159,24 +159,24 @@ defmodule Cldr.Number.Backend.System do
 
         ## Examples
 
-            iex> Cldr.Number.System.number_system_for "th", :latn, TestBackend.Cldr
+            iex> #{inspect __MODULE__}.number_system_for "th", :latn
             {:ok, %{digits: "0123456789", type: :numeric}}
 
-            iex> Cldr.Number.System.number_system_for "en", :default, TestBackend.Cldr
+            iex> #{inspect __MODULE__}.number_system_for "en", :default
             {:ok, %{digits: "0123456789", type: :numeric}}
 
-            iex> Cldr.Number.System.number_system_for "he", :traditional, TestBackend.Cldr
+            iex> #{inspect __MODULE__}.number_system_for "he", :traditional
             {:ok, %{rules: "hebrew", type: :algorithmic}}
 
-            iex> Cldr.Number.System.number_system_for "en", :finance, TestBackend.Cldr
+            iex> #{inspect __MODULE__}.number_system_for "en", :native
+            {:ok, %{digits: "0123456789", type: :numeric}}
+
+            iex> #{inspect __MODULE__}.number_system_for "en", :finance
             {
               :error,
               {Cldr.UnknownNumberSystemError,
                 "The number system :finance is unknown for the locale named \\"en\\". Valid number systems are %{default: :latn, native: :latn}"}
             }
-
-            iex> Cldr.Number.System.number_system_for "en", :native, TestBackend.Cldr
-            {:ok, %{digits: "0123456789", type: :numeric}}
 
         """
         @spec number_system_for(

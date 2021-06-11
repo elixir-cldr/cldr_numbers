@@ -797,7 +797,8 @@ defmodule Cldr.Number.System do
     }
   end
 
-  defp number_system_digits_error(system_name) do
+  @doc false
+  def number_system_digits_error(system_name) do
     {
       Cldr.UnknownNumberSystemError,
       "The number system #{inspect(system_name)} is not known or does not have digits"

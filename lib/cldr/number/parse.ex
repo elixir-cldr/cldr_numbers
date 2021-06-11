@@ -4,6 +4,7 @@ defmodule Cldr.Number.Parser do
   a string.
 
   """
+  alias Cldr.LanguageTag
 
   @number_format "[-+]?[0-9][0-9,_]*(\\.?[0-9_]+([eE][-+]?[0-9]+)?)?"
 
@@ -67,6 +68,12 @@ defmodule Cldr.Number.Parser do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend) do
 
+      symbols =
+        symbols_for_script(locale, symbols)
+
+      string =
+        normalize_number_string(string, locale, backend, symbols)
+
       scanner =
         @number_format
         |> localize_format_string(locale, backend, symbols)
@@ -75,6 +82,12 @@ defmodule Cldr.Number.Parser do
       scanner
       |> Regex.split(string, include_captures: true, trim: true)
       |> Enum.map(fn element -> parse(element, options) |> elem(1) end)
+    else
+      {:ok, %{rules: _, type: :algorithmic}} ->
+        script = script_from_locale(locale)
+        {:error, Cldr.Number.System.number_system_digits_error(script)}
+      other ->
+        other
     end
   end
 
@@ -144,12 +157,24 @@ defmodule Cldr.Number.Parser do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend) do
 
-      normalized_string = normalize_number_string(string, locale, backend, symbols)
+      symbols =
+        symbols_for_script(locale, symbols)
 
-      case parse_number(String.trim(normalized_string), Keyword.get(options, :number)) do
+      normalized_string =
+        string
+        |> normalize_number_string(locale, backend, symbols)
+        |> String.trim()
+
+      case parse_number(normalized_string, Keyword.get(options, :number)) do
         {:error, _} -> {:error, string}
         success -> success
       end
+    else
+      {:ok, %{rules: _, type: :algorithmic}} ->
+        script = script_from_locale(locale)
+        {:error, Cldr.Number.System.number_system_digits_error(script)}
+      other ->
+        other
     end
   end
 
@@ -382,13 +407,34 @@ defmodule Cldr.Number.Parser do
 
   # Replace localised symbols with canonical forms
   defp normalize_number_string(string, locale, backend, symbols) do
+    script = script_from_locale(locale)
+
     string
     |> String.replace("_", "")
     |> backend.normalize_lenient_parse(:number, locale)
     |> backend.normalize_lenient_parse(:general, locale)
-    |> String.replace(symbols.latn.group, "")
-    |> String.replace(symbols.latn.decimal, ".")
+    |> transliterate(script, :latn)
+    |> String.replace(symbols.group, "")
+    |> String.replace(symbols.decimal, ".")
     |> String.replace("_", "-")
+  end
+
+  defp transliterate(string, from, to) do
+    case Cldr.Number.Transliterate.transliterate_digits(string, from, to) do
+      {:error, _} -> string
+      string -> string
+    end
+  end
+
+  defp symbols_for_script(locale, symbols) do
+    script = script_from_locale(locale)
+    Map.fetch!(symbols, script) || Map.fetch!(symbols, :latn)
+  end
+
+  defp script_from_locale(%LanguageTag{script: script}) do
+    script
+    |> String.downcase()
+    |> String.to_existing_atom()
   end
 
   # Replace canonical forms with localised symbols
@@ -400,8 +446,8 @@ defmodule Cldr.Number.Parser do
 
     string
     |> String.replace("[-+]", "[" <> plus_matchers <> minus_matchers <> "]")
-    |> String.replace(",", grouping_matchers <> symbols.latn.group)
-    |> String.replace("\\.", "\\" <> symbols.latn.decimal)
+    |> String.replace(",", grouping_matchers <> symbols.group)
+    |> String.replace("\\.", "\\" <> symbols.decimal)
   end
 
   defp find_currency(currency_strings, currency, nil) do
