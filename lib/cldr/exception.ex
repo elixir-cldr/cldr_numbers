@@ -57,3 +57,16 @@ defmodule Cldr.NoNumberSymbols do
     %__MODULE__{message: message}
   end
 end
+
+defmodule Cldr.Number.ParseError do
+  @moduledoc """
+  Exception raised when when trying to parse
+  a string into a number and the string is
+  not parseable.
+  """
+  defexception [:message]
+
+  def exception(message) do
+    %__MODULE__{message: message}
+  end
+end

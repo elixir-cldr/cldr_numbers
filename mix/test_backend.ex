@@ -17,7 +17,7 @@ defmodule MyApp.Cldr2 do
   use Cldr,
     default_locale: "en-GB",
     locales: ["en-GB", "hu", "ar", "de"],
-    precompile_transliterations: [{:latn, :arab}, {:arab, :thai}, {:arab, :latn}],
+    precompile_transliterations: [{:latn, :arab}, {:arab, :thai}, {:arab, :latn}, {:thai, :latn}],
     providers: [Cldr.Number],
     supress_warnings: true
 end

@@ -553,7 +553,7 @@ defmodule Cldr.Number.Backend.Number do
 
         * A number of the requested or default type or
 
-        * `{:error, string}` if no number could be determined
+        * `{:error, {exception, error}}` if no number could be determined
 
         ## Notes
 
@@ -577,7 +577,9 @@ defmodule Cldr.Number.Backend.Number do
             {:ok, 1000}
 
             iex> #{inspect(__MODULE__)}.parse("＋1.000,34", locale: "de", number: :integer)
-            {:error, "＋1.000,34"}
+            {:error,
+              {Cldr.Number.ParseError,
+               "The string \\"＋1.000,34\\" could not be parsed as a number"}}
 
         """
         def parse(string, options \\ []) do

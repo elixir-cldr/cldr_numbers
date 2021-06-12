@@ -4,12 +4,11 @@ defmodule Cldr.Number.Parser do
   a string.
 
   """
-  alias Cldr.LanguageTag
 
   @number_format "[-+]?[0-9][0-9,_]*(\\.?[0-9_]+([eE][-+]?[0-9]+)?)?"
 
   @doc """
-  Scans a string locale-aware manner and returns
+  Scans a string in a locale-aware manner and returns
   a list of strings and numbers.
 
   ## Arguments
@@ -27,7 +26,7 @@ defmodule Cldr.Number.Parser do
 
   * `:backend` is any module that includes `use Cldr`
     and is therefore a CLDR backend module. The default
-    is `Cldr.default_backend/0`.
+    is `Cldr.default_backend!/0`.
 
   * `:locale` is any locale returned by `Cldr.known_locale_names/1`
     or a `t:Cldr.LanguageTag`. The default is `options[:backend].get_locale/1`.
@@ -61,38 +60,43 @@ defmodule Cldr.Number.Parser do
       iex> Cldr.Number.Parser.scan "1kg"
       [1, "kg"]
 
+      iex> Cldr.Number.Parser.scan "A number is the arab script ١٢٣٤٥", locale: "ar"
+      ["A number is the arab script ", 12345]
+
   """
   def scan(string, options \\ []) do
     {locale, backend} = Cldr.locale_and_backend_from(options)
 
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
-         {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend) do
+         {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend),
+         {:ok, number_system} <- digits_number_system_from(locale) do
 
       symbols =
-        symbols_for_script(locale, symbols)
-
-      string =
-        normalize_number_string(string, locale, backend, symbols)
+        symbols_for_number_system(symbols, number_system)
 
       scanner =
         @number_format
         |> localize_format_string(locale, backend, symbols)
         |> Regex.compile!([:unicode])
 
+      normalized_string =
+        transliterate(string, number_system, :latn, backend)
+
       scanner
-      |> Regex.split(string, include_captures: true, trim: true)
-      |> Enum.map(fn element -> parse(element, options) |> elem(1) end)
-    else
-      {:ok, %{rules: _, type: :algorithmic}} ->
-        script = script_from_locale(locale)
-        {:error, Cldr.Number.System.number_system_digits_error(script)}
-      other ->
-        other
+      |> Regex.split(normalized_string, include_captures: true, trim: true)
+      |> Enum.map(&parse_element(&1, options))
+    end
+  end
+
+  defp parse_element(element, options) do
+    case parse(element, options) do
+      {:ok, number} -> number
+      {:error, _} -> element
     end
   end
 
   @doc """
-  Parse a string locale-aware manner and return
+  Parse a string in a locale-aware manner and return
   a number.
 
   ## Arguments
@@ -119,20 +123,34 @@ defmodule Cldr.Number.Parser do
 
   * A number of the requested or default type or
 
-  * `{:error, string}` if no number could be determined
+  * `{:error, {exception, message}}` if no number could be determined
 
   ## Notes
 
   This function parses a string to return a number but
-  in a locale-aware manner. It will normalise grouping
-  characters and decimal separators, different forms of
+  in a locale-aware manner. It will normalise digits,
+  grouping characters and decimal separators.
+
+  It will transliterate digits that are in the
+  number system of the specific locale. For example, if
+  the locale is `th` (Thailand), then Thai digits are
+  transliterated to the Latin script before parsing.
+
+  Some number systems do not have decimal digits and in this
+  case an error will be returned, rather than continue
+  parsing and return misleading results.
+
+  It also caters for different forms of
   the `+` and `-` symbols that appear in Unicode and
   strips any `_` characters that might be used for
-  formatting in a string. It then parses the number
-  using the Elixir standard library functions.
+  formatting in a string.
+
+  It then parses the number using the Elixir standard
+  library functions.
 
   If the option `:number` is used and the parsed number
-  cannot be coerced to this type then an error is returned.
+  cannot be coerced to this type without losing precision
+  then an error is returned.
 
   ## Examples
 
@@ -145,36 +163,42 @@ defmodule Cldr.Number.Parser do
       iex> Cldr.Number.Parser.parse("1.000", locale: "de", number: :integer)
       {:ok, 1000}
 
+      iex> Cldr.Number.Parser.parse "١٢٣٤٥", locale: "ar"
+      {:ok, 12345}
+
       # 1_000.34 cannot be coerced into an integer
       # without precision loss so an error is returned.
       iex> Cldr.Number.Parser.parse("＋1.000,34", locale: "de", number: :integer)
-      {:error, "＋1.000,34"}
+      {:error,
+        {Cldr.Number.ParseError,
+         "The string \\"＋1.000,34\\" could not be parsed as a number"}}
+
+      iex> Cldr.Number.Parser.parse "一万二千三百四十五", locale: "ja-u-nu-jpan"
+      {:error,
+       {Cldr.UnknownNumberSystemError,
+        "The number system :jpan is not known or does not have digits"}}
 
   """
   def parse(string, options \\ []) when is_binary(string) and is_list(options) do
     {locale, backend} = Cldr.locale_and_backend_from(options)
 
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
-         {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend) do
+         {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend),
+         {:ok, number_system} <- digits_number_system_from(locale) do
 
       symbols =
-        symbols_for_script(locale, symbols)
+        symbols_for_number_system(symbols, number_system)
 
       normalized_string =
         string
+        |> transliterate(number_system, :latn, backend)
         |> normalize_number_string(locale, backend, symbols)
         |> String.trim()
 
       case parse_number(normalized_string, Keyword.get(options, :number)) do
-        {:error, _} -> {:error, string}
+        {:error, _} -> {:error, parse_error(string)}
         success -> success
       end
-    else
-      {:ok, %{rules: _, type: :algorithmic}} ->
-        script = script_from_locale(locale)
-        {:error, Cldr.Number.System.number_system_digits_error(script)}
-      other ->
-        other
     end
   end
 
@@ -407,34 +431,34 @@ defmodule Cldr.Number.Parser do
 
   # Replace localised symbols with canonical forms
   defp normalize_number_string(string, locale, backend, symbols) do
-    script = script_from_locale(locale)
-
     string
     |> String.replace("_", "")
     |> backend.normalize_lenient_parse(:number, locale)
     |> backend.normalize_lenient_parse(:general, locale)
-    |> transliterate(script, :latn)
     |> String.replace(symbols.group, "")
     |> String.replace(symbols.decimal, ".")
     |> String.replace("_", "-")
   end
 
-  defp transliterate(string, from, to) do
-    case Cldr.Number.Transliterate.transliterate_digits(string, from, to) do
+  defp transliterate(string, from, to, backend) do
+    module = Module.concat(backend, Number.Transliterate)
+
+    case module.transliterate_digits(string, from, to) do
       {:error, _} -> string
       string -> string
     end
   end
 
-  defp symbols_for_script(locale, symbols) do
-    script = script_from_locale(locale)
-    Map.fetch!(symbols, script) || Map.fetch!(symbols, :latn)
+  defp digits_number_system_from(locale) do
+    number_system = Cldr.Number.System.number_system_from_locale(locale)
+
+    with {:ok, _digits} <- Cldr.Number.System.number_system_digits(number_system) do
+      {:ok, number_system}
+    end
   end
 
-  defp script_from_locale(%LanguageTag{script: script}) do
-    script
-    |> String.downcase()
-    |> String.to_existing_atom()
+  defp symbols_for_number_system(symbols, number_system) do
+    Map.fetch!(symbols, number_system) || Map.fetch!(symbols, :latn)
   end
 
   # Replace canonical forms with localised symbols
@@ -489,6 +513,10 @@ defmodule Cldr.Number.Parser do
 
   defp unknown_currency_error(currency) do
     {Cldr.UnknownCurrencyError, "The currency #{inspect(currency)} is unknown or not supported"}
+  end
+
+  defp parse_error(string) do
+    {Cldr.Number.ParseError, "The string #{inspect string} could not be parsed as a number"}
   end
 
 end

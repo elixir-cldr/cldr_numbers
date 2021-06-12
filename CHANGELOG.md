@@ -2,11 +2,17 @@
 
 ## Cldr_Numbers v2.18.2
 
-This is the changelog for Cldr v2.18.2 released on June 11th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+This is the changelog for Cldr v2.18.2 released on June 12th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Breaking Change
+
+* There is a minor breaking change in the error return from `Cldr.Number.Parser.parse/2`. Previously the error return was `{:error, string}`. It is now more consistent with the rest of `ex_cldr` and returns `{:error, {Cldr.UnknownNumberSystemError, message}}`
 
 ### Bug Fixes
 
 * Fix `Cldr.Number.Parser.scan/2` to correctly parse numbers like `1kg`
+
+* Fix `Cldr.Number.Parser.parse/2` for numbers that are in non-latin scripts (like Thai, Arabic, ...). There are 66 known number systems that have decimal digits as of CLDR39.
 
 ## Cldr_Numbers v2.18.1
 

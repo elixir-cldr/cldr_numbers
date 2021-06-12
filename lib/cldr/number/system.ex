@@ -72,7 +72,7 @@ defmodule Cldr.Number.System do
   end
 
   @doc """
-  Returns the number system from a language tag
+  Returns the default number system from a language tag
   or locale name.
 
   ## Arguments
@@ -121,8 +121,47 @@ defmodule Cldr.Number.System do
     end
   end
 
+  @doc """
+  Returns the number system from a language tag
+  or locale name.
+
+  ## Arguments
+
+  * `locale` is any language tag returned be `Cldr.Locale.new/2`
+
+  ## Returns
+
+  * A number system name as an atom
+
+  ## Examples
+
+      iex> {:ok, locale} = MyApp.Cldr.validate_locale("en-US-u-nu-thai")
+      iex> Cldr.Number.System.number_system_from_locale(locale)
+      :thai
+
+      iex> {:ok, locale} = MyApp.Cldr.validate_locale("en-US")
+      iex> Cldr.Number.System.number_system_from_locale locale
+      :latn
+
+      iex> Cldr.Number.System.number_system_from_locale("ar")
+      :arab
+
+  """
+
   def number_system_from_locale(locale_name) when is_binary(locale_name) do
     number_system_from_locale(locale_name, Cldr.default_backend!())
+  end
+
+  def number_system_from_locale(%LanguageTag{locale: %{number_system: nil}} = locale) do
+    number_system_from_locale(locale.cldr_locale_name, locale.backend)
+  end
+
+  def number_system_from_locale(%LanguageTag{locale: %{number_system: number_system}}) do
+    number_system
+  end
+
+  def number_system_from_locale(%LanguageTag{cldr_locale_name: locale, backend: backend}) do
+    number_system_from_locale(locale, backend)
   end
 
   @doc """
