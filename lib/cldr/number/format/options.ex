@@ -78,7 +78,7 @@ defmodule Cldr.Number.Format.Options do
   @type t :: %__MODULE__{
     locale: LanguageTag.t(),
     number_system: System.system_name(),
-    currency: Currency.code(),
+    currency: Currency.code() | Currency.t(),
     format: format(),
     currency_digits: pos_integer(),
     currency_spacing: map(),
@@ -258,6 +258,10 @@ defmodule Cldr.Number.Format.Options do
 
   def validate_option(:currency, _options, _backend, nil) do
     {:ok, nil}
+  end
+
+  def validate_option(:currency, _options, _backend, %Cldr.Currency{} = currency) do
+    {:ok, currency}
   end
 
   def validate_option(:currency, _options, _backend, currency) do
