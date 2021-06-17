@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr_Numbers v2.18.4
+
+This is the changelog for Cldr v2.18.4 released on June 17th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Allow `t:Cldr.Currency` as a `:currency` option in `Cldr.Number.to_string/2`. Thanks to @jeroenvisser101 for the PR.
+
 ## Cldr_Numbers v2.18.3
 
 This is the changelog for Cldr v2.18.3 released on June 12th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
