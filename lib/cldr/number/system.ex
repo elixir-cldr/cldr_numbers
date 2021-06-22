@@ -99,13 +99,13 @@ defmodule Cldr.Number.System do
   @spec number_system_from_locale(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.backend()) ::
     system_name
 
-  def number_system_from_locale(%LanguageTag{locale: %{number_system: nil}} = locale, backend) do
+  def number_system_from_locale(%LanguageTag{locale: %{numbers: nil}} = locale, backend) do
     locale
     |> number_systems_for!(backend)
     |> Map.fetch!(default_number_system_type())
   end
 
-  def number_system_from_locale(%LanguageTag{locale: %{number_system: number_system}}, _backend) do
+  def number_system_from_locale(%LanguageTag{locale: %{numbers: number_system}}, _backend) do
     number_system
   end
 
@@ -152,11 +152,11 @@ defmodule Cldr.Number.System do
     number_system_from_locale(locale_name, Cldr.default_backend!())
   end
 
-  def number_system_from_locale(%LanguageTag{locale: %{number_system: nil}} = locale) do
+  def number_system_from_locale(%LanguageTag{locale: %{numbers: nil}} = locale) do
     number_system_from_locale(locale.cldr_locale_name, locale.backend)
   end
 
-  def number_system_from_locale(%LanguageTag{locale: %{number_system: number_system}}) do
+  def number_system_from_locale(%LanguageTag{locale: %{numbers: number_system}}) do
     number_system
   end
 
@@ -329,7 +329,7 @@ defmodule Cldr.Number.System do
       {:ok, [:latn, :hebr]}
 
       iex> Cldr.Number.System.number_system_names_for("zz", TestBackend.Cldr)
-      {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
+      {:error, {Cldr.InvalidLanguageError, "The language \\"zz\\" is invalid"}}
 
   """
   @spec number_system_names_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::

@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr_Numbers v2.19.0
+
+This is the changelog for Cldr v2.19.0 released on _____, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Updated to [ex_cldr version 2.23.0](https://hex.pm/packages/ex_cldr/2.23.0) which changes the names of some of the field in the "-u-" extension to match the CLDR canonical name. In particular the field name `number_system` changes to `numbers`.
+
 ## Cldr_Numbers v2.18.4
 
 This is the changelog for Cldr v2.18.4 released on June 17th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

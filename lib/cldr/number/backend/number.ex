@@ -124,7 +124,7 @@ defmodule Cldr.Number.Backend.Number do
              {Cldr.UnknownNumberSystemError, "The number system :unknown is unknown"}}
 
             iex> #{inspect(__MODULE__)}.validate_number_system "zz", :default
-            {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
+            {:error, {Cldr.InvalidLanguageError, "The language \\"zz\\" is invalid"}}
 
         """
         @spec validate_number_system(

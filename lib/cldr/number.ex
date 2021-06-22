@@ -96,7 +96,7 @@ defmodule Cldr.Number do
           | :currency
 
   @short_format_styles Options.short_format_styles()
-  @root_locale Map.get(Cldr.Config.all_language_tags(), "root")
+  @root_locale Map.fetch!(Cldr.Config.all_language_tags(), "root")
 
   @doc """
   Return a valid number system from a provided locale and number
@@ -131,7 +131,7 @@ defmodule Cldr.Number do
        {Cldr.UnknownNumberSystemError, "The number system :unknown is unknown"}}
 
       iex> Cldr.Number.validate_number_system "zz", :default, TestBackend.Cldr
-      {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
+      {:error, {Cldr.InvalidLanguageError, "The language \\"zz\\" is invalid"}}
 
   """
   @spec validate_number_system(

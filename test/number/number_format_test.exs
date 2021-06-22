@@ -49,7 +49,7 @@ defmodule Number.Format.Test do
   end
 
   test "that there is an exception if we get formats for an unknown locale" do
-    assert_raise Cldr.UnknownLocaleError, ~r/The locale .* is not known/, fn ->
+    assert_raise Cldr.InvalidLanguageError, ~r/The language .* is invalid/, fn ->
       TestBackend.Cldr.Number.Format.formats_for!("zzz")
     end
   end
