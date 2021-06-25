@@ -41,8 +41,9 @@ defmodule Number.System.Test do
       "The number system :thai is unknown for the locale named \"en-AU\". Valid number systems are %{default: :latn, native: :latn}"}}
   end
 
-  test "that an invalid nu extension defaults the number system when formatting" do
-    assert TestBackend.Cldr.Number.to_string(123, locale: "en-AU-u-nu-xxx") == {:ok, "123"}
+  test "that an invalid nu returns an error" do
+    assert TestBackend.Cldr.Number.to_string(123, locale: "en-AU-u-nu-xxx") ==
+      {:error, {Cldr.LanguageTag.ParseError, "The value \"xxx\" is not valid for the key \"nu\""}}
   end
 
 end
