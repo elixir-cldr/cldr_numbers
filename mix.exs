@@ -3,13 +3,13 @@ defmodule CldrNumbers.Mixfile do
 
   use Mix.Project
 
-  @version "2.19.0-dev"
+  @version "2.19.0"
 
   def project do
     [
       app: :ex_cldr_numbers,
       version: @version,
-      elixir: "~> 1.6",
+      elixir: "~> 1.10",
       name: "Cldr Numbers",
       description: description(),
       source_url: "https://github.com/elixir-cldr/cldr_numbers",
@@ -41,10 +41,8 @@ defmodule CldrNumbers.Mixfile do
 
   defp deps do
     [
-      # {:ex_cldr, "~> 2.22"},
-      {:ex_cldr, path: "../cldr", override: true},
-      # {:ex_cldr_currencies, "~> 2.11"},
-      {:ex_cldr_currencies, path: "../cldr_currencies", override: true},
+      {:ex_cldr, "~> 2.23"},
+      {:ex_cldr_currencies, "~> 2.11"},
       {:decimal, "~> 1.6 or ~> 2.0"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.18", optional: true, runtime: false},
