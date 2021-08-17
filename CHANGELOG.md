@@ -10,7 +10,21 @@ This is the changelog for Cldr v2.20.0 released on August 17th, 2021.  For older
 
 ### Enhancements
 
-* Add support for custom currency symbols. This extends the use of the `:currency_symbol` option. In previousl releases this option was required to be `:standard` or `:iso`. Now the value can also be a string which will be used as the currency symbol.
+* Add support for custom currency symbols. This extends the use of the `:currency_symbol` option. In previousl releases this option was required to be `:standard` or `:iso`. Now the value can also be `:narrow`, `:symbol` or a string which will be used as the currency symbol.  From the documentation for `Cldr.Number.to_string/3`:
+
+  * `currency_symbol`: Allows overriding a currency symbol. The alternatives
+    are:
+    * `:iso` the ISO currency code will be used instead of the default
+      currency symbol.
+    * `:narrow` uses the narrow symbol defined for the locale. The same
+      narrow symbol can be defined for more than one currency and therefore this
+      should be used with care. If no narrow symbol is defined, the standard
+      symbol is used.
+    * `:symbol` uses the standard symbol defined in CLDR. A symbol is unique
+      for each currency and can be safely used.
+    * "string" uses `string` as the currency symbol
+    * `:standard` (the default and recommended) uses the CLDR-defined symbol
+      based upon the currency format for the locale.
 
 ## Cldr_Numbers v2.19.0
 

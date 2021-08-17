@@ -519,7 +519,9 @@ defmodule Cldr.Number.Formatter.Decimal do
          %{currency_spacing: spacing} = options
        )
        when not is_nil(spacing) do
-    symbol = currency_symbol(options.currency, number, type, options.locale, backend)
+    %{currency: currency, currency_symbol: currency_symbol, locale: locale} = options
+    symbol = currency_symbol(currency, currency_symbol, number, type, locale, backend)
+
     before_spacing = spacing[:before_currency]
 
     if before_currency_match?(number_string, symbol, before_spacing) do
@@ -547,7 +549,9 @@ defmodule Cldr.Number.Formatter.Decimal do
          %{currency_spacing: spacing} = options
        )
        when not is_nil(spacing) do
-    symbol = currency_symbol(options.currency, number, type, options.locale, backend)
+    %{currency: currency, currency_symbol: currency_symbol, locale: locale} = options
+    symbol = currency_symbol(currency, currency_symbol, number, type, locale, backend)
+
     after_spacing = spacing[:after_currency]
 
     if after_currency_match?(number_string, symbol, after_spacing) do
@@ -571,7 +575,9 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   defp assemble_parts([{:currency, type} | rest], number_string, number, backend, meta, options) do
-    symbol = currency_symbol(options.currency, number, type, options.locale, backend)
+    %{currency: currency, currency_symbol: currency_symbol, locale: locale} = options
+    symbol = currency_symbol(currency, currency_symbol, number, type, locale, backend)
+
     [symbol | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
@@ -657,25 +663,41 @@ defmodule Cldr.Number.Formatter.Decimal do
   #   ¤¤¤    Appropriate currency display name for the currency, based on the
   #          plural rules in effect for the locale
   #   ¤¤¤¤   Narrow currency symbol.
-  def currency_symbol(%Currency{} = currency, _number, 1, _locale, _backend) do
-    currency.symbol
-  end
+  #
+  # Can also be forced to :narrow, :symbol or a string
 
-  def currency_symbol(%Currency{} = currency, _number, 2, _locale, _backend) do
-    currency.code
-  end
-
-  def currency_symbol(%Currency{} = currency, number, 3, locale, backend) do
-    Module.concat(backend, Number.Cardinal).pluralize(number, locale, currency.count)
-  end
-
-  def currency_symbol(%Currency{} = currency, _number, 4, _locale, _backend) do
+  def currency_symbol(%Currency{} = currency, :narrow, _number, _size, _locale, _backend) do
     currency.narrow_symbol || currency.symbol
   end
 
-  def currency_symbol(currency, number, size, locale, backend) do
+  def currency_symbol(%Currency{} = currency, :symbol, _number, _size, _locale, _backend) do
+    currency.symbol
+  end
+
+  def currency_symbol(%Currency{} = _currency, symbol, _number, _size, _locale, _backend)
+      when is_binary(symbol) do
+    symbol
+  end
+
+  def currency_symbol(%Currency{} = currency, _symbol,  _number, 1, _locale, _backend) do
+    currency.symbol
+  end
+
+  def currency_symbol(%Currency{} = currency, _symbol, _number, 2, _locale, _backend) do
+    currency.code
+  end
+
+  def currency_symbol(%Currency{} = currency, _symbol, number, 3, locale, backend) do
+    Module.concat(backend, Number.Cardinal).pluralize(number, locale, currency.count)
+  end
+
+  def currency_symbol(%Currency{} = currency, _symbol, _number, 4, _locale, _backend) do
+    currency.narrow_symbol || currency.symbol
+  end
+
+  def currency_symbol(currency, symbol, number, size, locale, backend) do
     {:ok, currency} = Currency.currency_for_code(currency, backend, locale: locale)
-    currency_symbol(currency, number, size, locale, backend)
+    currency_symbol(currency, symbol, number, size, locale, backend)
   end
 
   def transliterate(number_string, _meta, backend, %{locale: locale, number_system: number_system}) do

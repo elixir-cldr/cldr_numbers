@@ -52,6 +52,13 @@ defmodule Cldr.Test.Number.Format do
       {1234, "COP 1,234.00", [currency: :COP, currency_digits: :iso]},
       {1234, "COP 1,234.00", [currency: :COP]},
 
+      # Currency with varying currency symbol
+      {1234, "CUSTOM 1,234.00", [currency: :AUD, currency_symbol: "CUSTOM"]},
+      {1234, "$1,234.00", [currency: :AUD, currency_symbol: :narrow]},
+      {1234, "A$1,234.00", [currency: :AUD, currency_symbol: :standard]},
+      {1234, "A$1,234.00", [currency: :AUD, currency_symbol: :symbol]},
+      {1234, "AUD 1,234.00", [currency: :AUD, currency_symbol: :iso]},
+
       # Rounding
       {1234.21, "1,234.20", [format: "#,##0.05"]},
       {1234.22, "1,234.20", [format: "#,##0.05"]},

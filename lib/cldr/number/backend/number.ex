@@ -171,6 +171,20 @@ defmodule Cldr.Number.Backend.Number do
           is required if `:format` is set to `:currency`.  If `currency` is set
           and no `:format` is set, `:format` will be set to `:currency` as well.
 
+        * `currency_symbol`: Allows overriding a currency symbol. The alternatives
+          are:
+          * `:iso` the ISO currency code will be used instead of the default
+            currency symbol.
+          * `:narrow` uses the narrow symbol defined for the locale. The same
+            narrow symbol can be defined for more than one currency and therefore this
+            should be used with care. If no narrow symbol is defined, the standard
+            symbol is used.
+          * `:symbol` uses the standard symbol defined in CLDR. A symbol is unique
+            for each currency and can be safely used.
+          * "string" uses `string` as the currency symbol
+          * `:standard` (the default and recommended) uses the CLDR-defined symbol
+            based upon the currency format for the locale.
+
         * `:cash`: a boolean which indicates whether a number being formatted as a
           `:currency` is to be considered a cash value or not. Currencies can be
           rounded differently depending on whether `:cash` is `true` or `false`.
