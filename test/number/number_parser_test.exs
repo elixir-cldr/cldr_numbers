@@ -48,4 +48,15 @@ defmodule Cldr.Number.Parsing.Test do
     assert Cldr.Decimal.compare(parsed, Decimal.from_float(1000.0)) == :eq
   end
 
+  test "Parse a list of numbers separated by comma" do
+    assert Cldr.Number.Parser.scan( "Here's my number list: 1111, 2222, 3333, 4444, 55,55", number: :decimal) ==
+    ["Here's my number list: ", Decimal.new(1111), ", ", Decimal.new(2222), ", ",
+     Decimal.new(3333), ", ", Decimal.new(4444), ", ", Decimal.new(5555)]
+  end
+
+  test "Parsing a locale with a grouping character that is a non-breaking space" do
+    string = Cldr.Number.to_string!(12345, locale: "fr")
+    assert Cldr.Number.Parser.scan(string, locale: "fr") == [12345]
+    assert Cldr.Number.Parser.parse(string, locale: "fr") == {:ok, 12345}
+  end
 end

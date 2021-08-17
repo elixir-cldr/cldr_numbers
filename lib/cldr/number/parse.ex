@@ -5,7 +5,7 @@ defmodule Cldr.Number.Parser do
 
   """
 
-  @number_format "[-+]?[0-9][0-9,_]*(\\.?[0-9_]+([eE][-+]?[0-9]+)?)?"
+  @number_format "[-+]?[0-9]([0-9_]|[,](?=[0-9]))*(\\.?[0-9_]+([eE][-+]?[0-9]+)?)?"
 
   @doc """
   Scans a string in a locale-aware manner and returns
@@ -225,6 +225,7 @@ defmodule Cldr.Number.Parser do
 
   defp parse_number(string, :decimal) do
     case Cldr.Decimal.parse(string) do
+      {:error, ""} -> {:error, string}
       {decimal, ""} -> {:ok, decimal}
       _other -> {:error, string}
     end

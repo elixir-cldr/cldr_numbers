@@ -1,5 +1,17 @@
 # Changelog
 
+## Cldr_Numbers v2.20.0
+
+This is the changelog for Cldr v2.20.0 released on August 17th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Improve number parsing with `Cldr.Number.Parser.scan/2` when the string has lists of numbers separated by commas.  Thanks to @DaTrader for the report. Closes #19.
+
+### Enhancements
+
+* Add support for custom currency symbols. This extends the use of the `:currency_symbol` option. In previousl releases this option was required to be `:standard` or `:iso`. Now the value can also be a string which will be used as the currency symbol.
+
 ## Cldr_Numbers v2.19.0
 
 This is the changelog for Cldr v2.19.0 released on July 1st, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
