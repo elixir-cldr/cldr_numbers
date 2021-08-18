@@ -437,6 +437,7 @@ defmodule Cldr.Number.Parser do
     |> backend.normalize_lenient_parse(:number, locale)
     |> backend.normalize_lenient_parse(:general, locale)
     |> String.replace(symbols.group, "")
+    |> String.replace(" ", "")
     |> String.replace(symbols.decimal, ".")
     |> String.replace("_", "-")
   end
@@ -471,9 +472,17 @@ defmodule Cldr.Number.Parser do
 
     string
     |> String.replace("[-+]", "[" <> plus_matchers <> minus_matchers <> "]")
-    |> String.replace(",", grouping_matchers <> symbols.group)
+    |> String.replace(",", grouping_matchers <> maybe_add_space(symbols.group))
     |> String.replace("\\.", "\\" <> symbols.decimal)
   end
+
+  # If the grouping symbol is a pop space then
+  # also allow normal space as a group symbol when parsing
+  @pop_space " " # 0x202c
+  @space " " # 0x20
+
+  defp maybe_add_space(@pop_space), do: @pop_space <> @space
+  defp maybe_add_space(other), do: other
 
   defp find_currency(currency_strings, currency, nil) do
     canonical_currency = String.downcase(currency)

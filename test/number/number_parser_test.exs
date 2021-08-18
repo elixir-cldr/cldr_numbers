@@ -54,9 +54,21 @@ defmodule Cldr.Number.Parsing.Test do
      Decimal.new(3333), ", ", Decimal.new(4444), ", ", Decimal.new(5555)]
   end
 
-  test "Parsing a locale with a grouping character that is a non-breaking space" do
+  test "Parsing a locale with a grouping character that is a pop space" do
     string = Cldr.Number.to_string!(12345, locale: "fr")
     assert Cldr.Number.Parser.scan(string, locale: "fr") == [12345]
     assert Cldr.Number.Parser.parse(string, locale: "fr") == {:ok, 12345}
+  end
+
+  test "Parsing a locale with a grouping character that is a pop space but using 0x20 group char" do
+    # pop space is 0x202c
+    assert Cldr.Number.Parser.scan("This with normal space 12 345", locale: "fr") ==
+      ["This with normal space ", 12345]
+
+    assert Cldr.Number.Parser.scan("This is with pop space 12 345", locale: "fr") ==
+      ["This is with pop space ", 12345]
+
+    assert Cldr.Number.Parser.scan("This with normal space 12 345", locale: "en") ==
+      ["This with normal space ", 12, " ", 345]
   end
 end
