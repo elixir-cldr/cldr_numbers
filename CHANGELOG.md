@@ -1,5 +1,19 @@
 # Changelog
 
+## Cldr_Numbers v2.21.0
+
+This is the changelog for Cldr v2.21.0 released on August 18th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Add `Cldr.Number.Parser.resolve_pers/2` which will tokenize percent and permille symbols into `:percent` and `:permille`. This is similar to the `Cldr.Number.Parser.resolve_currencies/2` function but for percent and permille symbols. An example is:
+
+```elixir
+iex> Cldr.Number.Parser.scan("100%")
+...> |> Cldr.Number.Parser.resolve_pers()
+[100, :percent]
+```
+
 ## Cldr_Numbers v2.20.0
 
 This is the changelog for Cldr v2.20.0 released on August 17th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

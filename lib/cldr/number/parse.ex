@@ -241,7 +241,6 @@ defmodule Cldr.Number.Parser do
     end
   end
 
-
   @doc """
   Resolve curencies from strings within
   a list.
@@ -332,27 +331,53 @@ defmodule Cldr.Number.Parser do
     list(Cldr.Currency.code() | String.t())
 
   def resolve_currencies(list, options \\ []) when is_list(list) and is_list(options) do
-    Enum.map(list, fn
-      string when is_binary(string) ->
-        case resolve_currency(string, options) do
-          {:error, _} -> string
-          currency -> currency
-        end
-
-      other -> other
-    end)
-    |> List.flatten()
+    resolve(list, &resolve_currency/2, options)
   end
+
+  @doc """
+  Resolve and tokenize percent and permille
+  sybols from strings within a list.
+
+  Percent and permille symbols can be identified
+  at the beginning and/or the end of a string.
+
+  ## Arguments
+
+  * `list` is any list in which percent and
+    permille symbols are expected
+
+  * `options` is a keyword list of options
+
+  ## Options
+
+  * `:backend` is any module() that includes `use Cldr` and therefore
+    is a `Cldr` backend module(). The default is `Cldr.default_backend!/0`
+
+  * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
+    or a `t:Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
+    The default is `options[:backend].get_locale()`
+
+  ## Examples
+
+      iex> Cldr.Number.Parser.scan("100%")
+      ...> |> Cldr.Number.Parser.resolve_pers()
+      [100, :percent]
+
+  """
 
   @spec resolve_pers([String.t(), ...], Keyword.t()) ::
     list(per() | String.t())
 
   def resolve_pers(list, options \\ []) when is_list(list) and is_list(options) do
+    resolve(list, &resolve_per/2, options)
+  end
+
+  defp resolve(list, resolver, options) do
     Enum.map(list, fn
       string when is_binary(string) ->
-        case resolve_per(string, options) do
+        case resolver.(string, options) do
           {:error, _} -> string
-          currency -> currency
+          other -> other
         end
 
       other -> other
@@ -469,6 +494,45 @@ defmodule Cldr.Number.Parser do
     end
   end
 
+  @doc """
+  Resolve and tokenize percent or permille
+  from the beginning and/or the end of a string
+
+  ## Arguments
+
+  * `list` is any list in which percent
+    and permille symbols are expected
+
+  * `options` is a keyword list of options
+
+  ## Options
+
+  * `:backend` is any module() that includes `use Cldr` and therefore
+    is a `Cldr` backend module(). The default is `Cldr.default_backend!/0`
+
+  * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
+    or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
+    The default is `options[:backend].get_locale()`
+
+  ## Returns
+
+  * An `:percent` or `permille` or
+
+  * `{:error, {exception, message}}`
+
+  ## Examples
+
+      iex> Cldr.Number.Parser.resolve_per "11%"
+      ["11", :percent]
+
+      iex> Cldr.Number.Parser.resolve_per "% of linguists"
+      [:percent, " of linguists"]
+
+      iex> Cldr.Number.Parser.resolve_per "% of linguists %"
+      [:percent, " of linguists ", :percent]
+
+  """
+
   @spec resolve_per(String.t(), Keyword.t()) ::
     per() | list(per() | String.t()) | {:error, {module(), String.t()}}
 
@@ -481,7 +545,7 @@ defmodule Cldr.Number.Parser do
          {:ok, per} <- find(per_strings, string, fuzzy) do
       per
     else
-      :error -> {:error, "Not a per"}
+      :error -> {:error, {Cldr.Number.ParseError, "No percemt or permille found"}}
       other -> other
     end
   end
