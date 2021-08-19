@@ -71,4 +71,14 @@ defmodule Cldr.Number.Parsing.Test do
     assert Cldr.Number.Parser.scan("This with normal space 12 345", locale: "en") ==
       ["This with normal space ", 12, " ", 345]
   end
+
+  test "Resolving currencies in a string" do
+    scanned = Cldr.Number.Parser.scan("Lets try this 123 US dollars, a bunch of US dollars 23 and 345 euros")
+    assert Cldr.Number.Parser.resolve_currencies(scanned) ==
+      ["Lets try this ", 123, :USD, ", a bunch of ", :USD, 23, " and ", 345, :EUR]
+
+    scanned = Cldr.Number.Parser.scan("Lets try this 123 US dollars, a bunch of swiss francs 23 and 345 euros")
+    assert Cldr.Number.Parser.resolve_currencies(scanned) ==
+      ["Lets try this ", 123, :USD, ", a bunch of ", :CHF, 23, " and ", 345, :EUR]
+  end
 end
