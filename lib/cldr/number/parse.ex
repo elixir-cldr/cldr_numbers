@@ -64,7 +64,9 @@ defmodule Cldr.Number.Parser do
       ["A number is the arab script ", 12345]
 
   """
-  @spec scan(String.t(), Keyword.t()) :: list(String.t() | integer() | float() | Decimal.t())
+  @spec scan(String.t(), Keyword.t()) ::
+    list(String.t() | integer() | float() | Decimal.t()) |
+    {:error, {module(), String.t()}}
 
   def scan(string, options \\ []) do
     {locale, backend} = Cldr.locale_and_backend_from(options)
