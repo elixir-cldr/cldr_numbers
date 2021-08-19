@@ -5,6 +5,8 @@ defmodule Cldr.Number.Parser do
 
   """
 
+  @type per :: :percent | :permille
+
   @number_format "[-+]?[0-9]([0-9_]|[,](?=[0-9]))*(\\.?[0-9_]+([eE][-+]?[0-9]+)?)?"
 
   @doc """
@@ -342,6 +344,22 @@ defmodule Cldr.Number.Parser do
     |> List.flatten()
   end
 
+  @spec resolve_pers([String.t(), ...], Keyword.t()) ::
+    list(per() | String.t())
+
+  def resolve_pers(list, options \\ []) when is_list(list) and is_list(options) do
+    Enum.map(list, fn
+      string when is_binary(string) ->
+        case resolve_per(string, options) do
+          {:error, _} -> string
+          currency -> currency
+        end
+
+      other -> other
+    end)
+    |> List.flatten()
+  end
+
   @doc """
   Resolve a currency from the beginning
   and/or the end of a string
@@ -431,7 +449,7 @@ defmodule Cldr.Number.Parser do
     Cldr.Currency.code() | list(Cldr.Currency.code() | String.t()) |
     {:error, {module(), String.t()}}
 
-  def resolve_currency(string, options \\ []) do
+  def resolve_currency(string, options \\ []) when is_binary(string) do
     {locale, backend} = Cldr.locale_and_backend_from(options)
 
     {only_filter, options} =
@@ -443,10 +461,48 @@ defmodule Cldr.Number.Parser do
     with {:ok, locale} <- backend.validate_locale(locale),
          {:ok, currency_strings} <-
            Cldr.Currency.currency_strings(locale, backend, only_filter, except_filter),
-         {:ok, currency} <-
-           find_currency(currency_strings, string, fuzzy) do
+         {:ok, currency} <- find(currency_strings, string, fuzzy) do
       currency
+    else
+      :error -> {:error, unknown_currency_error(string)}
+      other -> other
     end
+  end
+
+  @spec resolve_per(String.t(), Keyword.t()) ::
+    per() | list(per() | String.t()) | {:error, {module(), String.t()}}
+
+  def resolve_per(string, options \\ []) when is_binary(string) do
+    {locale, backend} = Cldr.locale_and_backend_from(options)
+    {fuzzy, _options} = Keyword.pop(options, :fuzzy, nil)
+
+    with {:ok, locale} <- backend.validate_locale(locale),
+         {:ok, per_strings} <- per_strings(locale, backend),
+         {:ok, per} <- find(per_strings, string, fuzzy) do
+      per
+    else
+      :error -> {:error, "Not a per"}
+      other -> other
+    end
+  end
+
+  defp per_strings(locale, backend) do
+    with {:ok, number_system} <- digits_number_system_from(locale),
+         {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend) do
+      symbols = symbols_for_number_system(symbols, number_system)
+      parse_map = backend.lenient_parse_map(:general, locale.cldr_locale_name)
+      {:ok, Map.new(per_map(parse_map, symbols.percent_sign) ++ per_map(parse_map, symbols.per_mille))}
+    end
+  end
+
+  defp per_map(parse_map, char) do
+    parse_map
+    |> Map.fetch!(char)
+    |> Map.fetch!(:source)
+    |> String.replace("[", "")
+    |> String.replace("]", "")
+    |> String.graphemes()
+    |> Enum.map(&{&1, :percent})
   end
 
   # Replace localised symbols with canonical forms
@@ -503,47 +559,47 @@ defmodule Cldr.Number.Parser do
   defp maybe_add_space(@pop_space), do: @pop_space <> @space
   defp maybe_add_space(other), do: other
 
-  # Find a currency at the beginnig and end of a string, but ignore
+  # Find a code at the beginnig and end of a string, but ignore
   # any whitespace found at the start or end. Leading and trailing
-  # whitespace is preserved if there is no currency found so trimming
+  # whitespace is preserved if there is no code found so trimming
   # can only be applied when required, not up front.
 
-  defp find_currency(currency_strings, currency, nil) do
+  defp find(string_map, string, nil) do
     search =
-      currency
+      string
       |> String.downcase()
 
-    if currency_code = Map.get(currency_strings, String.trim(search)) do
-      currency_code
+    if code = Map.get(string_map, String.trim(search)) do
+      code
     else
-      [starting_code, remainder] = starting_currency(currency_strings, search)
-      [remainder, ending_code] = ending_currency(currency_strings, remainder)
+      [starting_code, remainder] = starting_string(string_map, search)
+      [remainder, ending_code] = ending_string(string_map, remainder)
       if starting_code == "" && ending_code == "" do
-        {:error, unknown_currency_error(search)}
+        :error
       else
         {:ok, Enum.reject([starting_code, remainder, ending_code], &(&1 == ""))}
       end
     end
   end
 
-  defp find_currency(currency_strings, currency, fuzzy)
+  defp find(string_map, search, fuzzy)
        when is_float(fuzzy) and fuzzy > 0.0 and fuzzy <= 1.0 do
-    canonical_currency = String.downcase(currency)
+    canonical_search = String.downcase(search)
 
-    {distance, currency_code} =
-      currency_strings
-      |> Enum.map(fn {k, v} -> {String.jaro_distance(k, canonical_currency), v} end)
+    {distance, code} =
+      string_map
+      |> Enum.map(fn {k, v} -> {String.jaro_distance(k, canonical_search), v} end)
       |> Enum.sort(fn {k1, _v1}, {k2, _v2} -> k1 > k2 end)
       |> hd
 
     if distance >= fuzzy do
-      currency_code
+      {:ok, code}
     else
-      {:error, unknown_currency_error(currency)}
+      :error
     end
   end
 
-  defp find_currency(_currency_strings, _currency, fuzzy) do
+  defp find(_currency_strings, _currency, fuzzy) do
     {:error,
      {
        ArgumentError,
@@ -551,27 +607,27 @@ defmodule Cldr.Number.Parser do
      }}
   end
 
-  def starting_currency(currency_strings, search) do
+  def starting_string(string_map, search) do
     trimmed = String.trim_leading(search)
-    case starts_with(currency_strings, trimmed) do
+    case starts_with(string_map, trimmed) do
       [] ->
         ["", search]
       list ->
-        {currency_string, currency_code} = longest_currency_match(list)
-        ["", remainder] = String.split(trimmed, currency_string, parts: 2)
-        [currency_code, remainder]
+        {string, code} = longest_match(list)
+        ["", remainder] = String.split(trimmed, string, parts: 2)
+        [code, remainder]
     end
   end
 
-  def ending_currency(currency_strings, search) do
+  def ending_string(string_map, search) do
     trimmed = String.trim_trailing(search)
-    case ends_with(currency_strings, trimmed) do
+    case ends_with(string_map, trimmed) do
       [] ->
         [search, ""]
       list ->
-        {currency_string, currency_code} = longest_currency_match(list)
-        [remainder, ""] = String.split(trimmed, currency_string, parts: 2)
-        [remainder, currency_code]
+        {string, code} = longest_match(list)
+        [remainder, ""] = String.split(trimmed, string, parts: 2)
+        [remainder, code]
     end
   end
 
@@ -583,8 +639,8 @@ defmodule Cldr.Number.Parser do
     Enum.filter(strings, &String.ends_with?(search, elem(&1, 0)))
   end
 
-  defp longest_currency_match(currencies) do
-    currencies
+  defp longest_match(matches) do
+    matches
     |> Enum.sort(fn a, b -> String.length(elem(a, 0)) > String.length(elem(b, 0)) end)
     |> hd
   end
