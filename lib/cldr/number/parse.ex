@@ -365,6 +365,8 @@ defmodule Cldr.Number.Parser do
 
   """
 
+  @doc since: "2.21.0"
+
   @spec resolve_pers([String.t(), ...], Keyword.t()) ::
     list(per() | String.t())
 
@@ -372,7 +374,48 @@ defmodule Cldr.Number.Parser do
     resolve(list, &resolve_per/2, options)
   end
 
-  defp resolve(list, resolver, options) do
+  @doc """
+  Maps a list of terms (usually strings and atoms)
+  calling a resolver function that operates
+  on each binary term.
+
+  If the resolver function returns `{:error, term}`
+  then no change is made to the term, otherwise
+  the return value of the resolver replaces the
+  original term.
+
+  ## Arguments
+
+  * `list` is a list of terms. Typically this is the
+    result of calling `Cldr.Number.Parser.scan/1`.
+
+  * `resolver` is a function that takes two
+    arguments. The first is one of the terms
+    in the `list`. The second is `options`.
+
+  * `options` is a keyword list of options
+    that is passed to the resolver function.
+
+  ## Note
+
+  * The resolver is called only on binary
+    elements of the list.
+
+  ## Returns
+
+  * `list` as modified through the application
+    of the resolver function on each bianry term.
+
+  ## Examples
+
+  See `Cldr.Number.Parser.resolve_currencies/2` and
+  `Cldr.Number.Parser.resolve_pers/2` which both
+  use this function.
+
+  """
+  @spec resolve(list(any()), fun(), Keyword.t()) :: list()
+
+  def resolve(list, resolver, options) do
     Enum.map(list, fn
       string when is_binary(string) ->
         case resolver.(string, options) do
@@ -456,13 +499,13 @@ defmodule Cldr.Number.Parser do
   ## Examples
 
       iex> Cldr.Number.Parser.resolve_currency("US dollars")
-      :USD
+      [:USD]
 
       iex> Cldr.Number.Parser.resolve_currency("100 eurosports", fuzzy: 0.75)
-      :EUR
+      [:EUR]
 
       iex> Cldr.Number.Parser.resolve_currency("dollars des États-Unis", locale: "fr")
-      :USD
+      [:USD]
 
       iex> Cldr.Number.Parser.resolve_currency("not a known currency", locale: "fr")
       {:error,
@@ -486,11 +529,14 @@ defmodule Cldr.Number.Parser do
     with {:ok, locale} <- backend.validate_locale(locale),
          {:ok, currency_strings} <-
            Cldr.Currency.currency_strings(locale, backend, only_filter, except_filter),
-         {:ok, currency} <- find(currency_strings, string, fuzzy) do
+         {:ok, currency} <- find_and_replace(currency_strings, string, fuzzy) do
       currency
     else
-      :error -> {:error, unknown_currency_error(string)}
-      other -> other
+      {:error, {Cldr.Number.ParseError, _}} ->
+        {:error, unknown_currency_error(string)}
+
+      other ->
+        other
     end
   end
 
@@ -533,6 +579,8 @@ defmodule Cldr.Number.Parser do
 
   """
 
+  @doc since: "2.21.0"
+
   @spec resolve_per(String.t(), Keyword.t()) ::
     per() | list(per() | String.t()) | {:error, {module(), String.t()}}
 
@@ -542,11 +590,14 @@ defmodule Cldr.Number.Parser do
 
     with {:ok, locale} <- backend.validate_locale(locale),
          {:ok, per_strings} <- per_strings(locale, backend),
-         {:ok, per} <- find(per_strings, string, fuzzy) do
+         {:ok, per} <- find_and_replace(per_strings, string, fuzzy) do
       per
     else
-      :error -> {:error, {Cldr.Number.ParseError, "No percemt or permille found"}}
-      other -> other
+      {:error, {Cldr.Number.ParseError, _}} ->
+        {:error, {Cldr.Number.ParseError, "No percent or permille found"}}
+
+      other ->
+        other
     end
   end
 
@@ -623,30 +674,84 @@ defmodule Cldr.Number.Parser do
   defp maybe_add_space(@pop_space), do: @pop_space <> @space
   defp maybe_add_space(other), do: other
 
-  # Find a code at the beginnig and end of a string, but ignore
-  # any whitespace found at the start or end. Leading and trailing
-  # whitespace is preserved if there is no code found so trimming
-  # can only be applied when required, not up front.
+  @doc """
+  Find a substring at the beginning and/or end of a
+  string, and replace it.
 
-  defp find(string_map, string, nil) do
+  Ignore any whitespace found at the start or end of the
+  string when looking for a match. A match is considered
+  only if there is no alphabetic character adjacent to
+  the match.
+
+  When multiple matches are found, the longest match
+  is replaced.
+
+  ## Arguments
+
+  * `string_map` is a map where the keys are the strings
+    to be matched and the values are the replacement.
+
+  * `string` is the string in which the find and replace
+    operation takes place.
+
+  * `fuzzy` is floating point number between 0.0 and 1.0
+    that is used to implement a fuzzy match using
+    `String.jaro_distance/2`. The default is `nil` which
+    means the match is exact at the beginning and/or the
+    end of the `string`.
+
+  ## Returns
+
+  * `{:ok, list}` where list is `string` broken into the
+    replacement(s) and the remainder after find and replace. Or
+
+  * `{:error, {exception, reason}}` will be returned if
+    the `fuzzy` parameter is invalid or if no search was found
+    and no replacement made. In the later case, `exception`
+    will be `Cldr.Number.ParseError`.
+
+  ## Examples
+
+      iex> Cldr.Number.Parser.find_and_replace(%{"this" => "that"}, "This is a string")
+      {:ok, ["that", " is a string"]}
+
+      iex> Cldr.Number.Parser.find_and_replace(%{"string" => "term"}, "This is a string")
+      {:ok, ["this is a ", "term"]}
+
+      iex> Cldr.Number.Parser.find_and_replace(%{"string" => "term", "this" => "that"}, "This is a string")
+      {:ok, ["that", " is a ", "term"]}
+
+      iex> Cldr.Number.Parser.find_and_replace(%{"unknown" => "term"}, "This is a string")
+      {:error, {Cldr.Number.ParseError, "No match was found"}}
+
+  """
+
+  @doc since: "2.22.0"
+
+  @spec find_and_replace(%{binary() => term()}, binary(), float() | nil) ::
+    {:ok, list()} | {:error, {module(), binary()}}
+
+  def find_and_replace(string_map, string, fuzzy \\ nil)
+
+  def find_and_replace(string_map, string, nil) when is_map(string_map) and is_binary(string) do
     search =
       string
       |> String.downcase()
 
     if code = Map.get(string_map, String.trim(search)) do
-      code
+      {:ok, [code]}
     else
       [starting_code, remainder] = starting_string(string_map, search)
       [remainder, ending_code] = ending_string(string_map, remainder)
       if starting_code == "" && ending_code == "" do
-        :error
+        {:error, {Cldr.Number.ParseError, "No match was found"}}
       else
         {:ok, Enum.reject([starting_code, remainder, ending_code], &(&1 == ""))}
       end
     end
   end
 
-  defp find(string_map, search, fuzzy)
+  def find_and_replace(string_map, search, fuzzy)
        when is_float(fuzzy) and fuzzy > 0.0 and fuzzy <= 1.0 do
     canonical_search = String.downcase(search)
 
@@ -657,13 +762,13 @@ defmodule Cldr.Number.Parser do
       |> hd
 
     if distance >= fuzzy do
-      {:ok, code}
+      {:ok, [code]}
     else
-      :error
+      {:error, {Cldr.Number.ParseError, "No match was found"}}
     end
   end
 
-  defp find(_currency_strings, _currency, fuzzy) do
+  def find_and_replace(_currency_strings, _currency, fuzzy) do
     {:error,
      {
        ArgumentError,
@@ -671,7 +776,7 @@ defmodule Cldr.Number.Parser do
      }}
   end
 
-  def starting_string(string_map, search) do
+  defp starting_string(string_map, search) do
     trimmed = String.trim_leading(search)
     case starts_with(string_map, trimmed) do
       [] ->
@@ -679,11 +784,15 @@ defmodule Cldr.Number.Parser do
       list ->
         {string, code} = longest_match(list)
         ["", remainder] = String.split(trimmed, string, parts: 2)
-        [code, remainder]
+        if String.match?(remainder, ~r/^[[:alpha:]]/u) do
+          ["", search]
+        else
+          [code, remainder]
+        end
     end
   end
 
-  def ending_string(string_map, search) do
+  defp ending_string(string_map, search) do
     trimmed = String.trim_trailing(search)
     case ends_with(string_map, trimmed) do
       [] ->
@@ -691,7 +800,11 @@ defmodule Cldr.Number.Parser do
       list ->
         {string, code} = longest_match(list)
         [remainder, ""] = String.split(trimmed, string, parts: 2)
-        [remainder, code]
+        if String.match?(remainder, ~r/[[:alpha:]]$/u) do
+          [search, ""]
+        else
+          [remainder, code]
+        end
     end
   end
 

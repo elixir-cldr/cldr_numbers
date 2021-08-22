@@ -1,5 +1,17 @@
 # Changelog
 
+## Cldr_Numbers v2.22.0
+
+This is the changelog for Cldr v2.22.0 released on August 22nd, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* `Cldr.Number.Parser.resolve_currencies/2` and `Cldr.Number.Parser.resolve_per/2` only perform replacements if the the found string is not adjacent to an alphabetic character.
+
+* `Cldr.Number.Parser.resolve/2` and `Cldr.Number.Parser.find_and_replace/2` are made public functions.
+
+* Add `resolve_pers/2` and `resolve_per/2` to the `MyApp.Number` module.
+
 ## Cldr_Numbers v2.21.0
 
 This is the changelog for Cldr v2.21.0 released on August 18th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

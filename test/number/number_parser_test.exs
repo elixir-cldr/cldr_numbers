@@ -81,4 +81,22 @@ defmodule Cldr.Number.Parsing.Test do
     assert Cldr.Number.Parser.resolve_currencies(scanned) ==
       ["Lets try this ", 123, :USD, ", a bunch of ", :CHF, 23, " and ", 345, :EUR]
   end
+
+  test "That resolving only happens when there is a non-alpha adjacent char" do
+    scanned = Cldr.Number.Parser.scan("These are 100 us dollars and also nonswiss francs")
+    assert Cldr.Number.Parser.resolve_currencies(scanned) ==
+      ["These are ", 100, :USD, " and also nonswiss francs"]
+
+    scanned = Cldr.Number.Parser.scan("These are 100 us dollars and also non swiss francs")
+    assert Cldr.Number.Parser.resolve_currencies(scanned) ==
+      ["These are ", 100, :USD, " and also non ", :CHF]
+
+    scanned = Cldr.Number.Parser.scan("These are us dollars 100 and also nonswiss francs")
+    assert  Cldr.Number.Parser.resolve_currencies(scanned) ==
+      ["these are ", :USD, 100, " and also nonswiss francs"]
+
+    scanned = Cldr.Number.Parser.scan("These areus dollars 100 and also nonswiss francs")
+    assert  Cldr.Number.Parser.resolve_currencies(scanned) ==
+      ["These areus dollars ", 100, " and also nonswiss francs"]
+  end
 end
