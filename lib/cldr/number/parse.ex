@@ -428,6 +428,35 @@ defmodule Cldr.Number.Parser do
     |> List.flatten()
   end
 
+  @whitespace ~r/^\s*$/u
+  @doc false
+  defguard is_token(arg) when is_atom(arg) or is_number(arg)
+
+
+  @doc """
+  Removes any whitespace strings from between
+  tokens in a list.
+
+  Tokens are numbers or atoms.
+
+  """
+  def remove_whitespace_between_tokens([first, second, third | rest])
+      when is_token(first) and is_token(third) do
+    if String.match?(second, @whitespace) do
+      [first | remove_whitespace_between_tokens([third | rest])]
+    else
+      [first | remove_whitespace_between_tokens([second, third | rest])]
+    end
+  end
+
+  def remove_whitespace_between_tokens([first | rest]) do
+    [first | remove_whitespace_between_tokens(rest)]
+  end
+
+  def remove_whitespace_between_tokens(first) do
+    first
+  end
+
   @doc """
   Resolve a currency from the beginning
   and/or the end of a string
@@ -716,7 +745,7 @@ defmodule Cldr.Number.Parser do
       {:ok, ["that", " is a string"]}
 
       iex> Cldr.Number.Parser.find_and_replace(%{"string" => "term"}, "This is a string")
-      {:ok, ["this is a ", "term"]}
+      {:ok, ["This is a ", "term"]}
 
       iex> Cldr.Number.Parser.find_and_replace(%{"string" => "term", "this" => "that"}, "This is a string")
       {:ok, ["that", " is a ", "term"]}
@@ -734,14 +763,10 @@ defmodule Cldr.Number.Parser do
   def find_and_replace(string_map, string, fuzzy \\ nil)
 
   def find_and_replace(string_map, string, nil) when is_map(string_map) and is_binary(string) do
-    search =
-      string
-      |> String.downcase()
-
-    if code = Map.get(string_map, String.trim(search)) do
+    if code = Map.get(string_map, normalize_search_string(string)) do
       {:ok, [code]}
     else
-      [starting_code, remainder] = starting_string(string_map, search)
+      [starting_code, remainder] = starting_string(string_map, string)
       [remainder, ending_code] = ending_string(string_map, remainder)
       if starting_code == "" && ending_code == "" do
         {:error, {Cldr.Number.ParseError, "No match was found"}}
@@ -777,35 +802,53 @@ defmodule Cldr.Number.Parser do
   end
 
   defp starting_string(string_map, search) do
-    trimmed = String.trim_leading(search)
+    [whitespace, trimmed] =
+      search
+      |> String.downcase()
+      |> String.split(~r/^\s*/, parts: 2, include_captures: true, trim: true)
+
     case starts_with(string_map, trimmed) do
       [] ->
         ["", search]
       list ->
-        {string, code} = longest_match(list)
-        ["", remainder] = String.split(trimmed, string, parts: 2)
+        {string, match_length, code} = longest_match(list)
+        [_, remainder] = String.split(trimmed, string, parts: 2)
         if String.match?(remainder, ~r/^[[:alpha:]]/u) do
           ["", search]
         else
-          [code, remainder]
+          match_length = match_length + :erlang.byte_size(whitespace)
+          << _ :: binary-size(match_length), remainder :: binary>> = search
+          [code,  remainder]
         end
     end
   end
 
   defp ending_string(string_map, search) do
-    trimmed = String.trim_trailing(search)
+    trimmed =
+      search
+      |> String.downcase()
+      |> String.trim_trailing()
+
     case ends_with(string_map, trimmed) do
       [] ->
         [search, ""]
       list ->
-        {string, code} = longest_match(list)
-        [remainder, ""] = String.split(trimmed, string, parts: 2)
+        {string, match_length, code} = longest_match(list)
+        [remainder, _] = String.split(trimmed, string, parts: 2)
         if String.match?(remainder, ~r/[[:alpha:]]$/u) do
           [search, ""]
         else
+          match = :erlang.byte_size(trimmed) - match_length
+          << remainder :: binary-size(match), _rest :: binary>> = search
           [remainder, code]
         end
     end
+  end
+
+  defp normalize_search_string(string) do
+    string
+    |> String.downcase()
+    |> String.trim()
   end
 
   defp starts_with(strings, search) do
@@ -817,9 +860,12 @@ defmodule Cldr.Number.Parser do
   end
 
   defp longest_match(matches) do
-    matches
-    |> Enum.sort(fn a, b -> String.length(elem(a, 0)) > String.length(elem(b, 0)) end)
-    |> hd
+    {match, code} =
+      matches
+      |> Enum.sort(fn a, b -> String.length(elem(a, 0)) > String.length(elem(b, 0)) end)
+      |> hd
+
+    {match, :erlang.byte_size(match), code}
   end
 
   defp unknown_currency_error(currency) do

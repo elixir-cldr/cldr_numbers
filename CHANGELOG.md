@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr_Numbers v2.22.1
+
+This is the changelog for Cldr v2.22.1 released on August 24th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Return the remainder strings with casing preserved when resolving currencies and pers.
+
 ## Cldr_Numbers v2.22.0
 
 This is the changelog for Cldr v2.22.0 released on August 22nd, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

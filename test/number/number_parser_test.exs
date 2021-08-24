@@ -93,10 +93,18 @@ defmodule Cldr.Number.Parsing.Test do
 
     scanned = Cldr.Number.Parser.scan("These are us dollars 100 and also nonswiss francs")
     assert  Cldr.Number.Parser.resolve_currencies(scanned) ==
-      ["these are ", :USD, 100, " and also nonswiss francs"]
+      ["These are ", :USD, 100, " and also nonswiss francs"]
 
     scanned = Cldr.Number.Parser.scan("These areus dollars 100 and also nonswiss francs")
     assert  Cldr.Number.Parser.resolve_currencies(scanned) ==
       ["These areus dollars ", 100, " and also nonswiss francs"]
+  end
+
+  test "That parsing returns the same case as the search for strings" do
+    scanned = Cldr.Number.Parser.scan( "Try ThCA$2is")
+    assert Cldr.Number.Parser.resolve_currencies(scanned) == [:TRY, " ThCA$", 2, "is"]
+
+    scanned = Cldr.Number.Parser.scan( "Try Th CA$2is")
+    assert Cldr.Number.Parser.resolve_currencies(scanned) == [:TRY, " Th ", :CAD, 2, "is"]
   end
 end
