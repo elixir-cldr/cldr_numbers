@@ -428,10 +428,8 @@ defmodule Cldr.Number.Parser do
     |> List.flatten()
   end
 
-  @whitespace ~r/^\s*$/u
   @doc false
   defguard is_token(arg) when is_atom(arg) or is_number(arg)
-
 
   @doc """
   Removes any whitespace strings from between
@@ -440,6 +438,8 @@ defmodule Cldr.Number.Parser do
   Tokens are numbers or atoms.
 
   """
+  @whitespace ~r/^\s*$/u
+
   def remove_whitespace_between_tokens([first, second, third | rest])
       when is_token(first) and is_token(third) do
     if String.match?(second, @whitespace) do
