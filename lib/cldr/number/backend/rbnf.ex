@@ -3,6 +3,7 @@ defmodule Cldr.Number.Backend.Rbnf do
 
   def define_number_modules(config) do
     backend = config.backend
+    root_locale = Cldr.Config.root_locale_name()
 
     quote location: :keep do
       defmodule Rbnf.NumberSystem do
@@ -11,7 +12,7 @@ defmodule Cldr.Number.Backend.Rbnf do
           @moduledoc """
           Functions to implement the number system rule-based-number-format rules of CLDR.
 
-          These rules are defined only on the "root" locale and represent specialised
+          These rules are defined only on the "und" locale and represent specialised
           number formatting.
 
           The standard public API for RBNF is via the `Cldr.Number.to_string/2` function.
@@ -19,14 +20,14 @@ defmodule Cldr.Number.Backend.Rbnf do
           The functions on this module are defined at compile time based upon the RBNF rules
           defined in the Unicode CLDR data repository.  Available rules are identified by:
 
-              iex> #{inspect(__MODULE__)}.rule_sets("root")
+              iex> #{inspect(__MODULE__)}.rule_sets(#{inspect(unquote(root_locale))})
               [:tamil, :roman_upper, :roman_lower, :hebrew_item,
                :hebrew, :greek_upper, :greek_lower, :georgian,
                :ethiopic, :cyrillic_lower, :armenian_upper, :armenian_lower]
 
           A rule can then be invoked on an available rule_set.  For example
 
-              iex> #{inspect(__MODULE__)}.roman_upper(123, "root")
+              iex> #{inspect(__MODULE__)}.roman_upper(123, #{inspect(unquote(root_locale))})
               "CXXIII"
 
           This particular call is equivalent to the call through the public API of:

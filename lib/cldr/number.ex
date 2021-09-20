@@ -81,6 +81,7 @@ defmodule Cldr.Number do
   possible.
   """
 
+  alias Cldr.Config
   alias Cldr.Number.Formatter
   alias Cldr.Number.Format.Options
 
@@ -96,7 +97,7 @@ defmodule Cldr.Number do
           | :currency
 
   @short_format_styles Options.short_format_styles()
-  @root_locale Map.fetch!(Cldr.Config.all_language_tags(), "root")
+  @root_locale Map.fetch!(Config.all_language_tags(), Config.root_locale_name())
 
   @doc """
   Return a valid number system from a provided locale and number

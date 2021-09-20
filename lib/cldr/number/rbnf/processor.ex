@@ -375,6 +375,7 @@ defmodule Cldr.Rbnf.Processor do
       # Return an error for a valid rule set which
       # is not supported for either the locale or
       # the number
+
       for rule_group <- all_rule_sets do
         @dialyzer {:nowarn_function, [{rule_group, 2}]}
         def unquote(rule_group)(number, locale_name) when is_binary(locale_name) do
@@ -391,7 +392,7 @@ defmodule Cldr.Rbnf.Processor do
         # lets make it easier to use them by defaulting the locale
         if hd(Enum.reverse(Module.split(module))) == "NumberSystem" do
           def unquote(rule_group)(number) do
-            unquote(rule_group)(number, "root")
+            unquote(rule_group)(number, unquote(Cldr.Config.root_locale_name()))
           end
         end
       end
