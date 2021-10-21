@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr_Numbers v2.23.0-rc.0
+
+This is the changelog for Cldr v2.23.0-rc.0 released on October 3rd, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Updates to CLDR release 40
+
 ## Cldr_Numbers v2.22.1
 
 This is the changelog for Cldr v2.22.1 released on September 13th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

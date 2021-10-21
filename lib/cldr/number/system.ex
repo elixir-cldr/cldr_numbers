@@ -49,7 +49,7 @@ defmodule Cldr.Number.System do
   ## Example
 
       iex> Cldr.Number.System.number_systems |> Enum.count
-      85
+      86
 
   """
   @spec number_systems :: map()

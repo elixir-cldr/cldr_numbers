@@ -3,7 +3,7 @@ defmodule CldrNumbers.Mixfile do
 
   use Mix.Project
 
-  @version "2.22.1"
+  @version "2.23.0-rc.0"
 
   def project do
     [
@@ -41,8 +41,8 @@ defmodule CldrNumbers.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 2.23"},
-      {:ex_cldr_currencies, "~> 2.11"},
+      {:ex_cldr, "~> 2.24-rc"},
+      {:ex_cldr_currencies, "~> 2.12-rc"},
       {:decimal, "~> 1.6 or ~> 2.0"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.18", optional: true, runtime: false},
@@ -55,7 +55,7 @@ defmodule CldrNumbers.Mixfile do
   defp package do
     [
       maintainers: ["Kip Cole"],
-      licenses: ["Apache 2.0"],
+      licenses: ["Apache-2.0"],
       links: links(),
       files: [
         "lib",
