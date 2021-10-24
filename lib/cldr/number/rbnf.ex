@@ -10,23 +10,114 @@ defmodule Cldr.Rbnf do
   use outside of supporting the compilation phase.
   """
 
+  alias Cldr.LanguageTag
+
   @doc """
   Returns the list of locales that that have RBNF defined
 
   This list is the set of known locales for which
   there are rbnf rules defined.
+
+  Delegates to `Cldr.known_rbnf_locale_names/1`
+
   """
+  defdelegate known_locale_names(backend), to: Cldr, as: :known_rbnf_locale_names
 
-  alias Cldr.LanguageTag
+  @categories [:NumberSystem, :Spellout, :Ordinal]
 
-  def known_locale_names(backend) do
-    Cldr.known_rbnf_locale_names(backend)
+  @doc """
+  Returns the list of RBNF rules for a locale.
+
+  A rule name can be used as the `:format` parameter
+  in `Cldr.Number.to_string/3`.
+
+  ## Arguments
+
+  * `locale` is any `Cldr.LanguageTag.t()`
+
+  ## Returns
+
+  * `{:ok, [list_of_rule_names_as_atoms]}` or
+
+  * `{:error, {exception, reason}}`
+
+  ## Examples
+
+      iex> Cldr.Rbnf.rule_names_for_locale "zh"
+      {:ok,
+       [:spellout_cardinal_alternate2, :spellout_ordinal, :spellout_cardinal,
+        :spellout_cardinal_financial, :spellout_numbering, :spellout_numbering_days,
+        :spellout_numbering_year, :digits_ordinal]}
+
+      iex> Cldr.Rbnf.rule_names_for_locale "fp"
+      {:error, {Cldr.InvalidLanguageError, "The language \"fp\" is invalid"}}
+
+  """
+  @spec rule_names_for_locale(Cldr.LanguageTag.t()) ::
+    {:ok, list(atom())} | {:error, {module(), String.t()}}
+
+  def rule_names_for_locale(%LanguageTag{rbnf_locale_name: nil} = language_tag) do
+    {:error, rbnf_locale_error(language_tag)}
+  end
+
+  def rule_names_for_locale(%LanguageTag{rbnf_locale_name: rbnf_locale_name, backend: backend}) do
+    rule_names =
+      Enum.flat_map(@categories, fn category ->
+        rbnf_module = Module.concat([backend, :Rbnf, category])
+        rule_names = rbnf_module.rule_sets(rbnf_locale_name)
+        if rule_names, do: rule_names, else: []
+      end)
+
+    {:ok, rule_names}
+  end
+
+  def rule_names_for_locale(locale_name, backend \\ Cldr.default_backend!())
+      when is_binary(locale_name) do
+    with {:ok, locale} <- Cldr.Locale.canonical_language_tag(locale_name, backend) do
+      rule_names_for_locale(locale)
+    end
+  end
+
+  @doc """
+  Returns the list of RBNF rules for a locale.
+
+  A rule name can be used as the `:format` parameter
+  in `Cldr.Number.to_string/3`.
+
+  ## Arguments
+
+  * `locale` is any `Cldr.LanguageTag.t()`
+
+  ## Returns
+
+  * `[list_of_rule_names_as_atoms]`, or
+
+  * raises an exception
+
+  ## Examples
+
+      iex> Cldr.Rbnf.rule_names_for_locale! "zh"
+      [:spellout_cardinal_alternate2, :spellout_ordinal, :spellout_cardinal,
+       :spellout_cardinal_financial, :spellout_numbering, :spellout_numbering_days,
+       :spellout_numbering_year, :digits_ordinal]
+
+  """
+  @spec rule_names_for_locale!(Cldr.LanguageTag.t()) :: list(atom()) | no_return()
+
+  def rule_names_for_locale!(locale) do
+    case rule_names_for_locale(locale) do
+      {:ok, rule_names} -> rule_names
+      {:error, {exception, reason}} -> raise exception, reason
+    end
   end
 
   @doc """
   Returns {:ok, rbnf_rules} for a `locale` or `{:error, {Cldr.NoRbnf, info}}`
 
   * `locale` is any `t:Cldr.LanguageTag`
+
+  This function reads the raw locale definition and therefore
+  should *not* be called at runtime.
 
   """
   @spec for_locale(LanguageTag.t()) ::
@@ -39,7 +130,7 @@ defmodule Cldr.Rbnf do
   def for_locale(%LanguageTag{rbnf_locale_name: rbnf_locale_name, backend: backend}) do
     rbnf_data =
       rbnf_locale_name
-      |> Cldr.Config.get_locale(backend)
+      |> Cldr.Locale.Loader.get_locale(backend)
       |> Map.get(:rbnf)
 
     {:ok, rbnf_data}
@@ -97,16 +188,16 @@ defmodule Cldr.Rbnf do
     end
   end
 
+  @doc false
   def categories_for_locale!(%LanguageTag{} = locale) do
-    locale
-    |> for_locale!()
-    |> Map.keys()
-    |> Enum.map(&map_category/1)
+    Enum.reduce(@categories, [], fn category, acc ->
+      rbnf_module = Module.concat([locale.backend, :Rbnf, category])
+      case rbnf_module.rule_sets(locale) do
+        nil -> acc
+        _rules -> [category | acc]
+      end
+    end)
   end
-
-  defp map_category(:OrdinalRules), do: :Ordinal
-  defp map_category(:NumberSystemRules), do: :NumberSystem
-  defp map_category(:SpelloutRules), do: :Spellout
 
   # Returns a map that merges all rules by the primary dimension of
   # RuleGroup, within which rbnf rules are keyed by locale.
