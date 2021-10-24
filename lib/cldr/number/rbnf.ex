@@ -213,7 +213,7 @@ defmodule Cldr.Rbnf do
     Enum.map(known_rbnf_locale_names, fn locale_name ->
       locale =
         locale_name
-        |> Cldr.Config.get_locale(config)
+        |> Cldr.Locale.Loader.get_locale(config)
         |> Map.get(:rbnf)
 
       Enum.map(locale, fn {group, sets} ->

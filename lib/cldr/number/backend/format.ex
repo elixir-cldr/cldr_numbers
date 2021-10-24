@@ -215,7 +215,7 @@ defmodule Cldr.Number.Backend.Format do
         for locale_name <- Cldr.Config.known_locale_names(config) do
           locale_data =
             locale_name
-            |> Cldr.Config.get_locale(config)
+            |> Cldr.Locale.Loader.get_locale(config)
 
           number_formats =
             locale_data

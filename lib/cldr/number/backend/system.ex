@@ -93,7 +93,7 @@ defmodule Cldr.Number.Backend.System do
         for locale_name <- Cldr.Config.known_locale_names(config) do
           systems =
             locale_name
-            |> Cldr.Config.get_locale(config)
+            |> Cldr.Locale.Loader.get_locale(config)
             |> Map.get(:number_systems)
 
           def number_systems_for(unquote(locale_name)) do
