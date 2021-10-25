@@ -90,7 +90,7 @@ defmodule Cldr.Number.Backend.System do
 
         def number_system_names_for(locale)
 
-        for locale_name <- Cldr.Config.known_locale_names(config) do
+        for locale_name <- Cldr.Locale.Loader.known_locale_names(config) do
           systems =
             locale_name
             |> Cldr.Locale.Loader.get_locale(config)
@@ -265,7 +265,7 @@ defmodule Cldr.Number.Backend.System do
             {module, function, locale_name} =
               Cldr.Config.rbnf_rule_function(definition.rules, backend)
 
-            if locale_name in Cldr.Config.known_locale_names(config) do
+            if locale_name in Cldr.Locale.Loader.known_locale_names(config) do
               def to_system(number, unquote(system)) do
                 with {:ok, _locale} <- unquote(backend).validate_locale(unquote(locale_name)) do
                   {:ok, unquote(module).unquote(function)(number, unquote(locale_name))}

@@ -116,7 +116,7 @@ defmodule Cldr.Number.Backend.Format do
 
         def decimal_format_list_for(locale \\ unquote(backend).get_locale())
 
-        for locale_name <- Cldr.Config.known_locale_names(config) do
+        for locale_name <- Cldr.Locale.Loader.known_locale_names(config) do
           decimal_formats = Cldr.Config.decimal_formats_for(locale_name, config)
 
           def decimal_format_list_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
@@ -212,7 +212,7 @@ defmodule Cldr.Number.Backend.Format do
 
         def default_grouping_for(locale \\ unquote(backend).get_locale())
 
-        for locale_name <- Cldr.Config.known_locale_names(config) do
+        for locale_name <- Cldr.Locale.Loader.known_locale_names(config) do
           locale_data =
             locale_name
             |> Cldr.Locale.Loader.get_locale(config)

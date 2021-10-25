@@ -13,7 +13,7 @@ defmodule Cldr.Number.Backend.Symbol do
         end
 
         all_symbols =
-          for locale <- Cldr.Config.known_locale_names(config) do
+          for locale <- Cldr.Locale.Loader.known_locale_names(config) do
             symbols =
               locale
               |> Cldr.Locale.Loader.get_locale(config)
