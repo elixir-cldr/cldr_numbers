@@ -97,7 +97,8 @@ defmodule Cldr.Number do
           | :currency
 
   @short_format_styles Options.short_format_styles()
-  @root_locale Map.fetch!(Config.all_language_tags(), Config.root_locale_name())
+  @root_locale_name Config.root_locale_name()
+  @root_locale Map.fetch!(Config.all_language_tags(), @root_locale_name)
 
   @doc """
   Return a valid number system from a provided locale and number
@@ -482,18 +483,8 @@ defmodule Cldr.Number do
   end
 
   defp to_string(number, format, backend, options) when is_atom(format) do
-    error = {:error, Cldr.Rbnf.rbnf_rule_error(options.locale, format)}
-    rbnf_locale = options.locale.rbnf_locale_name
-
-    Enum.reduce_while Cldr.Rbnf.categories_for_locale!(options.locale), error, fn category, acc ->
-      format_module = Module.concat([backend, :Rbnf, category])
-      rules = format_module.rule_sets(rbnf_locale)
-
-      if rules && format in rules do
-        {:halt, apply(format_module, format, [number, rbnf_locale])}
-      else
-        {:cont, acc}
-      end
+    with {:ok, module, locale} <- find_rbnf_format_module(options.locale, format, backend) do
+      apply(module, format, [number, locale])
     end
   end
 
@@ -507,6 +498,32 @@ defmodule Cldr.Number do
   # locale but its not there.
   defp to_string(_number, {:error, _} = error, _backend, _options) do
     error
+  end
+
+  # Look for the RBNF rule in the given locale or in the
+  # root locale (called "und")
+
+  defp find_rbnf_format_module(locale, format, backend) do
+    root_locale = Map.put(@root_locale, :backend, backend)
+
+    cond do
+      module = find_rbnf_module(locale, format, backend) -> {:ok, module, locale}
+      module = find_rbnf_module(root_locale, format, backend) -> {:ok, module, root_locale}
+      true ->  {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
+    end
+  end
+
+  defp find_rbnf_module(locale, format, backend) do
+    Enum.reduce_while Cldr.Rbnf.categories_for_locale!(locale), nil, fn category, acc ->
+      format_module = Module.concat([backend, :Rbnf, category])
+      rules = format_module.rule_sets(locale)
+
+      if rules && format in rules do
+        {:halt, format_module}
+      else
+        {:cont, acc}
+      end
+    end
   end
 
   defp evaluate_rule(number, module, function, locale, backend) do

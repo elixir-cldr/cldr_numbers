@@ -131,6 +131,16 @@ defmodule Rbnf.Test do
               }}
   end
 
+  test "that rbnf rules lookup fall back to the root locale (und)" do
+    # implemented in und locale
+    assert Cldr.Number.to_string(123, format: :digits_ordinal, locale: "de")  ==
+      {:ok, "123."}
+
+    # implemented in en locale
+    assert Cldr.Number.to_string(123, format: :digits_ordinal, locale: "en") ==
+      {:ok, "123rd"}
+  end
+
   Elixir.Cldr.Rbnf.TestSupport.rbnf_tests(fn name, tests, module, function, locale ->
     test name do
       Enum.each(unquote(Macro.escape(tests)), fn {test_data, test_result} ->

@@ -8,11 +8,13 @@
 
 [ex_cldr_numbers](https://hex.pm/packages/ex_cldr_numbers) is an addon library application for [ex_cldr](https://hex.pm/packages/ex_cldr) that provides localization and formatting for numbers and currencies.
 
-In order to use this library, a backend module for `ex_cldr` must be defined.  This is described in full in the [ex_cldr readme](https://hexdocs.pm/ex_cldr/readme.html#configuration).  To get started immediate, define a module in your project as follows:
+In order to use this library, a backend module for `ex_cldr` must be defined.  This is described in full in the [ex_cldr readme](https://hexdocs.pm/ex_cldr/readme.html#configuration).  To get started, define a backend module in your project as follows:
 
 ```elixir
 defmodule MyApp.Cldr do
-  use Cldr, locales: ["en", "fr", "zh"]
+  use Cldr,
+    locales: ["en", "fr", "zh"],
+    providers: [Cldr.Number]
 end
 ```
 
@@ -53,7 +55,7 @@ iex> h MyApp.Cldr.Number.to_string
 
 ## Installation
 
-Note that [ex_cldr_numbers](https://hex.pm/packages/ex_cldr_numbers) requires Elixir 1.5 or later.
+Note that [ex_cldr_numbers](https://hex.pm/packages/ex_cldr_numbers) requires Elixir 1.10 or later.
 
 Add `ex_cldr_numbers` as a dependency to your `mix` project:
 
