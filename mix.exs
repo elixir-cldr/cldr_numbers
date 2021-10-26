@@ -1,9 +1,9 @@
-defmodule CldrNumbers.Mixfile do
+defmodule Cldr.Numbers.Mixfile do
   @moduledoc false
 
   use Mix.Project
 
-  @version "2.23.0-rc.4"
+  @version "2.23.0"
 
   def project do
     [
@@ -41,8 +41,8 @@ defmodule CldrNumbers.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 2.24-rc"},
-      {:ex_cldr_currencies, "~> 2.12-rc"},
+      {:ex_cldr, "~> 2.24"},
+      {:ex_cldr_currencies, "~> 2.12"},
       {:decimal, "~> 1.6 or ~> 2.0"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.18", only: [:dev, :release], optional: true, runtime: false},

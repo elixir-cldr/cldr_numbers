@@ -1,5 +1,27 @@
 # Changelog
 
+## Cldr_Numbers v2.23.0
+
+This is the changelog for Cldr v2.23.0 released on October 27th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Updates to support [CLDR release 40](https://cldr.unicode.org/index/downloads/cldr-40) via [ex_cldr version 2.24](https://hex.pm/packages/ex_cldr/2.24.0)
+
+* Adds `Cldr.Rbnf.rule_names_for_locale/1` to return the available RBNF rule names for a given locale.
+
+### Bug Fixes
+
+* Arbitrary RBNF rule lookup falls back to the root locale (called "und") when checking if a rule is available. Thanks to @maennchen for the report. Closes #22.
+
+* Fixes performance issue when calling `Cldr.Number.to_string/3` with an arbitrary RBNF rule name. Previously these formats would mistakenly read the raw json file for a locale incurring a significant performance penaly. Performance is now 100x faster as expected. Thanks to @maennchen for the bug report. Closes #21.
+
+### Deprecations
+
+* Don't call deprecated `Cldr.Config.known_locale_names/1`, call `Cldr.Locale.Loader.known_locale_names/1` instead.
+
+* Don't call deprecated `Cldr.Config.get_locale/2`, use `Cldr.Locale.Loader.get_locale/2` instead.
+
 ## Cldr_Numbers v2.23.0-rc.4
 
 This is the changelog for Cldr v2.23.0-rc.4 released on October 26th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
