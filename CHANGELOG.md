@@ -4,6 +4,8 @@
 
 This is the changelog for Cldr v2.23.0-rc.4 released on October 26th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
+### Bug Fixes
+
 * Arbitrary RBNF rule lookup falls back to the root locale (called "und") when checking if a rule is available. Thanks to @maennchen for the report. Closes #22.
 
 ## Cldr_Numbers v2.23.0-rc.3
