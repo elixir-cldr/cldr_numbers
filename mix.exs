@@ -46,7 +46,6 @@ defmodule Cldr.Numbers.Mixfile do
       {:decimal, "~> 1.6 or ~> 2.0"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.18", only: [:dev, :release], optional: true, runtime: false},
-      {:earmark, "1.4.14", only: [:dev, :release], runtime: false, optional: true},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:exprof, "~> 0.2", only: :dev, runtime: false},
       {:benchee, "~> 1.0", only: :dev, runtime: false}
@@ -79,6 +78,7 @@ defmodule Cldr.Numbers.Mixfile do
       main: "readme",
       extras: ["README.md", "CHANGELOG.md", "LICENSE.md"],
       logo: "logo.png",
+      formatters: ["html"],
       skip_undefined_reference_warnings_on: ["changelog", "CHANGELOG.md"]
     ]
   end
