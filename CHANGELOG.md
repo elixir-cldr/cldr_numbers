@@ -1,5 +1,15 @@
 # Changelog
 
+## Cldr_Numbers v2.23.1
+
+This is the changelog for Cldr v2.23.1 released on December 1st, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Replace `use Mix.Config` with `import Config` in config files
+
+* Fix typespec for `<backend>.Cldr.Number.Transliterate.transliterate_digits/3`
+
 ## Cldr_Numbers v2.23.0
 
 This is the changelog for Cldr v2.23.0 released on October 27th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

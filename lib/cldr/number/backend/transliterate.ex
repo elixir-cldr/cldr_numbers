@@ -112,7 +112,7 @@ defmodule Cldr.Number.Backend.Transliterate do
         @spec transliterate(
                 String.t(),
                 LanguageTag.t() | Cldr.Locale.locale_name(),
-                String.t() | atom()
+                Cldr.Number.System.system_name() | Cldr.Number.System.types()
               ) ::
                 String.t() | {:error, {module(), String.t()}}
 
@@ -253,7 +253,9 @@ defmodule Cldr.Number.Backend.Transliterate do
             "0123456789"
 
         """
-        @spec transliterate_digits(binary, atom, atom) :: binary
+        @spec transliterate_digits(String.t(), System.system_name(), System.system_name()) ::
+                String.t()
+
         for {from_system, to_system} <- Map.get(config, :precompile_transliterations, []) do
           with {:ok, from} = System.number_system_digits(from_system),
                {:ok, to} = System.number_system_digits(to_system),

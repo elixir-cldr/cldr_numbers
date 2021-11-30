@@ -1,5 +1,5 @@
 # In test mode we compile and test all locales
-use Mix.Config
+import Config
 
 config :ex_unit,
   case_load_timeout: 220_000,
