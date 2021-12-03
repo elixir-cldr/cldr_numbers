@@ -762,7 +762,15 @@ defmodule Cldr.Number.Parser do
 
   def find_and_replace(string_map, string, fuzzy \\ nil)
 
-  def find_and_replace(string_map, string, nil) when is_map(string_map) and is_binary(string) do
+  def find_and_replace(string_map, string, fuzzy) when is_map(string_map) and is_binary(string) do
+    if String.trim(string) == "" do
+      {:ok, string}
+    else
+      do_find_and_replace(string_map, string, fuzzy)
+    end
+  end
+
+  defp do_find_and_replace(string_map, string, nil) when is_map(string_map) and is_binary(string) do
     if code = Map.get(string_map, normalize_search_string(string)) do
       {:ok, [code]}
     else
@@ -776,7 +784,7 @@ defmodule Cldr.Number.Parser do
     end
   end
 
-  def find_and_replace(string_map, search, fuzzy)
+  defp do_find_and_replace(string_map, search, fuzzy)
        when is_float(fuzzy) and fuzzy > 0.0 and fuzzy <= 1.0 do
     canonical_search = String.downcase(search)
 
@@ -793,7 +801,7 @@ defmodule Cldr.Number.Parser do
     end
   end
 
-  def find_and_replace(_currency_strings, _currency, fuzzy) do
+  defp do_find_and_replace(_currency_strings, _currency, fuzzy) do
     {:error,
      {
        ArgumentError,
