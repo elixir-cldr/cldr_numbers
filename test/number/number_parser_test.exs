@@ -107,4 +107,9 @@ defmodule Cldr.Number.Parsing.Test do
     scanned = Cldr.Number.Parser.scan( "Try Th CA$2is")
     assert Cldr.Number.Parser.resolve_currencies(scanned) == [:TRY, " Th ", :CAD, 2, "is"]
   end
+
+  test "Resolve currencies when the string is only whitespace" do
+    string = ["   "]
+    assert Cldr.Number.Parser.resolve_currencies(string) == string
+  end
 end
