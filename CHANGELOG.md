@@ -6,6 +6,8 @@ This is the changelog for Cldr v2.23.2 released on December 3rd, 2021.  For olde
 
 ### Bug Fixes
 
+* Fixes `Cldr.Number.Parser.resolve_currencies/1` when the argument is whitespace only. Thanks to @datrader for the report.
+
 ## Cldr_Numbers v2.23.1
 
 This is the changelog for Cldr v2.23.1 released on December 1st, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
