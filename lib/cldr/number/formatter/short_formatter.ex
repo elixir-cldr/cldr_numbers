@@ -247,9 +247,13 @@ defmodule Cldr.Number.Formatter.Short do
 
   # TODO: We can precompute these at compile time which would
   # save this lookup
-  defp adjustment(range, number_of_zeros) do
+  defp adjustment(range, number_of_zeros) when is_integer(number_of_zeros) do
     (range / Math.power_of_10(number_of_zeros - 1))
     |> trunc
+  end
+
+  defp adjustment(range, [_, number_of_zeros]) when is_integer(number_of_zeros) do
+   adjustment(range, number_of_zeros)
   end
 
   # The pluralization key has to consider when there is an
