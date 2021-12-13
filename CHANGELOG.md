@@ -6,7 +6,7 @@ This is the changelog for Cldr v2.23.3 released on December 14th, 2021.  For old
 
 ### Bug Fixes
 
-* Fixes short formatting for decimal numbers. Thanks to @datrader for the report.  Closes #135.
+* Fixes short formatting for decimal numbers. Thanks to @datrader for the report.  Closes #135 on [ex_money](https://github.com/kipcole9/ex_money).
 
 ## Cldr_Numbers v2.23.2
 
