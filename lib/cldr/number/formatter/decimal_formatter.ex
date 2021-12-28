@@ -72,6 +72,16 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   @doc false
+
+  # For when the number is actually a string. This allows formats to be
+  # composed.
+
+  def do_to_string(string, meta, backend, options) when is_binary(string) do
+    assemble_format(string, meta, backend, options)
+  end
+
+  # For most number formats
+
   def do_to_string(number, %{integer_digits: _integer_digits} = meta, backend, options) do
     number
     |> absolute_value(meta, backend, options)
@@ -92,7 +102,7 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   # For when the format itself actually has only literal components
   # and no number format.
-  @doc false
+
   def do_to_string(number, meta, backend, options) do
     assemble_format(number, meta, backend, options)
   end
@@ -817,6 +827,10 @@ defmodule Cldr.Number.Formatter.Decimal do
       case Compiler.compile(format) do
         {:ok, meta, formatting_pipeline} ->
           quote do
+            def to_string(string, unquote(format), options) when is_binary(string) do
+              Decimal.do_to_string(string, unquote(Macro.escape(meta)), unquote(backend), options)
+            end
+
             def to_string(number, unquote(format), options) when is_map(options) do
               meta =
                 Decimal.update_meta(

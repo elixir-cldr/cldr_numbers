@@ -34,11 +34,21 @@ defmodule Cldr.Number.Formatter.Currency do
 
   **This module is not part of the public API and is subject
   to change at any time.**
+
   """
 
   alias Cldr.Number.{Format, System}
   alias Cldr.{Substitution, Currency}
   alias Cldr.Number.Format.Options
+
+  def to_string(number, _format, _backend, _options) when is_binary(number) do
+    {:error,
+      {
+        ArgumentError,
+        "Not a number: #{inspect number}. Currency long formats only support number or Decimal arguments"
+      }
+    }
+  end
 
   def to_string(number, :currency_long, backend, options) do
     locale = options.locale

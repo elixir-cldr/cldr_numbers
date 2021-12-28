@@ -68,6 +68,15 @@ defmodule Cldr.Number.Formatter.Short do
   @spec to_string(Math.number_or_decimal(), atom(), Cldr.backend(), Options.t()) ::
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
+  def to_string(number, _style, _backend, _options) when is_binary(number) do
+    {:error,
+      {
+        ArgumentError,
+        "Not a number: #{inspect number}. Long and short formats only support number or Decimal arguments"
+      }
+    }
+  end
+          
   def to_string(number, style, backend, options) do
     locale = options.locale || backend.default_locale()
 

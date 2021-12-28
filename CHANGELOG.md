@@ -1,5 +1,17 @@
 # Changelog
 
+## Cldr_Numbers v2.24.0
+
+This is the changelog for Cldr v2.24.0 released on _____.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Allowed limited forms of format composition. For example, composing a `:long` format with a `:currency` format:
+```elixir
+iex> Cldr.Number.to_string!(100_000_000, format: :long) |> Cldr.Number.to_string(format: :currency) 
+{:ok, "$100 million"}
+```
+
 ## Cldr_Numbers v2.23.3
 
 This is the changelog for Cldr v2.23.3 released on December 14th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
