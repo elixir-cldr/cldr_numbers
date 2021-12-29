@@ -366,7 +366,7 @@ defmodule Cldr.Number do
       "The locale \\"he\\" with number system :hebr does not define a format :standard"}}
   ```
   """
-  @spec to_string(number | Decimal.t(), Cldr.backend() | Keyword.t() | map(), Keyword.t() | map()) ::
+  @spec to_string(number | Decimal.t() | String.t(), Cldr.backend() | Keyword.t() | map(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
 
   def to_string(number, backend \\ default_backend(), options \\ [])
@@ -426,7 +426,7 @@ defmodule Cldr.Number do
 
   """
   @spec to_string!(
-          number | Decimal.t(),
+          number | Decimal.t() | String.t(),
           Cldr.backend() | Keyword.t() | map(),
           Keyword.t() | map()
         ) ::
@@ -468,6 +468,11 @@ defmodule Cldr.Number do
 
   # For the :currency_long format only
   defp to_string(number, :currency_long = format, backend, options) do
+    Formatter.Currency.to_string(number, format, backend, options)
+  end
+
+  # For the :currency_medium format only
+  defp to_string(number, :currency_long_with_symbol = format, backend, options) do
     Formatter.Currency.to_string(number, format, backend, options)
   end
 

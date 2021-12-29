@@ -2,7 +2,7 @@
 
 ## Cldr_Numbers v2.24.0
 
-This is the changelog for Cldr v2.24.0 released on _____.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+This is the changelog for Cldr v2.24.0 released on December 30th.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Enhancements
 
@@ -11,6 +11,8 @@ This is the changelog for Cldr v2.24.0 released on _____.  For older changelogs 
 iex> Cldr.Number.to_string!(100_000_000, format: :long) |> Cldr.Number.to_string(format: :currency) 
 {:ok, "$100 million"}
 ```
+
+* Add format `:currency_long_with_symbol` which is a composite of `:currency_long` and the locales standard currency format. This supports formatting of of numbers like "$100 million" in the example above.
 
 ## Cldr_Numbers v2.23.3
 

@@ -40,6 +40,7 @@ defmodule Cldr.Number.Formatter.Currency do
   alias Cldr.Number.{Format, System}
   alias Cldr.{Substitution, Currency}
   alias Cldr.Number.Format.Options
+  alias Cldr.Number.Formatter.Decimal
 
   def to_string(number, _format, _backend, _options) when is_binary(number) do
     {:error,
@@ -48,6 +49,18 @@ defmodule Cldr.Number.Formatter.Currency do
         "Not a number: #{inspect number}. Currency long formats only support number or Decimal arguments"
       }
     }
+  end
+
+  # The format :currency_medium is a composition of :currency_long
+  # and the default :currency format.
+
+  def to_string(number, :currency_long_with_symbol, backend, options) do
+    decimal_options = decimal_options(options, backend)
+    decimal_format = decimal_options.format
+
+    number
+    |> Cldr.Number.to_string!(backend, long_options(options))
+    |> Decimal.to_string(decimal_format, backend, decimal_options)
   end
 
   def to_string(number, :currency_long, backend, options) do
@@ -86,4 +99,17 @@ defmodule Cldr.Number.Formatter.Currency do
   defp set_fractional_digits(options, _digits) do
     options
   end
+
+  defp long_options(options) do
+    options
+    |> Map.put(:format, :decimal_long)
+    |> Map.put(:currency, nil)
+  end
+
+  defp decimal_options(options, backend) do
+    currency_format = Currency.currency_format_from_locale(options.locale)
+    options = Map.put(options, :format, currency_format)
+    Options.resolve_standard_format(options, backend)
+  end
+
 end

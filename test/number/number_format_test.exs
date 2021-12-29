@@ -117,4 +117,15 @@ defmodule Number.Format.Test do
     assert MyApp.Cldr.Number.to_string(Decimal.new(1_000_000), format: :short) == {:ok, "1M"}
     assert MyApp.Cldr.Number.to_string(Decimal.new(1_100_000), format: :short, fractional_digits: 1) == {:ok, "1.1M"}
   end
+
+  test "Currency format long with symbol" do
+    assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol, locale: "fr") ==
+      {:ok, "1 milliard €"}
+    assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol) ==
+      {:ok, "$1 billion"}
+    assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol, locale: "hr") ==
+      {:ok, "1 milijardi kn"}
+    assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol, locale: "hr", currency: :USD) ==
+      {:ok, "1 milijardi USD"}
+  end
 end

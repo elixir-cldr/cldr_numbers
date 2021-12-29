@@ -35,6 +35,7 @@ defmodule Cldr.Number.Format.Options do
 
   @short_format_styles [
     :currency_short,
+    :currency_long_with_symbol,
     :currency_long,
     :decimal_short,
     :decimal_long
@@ -61,6 +62,7 @@ defmodule Cldr.Number.Format.Options do
     :currency,
     :accounting,
     :currency_long,
+    :currency_long_with_symbol,
     :currency_short
   ]
 
@@ -75,7 +77,7 @@ defmodule Cldr.Number.Format.Options do
   @type format :: binary() | fixed_formats()
   @type currency_symbol :: :standard | :iso
   @type short_format_styles ::
-    :currency_short | :currency_long | :decimal_short | :decimal_long
+    :currency_short | :currency_long | :currency_long_with_symbol | :decimal_short | :decimal_long
 
   @type t :: %__MODULE__{
     locale: LanguageTag.t(),
@@ -300,8 +302,10 @@ defmodule Cldr.Number.Format.Options do
     end
   end
 
+  @exclude_formats [:accounting, :currency_short, :currency_long, :currency_long_with_symbol]
+
   def validate_option(:format, options, _backend, format)
-      when is_atom(format) and format not in [:accounting, :currency_short, :currency_long] do
+      when is_atom(format) and format not in @exclude_formats do
     locale = Map.fetch!(options, :locale)
 
     if Map.get(options, :currency) do
