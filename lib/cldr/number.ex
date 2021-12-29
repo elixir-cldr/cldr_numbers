@@ -173,6 +173,9 @@ defmodule Cldr.Number do
     specified the number is formatted as `:currency_long` or
     `:currency_short` and `:fractional_digits` is set to 0 as a default.
 
+  * If `:format` is set to `:currency_long_with_symbol` then a format composed
+    of `:currency_long` with the locale's currency format is used.
+
   * `:format` may also be a format defined by CLDR's Rules Based Number
     Formats (RBNF).  Further information is found in the module `Cldr.Rbnf`.
     The most commonly used formats in this category are to spell out the
