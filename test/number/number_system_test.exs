@@ -7,13 +7,13 @@ defmodule Number.System.Test do
   end
 
   test "that number_systems_for raises when the locale is not known" do
-    assert_raise Cldr.UnknownLocaleError, ~r/The locale \"zzz\" is not known/, fn ->
+    assert_raise Cldr.InvalidLanguageError, ~r/The language \"zzz\" is invalid/, fn ->
       TestBackend.Cldr.Number.System.number_systems_for!("zzz")
     end
   end
 
   test "that number_system_names_for raises when the locale is not known" do
-    assert_raise Cldr.UnknownLocaleError, ~r/The locale .* is not known/, fn ->
+    assert_raise Cldr.InvalidLanguageError, ~r/The language .* is invalid/, fn ->
       TestBackend.Cldr.Number.System.number_system_names_for!("zzz")
     end
   end
@@ -38,7 +38,7 @@ defmodule Number.System.Test do
     assert TestBackend.Cldr.Number.to_string(1234, locale: "en-AU-u-nu-thai") ==
     {:error,
      {Cldr.UnknownNumberSystemError,
-      "The number system :thai is unknown for the locale named \"en-AU\". Valid number systems are %{default: :latn, native: :latn}"}}
+      "The number system :thai is unknown for the locale named :\"en-AU\". Valid number systems are %{default: :latn, native: :latn}"}}
   end
 
   test "that an invalid nu returns an error" do

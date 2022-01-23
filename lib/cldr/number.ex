@@ -366,7 +366,7 @@ defmodule Cldr.Number do
   ```
       iex> Cldr.Number.to_string(1234, TestBackend.Cldr, locale: "he", number_system: "hebr")
       {:error, {Cldr.UnknownFormatError,
-      "The locale \\"he\\" with number system :hebr does not define a format :standard"}}
+      "The locale :he with number system :hebr does not define a format :standard"}}
   ```
   """
   @spec to_string(number | Decimal.t() | String.t(), Cldr.backend() | Keyword.t() | map(), Keyword.t() | map()) ::

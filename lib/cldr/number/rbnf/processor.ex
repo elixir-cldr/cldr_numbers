@@ -363,8 +363,16 @@ defmodule Cldr.Rbnf.Processor do
         rule_sets(rbnf_locale_name)
       end
 
-      def rule_sets(rbnf_locale_name) when is_binary(rbnf_locale_name) do
+      def rule_sets(rbnf_locale_name) when is_atom(rbnf_locale_name) do
         Map.get(rule_sets(), rbnf_locale_name)
+      end
+
+      def rule_sets(rbnf_locale_name) when is_binary(rbnf_locale_name) do
+        rbnf_locale_name
+        |> String.to_existing_atom()
+        |> rule_sets
+      rescue ArgumentError ->
+        nil
       end
 
       # All rule sets for all locales

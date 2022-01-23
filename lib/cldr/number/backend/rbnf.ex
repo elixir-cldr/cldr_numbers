@@ -96,12 +96,21 @@ defmodule Cldr.Number.Backend.Rbnf do
           The functions on this module are defined at compile time based upon the RBNF rules
           defined in the Unicode CLDR data repository.  Available rules are identified by:
 
-              iex> #{inspect(__MODULE__)}.rule_sets("en")
+              iex> #{inspect(__MODULE__)}.rule_sets(:en)
               [:digits_ordinal]
+
+              iex> #{inspect(__MODULE__)}.rule_sets("fr")
+              [
+                :digits_ordinal_masculine_plural,
+                :digits_ordinal_masculine,
+                :digits_ordinal_feminine_plural,
+                :digits_ordinal_feminine,
+                :digits_ordinal
+              ]
 
           A rule can then be invoked on an available rule_set.  For example
 
-              iex> #{inspect(__MODULE__)}.digits_ordinal(123, "en")
+              iex> #{inspect(__MODULE__)}.digits_ordinal(123, :en)
               "123rd"
 
           This call is equivalent to the call through the public API of:

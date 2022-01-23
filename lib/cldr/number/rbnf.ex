@@ -148,7 +148,7 @@ defmodule Cldr.Rbnf do
   @spec for_locale(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
           {:ok, map()} | {:error, {module(), String.t()}}
 
-  def for_locale(locale, backend) when is_binary(locale) do
+  def for_locale(locale, backend) do
     with {:ok, language_tag} <- Cldr.Locale.canonical_language_tag(locale, backend) do
       for_locale(language_tag)
     end

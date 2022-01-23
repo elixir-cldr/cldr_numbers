@@ -64,7 +64,7 @@ defmodule Number.Format.Test do
     assert TestBackend.Cldr.Number.to_string(123, format: :spellout_ordinal_verbose, locale: "zh") ==
       {:error,
        {Cldr.Rbnf.NoRule,
-        "Locale \"zh\" does not define an rbnf ruleset :spellout_ordinal_verbose"}}
+        "Locale :zh does not define an rbnf ruleset :spellout_ordinal_verbose"}}
   end
 
   test "that we get default formats_for" do
@@ -77,7 +77,7 @@ defmodule Number.Format.Test do
                :error,
                {
                  Cldr.UnknownFormatError,
-                 "The locale \"he\" with number system :hebr does not define a format :standard"
+                 "The locale :he with number system :hebr does not define a format :standard"
                }
              }
   end

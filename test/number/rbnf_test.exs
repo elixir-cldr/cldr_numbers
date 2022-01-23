@@ -124,11 +124,13 @@ defmodule Rbnf.Test do
 
   test "no rule is available for number" do
     assert Cldr.Rbnf.Spellout.spellout_numbering_year(-24, "zh-Hant") ==
-             {:error,
-              {
-                Elixir.Cldr.Rbnf.NoRuleForNumber,
-                "rule group :spellout_numbering_year for locale \"zh-Hant\" does not know how to process -24"
-              }}
+      {
+        :error,
+        {
+          Elixir.Cldr.Rbnf.NoRuleForNumber,
+          "rule group :spellout_numbering_year for locale :\"zh-Hant\" does not know how to process -24"
+        }
+      }
   end
 
   test "that rbnf rules lookup fall back to the root locale (und)" do

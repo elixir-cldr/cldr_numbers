@@ -61,7 +61,7 @@ defmodule Cldr.Number.Backend.System do
             {:ok, %{default: :latn, native: :thai}}
 
             iex> #{inspect(__MODULE__)}.number_systems_for "zz"
-            {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
+            {:error, {Cldr.InvalidLanguageError, "The language \\"zz\\" is invalid"}}
 
         """
         @spec number_systems_for(Cldr.Locale.locale_name() | LanguageTag.t()) ::
@@ -82,7 +82,7 @@ defmodule Cldr.Number.Backend.System do
             {:ok, [:latn]}
 
             iex> #{inspect(__MODULE__)}.number_system_names_for "zz"
-            {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
+            {:error, {Cldr.InvalidLanguageError, "The language \\"zz\\" is invalid"}}
 
         """
         @spec number_system_names_for(Cldr.Locale.locale_name() | LanguageTag.t()) ::
@@ -126,7 +126,9 @@ defmodule Cldr.Number.Backend.System do
         end
 
         def number_systems_for(locale) do
-          {:error, Cldr.Locale.locale_error(locale)}
+          with {:ok, locale} <- unquote(backend).validate_locale(locale) do
+            number_systems_for(locale)
+          end
         end
 
         def number_systems_for!(locale) do
@@ -175,7 +177,7 @@ defmodule Cldr.Number.Backend.System do
             {
               :error,
               {Cldr.UnknownNumberSystemError,
-                "The number system :finance is unknown for the locale named \\"en\\". Valid number systems are %{default: :latn, native: :latn}"}
+                "The number system :finance is unknown for the locale named :en. Valid number systems are %{default: :latn, native: :latn}"}
             }
 
         """
@@ -195,7 +197,9 @@ defmodule Cldr.Number.Backend.System do
         end
 
         def number_system_names_for(locale) do
-          {:error, Cldr.Locale.locale_error(locale)}
+          with {:ok, locale} <- unquote(backend).validate_locale(locale) do
+            number_system_names_for(locale)
+          end
         end
 
         def number_system_types_for(locale) do

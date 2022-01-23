@@ -115,7 +115,7 @@ defmodule Cldr.Number.System do
     |> Map.fetch!(default_number_system_type())
   end
 
-  def number_system_from_locale(locale_name, backend) when is_binary(locale_name) do
+  def number_system_from_locale(locale_name, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
       number_system_from_locale(locale, backend)
     end
@@ -148,10 +148,6 @@ defmodule Cldr.Number.System do
 
   """
 
-  def number_system_from_locale(locale_name) when is_binary(locale_name) do
-    number_system_from_locale(locale_name, Cldr.default_backend!())
-  end
-
   def number_system_from_locale(%LanguageTag{locale: %{numbers: nil}} = locale) do
     number_system_from_locale(locale.cldr_locale_name, locale.backend)
   end
@@ -162,6 +158,10 @@ defmodule Cldr.Number.System do
 
   def number_system_from_locale(%LanguageTag{cldr_locale_name: locale, backend: backend}) do
     number_system_from_locale(locale, backend)
+  end
+
+  def number_system_from_locale(locale_name) do
+    number_system_from_locale(locale_name, Cldr.default_backend!())
   end
 
   @doc """
@@ -178,14 +178,14 @@ defmodule Cldr.Number.System do
 
   ## Examples
 
-      iex> Cldr.Number.System.number_systems_for "en"
+      iex> Cldr.Number.System.number_systems_for :en
       {:ok, %{default: :latn, native: :latn}}
 
-      iex> Cldr.Number.System.number_systems_for "th"
+      iex> Cldr.Number.System.number_systems_for :th
       {:ok, %{default: :latn, native: :thai}}
 
       iex> Cldr.Number.System.number_systems_for "zz", TestBackend.Cldr
-      {:error, {Cldr.UnknownLocaleError, "The locale \\"zz\\" is not known."}}
+      {:error, {Cldr.InvalidLanguageError, "The language \\"zz\\" is invalid"}}
 
   """
   @spec number_systems_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
@@ -196,8 +196,8 @@ defmodule Cldr.Number.System do
   end
 
   @doc false
-  def number_systems_for(locale) when is_binary(locale) do
-    number_systems_for(locale, Cldr.default_backend!)
+  def number_systems_for(locale) do
+    number_systems_for(locale, Cldr.default_backend!())
   end
 
   @doc """
@@ -235,7 +235,7 @@ defmodule Cldr.Number.System do
   end
 
   @doc false
-  def number_systems_for!(locale) when is_binary(locale) do
+  def number_systems_for!(locale) do
     number_systems_for!(locale, Cldr.default_backend!())
   end
 
@@ -280,8 +280,10 @@ defmodule Cldr.Number.System do
       iex> Cldr.Number.System.number_system_for "en", :finance, TestBackend.Cldr
       {
         :error,
-        {Cldr.UnknownNumberSystemError,
-          "The number system :finance is unknown for the locale named \\"en\\". Valid number systems are %{default: :latn, native: :latn}"}
+        {
+          Cldr.UnknownNumberSystemError,
+          "The number system :finance is unknown for the locale named :en. Valid number systems are %{default: :latn, native: :latn}"
+        }
       }
 
       iex> Cldr.Number.System.number_system_for "en", :native, TestBackend.Cldr
