@@ -124,7 +124,7 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         # No transliteration required when the digits and separators as the same
         # as the ones we use in formatting.
-        with {:ok, systems} <- Config.known_number_systems_like("en", :latn, config) do
+        with {:ok, systems} <- Config.known_number_systems_like(:en, :latn, config) do
           for {locale, system} <- systems do
             def transliterate(
                   sequence,
