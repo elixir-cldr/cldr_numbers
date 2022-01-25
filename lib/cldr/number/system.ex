@@ -12,7 +12,7 @@ defmodule Cldr.Number.System do
   """
 
   alias Cldr.Locale
-  alias Cldr.Number.Symbol
+  alias Cldr.Number.{System, Symbol}
   alias Cldr.LanguageTag
   alias Cldr.Math
 
@@ -92,12 +92,11 @@ defmodule Cldr.Number.System do
       iex> Cldr.Number.System.number_system_from_locale "en-US-u-nu-thai", MyApp.Cldr
       :thai
 
-      iex> Cldr.Number.System.number_system_from_locale "en-US", MyApp.Cldr
+      iex> Cldr.Number.System.number_system_from_locale :"en-US", MyApp.Cldr
       :latn
 
   """
-  @spec number_system_from_locale(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.backend()) ::
-    system_name
+  @spec number_system_from_locale(Locale.locale_reference(), Cldr.backend()) :: system_name
 
   def number_system_from_locale(%LanguageTag{locale: %{numbers: nil}} = locale, backend) do
     locale
@@ -147,6 +146,7 @@ defmodule Cldr.Number.System do
       :arab
 
   """
+  @spec number_system_from_locale(Locale.locale_reference()) :: system_name
 
   def number_system_from_locale(%LanguageTag{locale: %{numbers: nil}} = locale) do
     number_system_from_locale(locale.cldr_locale_name, locale.backend)
@@ -188,8 +188,8 @@ defmodule Cldr.Number.System do
       {:error, {Cldr.InvalidLanguageError, "The language \\"zz\\" is invalid"}}
 
   """
-  @spec number_systems_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
-          {:ok, map()} | {:error, {module(), String.t()}}
+  @spec number_systems_for(Locale.locale_reference(), Cldr.backend()) ::
+    {:ok, map()} | {:error, {module(), String.t()}}
 
   def number_systems_for(locale, backend) do
     Module.concat(backend, Number.System).number_systems_for(locale)
@@ -221,8 +221,7 @@ defmodule Cldr.Number.System do
       %{default: :latn, native: :thai}
 
   """
-  @spec number_systems_for!(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
-          map() | no_return()
+  @spec number_systems_for!(Locale.locale_reference(), Cldr.backend()) :: map() | no_return()
 
   def number_systems_for!(locale, backend) do
     case number_systems_for(locale, backend) do
@@ -290,12 +289,8 @@ defmodule Cldr.Number.System do
       {:ok, %{digits: "0123456789", type: :numeric}}
 
   """
-  @spec number_system_for(
-          Cldr.Locale.locale_name() | LanguageTag.t(),
-          Cldr.Number.System.system_name(),
-          Cldr.backend()
-        ) ::
-          {:ok, map()} | {:error, {module(), String.t()}}
+  @spec number_system_for(Locale.locale_reference, System.system_name(), Cldr.backend()) ::
+    {:ok, map()} | {:error, {module(), String.t()}}
 
   def number_system_for(locale, system_name, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
@@ -334,7 +329,7 @@ defmodule Cldr.Number.System do
       {:error, {Cldr.InvalidLanguageError, "The language \\"zz\\" is invalid"}}
 
   """
-  @spec number_system_names_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
+  @spec number_system_names_for(Locale.locale_reference(), Cldr.backend()) ::
           {:ok, list(atom())} | {:error, {module(), String.t()}}
 
   def number_system_names_for(locale, backend) do
@@ -371,8 +366,8 @@ defmodule Cldr.Number.System do
       [:latn, :hebr]
 
   """
-  @spec number_system_names_for!(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
-          list(system_name()) | no_return()
+  @spec number_system_names_for!(Locale.locale_reference(), Cldr.backend()) ::
+    [system_name()] | no_return()
 
   def number_system_names_for!(locale, backend) do
     case number_system_names_for(locale, backend) do
@@ -434,7 +429,7 @@ defmodule Cldr.Number.System do
   number system for the given locale as demonstrated in the third example.
 
   """
-  @spec system_name_from(system_name, Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
+  @spec system_name_from(system_name, Locale.locale_reference(), Cldr.backend()) ::
           {:ok, atom()} | {:error, {module(), String.t()}}
 
   def system_name_from(system_name, locale, backend) do
@@ -484,7 +479,7 @@ defmodule Cldr.Number.System do
       :hebr
 
   """
-  @spec system_name_from!(system_name, Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
+  @spec system_name_from!(system_name, Locale.locale_reference(), Cldr.backend()) ::
           atom() | no_return()
 
   def system_name_from!(system_name, locale, backend) do
@@ -527,7 +522,7 @@ defmodule Cldr.Number.System do
 
 
   """
-  @spec number_systems_like(LanguageTag.t() | Locale.locale_name(), system_name, Cldr.backend()) ::
+  @spec number_systems_like(Locale.locale_reference(), system_name, Cldr.backend()) ::
           {:ok, list()} | {:error, {module(), String.t()}}
 
   def number_systems_like(locale, number_system, backend) do

@@ -181,7 +181,7 @@ defmodule Cldr.Rbnf do
     is a `Cldr` backend module
 
   """
-  def for_locale!(locale, backend) when is_binary(locale) and is_atom(backend) do
+  def for_locale!(locale, backend) when is_atom(backend) do
     case for_locale(locale, backend) do
       {:ok, rules} -> rules
       {:error, {exception, reason}} -> raise exception, reason
