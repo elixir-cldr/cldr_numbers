@@ -454,7 +454,7 @@ defmodule Cldr.Number.Format do
     end
   end
 
-  def format_styles_for(locale_name, number_system, backend) when is_binary(locale_name) do
+  def format_styles_for(locale_name, number_system, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
       format_styles_for(locale, number_system, backend)
     end
@@ -505,7 +505,7 @@ defmodule Cldr.Number.Format do
     end
   end
 
-  def short_format_styles_for(locale_name, number_system, backend) when is_binary(locale_name) do
+  def short_format_styles_for(locale_name, number_system, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
       short_format_styles_for(locale, number_system, backend)
     end
@@ -549,8 +549,7 @@ defmodule Cldr.Number.Format do
     end
   end
 
-  def decimal_format_styles_for(locale_name, number_system, backend)
-      when is_binary(locale_name) do
+  def decimal_format_styles_for(locale_name, number_system, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
       decimal_format_styles_for(locale, number_system, backend)
     end
@@ -598,7 +597,7 @@ defmodule Cldr.Number.Format do
     end
   end
 
-  def format_system_types_for(locale_name, backend) when is_binary(locale_name) do
+  def format_system_types_for(locale_name, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
       format_system_types_for(locale, backend)
     end
@@ -632,7 +631,7 @@ defmodule Cldr.Number.Format do
     Cldr.Number.System.number_system_names_for(locale, backend)
   end
 
-  def format_system_names_for(locale_name, backend) when is_binary(locale_name) do
+  def format_system_names_for(locale_name, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
       format_system_names_for(locale, backend)
     end

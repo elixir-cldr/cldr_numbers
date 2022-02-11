@@ -34,13 +34,15 @@ defmodule Cldr.Number.Backend.Symbol do
 
         ## Options
 
-        * `locale` is any valid locale name returned by `#{inspect(backend)}.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `#{inspect(backend)}.Locale.new!/`.  The
-          default is `#{inspect(backend)}.get_locale/0`.
+        * `locale` is any valid locale name returned by
+          `#{inspect(backend)}.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by
+          `#{inspect(backend)}.Locale.new!/1`. The default
+          is `#{inspect(backend)}.get_locale/0`.
 
         ## Example:
 
-            iex> #{inspect(__MODULE__)}.number_symbols_for("th")
+            iex> #{inspect(__MODULE__)}.number_symbols_for(:th)
             {:ok, %{
                latn: %Cldr.Number.Symbol{
                  decimal: ".",
@@ -97,7 +99,7 @@ defmodule Cldr.Number.Backend.Symbol do
           end
         end
 
-        def number_symbols_for(locale_name) when is_binary(locale_name) do
+        def number_symbols_for(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             number_symbols_for(locale)
           end

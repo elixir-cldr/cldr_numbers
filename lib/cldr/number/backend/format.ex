@@ -93,16 +93,18 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Arguments
 
-        * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `#{inspect backend}.Locale.new!/1`.
-          The default is `#{inspect backend}.get_locale/0`
+        * `locale` is any valid locale name returned by
+          `#{inspect(backend)}.known_locale_names/0`
+          or a `Cldr.LanguageTag` struct returned by
+          `#{inspect(backend)}.Locale.new!/1`. The default
+          is `#{inspect(backend)}.get_locale/0`.
 
         This function exists to allow the decimal formatter to precompile all
         the known formats at compile time. Its use is not otherwise recommended.
 
         ## Example
 
-            iex> #{inspect(__MODULE__)}.decimal_format_list_for("en")
+            iex> #{inspect(__MODULE__)}.decimal_format_list_for(:en)
             {:ok, ["#,##0%", "#,##0.###", "#E0", "0 billion", "0 million", "0 thousand",
              "0 trillion", "00 billion", "00 million", "00 thousand", "00 trillion",
              "000 billion", "000 million", "000 thousand", "000 trillion", "000B", "000K",
@@ -124,7 +126,7 @@ defmodule Cldr.Number.Backend.Format do
           end
         end
 
-        def decimal_format_list_for(locale_name) when is_binary(locale_name) do
+        def decimal_format_list_for(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             decimal_format_list_for(locale)
           end
@@ -143,7 +145,7 @@ defmodule Cldr.Number.Backend.Format do
           `#{inspect(backend)}.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by
           `#{inspect(backend)}.Locale.new!/1`. The default
-          is `#{inspect(backend)}.get_locale/0`
+          is `#{inspect(backend)}.get_locale/0`.
 
         ## Returns
 
@@ -163,10 +165,11 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Arguments
 
-        * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+        * `locale` is any valid locale name returned by
+          `#{inspect(backend)}.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by
           `#{inspect(backend)}.Locale.new!/1`. The default
-          is `#{inspect(backend)}.get_locale/0`
+          is `#{inspect(backend)}.get_locale/0`.
 
         ## Returns
 
@@ -190,10 +193,11 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Arguments
 
-        * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+        * `locale` is any valid locale name returned by
+          `#{inspect(backend)}.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by
           `#{inspect(backend)}.Locale.new!/1`. The default
-          is `#{inspect(backend)}.get_locale/0`
+          is `#{inspect(backend)}.get_locale/0`.
 
         ## Returns
 
@@ -203,7 +207,7 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Examples
 
-            iex> #{inspect(__MODULE__)}.default_grouping_for("en")
+            iex> #{inspect(__MODULE__)}.default_grouping_for(:en)
             {:ok, %{fraction: %{first: 0, rest: 0}, integer: %{first: 3, rest: 3}}}
 
         """
@@ -247,19 +251,19 @@ defmodule Cldr.Number.Backend.Format do
           end
         end
 
-        def all_formats_for(locale_name) when is_binary(locale_name) do
+        def all_formats_for(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             all_formats_for(locale)
           end
         end
 
-        def minimum_grouping_digits_for(locale_name) when is_binary(locale_name) do
+        def minimum_grouping_digits_for(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             minimum_grouping_digits_for(locale)
           end
         end
 
-        def default_grouping_for(locale_name) when is_binary(locale_name) do
+        def default_grouping_for(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             default_grouping_for(locale)
           end
@@ -273,8 +277,9 @@ defmodule Cldr.Number.Backend.Format do
 
         * `locale` is any valid locale name returned by
           `#{inspect(backend)}.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `#{inspect(backend)}.Locale.new!/1`. The default
-          is `#{inspect(backend)}.get_locale/0`
+          or a `Cldr.LanguageTag` struct returned by
+          `#{inspect(backend)}.Locale.new!/1`. The default
+          is `#{inspect(backend)}.get_locale/0`.
 
         ## Returns
 
@@ -306,8 +311,9 @@ defmodule Cldr.Number.Backend.Format do
 
         * `locale` is any valid locale name returned by
           `#{inspect(backend)}.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `#{inspect(backend)}.Locale.new!/1`. The default
-          is `#{inspect(backend)}.get_locale/0`
+          or a `Cldr.LanguageTag` struct returned by
+          `#{inspect(backend)}.Locale.new!/1`. The default
+          is `#{inspect(backend)}.get_locale/0`.
 
         ## Returns
 
@@ -317,7 +323,7 @@ defmodule Cldr.Number.Backend.Format do
 
         ## Examples
 
-            iex> #{inspect(__MODULE__)}.default_grouping_for!("en")
+            iex> #{inspect(__MODULE__)}.default_grouping_for!(:en)
             %{fraction: %{first: 0, rest: 0}, integer: %{first: 3, rest: 3}}
 
         """
@@ -356,7 +362,7 @@ defmodule Cldr.Number.Backend.Format do
           `#{inspect(backend)}.known_locale_names/0`
           or a `Cldr.LanguageTag` struct returned by
           `#{inspect(backend)}.Locale.new!/1`. The default
-          is `#{inspect(backend)}.get_locale/0`
+          is `#{inspect(backend)}.get_locale/0`.
 
         ## Returns
 
@@ -385,15 +391,16 @@ defmodule Cldr.Number.Backend.Format do
 
         * `locale` is any valid locale name returned by
           `#{inspect(backend)}.known_locale_names/0`
-          or a `Cldr.LanguageTag` struct returned by `#{inspect backend}.Locale.new!/1`.
-          The default is `#{inspect(backend)}.get_locale/0`
+          or a `Cldr.LanguageTag` struct returned by
+          `#{inspect(backend)}.Locale.new!/1`. The default
+          is `#{inspect(backend)}.get_locale/0`.
 
         * `number_system` is any valid number system or number system type returned
-          by `#{inspect(backend)}.Number.System.number_systems_for/1`
+          by `#{inspect(backend)}.Number.System.number_systems_for/1`.
 
         ## Example
 
-            #{inspect(__MODULE__)}.formats_for "fr", :native
+            #{inspect(__MODULE__)}.formats_for :fr, :native
             #=> %Cldr.Number.Format{
               accounting: "#,##0.00 ¤;(#,##0.00 ¤)",
               currency: "#,##0.00 ¤",
@@ -433,7 +440,7 @@ defmodule Cldr.Number.Backend.Format do
           end
         end
 
-        def formats_for(locale_name, number_system) when is_binary(locale_name) do
+        def formats_for(locale_name, number_system) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             formats_for(locale, number_system)
           end

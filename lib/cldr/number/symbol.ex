@@ -145,7 +145,7 @@ defmodule Cldr.Number.Symbol do
     end
   end
 
-  def number_symbols_for(locale_name, number_system, backend) when is_binary(locale_name) do
+  def number_symbols_for(locale_name, number_system, backend) do
     with {:ok, locale} <- Cldr.validate_locale(locale_name, backend) do
       number_symbols_for(locale, number_system, backend)
     end

@@ -13,7 +13,7 @@ In order to use this library, a backend module for `ex_cldr` must be defined.  T
 ```elixir
 defmodule MyApp.Cldr do
   use Cldr,
-    locales: ["en", "fr", "zh"],
+    locales: [:en, :fr, :zh],
     providers: [Cldr.Number]
 end
 ```
@@ -26,13 +26,13 @@ The primary api is `MyApp.Cldr.Number.to_string/2`.  The following examples demo
 iex> MyApp.Cldr.Number.to_string 12345
 {:ok, "12,345"}
 
-iex> MyApp.Cldr.Number.to_string 12345, locale: "fr"
+iex> MyApp.Cldr.Number.to_string 12345, locale: :fr
 {:ok, "12 345"}
 
-iex> MyApp.Cldr.Number.to_string 12345, locale: "fr", currency: "USD"
+iex> MyApp.Cldr.Number.to_string 12345, locale: :fr, currency: "USD"
 {:ok, "12 345,00 $US"}
 
-iex> MyApp.Cldr.Number.to_string 12345, locale: "en", currency: "USD", currency_symbol: :iso
+iex> MyApp.Cldr.Number.to_string 12345, locale: :en, currency: "USD", currency_symbol: :iso
 {:ok, "USD 12,345.00"}
 
 iex> MyApp.Cldr.Number.to_string 12345, format: "#E0"
@@ -88,10 +88,10 @@ The primary api for number formatting is `MyApp.Cldr.Number.to_string/2`.  It pr
 iex> MyApp.Cldr.Number.to_string 12345
 {:ok, "12,345"}
 
-iex> MyApp.Cldr.Number.to_string 12345, locale: "fr"
+iex> MyApp.Cldr.Number.to_string 12345, locale: :fr
 {:ok, "12 345"}
 
-iex> MyApp.Cldr.Number.to_string 12345, locale: "fr", currency: "USD"
+iex> MyApp.Cldr.Number.to_string 12345, locale: :fr, currency: "USD"
 {:ok, "12 345,00 $US"}
 
 iex> MyApp.Cldr.Number.to_string 12345, format: "#E0"
@@ -103,10 +103,10 @@ iex> MyApp.Cldr.Number.to_string 12345, format: :accounting, currency: "THB"
 iex> MyApp.Cldr.Number.to_string -12345, format: :accounting, currency: "THB"
 {:ok, "(THB12,345.00)"}
 
-iex> MyApp.Cldr.Number.to_string 12345, format: :accounting, currency: "THB", locale: "th"
+iex> MyApp.Cldr.Number.to_string 12345, format: :accounting, currency: "THB", locale: :th
 {:ok, "THB12,345.00"}
 
-iex> MyApp.Cldr.Number.to_string 12345, format: :accounting, currency: "THB", locale: "th", number_system: :native
+iex> MyApp.Cldr.Number.to_string 12345, format: :accounting, currency: "THB", locale: :th, number_system: :native
 {:ok, "THB๑๒,๓๔๕.๐๐"}
 
 iex> MyApp.Cldr.Number.to_string 12345, maximum_integer_digits: 2
@@ -314,7 +314,7 @@ CLDR provides an additional mechanism for the formatting of numbers.  This appro
 
 #### Formatting numbers as words, ordinals and roman numerals
 
-* As words.  For example, formatting 123 into "one hundred and twenty-three" for the "en" locale.  The applicable format types are `:spellout` and `:spellout_verbose`.
+* As words.  For example, formatting 123 into "one hundred and twenty-three" for the :en locale.  The applicable format types are `:spellout` and `:spellout_verbose`.
 
 ```elixir
 iex> MyApp.Cldr.Number.to_string 123, format: :spellout
@@ -343,10 +343,10 @@ iex> MyApp.Cldr.Number.to_string 123, format: :spellout_ordinal
 iex> MyApp.Cldr.Number.to_string 123, format: :spellout_ordinal_verbose
 {:ok, "one hundred and twenty-third"}
 
-iex> MyApp.Cldr.Number.to_string 123, format: :ordinal, locale: "fr"
+iex> MyApp.Cldr.Number.to_string 123, format: :ordinal, locale: :fr
 {:ok, "123e"}
 
-iex> MyApp.Cldr.Number.to_string 123, format: :ordinal, locale: "zh"
+iex> MyApp.Cldr.Number.to_string 123, format: :ordinal, locale: :zh
 {:ok, "第123"}
 ```
 
@@ -404,10 +404,10 @@ The full set of RBNF formats is accessable through the modules `MyApp.Cldr.Rbnf.
 
 Each of these modules has a set of functions that are generated at compile time that implement the relevant RBNF rules.  The available rules for a given locale can be retrieved by calling `MyApp.Cldr.Rbnf.Spellout.rule_set(locale)` or the same function on the other modules.  For example:
 
-    iex> MyApp.Cldr.Rbnf.Ordinal.rule_sets "en"
+    iex> MyApp.Cldr.Rbnf.Ordinal.rule_sets :en
     [:digits_ordinal]
 
-    iex> MyApp.Cldr.Rbnf.Spellout.rule_sets "fr"
+    iex> MyApp.Cldr.Rbnf.Spellout.rule_sets :fr
     [:spellout_ordinal_masculine_plural, :spellout_ordinal_masculine,
      :spellout_ordinal_feminine_plural, :spellout_ordinal_feminine,
      :spellout_numbering_year, :spellout_numbering, :spellout_cardinal_masculine,
@@ -416,13 +416,13 @@ Each of these modules has a set of functions that are generated at compile time 
 These rule-based formats are invoked directly on the required module passing the number and locale.  For example:
 
 ```elixir
-iex> MyApp.Cldr.Rbnf.Spellout.spellout_numbering_year 1989, "fr"
+iex> MyApp.Cldr.Rbnf.Spellout.spellout_numbering_year 1989, :fr
 "dix-neuf-cent quatre-vingt-neuf"
 
-iex> MyApp.Cldr.Rbnf.Spellout.spellout_numbering_year 1989, "en"
+iex> MyApp.Cldr.Rbnf.Spellout.spellout_numbering_year 1989, :en
 "nineteen eighty-nine"
 
-iex> MyApp.Cldr.Rbnf.Ordinal.digits_ordinal 1989, "en"
+iex> MyApp.Cldr.Rbnf.Ordinal.digits_ordinal 1989, :en
 "1,989th"
 ```
 
@@ -438,16 +438,16 @@ In all cases, the locale-specific number separators are permitted providing a re
 
 ### Examples
 
-    iex> Cldr.Number.Parser.parse("＋1.000,34", locale: "de")
+    iex> Cldr.Number.Parser.parse("＋1.000,34", locale: :de)
     {:ok, 1000.34}
 
     iex> Cldr.Number.Parser.parse("-1_000_000.34")
     {:ok, -1000000.34}
 
-    iex> Cldr.Number.Parser.parse("1.000", locale: "de", number: :integer)
+    iex> Cldr.Number.Parser.parse("1.000", locale: :de, number: :integer)
     {:ok, 1000}
 
-    iex> Cldr.Number.Parser.parse("＋1.000,34", locale: "de", number: :integer)
+    iex> Cldr.Number.Parser.parse("＋1.000,34", locale: :de, number: :integer)
     {:error, "＋1.000,34"}
 
     iex> Cldr.Number.Parser.scan("£1_000_000.34")
@@ -462,5 +462,5 @@ In all cases, the locale-specific number separators are permitted providing a re
     iex> Cldr.Number.Parser.scan("The lottery number is 23 for the next draw")
     ["The lottery number is ", 23, " for the next draw"]
 
-    iex> Cldr.Number.Parser.scan("The loss is -1.000 euros", locale: "de", number: :integer)
+    iex> Cldr.Number.Parser.scan("The loss is -1.000 euros", locale: :de, number: :integer)
     ["The loss is ", -1000, " euros"]

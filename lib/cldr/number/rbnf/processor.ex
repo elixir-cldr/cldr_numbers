@@ -386,7 +386,7 @@ defmodule Cldr.Rbnf.Processor do
 
       for rule_group <- all_rule_sets do
         @dialyzer {:nowarn_function, [{rule_group, 2}]}
-        def unquote(rule_group)(number, locale_name) when is_binary(locale_name) do
+        def unquote(rule_group)(number, locale_name) when is_atom(locale_name) or is_binary(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             unquote(rule_group)(number, locale)
           end

@@ -122,13 +122,13 @@ defmodule Cldr.Number do
 
   ## Examples
 
-      iex> Cldr.Number.validate_number_system "en", :latn, TestBackend.Cldr
+      iex> Cldr.Number.validate_number_system :en, :latn, TestBackend.Cldr
       {:ok, :latn}
 
-      iex> Cldr.Number.validate_number_system "en", :default, TestBackend.Cldr
+      iex> Cldr.Number.validate_number_system :en, :default, TestBackend.Cldr
       {:ok, :latn}
 
-      iex> Cldr.Number.validate_number_system "en", :unknown, TestBackend.Cldr
+      iex> Cldr.Number.validate_number_system :en, :unknown, TestBackend.Cldr
       {:error,
        {Cldr.UnknownNumberSystemError, "The number system :unknown is unknown"}}
 
