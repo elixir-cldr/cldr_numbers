@@ -1,5 +1,15 @@
 # Changelog
 
+## Cldr_Numbers v2.25.1
+
+This is the changelog for Cldr v2.25.1 released on February 22nd, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Remove compiler warnings on Elixir 1.11. Thanks to @koszta for the report. Fixes #24.
+
+* Remove spurious `@dialyzer` directives that are no longer required (because we understand dialyzer a little bit more now).
+
 ## Cldr_Numbers v2.25.0
 
 This is the changelog for Cldr v2.25.0 released on February 21st, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
@@ -16,7 +26,7 @@ This is the changelog for Cldr v2.24.0 released on December 30th, 2021.  For old
 
 * Allowed limited forms of format composition. For example, composing a `:long` format with a `:currency` format:
 ```elixir
-iex> Cldr.Number.to_string!(100_000_000, format: :long) |> Cldr.Number.to_string(format: :currency) 
+iex> Cldr.Number.to_string!(100_000_000, format: :long) |> Cldr.Number.to_string(format: :currency)
 {:ok, "$100 million"}
 ```
 

@@ -132,10 +132,6 @@ defmodule Cldr.Number.Backend.Format do
           end
         end
 
-        def decimal_format_list_for(locale) do
-          {:error, Cldr.Locale.locale_error(locale)}
-        end
-
         @doc """
         Returns the decimal formats defined for a given locale.
 

@@ -78,14 +78,17 @@ defmodule Cldr.Number.Backend.Symbol do
         @spec number_symbols_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
                 {:ok, map()} | {:error, {module(), String.t()}}
 
-        @dialyzer {:nowarn_function, number_symbols_for: 1}
-        @dialyzer {:nowarn_function, number_symbols_for: 2}
-
         def number_symbols_for(locale \\ unquote(backend).get_locale())
 
         for {locale, symbols} <- all_symbols do
           def number_symbols_for(%LanguageTag{cldr_locale_name: unquote(locale)}) do
             {:ok, unquote(Macro.escape(symbols))}
+          end
+        end
+
+        def number_symbols_for(locale_name) do
+          with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
+            number_symbols_for(locale)
           end
         end
 
@@ -97,16 +100,6 @@ defmodule Cldr.Number.Backend.Symbol do
             |> Map.get(system_name)
             |> Cldr.Number.Symbol.symbols_return(locale, number_system)
           end
-        end
-
-        def number_symbols_for(locale_name) do
-          with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
-            number_symbols_for(locale)
-          end
-        end
-
-        def number_symbols_for(locale) do
-          {:error, Cldr.Locale.locale_error(locale)}
         end
 
         all_decimal_symbols =
