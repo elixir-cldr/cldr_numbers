@@ -39,10 +39,10 @@ defmodule Rbnf.Test do
   end
 
   test "rbnf spellout ordinal in ar" do
-    assert {:ok, "خمسة و عشرون ألف و ثلاثة مائة و أربعون"} =
+    assert {:ok, "خمسة وعشرون ألف وثلاثة مائة وأربعون"} =
              Cldr.Number.to_string(25_340, format: :spellout_ordinal_feminine, locale: "ar")
 
-    assert {:ok, "خمسة و عشرون ألف و ثلاثة مائة و أربعون"} =
+    assert {:ok, "خمسة وعشرون ألف وثلاثة مائة وأربعون"} =
             Cldr.Number.to_string(25_340, format: :spellout_ordinal_masculine, locale: "ar")
   end
 
