@@ -266,7 +266,7 @@ defmodule Cldr.Number.Backend.Format do
         end
 
         @doc """
-        Returns the minium grouping digits for a locale
+        Returns the minimum grouping digits for a locale
         or raises on error.
 
         ## Arguments

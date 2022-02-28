@@ -236,7 +236,7 @@ defmodule Cldr.Number do
     `:fractional_digits` will override that setting.
 
   * If `:maximum_integer_digits` is set to a positive integer value then the
-    numnber is left truncated before formatting. For example if the number `1234`
+    number is left truncated before formatting. For example if the number `1234`
     is formatted with the option `maximum_integer_digits: 2`, the number is
     truncated to `34` and formatted.
 

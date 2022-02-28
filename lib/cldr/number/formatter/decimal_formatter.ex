@@ -380,7 +380,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   # The actual grouping function.  Note there are two directions,
-  # `:forward` and `:reverse`.  Thats because we group from the decimal
+  # `:forward` and `:reverse`.  That's because we group from the decimal
   # placeholder outwards and there may be a final group that is less than
   # the grouping size.  For the fraction part the dangling part is at the
   # end (:forward direction) whereas for the integer part the dangling

@@ -95,7 +95,7 @@ defmodule Cldr.Number.Symbol do
   end
 
   @doc """
-  Returns the number sysbols for a specific locale and number system.
+  Returns the number symbols for a specific locale and number system.
 
   ## Options
 

@@ -13,7 +13,7 @@ defmodule Cldr.Number.Format.Meta do
     formatting a number >= zero
 
   * `:negative` which is a keyword list for
-    formatting negtive number
+    formatting negative number
 
   There are two formats because we can format in
   an accounting style (that is, numbers surrounded
@@ -88,7 +88,7 @@ defmodule Cldr.Number.Format.Meta do
     `:padding_length` in the `%Meta{}` struct. The `:pad`
     can be anywhere in the format list but it is most
     typically inserted before or after the `:format`
-    keyword.  The assumption is tha the `char` is a single
+    keyword.  The assumption is that the `char` is a single
     binary character but this is not checked.
 
   ## Currency symbol formatting

@@ -168,7 +168,7 @@ This is the changelog for Cldr v2.20.0 released on August 17th, 2021.  For older
 
 ### Enhancements
 
-* Add support for custom currency symbols. This extends the use of the `:currency_symbol` option. In previousl releases this option was required to be `:standard` or `:iso`. Now the value can also be `:narrow`, `:symbol` or a string which will be used as the currency symbol.  From the documentation for `Cldr.Number.to_string/3`:
+* Add support for custom currency symbols. This extends the use of the `:currency_symbol` option. In previously releases this option was required to be `:standard` or `:iso`. Now the value can also be `:narrow`, `:symbol` or a string which will be used as the currency symbol.  From the documentation for `Cldr.Number.to_string/3`:
 
   * `currency_symbol`: Allows overriding a currency symbol. The alternatives
     are:
@@ -278,7 +278,7 @@ This is the changelog for Cldr v2.15.4 released on Septmber 26th, 2020.  For old
 
 ### Enhancements
 
-* Use `Cldr.default_backend!/1` when available since `Cldr.default_backend/0` is deprecated as of `ex_cldr` verison `2.18.0`.
+* Use `Cldr.default_backend!/1` when available since `Cldr.default_backend/0` is deprecated as of `ex_cldr` version `2.18.0`.
 
 ### Bug Fixes
 
@@ -417,7 +417,7 @@ Examples:
  iex> TestBackend.Cldr.Number.to_string(1234, locale: "th-u-nu-thai")
  {:ok, "๑,๒๓๔"}
 
- # Locale defines a number system but an option :number_system is also provded which
+ # Locale defines a number system but an option :number_system is also provided which
  # take precedence
  iex> MyApp.Cldr.Number.to_string 1234, locale: "th-u-nu-latn", number_system: :thai
  {:ok, "๑,๒๓๔"}
@@ -450,7 +450,7 @@ Examples:
 
 * Uses the currency format defined by the locale if it is specified and the number format requested is `:currency` or `:accounting`. The currency format is defined as part of the [U extension](https://unicode.org/reports/tr35/#u_Extension). The order of precedence is:
 
-  * The locale's `currency format` if it is defined and the option `:format` to `MyApp.Cldr.Number.to_string/2` is either `:currency` or `:accounting`. Therefore the locales currency format takes precendence over the `:format` argument but only if `:format` is a currency format.
+  * The locale's `currency format` if it is defined and the option `:format` to `MyApp.Cldr.Number.to_string/2` is either `:currency` or `:accounting`. Therefore the locales currency format takes precedence over the `:format` argument but only if `:format` is a currency format.
 
   * The option `:format` in every other case
 
@@ -702,7 +702,7 @@ This is the changelog for Cldr v2.0.0 released on November 22nd, 2018.  For olde
 
 * `Cldr.Number.{Ordinal, Cardinal}.pluralize/3` now support ranges, not just numbers
 
-* Currency spacing is now applied for currency formatting.  Depending on the locale, some text may be placed between the current symbol and the number.  This enhanced readibility, it does not change the number formatting itself.  For example you can see below that for the locale "en", when the currency symbol is text, a non-breaking space is introduced between it and the number.
+* Currency spacing is now applied for currency formatting.  Depending on the locale, some text may be placed between the current symbol and the number.  This enhanced readability, it does not change the number formatting itself.  For example you can see below that for the locale "en", when the currency symbol is text, a non-breaking space is introduced between it and the number.
 
 ```
 iex> MyApp.Cldr.Number.to_string 2345, currency: :USD, format: "¤#,##0.00"

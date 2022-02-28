@@ -404,7 +404,7 @@ defmodule Cldr.Number.Parser do
   ## Returns
 
   * `list` as modified through the application
-    of the resolver function on each bianry term.
+    of the resolver function on each binary term.
 
   ## Examples
 
