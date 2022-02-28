@@ -513,7 +513,7 @@ defmodule Cldr.Number.System do
   ## Notes
 
   Transliterating between locale & number systems is expensive.  To avoid
-  unncessary transliteration we look for locale and number systems that have
+  unnecessary transliteration we look for locale and number systems that have
   the same digits and separators.  Typically we are comparing to locale "en"
   and number system "latn" since this is what the number formatting routines use
   as placeholders.
@@ -749,7 +749,7 @@ defmodule Cldr.Number.System do
   ## Arguments
 
   * `from` is any `String.t()` intended to represent the
-    digits of a number system but thats not a requirement.
+    digits of a number system but that's not a requirement.
 
   * `to` is any `String.t()` that is the same length as `from`
     intended to represent the digits of a number system.
@@ -814,7 +814,7 @@ defmodule Cldr.Number.System do
   @doc """
   Returns an error tuple for an number system unknown to a given locale.
 
-  ## Arguements
+  ## Arguments
 
   * `number_system` is any number system name **not** returned by `Cldr.known_number_systems/0`
 

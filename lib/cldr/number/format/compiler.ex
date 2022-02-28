@@ -115,7 +115,7 @@ defmodule Cldr.Number.Format.Compiler do
   @min_integer_digits 1
 
   # Default is a minimum of no fractional digits and
-  # a max thats as big as it takes.
+  # a max that's as big as it takes.
   # @max_fraction_digits  0
   @min_fraction_digits 0
 
@@ -192,7 +192,7 @@ defmodule Cldr.Number.Format.Compiler do
   @doc """
   Parse a number format definition
 
-  Using a yexx lexer, parse a nunber format definition into list of
+  Using a yexx lexer, parse a number format definition into list of
   elements we can then interpret to format a number.
 
   ## Example
@@ -656,8 +656,8 @@ defmodule Cldr.Number.Format.Compiler do
 
     if captures = Regex.named_captures(@significant_digits_match, format) do
       minimum = String.length(captures["ats"])
-      maximim = minimum + String.length(captures["hashes"])
-      %{min: minimum, max: maximim}
+      maximum = minimum + String.length(captures["hashes"])
+      %{min: minimum, max: maximum}
     else
       %{min: 0, max: 0}
     end

@@ -21,7 +21,7 @@ defmodule Cldr.Number.Formatter.Short do
       {:ok, "7 billion"}
 
   These formats are compact representations however they do lose
-  precision in the presentation in favour of human readibility.
+  precision in the presentation in favour of human readability.
 
   Note that for a `:currency` short format the number of decimal places
   is retrieved from the currency definition itself.  You can see the difference

@@ -178,7 +178,7 @@ defmodule Cldr.Number.Format do
 
   ## Returns
 
-  * a list of decimal formats ot
+  * a list of decimal formats or
 
   * raises an exception
 
@@ -190,7 +190,7 @@ defmodule Cldr.Number.Format do
   end
 
   @doc """
-  Returns the minium grouping digits for a locale.
+  Returns the minimum grouping digits for a locale.
 
   ## Arguments
 
@@ -221,7 +221,7 @@ defmodule Cldr.Number.Format do
   end
 
   @doc """
-  Returns the minium grouping digits for a locale or raises if there is an error.
+  Returns the minimum grouping digits for a locale or raises if there is an error.
 
   ## Arguments
 

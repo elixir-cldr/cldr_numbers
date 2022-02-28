@@ -272,7 +272,7 @@ The formats described therein are supported by `ex_cldr_numbers` with some minor
 
 ### Number Pattern Character Definitions
 
-The folllowing table describes the symbols used in a number format string and is extracted from [TR35](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns)
+The following table describes the symbols used in a number format string and is extracted from [TR35](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns)
 
   | Symbol | Location   | Localized Replacement | Meaning                                          |
   | :----: | ---------- | --------------------- |------------------------------------------------- |
@@ -400,7 +400,7 @@ iex> Cldr.Number.System.known_number_systems
 
 There are also many additional methods more specialised to a specific locale that cater for languages with more complex gender and grammar requirements.  Since these rules are specialised to a locale it is not possible to standarise the public API more than described in this section.
 
-The full set of RBNF formats is accessable through the modules `MyApp.Cldr.Rbnf.Ordinal`, `MyApp.Cldr.Rbnf.Spellout` and `MyApp.Cldr.Rbnf.NumberSystem`.
+The full set of RBNF formats is accessible through the modules `MyApp.Cldr.Rbnf.Ordinal`, `MyApp.Cldr.Rbnf.Spellout` and `MyApp.Cldr.Rbnf.NumberSystem`.
 
 Each of these modules has a set of functions that are generated at compile time that implement the relevant RBNF rules.  The available rules for a given locale can be retrieved by calling `MyApp.Cldr.Rbnf.Spellout.rule_set(locale)` or the same function on the other modules.  For example:
 

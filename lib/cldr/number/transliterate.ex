@@ -105,7 +105,7 @@ defmodule Cldr.Number.Transliterate do
         "Transliteration from number system #{inspect(from_system)} to " <>
           "#{inspect(to_system)} requires dynamic generation of a transliteration map for " <>
           "each function call which is slow. Please consider configuring this transliteration pair. " <>
-          "See `Cldr.Number.Transliteration` for futher information."
+          "See `Cldr.Number.Transliteration` for further information."
       )
 
       map = System.generate_transliteration_map(from, to)
