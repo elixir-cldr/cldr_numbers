@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr_Numbers v2.25.2
+
+This is the changelog for Cldr v2.25.1 released on March 2nd, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fixes formatting of `Decimal` `Inf` and `NaN` numbers. Thanks to @sh41 for the report. Closes #26.
+
 ## Cldr_Numbers v2.25.1
 
 This is the changelog for Cldr v2.25.1 released on February 22nd, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
