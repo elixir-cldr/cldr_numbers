@@ -73,15 +73,24 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   @doc false
 
+  # Formatting for NaN and Inf
+  def do_to_string(%Decimal{coef: :NaN}, meta, backend, options) do
+    options.symbols.nan
+    |> assemble_format(meta, backend, options)
+  end
+
+  def do_to_string(%Decimal{coef: :inf}, meta, backend, options) do
+    options.symbols.infinity
+    |> assemble_format(meta, backend, options)
+  end
+
   # For when the number is actually a string. This allows formats to be
   # composed.
-
   def do_to_string(string, meta, backend, options) when is_binary(string) do
     assemble_format(string, meta, backend, options)
   end
 
   # For most number formats
-
   def do_to_string(number, %{integer_digits: _integer_digits} = meta, backend, options) do
     number
     |> absolute_value(meta, backend, options)
@@ -831,6 +840,16 @@ defmodule Cldr.Number.Formatter.Decimal do
               Decimal.do_to_string(string, unquote(Macro.escape(meta)), unquote(backend), options)
             end
 
+            # Formatting for NaN and Inf
+            def to_string(%Elixir.Decimal{coef: :NaN} = number, unquote(format), options) do
+              Decimal.do_to_string(number, unquote(Macro.escape(meta)), unquote(backend), options)
+            end
+
+            def to_string(%Elixir.Decimal{coef: :inf} = number, unquote(format), options) do
+              Decimal.do_to_string(number, unquote(Macro.escape(meta)), unquote(backend), options)
+            end
+
+            # All other numbers
             def to_string(number, unquote(format), options) when is_map(options) do
               meta =
                 Decimal.update_meta(

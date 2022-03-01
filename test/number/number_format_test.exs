@@ -128,4 +128,15 @@ defmodule Number.Format.Test do
     assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol, locale: "hr", currency: :USD) ==
       {:ok, "1 milijardi USD"}
   end
+
+  test "NaN and Inf decimal number formatting" do
+    assert {:ok, "NaN"} = Cldr.Number.to_string(Decimal.new("NaN"))
+    assert {:ok, "-NaN"} = Cldr.Number.to_string(Decimal.new("-NaN"))
+    assert {:ok, "∞"} = Cldr.Number.to_string(Decimal.new("Inf"))
+    assert {:ok, "-∞"} = Cldr.Number.to_string(Decimal.new("-Inf"))
+    assert {:ok, "∞"} = Cldr.Number.to_string(Decimal.new("Inf"), locale: :de)
+    assert {:ok, "-∞"} = Cldr.Number.to_string(Decimal.new("-Inf"), locale: :de)
+    assert {:ok, "-∞"} = Cldr.Number.to_string(Decimal.new("-Inf"), format: "########", locale: :de)
+    assert {:ok, "∞ and beyond"} = Cldr.Number.to_string(Decimal.new("Inf"), format: "# and beyond")
+  end
 end
