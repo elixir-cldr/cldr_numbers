@@ -149,7 +149,12 @@ defmodule Cldr.Test.Number.Format do
 
       # Specify accounting or currency in the locale
       {-123.4, "$-123.40", [format: :currency, locale: "en-AU-u-cu-aud-cf-standard"]},
-      {-123.4, "($123.40)", [format: :currency, locale: "en-AU-u-cu-aud-cf-account"]}
+      {-123.4, "($123.40)", [format: :currency, locale: "en-AU-u-cu-aud-cf-account"]},
+
+      # Formatting digital tokens (Crypto currencies)
+      {1234545656.456789, "₿ 1,234,545,656.456789", [currency: "BTC"]},
+      {1234545656.456789, "₿1B", [format: :short, currency: "BTC"]},
+      {1234545656.456789, "1,234,545,656.456789 Bitcoin", [format: :long, currency: "BTC"]}
     ]
   end
 end

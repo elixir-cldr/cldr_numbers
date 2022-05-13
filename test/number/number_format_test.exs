@@ -127,6 +127,8 @@ defmodule Number.Format.Test do
       {:ok, "1 milijardi kn"}
     assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol, locale: "hr", currency: :USD) ==
       {:ok, "1 milijardi USD"}
+    assert Cldr.Number.to_string(1234545656.456789, currency: "BTC", format: :currency_long_with_symbol) ==
+      {:ok, "₿1 billion"}
   end
 
   test "NaN and Inf decimal number formatting" do
@@ -138,5 +140,13 @@ defmodule Number.Format.Test do
     assert {:ok, "-∞"} = Cldr.Number.to_string(Decimal.new("-Inf"), locale: :de)
     assert {:ok, "-∞"} = Cldr.Number.to_string(Decimal.new("-Inf"), format: "########", locale: :de)
     assert {:ok, "∞ and beyond"} = Cldr.Number.to_string(Decimal.new("Inf"), format: "# and beyond")
+  end
+
+  test "Digital tokens with overriden symbols" do
+    assert {:ok, "₿ 1,234,545,656.456789"} = Cldr.Number.to_string(1234545656.456789, currency: "BTC", currency_symbol: :narrow)
+    assert {:ok, "BTC 1,234,545,656.456789"} = Cldr.Number.to_string(1234545656.456789, currency: "BTC", currency_symbol: :iso )
+    assert {:ok, "₿ 1,234,545,656.456789"} = Cldr.Number.to_string(1234545656.456789, currency: "BTC", currency_symbol: :symbol)
+    assert {:ok, "₿ 1,234,545,656.456789"} = Cldr.Number.to_string(1234545656.456789, currency: "BTC", currency_symbol: :standard)
+    assert {:ok, "XBTC 1,234,545,656.456789"} = Cldr.Number.to_string(1234545656.456789, currency: "BTC", currency_symbol: "XBTC")
   end
 end

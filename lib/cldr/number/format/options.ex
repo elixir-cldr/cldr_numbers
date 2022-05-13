@@ -271,6 +271,12 @@ defmodule Cldr.Number.Format.Options do
   def validate_option(:currency, _options, _backend, currency) do
     with {:ok, currency} <- Cldr.validate_currency(currency) do
       {:ok, currency}
+    else
+      {:error, _} ->
+        case DigitalToken.validate_token(currency) do
+          {:ok, token} -> {:ok, token}
+          {:error, _} -> {:error, Cldr.unknown_currency_error(currency)}
+        end
     end
   end
 

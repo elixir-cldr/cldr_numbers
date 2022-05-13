@@ -42,6 +42,10 @@ defmodule Cldr.Number.Formatter.Currency do
   alias Cldr.Number.Format.Options
   alias Cldr.Number.Formatter.Decimal
 
+  import Cldr.Number.Formatter.Decimal, only: [is_currency: 1]
+  import DigitalToken, only: [is_digital_token: 1]
+
+  @doc false
   def to_string(number, _format, _backend, _options) when is_binary(number) do
     {:error,
       {
@@ -75,15 +79,13 @@ defmodule Cldr.Number.Formatter.Currency do
             "locale #{inspect(locale)} and number system #{inspect(number_system)}."
     end
 
-    {:ok, currency} = Currency.currency_for_code(options.currency, backend, locale: locale)
-    currency_string = cardinal.pluralize(number, locale, currency.count)
-
     options =
       options
       |> Map.put(:format, :standard)
-      |> set_fractional_digits(options.fractional_digits)
+      |> set_fractional_digits(options.currency, options.fractional_digits)
       |> Options.resolve_standard_format(backend)
 
+    currency_string = currency_string(number, options.currency, cardinal, locale, backend)
     number_string = Cldr.Number.to_string!(number, backend, options)
     format = cardinal.pluralize(number, locale, formats)
 
@@ -91,12 +93,21 @@ defmodule Cldr.Number.Formatter.Currency do
     |> :erlang.iolist_to_binary()
   end
 
-  defp set_fractional_digits(options, nil) do
-    options
-    |> Map.put(:fractional_digits, 0)
+  defp currency_string(number, currency, cardinal, locale, backend) when is_currency(currency) do
+    {:ok, currency} = Currency.currency_for_code(currency, backend, locale: locale)
+    cardinal.pluralize(number, locale, currency.count)
   end
 
-  defp set_fractional_digits(options, _digits) do
+  defp currency_string(_number, currency, _cardinal, _locale, _backend) when is_digital_token(currency) do
+    {:ok, currency_string} = DigitalToken.long_name(currency)
+    currency_string
+  end
+
+  defp set_fractional_digits(options, currency, nil) when is_currency(currency) do
+    Map.put(options, :fractional_digits, 0)
+  end
+
+  defp set_fractional_digits(options, _currency, _digits) do
     options
   end
 

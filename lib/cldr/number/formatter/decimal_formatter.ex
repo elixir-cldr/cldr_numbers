@@ -19,13 +19,18 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   """
   import Cldr.Math, only: [power_of_10: 1]
+  import DigitalToken, only: [is_digital_token: 1]
 
   alias Cldr.{Currency, Math, Digits}
   alias Cldr.Number.Format
   alias Cldr.Number.Format.Compiler
   alias Cldr.Number.Format.Options
 
+  @doc false
+  defguard is_currency(currency) when is_atom(currency)
+
   @empty_string ""
+  @max_token_fractional_digits 18
 
   @doc """
   Formats a number according to a decimal format string.
@@ -714,9 +719,18 @@ defmodule Cldr.Number.Formatter.Decimal do
     currency.narrow_symbol || currency.symbol
   end
 
-  def currency_symbol(currency, symbol, number, size, locale, backend) do
+  def currency_symbol(currency, symbol, number, size, locale, backend) when is_currency(currency) do
     {:ok, currency} = Currency.currency_for_code(currency, backend, locale: locale)
     currency_symbol(currency, symbol, number, size, locale, backend)
+  end
+
+  def currency_symbol(digital_token, symbol, _number, _size, _locale, _backend) when is_digital_token(digital_token) and is_binary(symbol) do
+    symbol
+  end
+
+  def currency_symbol(digital_token, _symbol, _number, size, _locale, _backend) when is_digital_token(digital_token) do
+    {:ok, symbol} = DigitalToken.symbol(digital_token, size)
+    symbol
   end
 
   def transliterate(number_string, _meta, backend, %{locale: locale, number_system: number_system}) do
@@ -729,6 +743,10 @@ defmodule Cldr.Number.Formatter.Decimal do
   # we are just adjusting the meta data, not the number itself
   def adjust_fraction_for_currency(meta, nil, _currency_digits, _backend) do
     meta
+  end
+
+  def adjust_fraction_for_currency(meta, currency, _currency_digits, _backend) when is_digital_token(currency) do
+    %{meta | fractional_digits: %{max: @max_token_fractional_digits, min: 0}}
   end
 
   def adjust_fraction_for_currency(meta, currency, :accounting, backend) do

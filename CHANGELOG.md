@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr_Numbers v2.27.0
+
+This is the changelog for Cldr v2.27.0 released on May 14th, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Add support for formatting numbers representing [ISO 24165](https://www.iso.org/standard/80601.html) Digital Tokens (aka crypto currencies). The behaviour follows that for currency formatting. Given that the [digital token registry](https://dtif.org) does not contain fraction precision data or pluralised or localised token names, the formatting of digital tokens amounts is not localized beyond formatting the number itself.
+
 ## Cldr_Numbers v2.26.0
 
 This is the changelog for Cldr v2.26.0 released on April 6th, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

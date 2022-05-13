@@ -183,10 +183,13 @@ defmodule Cldr.Number do
     `:spellout_year`, `:ordinal`.  A number can also be formatted as roman
     numbers by using the format `:roman` or `:roman_lower`.
 
-  * `currency`: is the currency for which the number is formatted. For
-    available currencies see `Cldr.Currency.known_currencies/0`. This option
+  * `currency`: is the currency for which the number is formatted. This option
     is required if `:format` is set to `:currency`.  If `currency` is set
     and no `:format` is set, `:format` will be set to `:currency` as well.
+    Currency may be any [ISO 4217 currency code](https://en.wikipedia.org/wiki/ISO_4217)
+    returned by `Cldr.Currency.known_currencies/0` or a
+    [ISO 24165](https://www.iso.org/standard/80601.html) digital token
+    identifier (crypto currency).
 
   * `currency_symbol`: Allows overriding a currency symbol. The alternatives
     are:
@@ -205,11 +208,12 @@ defmodule Cldr.Number do
   * `:cash`: a boolean which indicates whether a number being formatted as a
     `:currency` is to be considered a cash value or not. Currencies can be
     rounded differently depending on whether `:cash` is `true` or `false`.
-    *This option is deprecated in favour of `currency_digits: :cash`.
+    *This option is deprecated in favour of `currency_digits: :cash`. Ignored
+    if the currency is a digital token.
 
   * `:currency_digits` indicates which of the rounding and digits should be
     used. The options are `:accounting` which is the default, `:cash` or
-    `:iso`
+    `:iso`. Ignored if the currency is a digital token.
 
   * `:rounding_mode`: determines how a number is rounded to meet the precision
     of the format requested. The available rounding modes are `:down`,
