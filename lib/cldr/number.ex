@@ -249,7 +249,7 @@ defmodule Cldr.Number do
     settings that would be applied by default.
 
   * `:minimum_grouping_digits` overrides the CLDR definition of minimum grouping
-    digits. For example in the locale `es` the number `1234` is formatted by default
+    digits. For example in the locale `es` the number `1345` is formatted by default
     as `1345` because the locale defines the `minimium_grouping_digits` as `2`. If
     `minimum_grouping_digits: 1` is set as an option the number is formatting as
     `1.345`. The `:minimum_grouping_digits` is added to the grouping defined by
