@@ -251,7 +251,7 @@ defmodule Cldr.Number do
   * `:minimum_grouping_digits` overrides the CLDR definition of minimum grouping
     digits. For example in the locale `es` the number `1345` is formatted by default
     as `1345` because the locale defines the `minimium_grouping_digits` as `2`. If
-    `minimum_grouping_digits: 1` is set as an option the number is formatting as
+    `minimum_grouping_digits: 1` is set as an option the number is formatted as
     `1.345`. The `:minimum_grouping_digits` is added to the grouping defined by
     the number format.  If the sum of these two digits is greater than the number
     of digits in the integer (or fractional) part of the number then no grouping
