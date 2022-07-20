@@ -70,13 +70,12 @@ defmodule Cldr.Number.Formatter.Short do
 
   def to_string(number, _style, _backend, _options) when is_binary(number) do
     {:error,
-      {
-        ArgumentError,
-        "Not a number: #{inspect number}. Long and short formats only support number or Decimal arguments"
-      }
-    }
+     {
+       ArgumentError,
+       "Not a number: #{inspect(number)}. Long and short formats only support number or Decimal arguments"
+     }}
   end
-          
+
   def to_string(number, style, backend, options) do
     locale = options.locale || backend.default_locale()
 
@@ -148,7 +147,7 @@ defmodule Cldr.Number.Formatter.Short do
 
       options =
         options
-        |> Map.new
+        |> Map.new()
         |> Map.put_new(:locale, locale)
         |> Map.put_new(:number_system, number_system)
         |> Map.put_new(:currency, nil)
@@ -157,8 +156,12 @@ defmodule Cldr.Number.Formatter.Short do
         [range, plural_selectors] ->
           normalized_number = normalise_number(number, range, plural_selectors.other)
           plural_key = pluralization_key(normalized_number, options)
-          [_format, number_of_zeros] = pluralizer.pluralize(plural_key, options.locale, plural_selectors)
+
+          [_format, number_of_zeros] =
+            pluralizer.pluralize(plural_key, options.locale, plural_selectors)
+
           {range, number_of_zeros}
+
         {number, _format} ->
           {number, 0}
       end
@@ -183,7 +186,10 @@ defmodule Cldr.Number.Formatter.Short do
       [range, plural_selectors] ->
         normalized_number = normalise_number(number, range, plural_selectors.other)
         plural_key = pluralization_key(normalized_number, options)
-        [format, _number_of_zeros] = pluralizer.pluralize(plural_key, options.locale, plural_selectors)
+
+        [format, _number_of_zeros] =
+          pluralizer.pluralize(plural_key, options.locale, plural_selectors)
+
         {normalized_number, format}
 
       # Its a standard format
@@ -192,7 +198,8 @@ defmodule Cldr.Number.Formatter.Short do
     end
   end
 
-  defp get_short_format_rule(number, _format_rules, options, backend) when is_number(number) and number < 1000 do
+  defp get_short_format_rule(number, _format_rules, options, backend)
+       when is_number(number) and number < 1000 do
     format =
       options.locale
       |> Format.formats_for!(options.number_system, backend)
@@ -234,12 +241,18 @@ defmodule Cldr.Number.Formatter.Short do
   end
 
   @one_thousand Decimal.new(1000)
+  @neg_one_thousand Decimal.new(-1000)
   defp normalise_number(%Decimal{} = number, range, number_of_zeros) do
-    if Cldr.Decimal.compare(number, @one_thousand) == :lt do
+    if Cldr.Decimal.compare(number, @one_thousand) == :lt &&
+       Cldr.Decimal.compare(number, @neg_one_thousand) == :lt do
       number
     else
       Decimal.div(number, Decimal.new(adjustment(range, number_of_zeros)))
     end
+  end
+
+  defp normalise_number(number, range, number_of_zeros) when number < -1000 do
+    number / adjustment(range, number_of_zeros)
   end
 
   defp normalise_number(number, _range, _number_of_zeros) when number < 1000 do
@@ -262,7 +275,7 @@ defmodule Cldr.Number.Formatter.Short do
   end
 
   defp adjustment(range, [_, number_of_zeros]) when is_integer(number_of_zeros) do
-   adjustment(range, number_of_zeros)
+    adjustment(range, number_of_zeros)
   end
 
   # The pluralization key has to consider when there is an
