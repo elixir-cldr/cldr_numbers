@@ -4,6 +4,8 @@
 
 This is the changelog for Cldr v2.27.1 released on July 20th, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
+### Bug Fixes
+
 * Fix `:short` formatting of negative numbers. Thanks to @glennr for the report. Closes #30.
 
 ## Cldr_Numbers v2.27.0
