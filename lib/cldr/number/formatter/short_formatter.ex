@@ -76,7 +76,7 @@ defmodule Cldr.Number.Formatter.Short do
       }
     }
   end
-          
+
   def to_string(number, style, backend, options) do
     locale = options.locale || backend.default_locale()
 
@@ -173,6 +173,19 @@ defmodule Cldr.Number.Formatter.Short do
 
   defp digits(options, _digits) do
     options
+  end
+
+  defp choose_short_format(number, format_rules, options, backend)
+      when is_number(number) and number < 0 do
+    {number, format} = choose_short_format(abs(number), format_rules, options, backend)
+    {number * -1, format}
+  end
+
+  defp choose_short_format(%Decimal{sign: -1 = sign} = number, format_rules, options, backend) do
+    {normalized_number, format} =
+      choose_short_format(Decimal.abs(number), format_rules, options, backend)
+
+    {Decimal.mult(normalized_number, sign), format}
   end
 
   defp choose_short_format(number, format_rules, options, backend) do

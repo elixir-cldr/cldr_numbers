@@ -132,6 +132,14 @@ defmodule Cldr.Test.Number.Format do
       {1_499, "1 millier", [format: :long, locale: "fr"]},
       {1_500, "2 mille", [format: :long, locale: "fr"]},
 
+      # Negative short formats
+      {1_000_000, "1M", [format: :short]},
+      {-1_000_000, "-1M", [format: :short]},
+      {100_000, "100K", [format: :short]},
+      {-100_000, "-100K", [format: :short]},
+      {1_000, "1K", [format: :short]},
+      {-1_000, "-1K", [format: :short]},
+
       # Notes for future tests in "fr" locale:
       # millier is used with the number 1 on front and strictly only for 1000 (1 millier).
       # mille is used for anything between 1001 (Mille 1) and 1999 (Mille 999) and with no number before the word mille.
