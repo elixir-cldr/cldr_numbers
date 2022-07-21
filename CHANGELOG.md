@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr_Numbers v2.27.2
+
+This is the changelog for Cldr v2.27.2 released on July 21st, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix `:short` formatting of decimal numbers with specified fractional digits. Thanks to @glennr for the report. Closes #32.
+
 ## Cldr_Numbers v2.27.1
 
 This is the changelog for Cldr v2.27.1 released on July 20th, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

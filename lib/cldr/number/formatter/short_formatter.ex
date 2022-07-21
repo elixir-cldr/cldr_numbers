@@ -223,10 +223,16 @@ defmodule Cldr.Number.Formatter.Short do
   end
 
   defp get_short_format_rule(%Decimal{} = number, format_rules, options, backend) do
-    number
-    |> Decimal.round(0, :floor)
-    |> Decimal.to_integer()
-    |> get_short_format_rule(format_rules, options, backend)
+    rule =
+      number
+      |> Decimal.round(0, :floor)
+      |> Decimal.to_integer()
+      |> get_short_format_rule(format_rules, options, backend)
+
+    case rule do
+      {_ignore, format} -> {number, format}
+      rule -> rule
+    end
   end
 
   defp maybe_get_default_format([_range, %{other: ["0", _]}], number, options, backend) do
