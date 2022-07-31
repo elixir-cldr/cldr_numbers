@@ -1,7 +1,7 @@
 defmodule Cldr.Number.Doc.Test do
   use ExUnit.Case
 
-  default = Application.get_env(:ex_cldr, :default_backend)
+  default = Application.compile_env(:ex_cldr, :default_backend)
   Application.put_env(:ex_cldr, :default_backend, TestBackend.Cldr)
 
   doctest Cldr.Number
