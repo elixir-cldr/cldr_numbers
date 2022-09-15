@@ -105,12 +105,15 @@ defmodule Cldr.Number.Format do
   ## Example
 
       iex> Cldr.Number.Format.decimal_format_list_for("en", MyApp.Cldr)
-      {:ok, ["#,##0%", "#,##0.###", "#E0", "0 billion", "0 million", "0 thousand",
+      {:ok, ["#,##0%", "#,##0.###", "#,##0.00", "#,##0.00;(#,##0.00)","#E0",
+       "0 billion", "0 million", "0 thousand",
        "0 trillion", "00 billion", "00 million", "00 thousand", "00 trillion",
        "000 billion", "000 million", "000 thousand", "000 trillion", "000B", "000K",
        "000M", "000T", "00B", "00K", "00M", "00T", "0B", "0K", "0M", "0T",
        "¤#,##0.00", "¤#,##0.00;(¤#,##0.00)", "¤000B", "¤000K", "¤000M",
-       "¤000T", "¤00B", "¤00K", "¤00M", "¤00T", "¤0B", "¤0K", "¤0M", "¤0T"]}
+       "¤000T", "¤00B", "¤00K", "¤00M", "¤00T", "¤0B", "¤0K", "¤0M", "¤0T",
+       "¤ #,##0.00", "¤ #,##0.00;(¤ #,##0.00)", "¤ 000B", "¤ 000K", "¤ 000M",
+       "¤ 000T", "¤ 00B", "¤ 00K", "¤ 00M", "¤ 00T", "¤ 0B", "¤ 0K", "¤ 0M", "¤ 0T"]}
 
   """
   @spec decimal_format_list_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) ::
