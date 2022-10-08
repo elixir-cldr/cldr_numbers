@@ -35,6 +35,12 @@ defmodule Cldr.Number.Parsing.Test do
       |> Cldr.Number.Parser.resolve_currencies(backend: TestBackend.Cldr)
 
     assert result2 == [:USD, 100]
+
+    result3 =
+      Cldr.Number.Parser.scan("R100", backend: TestBackend.Cldr)
+      |> Cldr.Number.Parser.resolve_currencies(backend: TestBackend.Cldr)
+
+    assert result3 == [:ZAR, 100]
   end
 
   test "scanning strings that have symbols in them" do

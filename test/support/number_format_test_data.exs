@@ -118,6 +118,7 @@ defmodule Cldr.Test.Number.Format do
       {1234, "1 thousand", [format: :long]},
       {1_234_567_890, "1 billion", [format: :long]},
       {1234, "$1K", [format: :short, currency: :USD]},
+      {1234, "ZAR 1K", [format: :short, currency: :ZAR]},
       {12345, "12,345 US dollars", [format: :long, currency: :USD]},
       {123, "A$123", [format: :short, currency: :AUD]},
       {12, "12 Thai baht", [format: :long, currency: :THB]},
@@ -161,7 +162,7 @@ defmodule Cldr.Test.Number.Format do
 
       # Formatting digital tokens (Crypto currencies)
       {1234545656.456789, "₿ 1,234,545,656.456789", [currency: "BTC"]},
-      {1234545656.456789, "₿1B", [format: :short, currency: "BTC"]},
+      {1234545656.456789, "₿ 1B", [format: :short, currency: "BTC"]},
       {1234545656.456789, "1,234,545,656.456789 Bitcoin", [format: :long, currency: "BTC"]}
     ]
   end

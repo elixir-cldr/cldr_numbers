@@ -1,5 +1,15 @@
 # Changelog
 
+## Cldr_Numbers v2.27.3
+
+This is the changelog for Cldr v2.27.3 released on October 8th, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* `Cldr.Number.to_string/3` with `format: :narrow` and `:currency` set will use the currency's narrow symbol.
+
+* Apply currency spacing for short formats (previously not being applied)
+
 ## Cldr_Numbers v2.27.2
 
 This is the changelog for Cldr v2.27.2 released on July 21st, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

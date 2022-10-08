@@ -127,6 +127,11 @@ defmodule Number.Format.Test do
     assert MyApp.Cldr.Number.to_string(Decimal.new(1_100_000), format: :short, fractional_digits: 1) == {:ok, "1.1M"}
   end
 
+  test "Currency with :narrow formatting uses standard format with narrow symbol" do
+    assert MyApp.Cldr.Number.to_string(Decimal.new(1_000_000), currency: :USD, format: :narrow) ==
+      {:ok, "$1,000,000.00"}
+  end
+
   test "Decimal currency short with fractional digits formatting" do
     assert Cldr.Number.to_string(Decimal.new("214564569.50"), format: :short, currency: :USD, fractional_digits: 2) ==
       {:ok, "$214.56M"}

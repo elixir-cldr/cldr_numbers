@@ -109,19 +109,25 @@ defmodule Cldr.Number.Format.Options do
         |> Keyword.merge(options)
         |> Map.new
 
-      Enum.reduce_while(@options, options, fn option, options ->
-        case validate_option(option, options, backend, Map.get(options, option)) do
-          {:ok, result} -> {:cont, Map.put(options, option, result)}
-          {:error, _} = error -> {:halt, error}
-        end
-      end)
+      options
+      |> maybe_adjust_currency_format(options.currency, options.format)
+      |> validate_each_option(backend)
       |> resolve_standard_format(backend)
-      |> confirm_currency_format_has_currency_code
+      |> confirm_currency_format_has_currency_code()
       |> set_pattern(number)
-      |> maybe_set_iso_currency_symbol
+      |> maybe_set_iso_currency_symbol()
       |> structify(__MODULE__)
-      |> wrap_ok
+      |> wrap_ok()
     end
+  end
+
+  def validate_each_option(options, backend) do
+    Enum.reduce_while(@options, options, fn option, options ->
+      case validate_option(option, options, backend, Map.get(options, option)) do
+        {:ok, result} -> {:cont, Map.put(options, option, result)}
+        {:error, _} = error -> {:halt, error}
+      end
+    end)
   end
 
   def wrap_ok(%__MODULE__{} = options) do
@@ -146,6 +152,18 @@ defmodule Cldr.Number.Format.Options do
   #     {:error, {ArgumentError, "Invalid options found: #{inspect invalid}"}}
   #   end
   # end
+
+  # If the format is :narrpw and we have a currency then we set the currency_symbol to
+  # :narrow, the format to :currency
+  def maybe_adjust_currency_format(options, currency, :narrow) when not is_nil(currency) do
+    options
+    |> Map.put(:currency_symbol, :narrow)
+    |> Map.put(:format, Currency.currency_format_from_locale(options.locale))
+  end
+
+  def maybe_adjust_currency_format(options, _currency, _format) do
+    options
+  end
 
   def resolve_standard_format(%{format: format} = options, backend)
       when format in @standard_formats do
@@ -338,7 +356,7 @@ defmodule Cldr.Number.Format.Options do
   # Currency spacing isn't really a user option
   # Its derived for currency formats only
   def validate_option(:currency_spacing, %{format: format} = options, backend, _spacing)
-      when format in [:currency, :accounting] do
+      when format in [:currency, :accounting, :currency_short] do
     locale = Map.fetch!(options, :locale)
     number_system = Map.fetch!(options, :number_system)
     module = Module.concat(backend, Number.Format)
