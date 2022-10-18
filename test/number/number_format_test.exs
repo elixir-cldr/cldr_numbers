@@ -142,7 +142,7 @@ defmodule Number.Format.Test do
     assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol) ==
       {:ok, "$1 billion"}
     assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol, locale: "hr") ==
-      {:ok, "1 milijardi kn"}
+      {:ok, "1 milijardi €"}
     assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol, locale: "hr", currency: :USD) ==
       {:ok, "1 milijardi USD"}
     assert Cldr.Number.to_string(1234545656.456789, currency: "BTC", format: :currency_long_with_symbol) ==
