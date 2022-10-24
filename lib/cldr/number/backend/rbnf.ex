@@ -21,7 +21,7 @@ defmodule Cldr.Number.Backend.Rbnf do
           defined in the Unicode CLDR data repository.  Available rules are identified by:
 
               iex> #{inspect(__MODULE__)}.rule_sets(#{inspect(unquote(root_locale))})
-              [:tamil, :roman_upper, :roman_lower, :hebrew_item,
+              [:zz_default, :tamil, :roman_upper, :roman_lower, :hebrew_item,
                :hebrew, :greek_upper, :greek_lower, :georgian,
                :ethiopic, :cyrillic_lower, :armenian_upper, :armenian_lower]
 
