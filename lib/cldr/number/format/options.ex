@@ -25,7 +25,8 @@ defmodule Cldr.Number.Format.Options do
     :rounding_mode,
     :fractional_digits,
     :maximum_integer_digits,
-    :round_nearest
+    :round_nearest,
+    :wrapper
   ]
 
   # These are the options that can be supplied
@@ -92,7 +93,8 @@ defmodule Cldr.Number.Format.Options do
     rounding_mode: Decimal.rounding(),
     fractional_digits: pos_integer(),
     maximum_integer_digits: pos_integer(),
-    round_nearest: pos_integer()
+    round_nearest: pos_integer(),
+    wrapper: (fun() -> {:ok, String.t() | :error})
   }
 
   defstruct @options
@@ -398,6 +400,10 @@ defmodule Cldr.Number.Format.Options do
       {:ok, symbols} -> {:ok, symbols}
       _other -> {:ok, nil}
     end
+  end
+
+  def validate_option(:wrapper, _options, _backend, wrapper) when is_nil(wrapper) or is_function(wrapper, 2) do
+    {:ok, wrapper}
   end
 
   def validate_option(:minimum_grouping_digits, _options, _backend, nil) do

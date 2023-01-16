@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr_Numbers v2.29.0
+
+This is the changelog for Cldr v2.29.0 released on January 17th.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Adds an option `:wrapper` to `Cldr.Number.to_string/2`. The argument is a 2-arity function that received the parameters `type` and `string`  where `type` is one of `:number`, `:currency_symbol`, `:percent`, `:permille`, `:minus` or `:plus`. The function must return either `{:ok, wrapped_string}` or `:error`. The function can be used to wrap format elements in HTML or other tags.
+
 ## Cldr_Numbers v2.28.0
 
 This is the changelog for Cldr v2.28.0 released on October 24th, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

@@ -201,9 +201,9 @@ defmodule Cldr.Number do
       symbol is used.
     * `:symbol` uses the standard symbol defined in CLDR. A symbol is unique
       for each currency and can be safely used.
-    * "string" uses `string` as the currency symbol
     * `:standard` (the default and recommended) uses the CLDR-defined symbol
       based upon the currency format for the locale.
+    * "string" uses `string` as the currency symbol
 
   * `:cash`: a boolean which indicates whether a number being formatted as a
     `:currency` is to be considered a cash value or not. Currencies can be
@@ -256,6 +256,12 @@ defmodule Cldr.Number do
     the number format.  If the sum of these two digits is greater than the number
     of digits in the integer (or fractional) part of the number then no grouping
     is performed.
+
+  * `:wrapper` is a 2-arity function that will be called for each number component
+    with parameters `type` and `string` where `type` is one of `:number`,
+    `:currency_symbol`, `:percent`, `:permille`, `:minus` or `:plus`. The function
+    must return either `{:ok, wrapped_string}` or `:error`. The function can be used
+    to wrap format elements in HTML or other tags.
 
   ## Locale extensions affecting formatting
 

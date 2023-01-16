@@ -543,9 +543,14 @@ defmodule Cldr.Number.Formatter.Decimal do
          %{currency_spacing: spacing} = options
        )
        when not is_nil(spacing) do
-    %{currency: currency, currency_symbol: currency_symbol, locale: locale} = options
-    symbol = currency_symbol(currency, currency_symbol, number, type, locale, backend)
+    %{currency: currency, currency_symbol: currency_symbol, locale: locale, wrapper: wrapper} = options
 
+    symbol =
+      currency
+      |> currency_symbol(currency_symbol, number, type, locale, backend)
+      |> maybe_wrap(:currency_symbol, wrapper)
+
+    number_string = maybe_wrap(number_string, :number, wrapper)
     before_spacing = spacing[:before_currency]
 
     if before_currency_match?(number_string, symbol, before_spacing) do
@@ -573,9 +578,14 @@ defmodule Cldr.Number.Formatter.Decimal do
          %{currency_spacing: spacing} = options
        )
        when not is_nil(spacing) do
-    %{currency: currency, currency_symbol: currency_symbol, locale: locale} = options
-    symbol = currency_symbol(currency, currency_symbol, number, type, locale, backend)
+    %{currency: currency, currency_symbol: currency_symbol, locale: locale, wrapper: wrapper} = options
 
+    symbol =
+      currency
+      |> currency_symbol(currency_symbol, number, type, locale, backend)
+      |> maybe_wrap(:currency_symbol, wrapper)
+
+    number_string = maybe_wrap(number_string, :number, wrapper)
     after_spacing = spacing[:after_currency]
 
     if after_currency_match?(number_string, symbol, after_spacing) do
@@ -599,14 +609,18 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   defp assemble_parts([{:currency, type} | rest], number_string, number, backend, meta, options) do
-    %{currency: currency, currency_symbol: currency_symbol, locale: locale} = options
-    symbol = currency_symbol(currency, currency_symbol, number, type, locale, backend)
+    %{currency: currency, currency_symbol: currency_symbol, locale: locale, wrapper: wrapper} = options
+
+    symbol =
+      currency
+      |> currency_symbol(currency_symbol, number, type, locale, backend)
+      |> maybe_wrap(:currency_symbol, wrapper)
 
     [symbol | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
-  defp assemble_parts([{:format, _} | rest], number_string, number, backend, meta, options) do
-    [number_string | assemble_parts(rest, number_string, number, backend, meta, options)]
+  defp assemble_parts([{:format, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
+    [maybe_wrap(number_string, :number, wrapper) | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
   defp assemble_parts([{:pad, _} | rest], number_string, number, backend, meta, options) do
@@ -616,28 +630,31 @@ defmodule Cldr.Number.Formatter.Decimal do
     ]
   end
 
-  defp assemble_parts([{:plus, _} | rest], number_string, number, backend, meta, options) do
+  defp assemble_parts([{:plus, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
     [
-      options.symbols.plus_sign
+      maybe_wrap(options.symbols.plus_sign, :plus, wrapper)
       | assemble_parts(rest, number_string, number, backend, meta, options)
     ]
   end
 
-  defp assemble_parts([{:minus, _} | rest], number_string, number, backend, meta, options) do
-    sign = if number_string == "0", do: "", else: options.symbols.minus_sign
+  defp assemble_parts([{:minus, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
+    sign =
+      if(number_string == "0", do: "", else: options.symbols.minus_sign)
+      |> maybe_wrap(:minus, wrapper)
+
     [sign | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
-  defp assemble_parts([{:percent, _} | rest], number_string, number, backend, meta, options) do
+  defp assemble_parts([{:percent, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
     [
-      options.symbols.percent_sign
+      maybe_wrap(options.symbols.percent_sign, :percent, wrapper)
       | assemble_parts(rest, number_string, number, backend, meta, options)
     ]
   end
 
-  defp assemble_parts([{:permille, _} | rest], number_string, number, backend, meta, options) do
+  defp assemble_parts([{:permille, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
     [
-      options.symbols.per_mille
+      maybe_wrap(options.symbols.per_mille, :permille, wrapper)
       | assemble_parts(rest, number_string, number, backend, meta, options)
     ]
   end
@@ -659,6 +676,18 @@ defmodule Cldr.Number.Formatter.Decimal do
          options
        ) do
     [char | assemble_parts(rest, number_string, number, backend, meta, options)]
+  end
+
+  # Invokes a wrapping function.
+  defp maybe_wrap(string, _type, nil) do
+    string
+  end
+
+  defp maybe_wrap(string, type, wrapper) do
+    case wrapper.(string, type) do
+      {:ok, string} -> string
+      :error -> string
+    end
   end
 
   # Calculate the padding by subtracting the length of the number
