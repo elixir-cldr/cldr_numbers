@@ -279,7 +279,7 @@ defmodule Cldr.Number do
   When formatting a number the format is parsed into format elements that might include
   a currency symbol, a literal string, inserted text between a currency symbol and the
   currency amount, a percent sign, the number itself and several other elements.  In
-  some cases it is helpful to be apply to apply specific formatting to each element.
+  some cases it is helpful to be apply specific formatting to each element.
   This can be achieved by specifying a `:wrapper` option. This option takes a 2-arity
   function as an argument. For each element of the format the wrapper function is called
   with two parameters:  the format element as a string and an atom representing the
