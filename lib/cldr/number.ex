@@ -259,8 +259,9 @@ defmodule Cldr.Number do
   * `:wrapper` is a 2-arity function that will be called for each number component
     with parameters `string` and `tag` where `tag` is one of `:number`,
     `:currency_symbol`, `:currency_space`, `:literal`, `:quote`, `:percent`,
-    `:permille`, `:minus` or `:plus`. The function must return a string. The
-    function can be used to wrap format elements in HTML or other tags.
+    `:permille`, `:minus` or `:plus`. The function must return either a string
+    or a Phoenix safe string such as that returned by `Phoenix.HTML.Tag.content_tag/3`.
+    The function can be used to wrap format elements in HTML or other tags.
 
   ## Locale extensions affecting formatting
 
@@ -281,12 +282,24 @@ defmodule Cldr.Number do
   applied to the symbol than the number.  For example:
 
       iex> Cldr.Number.to_string(100, format: :currency, currency: :USD, wrapper: fn
-      ...>   string, :currency_symbol -> "<span class=symbol>" <> string <> "</span>"
-      ...>   string, :number -> "<span class=number>" <> string <> "</span>"
+      ...>   string, :currency_symbol -> "<span class=\\"symbol\\">" <> string <> "</span>"
+      ...>   string, :number -> "<span class=\\"number\\">" <> string <> "</span>"
       ...>   string, :currency_space -> "<span>" <> string <> "</span>"
       ...>   string, _other -> string
       ...> end)
-      {:ok, "<span class=symbol>$</span><span class=number>100.00</span>"}
+      {:ok, "<span class=\\"symbol\\">$</span><span class=\\"number\\">100.00</span>"}
+
+  It is also possible and recommended to use the `Phoenix.HTML.Tag.content_tag/3`
+  function if wrapping HTML tags since these will ensure HTML entities are
+  correctly encoded.  For example:
+
+      iex> Cldr.Number.to_string(100, format: :currency, currency: :USD, wrapper: fn
+      ...>   string, :currency_symbol -> Phoenix.HTML.Tag.content_tag(:span, string, class: "symbol")
+      ...>   string, :number -> Phoenix.HTML.Tag.content_tag(:span, string, class: "number")
+      ...>   string, :currency_space -> Phoenix.HTML.Tag.content_tag(:span, string)
+      ...>   string, _other -> string
+      ...> end)
+      {:ok, "<span class=\\"symbol\\">$</span><span class=\\"number\\">100.00</span>"}
 
   When formatting a number the format is parsed into format elements that might include
   a currency symbol, a literal string, inserted text between a currency symbol and the
@@ -297,6 +310,8 @@ defmodule Cldr.Number do
   with two parameters:  the format element as a string and an atom representing the
   element type. The wrapper function is required to return a string that is then
   inserted in the final formatted number.
+
+
 
   ## Returns
 

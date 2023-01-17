@@ -686,9 +686,15 @@ defmodule Cldr.Number.Formatter.Decimal do
     [char | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
-  # Invokes a wrapping function.
+  # Invokes a wrapping function. It can return a Phoenix :safe
+  # string or a string.
   defp maybe_wrap(string, _tag, nil), do: string
-  defp maybe_wrap(string, tag, wrapper), do: wrapper.(string, tag)
+  defp maybe_wrap(string, tag, wrapper) do
+    case wrapper.(string, tag) do
+      {:safe, iodata} -> iodata
+      string when is_binary(string) -> string
+    end
+  end
 
   # Calculate the padding by subtracting the length of the number
   # string from the padding length.
