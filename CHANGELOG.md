@@ -12,15 +12,26 @@ This is the changelog for Cldr v2.29.0 released on January 17th, 2023.  For olde
 
 ### Enhancements
 
-* Adds an option `:wrapper` to `Cldr.Number.to_string/2`. The argument is a 2-arity function that receives the parameters `string` and `tag` where `tag` is one of `:number`, `:currency_symbol`, `:currency_space`, `:literal`, `:quote`, `:percent`, `:permille`, `:minus` or `:plus`. The function must return a string. The function can be used to wrap format elements in HTML or other tags.  Thanks to @rubas for the motivation and review. Example:
+* Adds an option `:wrapper` to `Cldr.Number.to_string/2`. The argument is a 2-arity function that receives the parameters `string` and `tag` where `tag` is one of `:number`, `:currency_symbol`, `:currency_space`, `:literal`, `:quote`, `:percent`, `:permille`, `:minus` or `:plus`. The function must return a string or a "safe string" such as that returned by `Phoenix.HTML.Tag.content_tag/3`. The function can be used to wrap format elements in HTML or other tags.  Thanks to @rubas for the motivation and review. Example:
 ```elixir
 iex> Cldr.Number.to_string(100, format: :currency, currency: :USD, wrapper: fn
-...>   string, :currency_symbol -> "<span class=symbol>" <> string <> "</span>"
-...>   string, :number -> "<span class=number>" <> string <> "</span>"
+...>   string, :currency_symbol -> "<span class=\"symbol\">" <> string <> "</span>"
+...>   string, :number -> "<span class=\"number\">" <> string <> "</span>"
 ...>   string, :currency_space -> "<span>" <> string <> "</span>"
 ...>   string, _other -> string
 ...> end)
-{:ok, "<span class=symbol>$</span><span class=number>100.00</span>"}
+{:ok, "<span class=\"symbol\">$</span><span class=\"number\">100.00</span>"}
+
+# It is also possible and recommended to use the `Phoenix.HTML.Tag.content_tag/3` 
+# function if wrapping HTML tags since these will ensure HTML entities are 
+# correctly encoded.  For example:
+iex> Cldr.Number.to_string(100, format: :currency, currency: :USD, wrapper: fn
+...>   string, :currency_symbol -> Phoenix.HTML.Tag.content_tag(:span, string, class: "symbol")
+...>   string, :number -> Phoenix.HTML.Tag.content_tag(:span, string, class: "number")
+...>   string, :currency_space -> Phoenix.HTML.Tag.content_tag(:span, string)
+...>   string, _other -> string
+...> end)
+{:ok, "<span class=\"symbol\">$</span><span class=\"number\">100.00</span>"}
 ```
 
 * Adds the number formats `:currency_no_symbol` and `:accounting_no_symbol` that can be used to format currency amounts without an associated currency symbol.
