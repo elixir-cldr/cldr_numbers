@@ -12,7 +12,7 @@ This is the changelog for Cldr v2.29.0 released on January 17th, 2023.  For olde
 
 ### Enhancements
 
-* Adds an option `:wrapper` to `Cldr.Number.to_string/2`. The argument is a 2-arity function that receives the parameters `string` and `tag` where `tag` is one of `:number`, `:currency_symbol`, `:currency_space`, `:literal`, `:quote`, `:percent`, `:permille`, `:minus` or `:plus`. The function must return a string. The function can be used to wrap format elements in HTML or other tags.  Example:
+* Adds an option `:wrapper` to `Cldr.Number.to_string/2`. The argument is a 2-arity function that receives the parameters `string` and `tag` where `tag` is one of `:number`, `:currency_symbol`, `:currency_space`, `:literal`, `:quote`, `:percent`, `:permille`, `:minus` or `:plus`. The function must return a string. The function can be used to wrap format elements in HTML or other tags.  Thanks to @rubas for the motivation and review. Example:
 ```elixir
 iex> Cldr.Number.to_string(100, format: :currency, currency: :USD, wrapper: fn
 ...>   string, :currency_symbol -> "<span class=symbol>" <> string <> "</span>"
