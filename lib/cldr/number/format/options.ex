@@ -56,12 +56,12 @@ defmodule Cldr.Number.Format.Options do
     :standard,
     :accounting,
     :currency,
-    :percent
+    :percent,
+    :currency_no_symbol,
+    :accounting_no_symbol
   ]
 
-  @currency_formats [
-    :currency,
-    :accounting,
+  @currency_formats_requiring_a_currency [
     :currency_long,
     :currency_long_with_symbol,
     :currency_short
@@ -167,6 +167,18 @@ defmodule Cldr.Number.Format.Options do
     options
   end
 
+  # As of CLDR 42 there is a format for a currency that excludes the
+  # currency symbol.
+  def resolve_standard_format(%{format: :currency, currency: nil} = options, backend) do
+    options = Map.put(options, :format, :currency_no_symbol)
+    resolve_standard_format(options, backend)
+  end
+
+  def resolve_standard_format(%{format: :accounting, currency: nil} = options, backend) do
+    options = Map.put(options, :format, :accounting_no_symbol)
+    resolve_standard_format(options, backend)
+  end
+
   def resolve_standard_format(%{format: format} = options, backend)
       when format in @standard_formats do
     locale = Map.fetch!(options, :locale)
@@ -267,7 +279,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   def validate_option(:currency, %{format: format, locale: locale}, _backend, nil)
-      when format in @currency_formats do
+      when format in @currency_formats_requiring_a_currency do
     {:ok, Cldr.Currency.currency_from_locale(locale)}
   end
 

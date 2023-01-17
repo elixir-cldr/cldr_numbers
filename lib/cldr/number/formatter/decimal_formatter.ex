@@ -544,19 +544,16 @@ defmodule Cldr.Number.Formatter.Decimal do
        )
        when not is_nil(spacing) do
     %{currency: currency, currency_symbol: currency_symbol, locale: locale, wrapper: wrapper} = options
-
-    symbol =
-      currency
-      |> currency_symbol(currency_symbol, number, type, locale, backend)
-      |> maybe_wrap(:currency_symbol, wrapper)
-
-    number_string = maybe_wrap(number_string, :number, wrapper)
     before_spacing = spacing[:before_currency]
+    symbol =  currency_symbol( currency, currency_symbol, number, type, locale, backend)
+    before_currency_match? = before_currency_match?(number_string, symbol, before_spacing)
+    symbol = maybe_wrap(symbol, :currency_symbol, wrapper)
+    number_string = maybe_wrap(number_string, :number, wrapper)
 
-    if before_currency_match?(number_string, symbol, before_spacing) do
+    if before_currency_match? do
       [
         number_string,
-        before_spacing[:insert_between],
+        maybe_wrap(before_spacing[:insert_between], :currency_space, wrapper),
         symbol
         | assemble_parts(rest, number_string, number, backend, meta, options)
       ]
@@ -579,19 +576,16 @@ defmodule Cldr.Number.Formatter.Decimal do
        )
        when not is_nil(spacing) do
     %{currency: currency, currency_symbol: currency_symbol, locale: locale, wrapper: wrapper} = options
-
-    symbol =
-      currency
-      |> currency_symbol(currency_symbol, number, type, locale, backend)
-      |> maybe_wrap(:currency_symbol, wrapper)
-
-    number_string = maybe_wrap(number_string, :number, wrapper)
     after_spacing = spacing[:after_currency]
+    symbol =  currency_symbol( currency, currency_symbol, number, type, locale, backend)
+    after_currency_match? = after_currency_match?(number_string, symbol, after_spacing)
+    symbol = maybe_wrap(symbol, :currency_symbol, wrapper)
+    number_string = maybe_wrap(number_string, :number, wrapper)
 
-    if after_currency_match?(number_string, symbol, after_spacing) do
+    if after_currency_match? do
       [
         symbol,
-        after_spacing[:insert_between],
+        maybe_wrap(after_spacing[:insert_between], :currency_space, wrapper),
         number_string
         | assemble_parts(rest, number_string, number, backend, meta, options)
       ]

@@ -183,9 +183,8 @@ defmodule Cldr.Number do
     `:spellout_year`, `:ordinal`.  A number can also be formatted as roman
     numbers by using the format `:roman` or `:roman_lower`.
 
-  * `currency`: is the currency for which the number is formatted. This option
-    is required if `:format` is set to `:currency`.  If `currency` is set
-    and no `:format` is set, `:format` will be set to `:currency` as well.
+  * `currency`: is the currency for which the number is formatted. If `currency`
+    is set and no `:format` is set, `:format` will be set to `:currency` as well.
     Currency may be any [ISO 4217 currency code](https://en.wikipedia.org/wiki/ISO_4217)
     returned by `Cldr.Currency.known_currencies/0` or a
     [ISO 24165](https://www.iso.org/standard/80601.html) digital token

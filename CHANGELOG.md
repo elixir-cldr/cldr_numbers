@@ -8,6 +8,10 @@ This is the changelog for Cldr v2.29.0 released on January 17th.  For older chan
 
 * Adds an option `:wrapper` to `Cldr.Number.to_string/2`. The argument is a 2-arity function that received the parameters `type` and `string`  where `type` is one of `:number`, `:currency_symbol`, `:percent`, `:permille`, `:minus` or `:plus`. The function must return either `{:ok, wrapped_string}` or `:error`. The function can be used to wrap format elements in HTML or other tags.
 
+* Adds the number formats `:currency_no_symbol` and `:accounting_no_symbol` that can be used to format currency amounts without an associated currency symbol.
+
+* Removes the `Cldr.Number.to_string/3` requirement for a currency to be provided (or derived) when the format is `:currency`. If a currency is provided, the format `:currency` is used. If a currency is not provided, the format `:currency_no_symbol` is used.
+
 ## Cldr_Numbers v2.28.0
 
 This is the changelog for Cldr v2.28.0 released on October 24th, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
