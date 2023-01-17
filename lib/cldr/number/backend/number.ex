@@ -235,24 +235,47 @@ defmodule Cldr.Number.Backend.Number do
           of digits in the integer (or fractional) part of the number then no grouping
           is performed.
 
+        * `:wrapper` is a 2-arity function that will be called for each number component
+          with parameters `string` and `tag` where `tag` is one of `:number`,
+          `:currency_symbol`, `:currency_space`, `:literal`, `:quote`, `:percent`,
+          `:permille`, `:minus` or `:plus`. The function must return a string. The
+          function can be used to wrap format elements in HTML or other tags.
+
         ## Locale extensions affecting formatting
 
         A locale identifier can specify options that affect number formatting.
         These options are:
 
-        * `cu`: defines what currency is implied when no curreny is specified in
-          the call to `to_string/2`.
-
-        * `cf`: defines whether to use currency or accounting format for
-          formatting currencies. This overrides the `format: :currency` and `format: :accounting`
-          options.
-
         * `nu`: defines the number system to be used if none is specified by the `:number_system`
           option to `to_string/2`
 
-        These keys are part of the [u extension](https://unicode.org/reports/tr35/#u_Extension) and
+        This key is part of the [u extension](https://unicode.org/reports/tr35/#u_Extension) and
         that document should be consulted for details on how to construct a locale identifier with these
         extensions.
+
+        ## Wrapping format elements
+
+        When formatting a number the format is parsed into format elements that might include
+        a currency symbol, a literal string, inserted text between a currency symbol and the
+        currency amount, a percent sign, the number itself and several other elements.  In
+        some cases it is helpful to be apply to apply specific formatting to each element.
+        This can be achieved by specifying a `:wrapper` option. This option takes a 2-arity
+        function as an argument. For each element of the format the wrapper function is called
+        with two parameters:  the format element as a string and an atom representing the
+        element type. The wrapper function is required to return a string that is then
+        inserted in the final formatted number.
+
+        Wrapping elements is particularly useful when formatting a number with a
+        currency symbol and the requirement is to have different HTML formatting
+        applied to the symbol than the number.  For example:
+
+            iex> #{inspect(__MODULE__)}.to_string(100, format: :currency, currency: :USD, wrapper: fn
+            ...>   string, :currency_symbol -> "<span class=symbol>" <> string <> "</span>"
+            ...>   string, :number -> "<span class=number>" <> string <> "</span>"
+            ...>   string, :currency_space -> "<span>" <> string <> "</span>"
+            ...>   string, _other -> string
+            ...> end)
+            {:ok, "<span class=symbol>$</span><span class=number>100.00</span>"}
 
         ## Returns
 
@@ -323,9 +346,6 @@ defmodule Cldr.Number.Backend.Number do
 
             iex> #{inspect(__MODULE__)}.to_string 123, locale: "th-u-nu-thai"
             {:ok, "๑๒๓"}
-
-            iex> #{inspect(__MODULE__)}.to_string 123, format: :currency, locale: "en-u-cu-thb"
-            {:ok, "THB 123.00"}
 
         ## Errors
 

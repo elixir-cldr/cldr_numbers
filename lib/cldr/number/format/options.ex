@@ -94,7 +94,7 @@ defmodule Cldr.Number.Format.Options do
     fractional_digits: pos_integer(),
     maximum_integer_digits: pos_integer(),
     round_nearest: pos_integer(),
-    wrapper: (fun() -> {:ok, String.t() | :error})
+    wrapper: ((String.t(), atom) -> String.t())
   }
 
   defstruct @options

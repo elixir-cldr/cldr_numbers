@@ -31,8 +31,8 @@ defmodule Number.Format.Test do
     assert {:ok, "1.40"} == TestBackend.Cldr.Number.to_string(1.4, fractional_digits: 2)
   end
 
-  test "a currency format with no currency uses the locales currency" do
-    assert {:ok, "$1,234.00"} = TestBackend.Cldr.Number.to_string(1234, format: :currency)
+  test "a currency format with no currency returns a currency formatted number" do
+    assert {:ok, "1,234.00"} = TestBackend.Cldr.Number.to_string(1234, format: :currency)
   end
 
   test "that -0 is formatted as 0" do

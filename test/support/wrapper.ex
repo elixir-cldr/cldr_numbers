@@ -1,5 +1,5 @@
 defmodule NumberWrapper do
-  def wrapper(string, type) do
-    {:ok, "<#{type}>" <> string <> "<#{type}>"}
+  def wrapper(string, tag) do
+    "<#{tag}>" <> string <> "<#{tag}>"
   end
 end

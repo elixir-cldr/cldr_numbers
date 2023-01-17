@@ -9,7 +9,21 @@ defmodule Cldr.Number.Formatter.Decimal do
   The available format styles for a locale can be returned by:
 
       iex> Cldr.Number.Format.decimal_format_styles_for("en", :latn, TestBackend.Cldr)
-      {:ok, [:accounting, :currency, :currency_long, :percent, :scientific, :standard]}
+      {
+        :ok,
+        [
+          :accounting,
+          :accounting_alpha_next_to_number,
+          :accounting_no_symbol,
+          :currency,
+          :currency_alpha_next_to_number,
+          :currency_long,
+          :currency_no_symbol,
+          :percent,
+          :scientific,
+          :standard
+        ]
+      }
 
   This allows a number to be formatted in a locale-specific way but using
   a standard method of describing the purpose of the format.
@@ -653,12 +667,12 @@ defmodule Cldr.Number.Formatter.Decimal do
     ]
   end
 
-  defp assemble_parts([{:literal, literal} | rest], number_string, number, backend, meta, options) do
-    [literal | assemble_parts(rest, number_string, number, backend, meta, options)]
+  defp assemble_parts([{:literal, literal} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
+    [maybe_wrap(literal, :literal, wrapper) | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
-  defp assemble_parts([{:quote, _} | rest], number_string, number, backend, meta, options) do
-    ["'" | assemble_parts(rest, number_string, number, backend, meta, options)]
+  defp assemble_parts([{:quote, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
+    [maybe_wrap("'", :quote, wrapper) | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
   defp assemble_parts(
@@ -673,16 +687,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   # Invokes a wrapping function.
-  defp maybe_wrap(string, _type, nil) do
-    string
-  end
-
-  defp maybe_wrap(string, type, wrapper) do
-    case wrapper.(string, type) do
-      {:ok, string} -> string
-      :error -> string
-    end
-  end
+  defp maybe_wrap(string, _tag, nil), do: string
+  defp maybe_wrap(string, tag, wrapper), do: wrapper.(string, tag)
 
   # Calculate the padding by subtracting the length of the number
   # string from the padding length.

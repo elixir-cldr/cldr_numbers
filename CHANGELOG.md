@@ -2,11 +2,26 @@
 
 ## Cldr_Numbers v2.29.0
 
-This is the changelog for Cldr v2.29.0 released on January 17th.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+This is the changelog for Cldr v2.29.0 released on January 17th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Behavior change
+
+* In prior releases formatting a number as `format: :currency` would derive the currency code from the locale if no `:currency_code` was provided.  This is no longer the case.  As of CLDR42 a format `:currency_no_symbol` is defined to allow formatting of the number without an associated symbol.  Now when `format: :currency` is passed without a `:currency_code` option, the format is changed to `format: :currency_no_symbol`. To retain the existing behaviour, pass `currency_code: Cldr.Currency.currency_from_locale(locale)` as an option.
+
+* In prior releases the currency format (:currency or :accounting) would be overriden by any choice expressed in the locale. That is no longer the case from this release. To retain the existing behaviour, pass `format: Cldr.Currency.currency_format_from_locale(locale)` as an option.
 
 ### Enhancements
 
-* Adds an option `:wrapper` to `Cldr.Number.to_string/2`. The argument is a 2-arity function that received the parameters `type` and `string`  where `type` is one of `:number`, `:currency_symbol`, `:percent`, `:permille`, `:minus` or `:plus`. The function must return either `{:ok, wrapped_string}` or `:error`. The function can be used to wrap format elements in HTML or other tags.
+* Adds an option `:wrapper` to `Cldr.Number.to_string/2`. The argument is a 2-arity function that receives the parameters `string` and `tag` where `tag` is one of `:number`, `:currency_symbol`, `:currency_space`, `:literal`, `:quote`, `:percent`, `:permille`, `:minus` or `:plus`. The function must return a string. The function can be used to wrap format elements in HTML or other tags.  Example:
+```elixir
+iex> Cldr.Number.to_string(100, format: :currency, currency: :USD, wrapper: fn
+...>   string, :currency_symbol -> "<span class=symbol>" <> string <> "</span>"
+...>   string, :number -> "<span class=number>" <> string <> "</span>"
+...>   string, :currency_space -> "<span>" <> string <> "</span>"
+...>   string, _other -> string
+...> end)
+{:ok, "<span class=symbol>$</span><span class=number>100.00</span>"}
+```
 
 * Adds the number formats `:currency_no_symbol` and `:accounting_no_symbol` that can be used to format currency amounts without an associated currency symbol.
 

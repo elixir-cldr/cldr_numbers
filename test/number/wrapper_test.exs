@@ -28,4 +28,9 @@ defmodule Number.FormatWrapper.Test do
     assert {:ok, "<minus>-<minus><number>100<number>"} =
       Cldr.Number.to_string(-100, format: "##", wrapper: &NumberWrapper.wrapper/2)
   end
+
+  test "Wrapping a literal" do
+    assert {:ok, "<literal>some string <literal><number>100<number>"} =
+      Cldr.Number.to_string(100, format: "some string ##", wrapper: &NumberWrapper.wrapper/2)
+  end
 end
