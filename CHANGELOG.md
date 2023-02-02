@@ -6,7 +6,7 @@ This is the changelog for Cldr v2.29.0 released on January 17th, 2023.  For olde
 
 ### Behavior change
 
-* In prior releases formatting a number as `format: :currency` would derive the currency code from the locale if no `:currency_code` was provided.  This is no longer the case.  As of CLDR42 a format `:currency_no_symbol` is defined to allow formatting of the number without an associated symbol.  Now when `format: :currency` is passed without a `:currency_code` option, the format is changed to `format: :currency_no_symbol`. To retain the existing behaviour, pass `currency_code: Cldr.Currency.currency_from_locale(locale)` as an option.
+* In prior releases formatting a number as `format: :currency` would derive the currency code from the locale if no `:currency_code` was provided.  This is no longer the case.  As of CLDR42 a format `:currency_no_symbol` is defined to allow formatting of the number without an associated symbol.  Now when `format: :currency` is passed without a `:currency` option, the format is changed to `format: :currency_no_symbol`. To retain the existing behaviour, pass `currency: Cldr.Currency.currency_from_locale(locale)` as an option.
 
 * In prior releases the currency format (:currency or :accounting) would be overriden by any choice expressed in the locale. That is no longer the case from this release. To retain the existing behaviour, pass `format: Cldr.Currency.currency_format_from_locale(locale)` as an option.
 
