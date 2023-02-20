@@ -42,7 +42,9 @@ defmodule Cldr.Numbers.Mixfile do
   defp deps do
     [
       {:ex_cldr, "~> 2.34"},
-      {:ex_cldr_currencies, ">= 2.14.2"},
+      # {:ex_cldr_currencies, ">= 2.14.2"},
+      {:ex_cldr_currencies, path: "../cldr_currencies"},
+
       {:digital_token, "~> 0.3 or ~> 1.0"},
 
       {:decimal, "~> 1.6 or ~> 2.0"},

@@ -1,12 +1,13 @@
 defmodule Cldr.Number.Backend.Rbnf do
   @moduledoc false
 
-  def define_number_modules(config) do
+  def define_number_system_module(config) do
     backend = config.backend
+    module_name = Module.concat(backend, Rbnf.NumberSystem)
     root_locale = Cldr.Config.root_locale_name()
 
-    quote location: :keep do
-      defmodule Rbnf.NumberSystem do
+    body =
+      quote location: :keep do
         @moduledoc false
         if Cldr.Config.include_module_docs?(unquote(config.generate_docs)) do
           @moduledoc """
@@ -44,7 +45,15 @@ defmodule Cldr.Number.Backend.Rbnf do
         define_rules(:NumberingSystemRules, unquote(backend), __ENV__)
       end
 
-      defmodule Rbnf.Spellout do
+    {module_name, body, __ENV__}
+  end
+
+  def define_spellout_module(config) do
+    backend = config.backend
+    module_name = Module.concat(backend, Rbnf.Spellout)
+
+    body =
+      quote do
         @moduledoc false
         if Cldr.Config.include_module_docs?(unquote(config.generate_docs)) do
           @moduledoc """
@@ -81,8 +90,15 @@ defmodule Cldr.Number.Backend.Rbnf do
 
         define_rules(:SpelloutRules, unquote(backend), __ENV__)
       end
+    {module_name, body, __ENV__}
+  end
 
-      defmodule Rbnf.Ordinal do
+  def define_ordinal_module(config) do
+    backend = config.backend
+    module_name = Module.concat(backend, Rbnf.Ordinal)
+
+    body =
+      quote do
         @moduledoc false
         if Cldr.Config.include_module_docs?(unquote(config.generate_docs)) do
           @moduledoc """
@@ -126,6 +142,6 @@ defmodule Cldr.Number.Backend.Rbnf do
 
         define_rules(:OrdinalRules, unquote(backend), __ENV__)
       end
-    end
+    {module_name, body, __ENV__}
   end
 end
