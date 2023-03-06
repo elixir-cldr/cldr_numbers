@@ -40,7 +40,7 @@ defmodule Cldr.Number.Formatter.Currency do
   alias Cldr.Number.{Format, System}
   alias Cldr.{Substitution, Currency}
   alias Cldr.Number.Format.Options
-  alias Cldr.Number.Formatter.Decimal
+  alias Cldr.Number.Formatter
 
   import DigitalToken, only: [is_digital_token: 1]
 
@@ -58,12 +58,12 @@ defmodule Cldr.Number.Formatter.Currency do
   # and the default :currency format.
 
   def to_string(number, :currency_long_with_symbol, backend, options) do
-    decimal_options = decimal_options(options, backend)
+    decimal_options = decimal_options(options, backend, number)
     decimal_format = decimal_options.format
 
     number
     |> Cldr.Number.to_string!(backend, long_options(options))
-    |> Decimal.to_string(decimal_format, backend, decimal_options)
+    |> Formatter.Decimal.to_string(decimal_format, backend, decimal_options)
   end
 
   def to_string(number, :currency_long, backend, options) do
@@ -115,10 +115,13 @@ defmodule Cldr.Number.Formatter.Currency do
     |> Map.put(:currency, nil)
   end
 
-  defp decimal_options(options, backend) do
+  defp decimal_options(options, backend, number) do
     currency_format = Currency.currency_format_from_locale(options.locale)
     options = Map.put(options, :format, currency_format)
-    Options.resolve_standard_format(options, backend)
+
+    options
+    |> Options.resolve_standard_format(backend)
+    |> Options.maybe_expand_currency_symbol(number)
   end
 
 end
