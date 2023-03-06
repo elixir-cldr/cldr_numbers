@@ -2,11 +2,13 @@
 
 ## Cldr Numbers v2.29.1
 
-This is the changelog for Cldr v2.29.1 released on March _____, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+This is the changelog for Cldr v2.29.1 released on March 6th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
 * Fix short formatting for decimal numbers. Thanks to @dbernheisel for the report. Closes #34.
+
+* Fix formatting negative numbers when the currency symbol results in an alphabetic character next to the number. In these cases a special format `:currency_alpha_next_to_number` (or `:accounting_alpha_next_to_number`).
 
 ## Cldr_Numbers v2.29.0
 
