@@ -12,7 +12,7 @@ defmodule Number.FormatWrapper.Test do
   end
 
   test "Wrapping a currency symbol with inserted space" do
-    assert {:ok, "<currency_symbol>CHF<currency_symbol><currency_space> <currency_space><number>100.00<number>"} =
+    assert {:ok, "<currency_symbol>CHF<currency_symbol><literal> <literal><number>100.00<number>"} =
       Cldr.Number.to_string(100, currency: :CHF, wrapper: &NumberWrapper.wrapper/2)
   end
 

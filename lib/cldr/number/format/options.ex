@@ -9,6 +9,8 @@ defmodule Cldr.Number.Format.Options do
   alias Cldr.Currency
   alias Cldr.LanguageTag
 
+  import DigitalToken, only: :macros
+
   # These are the options set in the
   # struct guide formatting
   @options [
@@ -640,15 +642,24 @@ defmodule Cldr.Number.Format.Options do
   # so on with the actual symbol
 
   @doc false
-  def maybe_expand_currency_symbol(%{currency: %Currency{} = currency, format: format} = options, number) when is_binary(format) do
-    backend = options.locale.backend
-    size = Module.concat(backend, Number.Formatter.Decimal).metadata!(options.format).currency.symbol_count
-    symbol = currency_symbol(currency, options.currency_symbol, number, size, options.locale, backend)
-    Map.put(options, :currency_symbol, symbol)
+  def maybe_expand_currency_symbol(%{currency: %Currency{}, format: format} = options, number) when is_binary(format) do
+    expand_currency_symbol(options, number)
+  end
+
+  def maybe_expand_currency_symbol(%{currency: currency, format: format} = options, number)
+      when is_digital_token(currency) and is_binary(format) do
+    expand_currency_symbol(options, number)
   end
 
   def maybe_expand_currency_symbol(options, _number) do
     options
+  end
+
+  defp expand_currency_symbol(%{currency: currency, format: format} = options, number) do
+    backend = options.locale.backend
+    size = Module.concat(backend, Number.Formatter.Decimal).metadata!(format).currency.symbol_count
+    symbol = currency_symbol(currency, options.currency_symbol, number, size, options.locale, backend)
+    Map.put(options, :currency_symbol, symbol)
   end
 
   # Extract the appropriate currency symbol based upon how many currency
@@ -688,21 +699,29 @@ defmodule Cldr.Number.Format.Options do
   end
 
   def currency_symbol(%Currency{} = currency, _symbol, number, 3, locale, backend) do
-    Module.concat(backend, Cldr.Number.Cardinal).pluralize(number, locale, currency.count)
+    Module.concat(backend, Number.Cardinal).pluralize(number, locale, currency.count)
   end
 
   def currency_symbol(%Currency{} = currency, _symbol, _number, 4, _locale, _backend) do
     currency.narrow_symbol || currency.symbol
   end
 
-  # def currency_symbol(digital_token, symbol, _number, _size, _locale, _backend) when is_digital_token(digital_token) and is_binary(symbol) do
-  #   symbol
-  # end
-  #
-  # def currency_symbol(digital_token, _symbol, _number, size, _locale, _backend) when is_digital_token(digital_token) do
-  #   {:ok, symbol} = DigitalToken.symbol(digital_token, size)
-  #   symbol
-  # end
+  def currency_symbol(digital_token, :iso, _number, _size, _locale, _backend)
+      when is_digital_token(digital_token) do
+    {:ok, token} = DigitalToken.get_token(digital_token)
+    hd(token.informative.short_names)
+  end
+
+  def currency_symbol(digital_token, symbol, _number, _size, _locale, _backend)
+      when is_digital_token(digital_token) and is_binary(symbol) do
+    symbol
+  end
+
+  def currency_symbol(digital_token, _symbol, _number, size, _locale, _backend)
+      when is_digital_token(digital_token) do
+    {:ok, symbol} = DigitalToken.symbol(digital_token, size)
+    symbol
+  end
 
   # ========= This is here for compatibility and needs review =========
 
