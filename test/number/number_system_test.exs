@@ -31,19 +31,19 @@ defmodule Number.System.Test do
 
   test "that number_system parameter overrides the locale u number system" do
     assert TestBackend.Cldr.Number.to_string(1234, locale: "th-u-nu-latn", number_system: :thai) ==
-      {:ok, "๑,๒๓๔"}
+             {:ok, "๑,๒๓๔"}
   end
 
   test "that a locale u number system that is not valid for a locale returns an error" do
     assert TestBackend.Cldr.Number.to_string(1234, locale: "en-AU-u-nu-thai") ==
-    {:error,
-     {Cldr.UnknownNumberSystemError,
-      "The number system :thai is unknown for the locale named :\"en-AU\". Valid number systems are %{default: :latn, native: :latn}"}}
+             {:error,
+              {Cldr.UnknownNumberSystemError,
+               "The number system :thai is unknown for the locale named :\"en-AU\". Valid number systems are %{default: :latn, native: :latn}"}}
   end
 
   test "that an invalid nu returns an error" do
     assert TestBackend.Cldr.Number.to_string(123, locale: "en-AU-u-nu-xxx") ==
-      {:error, {Cldr.LanguageTag.ParseError, "The value \"xxx\" is not valid for the key \"nu\""}}
+             {:error,
+              {Cldr.LanguageTag.ParseError, "The value \"xxx\" is not valid for the key \"nu\""}}
   end
-
 end

@@ -35,7 +35,7 @@ defmodule Cldr.Number.Format.Options do
   # These are the options that can be supplied
   # through the api
   @valid_options @options --
-    [:currency_spacing, :pattern] ++ [:cash]
+                   ([:currency_spacing, :pattern] ++ [:cash])
 
   @short_format_styles [
     :currency_short,
@@ -85,25 +85,29 @@ defmodule Cldr.Number.Format.Options do
   @type format :: binary() | fixed_formats()
   @type currency_symbol :: :standard | :iso
   @type short_format_styles ::
-    :currency_short | :currency_long | :currency_long_with_symbol | :decimal_short | :decimal_long
+          :currency_short
+          | :currency_long
+          | :currency_long_with_symbol
+          | :decimal_short
+          | :decimal_long
 
   @type t :: %__MODULE__{
-    locale: LanguageTag.t(),
-    number_system: System.system_name(),
-    currency: Currency.t(),
-    format: format(),
-    currency_format: :currency | :accounting,
-    currency_digits: pos_integer(),
-    currency_spacing: map(),
-    symbols: Symbol.t(),
-    minimum_grouping_digits: pos_integer(),
-    pattern: String.t(),
-    rounding_mode: Decimal.rounding(),
-    fractional_digits: pos_integer(),
-    maximum_integer_digits: pos_integer(),
-    round_nearest: pos_integer(),
-    wrapper: ((String.t(), atom) -> String.t())
-  }
+          locale: LanguageTag.t(),
+          number_system: System.system_name(),
+          currency: Currency.t(),
+          format: format(),
+          currency_format: :currency | :accounting,
+          currency_digits: pos_integer(),
+          currency_spacing: map(),
+          symbols: Symbol.t(),
+          minimum_grouping_digits: pos_integer(),
+          pattern: String.t(),
+          rounding_mode: Decimal.rounding(),
+          fractional_digits: pos_integer(),
+          maximum_integer_digits: pos_integer(),
+          round_nearest: pos_integer(),
+          wrapper: (String.t(), atom -> String.t())
+        }
 
   defstruct @options
 
@@ -113,11 +117,10 @@ defmodule Cldr.Number.Format.Options do
   def validate_options(number, backend, options) do
     with {:ok, options} <- ensure_only_valid_keys(@valid_options, options),
          {:ok, backend} <- Cldr.validate_backend(backend) do
-
       options =
         Module.concat(backend, Number).default_options()
         |> Keyword.merge(options)
-        |> Map.new
+        |> Map.new()
 
       options
       |> validate_each_option(backend)
@@ -181,7 +184,7 @@ defmodule Cldr.Number.Format.Options do
   # because later on we may need to adjust the "alpha_next_to_number" format
 
   defp maybe_adjust_currency_format(%{format: format} = options, currency, _)
-      when not is_nil(currency) and format in [:accounting, :currency] do
+       when not is_nil(currency) and format in [:accounting, :currency] do
     Map.put(options, :currency_format, options.format)
   end
 
@@ -222,10 +225,11 @@ defmodule Cldr.Number.Format.Options do
     case Map.fetch(formats, format) do
       {:ok, nil} ->
         {:error,
-          {Cldr.UnknownFormatError,
-            "The locale #{inspect Map.fetch!(locale, :cldr_locale_name)} " <>
-            "with number system #{inspect number_system} " <>
-            "does not define a format #{inspect format}"}}
+         {Cldr.UnknownFormatError,
+          "The locale #{inspect(Map.fetch!(locale, :cldr_locale_name))} " <>
+            "with number system #{inspect(number_system)} " <>
+            "does not define a format #{inspect(format)}"}}
+
       {:ok, format} ->
         {:ok, format}
     end
@@ -235,11 +239,11 @@ defmodule Cldr.Number.Format.Options do
   #  @iso_placeholder Compiler.placeholder(:currency) <> Compiler.placeholder(:currency)
 
   defp confirm_currency_format_has_currency(%{format: format, currency: nil} = options)
-      when is_binary(format) do
+       when is_binary(format) do
     if String.contains?(format, @currency_placeholder) do
       {:error,
-        {Cldr.FormatError,
-          "currency format #{inspect(format)} requires that " <>
+       {Cldr.FormatError,
+        "currency format #{inspect(format)} requires that " <>
           "options[:currency] be specified"}}
     else
       options
@@ -251,26 +255,21 @@ defmodule Cldr.Number.Format.Options do
   end
 
   # From TR35
-  # The alt="alphaNextToNumber" pattern, if available, should be used instead of the standard pattern when the currency symbol
-  # character closest to the numeric value has Unicode General Category L (letter). The alt="alphaNextToNumber" pattern is typically
-  # provided when the standard currency pattern does not have a space between currency symbol and numeric value; the alphaNextToNumber
-  # variant adds a non-breaking space if appropriate for the locale.
-
-  defp maybe_apply_alpha_next_to_number(%{currency_symbol: nil} = options, _backend) do
-    options
-  end
-
-  defp maybe_apply_alpha_next_to_number(%{currency_symbol: symbol} = options, _backend) when is_atom(symbol) do
-    options
-  end
+  # The alt="alphaNextToNumber" pattern, if available, should be used instead of the standard
+  # pattern when the currency symbol character closest to the numeric value has Unicode General
+  # Category L (letter). The alt="alphaNextToNumber" pattern is typically provided when the
+  # standard currency pattern does not have a space between currency symbol and numeric value; the
+  # alphaNextToNumber variant adds a non-breaking space if appropriate for the locale.
 
   defp maybe_apply_alpha_next_to_number(%{currency_format: currency_format} = options, backend)
-      when currency_format in [:currency, :accounting] do
+       when currency_format in [:currency, :accounting] do
     cond do
-      String.starts_with?(options.format, @currency_placeholder) && Regex.match?(~r/\p{L}$/u, options.currency_symbol) ->
+      String.starts_with?(options.format, @currency_placeholder) &&
+          Regex.match?(~r/\p{L}$/u, options.currency_symbol) ->
         resolve_alpha_next_to_number(options, backend)
 
-      String.ends_with?(options.format, @currency_placeholder) && Regex.match?(~r/^\p{L}/u, options.currency_symbol) ->
+      String.ends_with?(options.format, @currency_placeholder) &&
+          Regex.match?(~r/^\p{L}/u, options.currency_symbol) ->
         resolve_alpha_next_to_number(options, backend)
 
       true ->
@@ -286,9 +285,10 @@ defmodule Cldr.Number.Format.Options do
   # we set :currency_spacing to nil so it doesn't need to be evaluated
 
   defp resolve_alpha_next_to_number(options, backend) do
-    format = if options.currency_format == :accounting,
-      do: :accounting_alpha_next_to_number,
-      else: :currency_alpha_next_to_number
+    format =
+      if options.currency_format == :accounting,
+        do: :accounting_alpha_next_to_number,
+        else: :currency_alpha_next_to_number
 
     resolve_options = Map.put(options, :format, format)
 
@@ -341,7 +341,7 @@ defmodule Cldr.Number.Format.Options do
 
   # Number system is extracted from the locale
   defp validate_option(:number_system, options, backend, number_system)
-      when is_nil(number_system) or number_system == :default do
+       when is_nil(number_system) or number_system == :default do
     number_system =
       options
       |> Map.fetch!(:locale)
@@ -358,12 +358,12 @@ defmodule Cldr.Number.Format.Options do
   # Currency validation returns a t: Cldr.Currency.t/0
 
   defp validate_option(:currency, %{format: format, locale: locale}, backend, nil)
-      when format in @currency_formats_requiring_a_currency do
+       when format in @currency_formats_requiring_a_currency do
     currency_from_locale(locale, backend)
   end
 
   defp validate_option(:currency, %{format: format, locale: locale}, backend, nil)
-      when is_binary(format) do
+       when is_binary(format) do
     if String.contains?(format, @currency_placeholder) do
       currency_from_locale(locale, backend)
     else
@@ -381,7 +381,8 @@ defmodule Cldr.Number.Format.Options do
 
   defp validate_option(:currency, options, backend, currency) do
     with {:ok, currency_code} <- Cldr.validate_currency(currency),
-         {:ok, currency} <- Cldr.Currency.currency_for_code(currency_code, backend, locale: options.locale) do
+         {:ok, currency} <-
+           Cldr.Currency.currency_for_code(currency_code, backend, locale: options.locale) do
       {:ok, currency}
     else
       {:error, _} ->
@@ -441,7 +442,7 @@ defmodule Cldr.Number.Format.Options do
   # then derive a currency format from the locale
 
   defp validate_option(:format, options, _backend, format)
-      when is_atom(format) and format not in @exclude_formats do
+       when is_atom(format) and format not in @exclude_formats do
     locale = Map.fetch!(options, :locale)
 
     if Map.get(options, :currency) do
@@ -454,7 +455,6 @@ defmodule Cldr.Number.Format.Options do
   defp validate_option(:format, _options, _backend, format) do
     {:ok, format}
   end
-
 
   # Currency digits is an opaque option that is a proxy
   # for the `:cash` parameter which is set to true or false
@@ -471,19 +471,19 @@ defmodule Cldr.Number.Format.Options do
   # based upon :format) but we validate anyway
 
   defp validate_option(:currency_format, _options, _backend, currency_format)
-      when currency_format in [:currency, :accounting, nil] do
+       when currency_format in [:currency, :accounting, nil] do
     {:ok, currency_format}
   end
 
   defp validate_option(:currency_format, _options, _backend, currency_format) do
-    {:error, "Invalid :currency_format: #{inspect currency_format}"}
+    {:error, "Invalid :currency_format: #{inspect(currency_format)}"}
   end
 
   # Currency spacing isn't really a user option
   # Its derived for currency formats only
 
   defp validate_option(:currency_spacing, %{format: format} = options, backend, _spacing)
-      when format in [:currency, :accounting, :currency_short] do
+       when format in [:currency, :accounting, :currency_short] do
     locale = Map.fetch!(options, :locale)
     number_system = Map.fetch!(options, :number_system)
     module = Module.concat(backend, Number.Format)
@@ -500,21 +500,20 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp validate_option(:currency_symbol, _options, _backend, currency_symbol)
-      when currency_symbol in @currency_symbol do
+       when currency_symbol in @currency_symbol do
     {:ok, currency_symbol}
   end
 
   defp validate_option(:currency_symbol, _options, _backend, currency_symbol)
-      when is_binary(currency_symbol) do
+       when is_binary(currency_symbol) do
     {:ok, currency_symbol}
   end
 
   defp validate_option(:currency_symbol, _options, _backend, other) do
     {:error,
-      {ArgumentError,
-        ":currency_symbol must be :standard, :iso, :narrow, :symbol, " <>
-        "a string or nil. Found #{inspect other}"
-    }}
+     {ArgumentError,
+      ":currency_symbol must be :standard, :iso, :narrow, :symbol, " <>
+        "a string or nil. Found #{inspect(other)}"}}
   end
 
   defp validate_option(:symbols, options, backend, _any) do
@@ -527,7 +526,8 @@ defmodule Cldr.Number.Format.Options do
     end
   end
 
-  defp validate_option(:wrapper, _options, _backend, wrapper) when is_nil(wrapper) or is_function(wrapper, 2) do
+  defp validate_option(:wrapper, _options, _backend, wrapper)
+       when is_nil(wrapper) or is_function(wrapper, 2) do
     {:ok, wrapper}
   end
 
@@ -536,14 +536,14 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp validate_option(:minimum_grouping_digits, _options, _backend, int)
-      when is_integer(int) and int >= 0 do
+       when is_integer(int) and int >= 0 do
     {:ok, int}
   end
 
   defp validate_option(:minimum_grouping_digits, _options, _backend, other) do
     {:error,
-      {ArgumentError,
-        ":minimum_grouping_digits must be a positive integer or nil. Found #{inspect other}"}}
+     {ArgumentError,
+      ":minimum_grouping_digits must be a positive integer or nil. Found #{inspect(other)}"}}
   end
 
   defp validate_option(:fractional_digits, _options, _backend, nil) do
@@ -551,14 +551,14 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp validate_option(:fractional_digits, _options, _backend, int)
-      when is_integer(int) and int >= 0 do
+       when is_integer(int) and int >= 0 do
     {:ok, int}
   end
 
   defp validate_option(:fractional_digits, _options, _backend, other) do
     {:error,
-      {ArgumentError,
-        ":fractional_digits must be a an integer >= 0 or nil. Found #{inspect other}"}}
+     {ArgumentError,
+      ":fractional_digits must be a an integer >= 0 or nil. Found #{inspect(other)}"}}
   end
 
   defp validate_option(:maximum_integer_digits, _options, _backend, nil) do
@@ -566,14 +566,14 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp validate_option(:maximum_integer_digits, _options, _backend, int)
-      when is_integer(int) and int >= 0 do
+       when is_integer(int) and int >= 0 do
     {:ok, int}
   end
 
   defp validate_option(:maximum_integer_digits, _options, _backend, other) do
     {:error,
-      {ArgumentError,
-        ":maximum_integer_digits must be a an integer >= 0 or nil. Found #{inspect other}"}}
+     {ArgumentError,
+      ":maximum_integer_digits must be a an integer >= 0 or nil. Found #{inspect(other)}"}}
   end
 
   defp validate_option(:round_nearest, _options, _backend, nil) do
@@ -581,14 +581,13 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp validate_option(:round_nearest, _options, _backend, int)
-      when is_integer(int) and int > 0 do
+       when is_integer(int) and int > 0 do
     {:ok, int}
   end
 
   defp validate_option(:round_nearest, _options, _backend, other) do
     {:error,
-      {ArgumentError,
-        ":round_nearest must be a positive integer or nil. Found #{inspect other}"}}
+     {ArgumentError, ":round_nearest must be a positive integer or nil. Found #{inspect(other)}"}}
   end
 
   defp validate_option(:rounding_mode, _options, _backend, nil) do
@@ -596,14 +595,14 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp validate_option(:rounding_mode, _options, _backend, rounding_mode)
-      when rounding_mode in @rounding_modes do
+       when rounding_mode in @rounding_modes do
     {:ok, rounding_mode}
   end
 
   defp validate_option(:rounding_mode, _options, _backend, other) do
     {:error,
-      {ArgumentError,
-        ":rounding_mode must be one of #{inspect @rounding_modes}. Found #{inspect other}"}}
+     {ArgumentError,
+      ":rounding_mode must be one of #{inspect(@rounding_modes)}. Found #{inspect(other)}"}}
   end
 
   defp validate_option(:pattern, _options, _backend, _pattern) do
@@ -613,7 +612,8 @@ defmodule Cldr.Number.Format.Options do
   # Returns a Cldr.Currency.t from a locale and backend
   defp currency_from_locale(locale, backend) do
     with currency_code when is_atom(currency_code) <- Cldr.Currency.currency_from_locale(locale),
-         {:ok, currency} <- Cldr.Currency.currency_for_code(currency_code, backend, locale: locale) do
+         {:ok, currency} <-
+           Cldr.Currency.currency_for_code(currency_code, backend, locale: locale) do
       {:ok, currency}
     end
   end
@@ -642,7 +642,8 @@ defmodule Cldr.Number.Format.Options do
   # so on with the actual symbol
 
   @doc false
-  def maybe_expand_currency_symbol(%{currency: %Currency{}, format: format} = options, number) when is_binary(format) do
+  def maybe_expand_currency_symbol(%{currency: %Currency{}, format: format} = options, number)
+      when is_binary(format) do
     expand_currency_symbol(options, number)
   end
 
@@ -657,8 +658,13 @@ defmodule Cldr.Number.Format.Options do
 
   defp expand_currency_symbol(%{currency: currency, format: format} = options, number) do
     backend = options.locale.backend
-    size = Module.concat(backend, Number.Formatter.Decimal).metadata!(format).currency.symbol_count
-    symbol = currency_symbol(currency, options.currency_symbol, number, size, options.locale, backend)
+
+    size =
+      Module.concat(backend, Number.Formatter.Decimal).metadata!(format).currency.symbol_count
+
+    symbol =
+      currency_symbol(currency, options.currency_symbol, number, size, options.locale, backend)
+
     Map.put(options, :currency_symbol, symbol)
   end
 
@@ -690,7 +696,7 @@ defmodule Cldr.Number.Format.Options do
     symbol
   end
 
-  def currency_symbol(%Currency{} = currency, _symbol,  _number, 1, _locale, _backend) do
+  def currency_symbol(%Currency{} = currency, _symbol, _number, 1, _locale, _backend) do
     currency.symbol
   end
 

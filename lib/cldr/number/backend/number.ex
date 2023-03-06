@@ -539,7 +539,7 @@ defmodule Cldr.Number.Backend.Number do
           an `integer` or a `float`.
 
         * `:locale` is any locale returned by `Cldr.known_locale_names/1`
-          or a `Cldr.LanguageTag.t`. The default is `#{inspect backend}.get_locale/0`.
+          or a `Cldr.LanguageTag.t`. The default is `#{inspect(backend)}.get_locale/0`.
 
         ## Returns
 
@@ -591,9 +591,9 @@ defmodule Cldr.Number.Backend.Number do
           an `integer` or a `float`.
 
         * `:locale` is any locale returned by
-          `#{inspect backend}.known_locale_names/0`
+          `#{inspect(backend)}.known_locale_names/0`
           or a `Cldr.LanguageTag.t`. The default is
-          `#{inspect backend}.get_locale/0`.
+          `#{inspect(backend)}.get_locale/0`.
 
         ## Returns
 
@@ -648,7 +648,7 @@ defmodule Cldr.Number.Backend.Number do
 
         * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
           or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
-          The default is `#{inspect backend}.get_locale()`
+          The default is `#{inspect(backend)}.get_locale()`
 
         * `:only` is an `atom` or list of `atoms` representing the
           currencies or currency types to be considered for a match.
@@ -726,7 +726,7 @@ defmodule Cldr.Number.Backend.Number do
 
         * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
           or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
-          The default is `#{inspect backend}.get_locale()`
+          The default is `#{inspect(backend)}.get_locale()`
 
         * `:only` is an `atom` or list of `atoms` representing the
           currencies or currency types to be considered for a match.
@@ -829,7 +829,7 @@ defmodule Cldr.Number.Backend.Number do
         @doc since: "2.22.0"
 
         @spec resolve_pers([String.t(), ...], Keyword.t()) ::
-          list(Cldr.Number.Parser.per() | String.t())
+                list(Cldr.Number.Parser.per() | String.t())
 
         def resolve_pers(list, options \\ []) when is_list(list) and is_list(options) do
           options = Keyword.put(options, :backend, unquote(backend))
@@ -875,8 +875,9 @@ defmodule Cldr.Number.Backend.Number do
         @doc since: "2.22.0"
 
         @spec resolve_per(String.t(), Keyword.t()) ::
-          Cldr.Number.Parser.per() | list(Cldr.Number.Parser.per() | String.t()) |
-          {:error, {module(), String.t()}}
+                Cldr.Number.Parser.per()
+                | list(Cldr.Number.Parser.per() | String.t())
+                | {:error, {module(), String.t()}}
 
         def resolve_per(string, options \\ []) when is_binary(string) do
           options = Keyword.put(options, :backend, unquote(backend))

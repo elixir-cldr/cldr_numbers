@@ -351,8 +351,8 @@ defmodule Cldr.Rbnf.Processor do
             rule_sets: rule_sets,
             all_rule_sets: all_rule_sets,
             backend: backend,
-            module: module] do
-
+            module: module
+          ] do
       # A map of rule sets by locale
       def rule_sets do
         unquote(Macro.escape(rule_sets))
@@ -371,8 +371,9 @@ defmodule Cldr.Rbnf.Processor do
         rbnf_locale_name
         |> String.to_existing_atom()
         |> rule_sets
-      rescue ArgumentError ->
-        nil
+      rescue
+        ArgumentError ->
+          nil
       end
 
       # All rule sets for all locales
@@ -386,7 +387,8 @@ defmodule Cldr.Rbnf.Processor do
 
       for rule_group <- all_rule_sets do
         @dialyzer {:nowarn_function, [{rule_group, 2}]}
-        def unquote(rule_group)(number, locale_name) when is_atom(locale_name) or is_binary(locale_name) do
+        def unquote(rule_group)(number, locale_name)
+            when is_atom(locale_name) or is_binary(locale_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale_name) do
             unquote(rule_group)(number, locale)
           end

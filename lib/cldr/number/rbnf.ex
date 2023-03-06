@@ -54,7 +54,7 @@ defmodule Cldr.Rbnf do
 
   """
   @spec rule_names_for_locale(Cldr.LanguageTag.t()) ::
-    {:ok, list(atom())} | {:error, {module(), String.t()}}
+          {:ok, list(atom())} | {:error, {module(), String.t()}}
 
   def rule_names_for_locale(%LanguageTag{rbnf_locale_name: nil} = language_tag) do
     {:error, rbnf_locale_error(language_tag)}
@@ -192,6 +192,7 @@ defmodule Cldr.Rbnf do
   def categories_for_locale!(%LanguageTag{} = locale) do
     Enum.reduce(@categories, [], fn category, acc ->
       rbnf_module = Module.concat([locale.backend, :Rbnf, category])
+
       case rbnf_module.rule_sets(locale) do
         nil -> acc
         _rules -> [category | acc]

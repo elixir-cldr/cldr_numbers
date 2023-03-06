@@ -41,16 +41,16 @@ defmodule Cldr.Number.Format do
   @short_format_styles [:decimal_long, :decimal_short, :currency_short, :currency_long]
 
   @format_styles [
-    :standard,
-    :currency,
-    :accounting,
-    :scientific,
-    :percent,
-    :accounting_alpha_next_to_number,
-    :accounting_no_symbol,
-    :currency_alpha_next_to_number,
-    :currency_no_symbol
-  ] ++ @short_format_styles
+                   :standard,
+                   :currency,
+                   :accounting,
+                   :scientific,
+                   :percent,
+                   :accounting_alpha_next_to_number,
+                   :accounting_no_symbol,
+                   :currency_alpha_next_to_number,
+                   :currency_no_symbol
+                 ] ++ @short_format_styles
 
   defstruct @format_styles ++ [:currency_spacing, :other]
 

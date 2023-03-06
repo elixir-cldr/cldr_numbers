@@ -24,7 +24,7 @@ defmodule CldrNumbersTest do
     assert "that module docs are generated for a backend" do
       for mod <- @modules do
         module = Module.concat(TestBackend.Cldr, mod)
-        {:docs_v1, 1, :elixir, "text/markdown", _, %{}, _} = Code.fetch_docs(module)
+        {:docs_v1, _, :elixir, "text/markdown", _, %{}, _} = Code.fetch_docs(module)
       end
     end
   end

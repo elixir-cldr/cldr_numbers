@@ -269,7 +269,10 @@ defmodule Cldr.Number.Format.Compiler do
     |> stage(:set_max_integer_digits)
     |> stage_if_not(
       :apply_grouping,
-      match?(%Meta{grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}}}, meta)
+      match?(
+        %Meta{grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}}},
+        meta
+      )
     )
     |> stage(:reassemble_number_string)
     |> stage(:transliterate)
@@ -398,6 +401,7 @@ defmodule Cldr.Number.Format.Compiler do
     case Enum.reverse(parts) do
       [{:currency, count} | _rest] ->
         %{location: :last, symbol_count: count}
+
       _other ->
         nil
     end

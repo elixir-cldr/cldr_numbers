@@ -67,8 +67,8 @@ defmodule Cldr.Number.Parser do
 
   """
   @spec scan(String.t(), Keyword.t()) ::
-    list(String.t() | integer() | float() | Decimal.t()) |
-    {:error, {module(), String.t()}}
+          list(String.t() | integer() | float() | Decimal.t())
+          | {:error, {module(), String.t()}}
 
   def scan(string, options \\ []) do
     {locale, backend} = Cldr.locale_and_backend_from(options)
@@ -76,17 +76,14 @@ defmodule Cldr.Number.Parser do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend),
          {:ok, number_system} <- digits_number_system_from(locale) do
-
-      symbols =
-        symbols_for_number_system(symbols, number_system)
+      symbols = symbols_for_number_system(symbols, number_system)
 
       scanner =
         @number_format
         |> localize_format_string(locale, backend, symbols)
         |> Regex.compile!([:unicode])
 
-      normalized_string =
-        transliterate(string, number_system, :latn, backend)
+      normalized_string = transliterate(string, number_system, :latn, backend)
 
       scanner
       |> Regex.split(normalized_string, include_captures: true, trim: true)
@@ -186,8 +183,8 @@ defmodule Cldr.Number.Parser do
 
   """
   @spec parse(String.t(), Keyword.t()) ::
-    {:ok, integer() | float() | Decimal.t()} |
-    {:error, {module(), String.t()}}
+          {:ok, integer() | float() | Decimal.t()}
+          | {:error, {module(), String.t()}}
 
   def parse(string, options \\ []) when is_binary(string) and is_list(options) do
     {locale, backend} = Cldr.locale_and_backend_from(options)
@@ -195,9 +192,7 @@ defmodule Cldr.Number.Parser do
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend),
          {:ok, number_system} <- digits_number_system_from(locale) do
-
-      symbols =
-        symbols_for_number_system(symbols, number_system)
+      symbols = symbols_for_number_system(symbols, number_system)
 
       normalized_string =
         string
@@ -328,7 +323,7 @@ defmodule Cldr.Number.Parser do
 
   """
   @spec resolve_currencies([String.t(), ...], Keyword.t()) ::
-    list(Cldr.Currency.code() | String.t())
+          list(Cldr.Currency.code() | String.t())
 
   def resolve_currencies(list, options \\ []) when is_list(list) and is_list(options) do
     resolve(list, &resolve_currency/2, options)
@@ -368,7 +363,7 @@ defmodule Cldr.Number.Parser do
   @doc since: "2.21.0"
 
   @spec resolve_pers([String.t(), ...], Keyword.t()) ::
-    list(per() | String.t())
+          list(per() | String.t())
 
   def resolve_pers(list, options \\ []) when is_list(list) and is_list(options) do
     resolve(list, &resolve_per/2, options)
@@ -423,7 +418,8 @@ defmodule Cldr.Number.Parser do
           other -> other
         end
 
-      other -> other
+      other ->
+        other
     end)
     |> List.flatten()
   end
@@ -543,8 +539,9 @@ defmodule Cldr.Number.Parser do
 
   """
   @spec resolve_currency(String.t(), Keyword.t()) ::
-    Cldr.Currency.code() | list(Cldr.Currency.code() | String.t()) |
-    {:error, {module(), String.t()}}
+          Cldr.Currency.code()
+          | list(Cldr.Currency.code() | String.t())
+          | {:error, {module(), String.t()}}
 
   def resolve_currency(string, options \\ []) when is_binary(string) do
     {locale, backend} = Cldr.locale_and_backend_from(options)
@@ -611,7 +608,7 @@ defmodule Cldr.Number.Parser do
   @doc since: "2.21.0"
 
   @spec resolve_per(String.t(), Keyword.t()) ::
-    per() | list(per() | String.t()) | {:error, {module(), String.t()}}
+          per() | list(per() | String.t()) | {:error, {module(), String.t()}}
 
   def resolve_per(string, options \\ []) when is_binary(string) do
     {locale, backend} = Cldr.locale_and_backend_from(options)
@@ -635,7 +632,9 @@ defmodule Cldr.Number.Parser do
          {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend) do
       symbols = symbols_for_number_system(symbols, number_system)
       parse_map = backend.lenient_parse_map(:general, locale.cldr_locale_name)
-      {:ok, Map.new(per_map(parse_map, symbols.percent_sign) ++ per_map(parse_map, symbols.per_mille))}
+
+      {:ok,
+       Map.new(per_map(parse_map, symbols.percent_sign) ++ per_map(parse_map, symbols.per_mille))}
     end
   end
 
@@ -697,8 +696,10 @@ defmodule Cldr.Number.Parser do
 
   # If the grouping symbol is a pop space then
   # also allow normal space as a group symbol when parsing
-  @pop_space " " # 0x202c
-  @space " " # 0x20
+  # 0x202c
+  @pop_space " "
+  # 0x20
+  @space " "
 
   defp maybe_add_space(@pop_space), do: @pop_space <> @space
   defp maybe_add_space(other), do: other
@@ -758,7 +759,7 @@ defmodule Cldr.Number.Parser do
   @doc since: "2.22.0"
 
   @spec find_and_replace(%{binary() => term()}, binary(), float() | nil) ::
-    {:ok, list()} | {:error, {module(), binary()}}
+          {:ok, list()} | {:error, {module(), binary()}}
 
   def find_and_replace(string_map, string, fuzzy \\ nil)
 
@@ -770,12 +771,14 @@ defmodule Cldr.Number.Parser do
     end
   end
 
-  defp do_find_and_replace(string_map, string, nil) when is_map(string_map) and is_binary(string) do
+  defp do_find_and_replace(string_map, string, nil)
+       when is_map(string_map) and is_binary(string) do
     if code = Map.get(string_map, normalize_search_string(string)) do
       {:ok, [code]}
     else
       [starting_code, remainder] = starting_string(string_map, string)
       [remainder, ending_code] = ending_string(string_map, remainder)
+
       if starting_code == "" && ending_code == "" do
         {:error, {Cldr.Number.ParseError, "No match was found"}}
       else
@@ -818,15 +821,17 @@ defmodule Cldr.Number.Parser do
     case starts_with(string_map, trimmed) do
       [] ->
         ["", search]
+
       list ->
         {string, match_length, code} = longest_match(list)
         [_, remainder] = String.split(trimmed, string, parts: 2)
+
         if String.match?(remainder, ~r/^[[:alpha:]]/u) do
           ["", search]
         else
           match_length = match_length + :erlang.byte_size(whitespace)
-          << _ :: binary-size(match_length), remainder :: binary>> = search
-          [code,  remainder]
+          <<_::binary-size(match_length), remainder::binary>> = search
+          [code, remainder]
         end
     end
   end
@@ -840,14 +845,16 @@ defmodule Cldr.Number.Parser do
     case ends_with(string_map, trimmed) do
       [] ->
         [search, ""]
+
       list ->
         {string, match_length, code} = longest_match(list)
         [remainder, _] = String.split(trimmed, string, parts: 2)
+
         if String.match?(remainder, ~r/[[:alpha:]]$/u) do
           [search, ""]
         else
           match = :erlang.byte_size(trimmed) - match_length
-          << remainder :: binary-size(match), _rest :: binary>> = search
+          <<remainder::binary-size(match), _rest::binary>> = search
           [remainder, code]
         end
     end
@@ -881,7 +888,6 @@ defmodule Cldr.Number.Parser do
   end
 
   defp parse_error(string) do
-    {Cldr.Number.ParseError, "The string #{inspect string} could not be parsed as a number"}
+    {Cldr.Number.ParseError, "The string #{inspect(string)} could not be parsed as a number"}
   end
-
 end

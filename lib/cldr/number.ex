@@ -407,7 +407,11 @@ defmodule Cldr.Number do
       "The locale :he with number system :hebr does not define a format :standard"}}
   ```
   """
-  @spec to_string(number | Decimal.t() | String.t(), Cldr.backend() | Keyword.t() | map(), Keyword.t() | map()) ::
+  @spec to_string(
+          number | Decimal.t() | String.t(),
+          Cldr.backend() | Keyword.t() | map(),
+          Keyword.t() | map()
+        ) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
 
   def to_string(number, backend \\ default_backend(), options \\ [])
@@ -489,7 +493,7 @@ defmodule Cldr.Number do
     {:ordinal, :digits_ordinal, Ordinal},
     {:spellout, :spellout_numbering, Spellout},
     {:spellout_verbose, :spellout_numbering_verbose, Spellout},
-    {:spellout_year, :spellout_numbering_year, Spellout},
+    {:spellout_year, :spellout_numbering_year, Spellout}
   ]
 
   for {format, function, module} <- @format_mapping do
@@ -555,12 +559,12 @@ defmodule Cldr.Number do
     cond do
       module = find_rbnf_module(locale, format, backend) -> {:ok, module, locale}
       module = find_rbnf_module(root_locale, format, backend) -> {:ok, module, root_locale}
-      true ->  {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
+      true -> {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
     end
   end
 
   defp find_rbnf_module(locale, format, backend) do
-    Enum.reduce_while Cldr.Rbnf.categories_for_locale!(locale), nil, fn category, acc ->
+    Enum.reduce_while(Cldr.Rbnf.categories_for_locale!(locale), nil, fn category, acc ->
       format_module = Module.concat([backend, :Rbnf, category])
       rules = format_module.rule_sets(locale)
 
@@ -569,7 +573,7 @@ defmodule Cldr.Number do
       else
         {:cont, acc}
       end
-    end
+    end)
   end
 
   defp evaluate_rule(number, module, function, locale, backend) do
@@ -747,7 +751,6 @@ defmodule Cldr.Number do
     with {:ok, options} <- Options.validate_options(number, backend, options),
          {:ok, format} <- Options.validate_other_format(other_format, backend, options),
          {:ok, formatted_number} <- to_string(number, backend, options) do
-
       final_format =
         [formatted_number]
         |> Cldr.Substitution.substitute(format)
@@ -812,7 +815,8 @@ defmodule Cldr.Number do
   format.
 
   """
-  @spec decimal_format_metadata(String.t(), Cldr.backend()) :: {:ok, Cldr.Number.Format.Meta.t()} | {:error, String.t()}
+  @spec decimal_format_metadata(String.t(), Cldr.backend()) ::
+          {:ok, Cldr.Number.Format.Meta.t()} | {:error, String.t()}
   def decimal_format_metadata(format, backend \\ default_backend()) when is_binary(format) do
     backend.decimal_format_metadata(format)
   end

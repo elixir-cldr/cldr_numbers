@@ -3,6 +3,6 @@ defmodule Cldr.Number.ShortFormatter.Test do
 
   test "Short formatter for a decimal" do
     number = Decimal.new("940038.00000000")
-    assert {:ok, "940K"} =  MyApp.Cldr.Number.to_string(number, format: :short)
+    assert {:ok, "940K"} = MyApp.Cldr.Number.to_string(number, format: :short)
   end
 end

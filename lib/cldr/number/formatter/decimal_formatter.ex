@@ -28,9 +28,6 @@ defmodule Cldr.Number.Formatter.Decimal do
   This allows a number to be formatted in a locale-specific way but using
   a standard method of describing the purpose of the format.
 
-  **This module is not part of the public API and is subject
-  to change at any time.**
-
   """
   import Cldr.Math, only: [power_of_10: 1]
   import DigitalToken, only: [is_digital_token: 1]
@@ -40,18 +37,21 @@ defmodule Cldr.Number.Formatter.Decimal do
   alias Cldr.Number.Format.Compiler
   alias Cldr.Number.Format.Options
 
-  @doc false
-  defguard is_currency(currency) when is_atom(currency)
-
   @empty_string ""
   @max_token_fractional_digits 18
 
   @doc """
   Formats a number according to a decimal format string.
 
+  This is a lower level formatting function. It is strongly
+  advised to use `Cldr.Number.to_string/2` or even better the
+  `MyApp.Cldr.Number.to_string/2` function where `MyApp.Cldr`
+  is a Cldr backend module.
+
   ## Arguments
 
-  * `number` is an integer, float or Decimal.
+  * `number` is an integer, float or Decimal or a string. A string
+    is used only when composing formats.
 
   * `format` is a format string.  See `Cldr.Number` for further
     information.
@@ -59,15 +59,15 @@ defmodule Cldr.Number.Formatter.Decimal do
   * `backend` is any module that includes `use Cldr` and therefore
     is a `Cldr` backend module.
 
-  * `options` is a map of validated options.  See `Cldr.Number.to_string/2`
-    for further information.
+  * `options` is a `t:Cldr.Number.Format.Options.t/0 of validated options.
+    See `Cldr.Number.to_string/2` for further information.
 
   """
 
   @spec to_string(Math.number_or_decimal() | String.t(), String.t(), Cldr.backend(), Options.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
 
-  def to_string(number, format, backend, %Options{} = options) do
+  def to_string(number, format, backend, %Options{} = options) when is_binary(format) do
     Module.concat(backend, Number.Formatter.Decimal).to_string(number, format, options)
   end
 
@@ -85,6 +85,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   @doc false
 
   # Formatting for NaN and Inf
+
   def do_to_string(%Decimal{coef: :NaN}, meta, backend, options) do
     options.symbols.nan
     |> assemble_format(meta, backend, options)
@@ -97,11 +98,16 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   # For when the number is actually a string. This allows formats to be
   # composed.
+
   def do_to_string(string, meta, backend, options) when is_binary(string) do
     assemble_format(string, meta, backend, options)
   end
 
-  # For most number formats
+  # For most number formats. Note this pipleine is only used for
+  # formats that are compiled at runtime. For all known formats that
+  # are compiled at compile time, their pipeline is baked into the
+  # backend code (see define_to_string/1 in this module).
+
   def do_to_string(number, %{integer_digits: _integer_digits} = meta, backend, options) do
     number
     |> absolute_value(meta, backend, options)
@@ -129,6 +135,8 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   # We work with the absolute value because the formatting of the sign
   # is done by selecting the "negative format" rather than the "positive format"
+
+  @doc false
   def absolute_value(%Decimal{} = number, _meta, _backend, _options) do
     Decimal.abs(number)
   end
@@ -140,6 +148,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   # If the format includes a % (percent) or permille then we
   # adjust the number by a factor.  All other formats the factor
   # is 1 and hence we avoid the multiplication.
+
+  @doc false
   def multiply_by_factor(number, %{multiplier: 1}, _backend, _options) do
     number
   end
@@ -165,6 +175,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   # digit rounding as well as decimal precision rounding.  Its likely
   # not a good idea to combine the two in a format mask and results
   # are unspecified if you do.
+
+  @doc false
   def round_to_significant_digits(
         number,
         %{significant_digits: %{min: 0, max: 0}},
@@ -186,7 +198,11 @@ defmodule Cldr.Number.Formatter.Decimal do
   # Round to nearest rounds a number to the nearest increment specified.  For example
   # if `rounding: 5` then we round to the nearest multiple of 5.  The appropriate rounding
   # mode is used.
-  def round_to_nearest(number, %{round_nearest: rounding}, _backend, %{rounding_mode: _rounding_mode})
+
+  @doc false
+  def round_to_nearest(number, %{round_nearest: rounding}, _backend, %{
+        rounding_mode: _rounding_mode
+      })
       when rounding == 0 do
     number
   end
@@ -202,7 +218,9 @@ defmodule Cldr.Number.Formatter.Decimal do
     |> Decimal.mult(rounding)
   end
 
-  def round_to_nearest(number, %{round_nearest: rounding}, _backend, %{rounding_mode: rounding_mode})
+  def round_to_nearest(number, %{round_nearest: rounding}, _backend, %{
+        rounding_mode: rounding_mode
+      })
       when is_float(number) do
     number
     |> Kernel./(rounding)
@@ -210,7 +228,9 @@ defmodule Cldr.Number.Formatter.Decimal do
     |> Kernel.*(rounding)
   end
 
-  def round_to_nearest(number, %{round_nearest: rounding}, _backend, %{rounding_mode: rounding_mode})
+  def round_to_nearest(number, %{round_nearest: rounding}, _backend, %{
+        rounding_mode: rounding_mode
+      })
       when is_integer(number) do
     number
     |> Kernel./(rounding)
@@ -221,6 +241,8 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   # For a scientific format we need to adjust to a
   # coefficient * 10^exponent format.
+
+  @doc false
   def set_exponent(number, %{exponent_digits: 0}, _backend, _options) do
     {number, 0}
   end
@@ -234,6 +256,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   # Round to get the right number of fractional digits.  This is
   # applied after setting the exponent since we may have either
   # the original number or its coef/exponentform.
+
+  @doc false
   def round_fractional_digits({number, exponent}, _meta, _backend, _options)
       when is_integer(number) do
     {number, exponent}
@@ -264,7 +288,9 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   # Output the number to a tuple - all the other transformations
   # are done on the tuple version split into its constituent
-  # parts
+  # parts.
+
+  @doc false
   def output_to_tuple(number, _meta, _backend, _options) when is_integer(number) do
     integer = :erlang.integer_to_list(number)
     {1, integer, [], 1, [?0]}
@@ -280,7 +306,9 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   # Remove all the leading zeros from an integer and add back what
-  # is required for the format
+  # is required for the format.
+
+  @doc false
   def adjust_leading_zeros(
         {sign, integer, fraction, exponent_sign, exponent},
         %{integer_digits: integer_digits},
@@ -297,6 +325,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     {sign, integer, fraction, exponent_sign, exponent}
   end
 
+  @doc false
   def adjust_trailing_zeros(
         {sign, integer, fraction, exponent_sign, exponent},
         %{fractional_digits: fraction_digits},
@@ -307,16 +336,18 @@ defmodule Cldr.Number.Formatter.Decimal do
     {sign, integer, fraction, exponent_sign, exponent}
   end
 
-  def do_trailing_zeros(fraction, count) when count <= 0 do
+  defp do_trailing_zeros(fraction, count) when count <= 0 do
     fraction
   end
 
-  def do_trailing_zeros(fraction, count) do
+  defp do_trailing_zeros(fraction, count) do
     fraction ++ :lists.duplicate(count, ?0)
   end
 
   # Take the rightmost maximum digits only - this is a truncation from the
   # right.
+
+  @doc false
   def set_max_integer_digits(number, %{integer_digits: %{max: 0}}, _backend, _options) do
     number
   end
@@ -331,11 +362,11 @@ defmodule Cldr.Number.Formatter.Decimal do
     {sign, integer, fraction, exponent_sign, exponent}
   end
 
-  def do_max_integer_digits(integer, over) when over <= 0 do
+  defp do_max_integer_digits(integer, over) when over <= 0 do
     integer
   end
 
-  def do_max_integer_digits(integer, over) do
+  defp do_max_integer_digits(integer, over) do
     {_rest, integer} = Enum.split(integer, over)
     integer
   end
@@ -343,6 +374,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   # Insert the grouping placeholder in the right place in the number.
   # There may be one or two different groupings for the integer part
   # and one grouping for the fraction part.
+
+  @doc false
   def apply_grouping(
         {sign, integer, [] = fraction, exponent_sign, exponent},
         %{grouping: groups},
@@ -391,11 +424,11 @@ defmodule Cldr.Number.Formatter.Decimal do
     {sign, integer, fraction, exponent_sign, exponent}
   end
 
-  def minimum_group_size(%{first: group_size}, 0, locale, backend) do
+  defp minimum_group_size(%{first: group_size}, 0, locale, backend) do
     Format.minimum_grouping_digits_for!(locale, backend) + group_size
   end
 
-  def minimum_group_size(%{first: group_size}, minimum_grouping_digits, _locale, _backend) do
+  defp minimum_group_size(%{first: group_size}, minimum_grouping_digits, _locale, _backend) do
     minimum_grouping_digits + group_size
   end
 
@@ -407,6 +440,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   # group is at the beginning (:reverse direction)
 
   @group_separator Compiler.placeholder(:group)
+
+  @doc false
 
   # No grouping if the length (number of digits) is less than the
   # minimum grouping size.
@@ -462,6 +497,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     |> add_last_group(first_group, @group_separator)
   end
 
+  @doc false
   def add_separator([], _every, _separator) do
     []
   end
@@ -477,6 +513,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     Enum.reverse(rest)
   end
 
+  @doc false
   def add_first_group(groups, [], _separator) do
     groups
   end
@@ -485,6 +522,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     [first, separator, groups]
   end
 
+  @doc false
   def add_last_group(groups, [], _separator) do
     groups
   end
@@ -497,6 +535,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   @exponent_separator Compiler.placeholder(:exponent)
   @exponent_sign Compiler.placeholder(:exponent_sign)
   @minus_placeholder Compiler.placeholder(:minus)
+
+  @doc false
   def reassemble_number_string(
         {_sign, integer, fraction, exponent_sign, exponent},
         meta,
@@ -532,6 +572,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   # whether the number is positive or negative (as indicated
   # by options[:sign]) we assemble the parts and transliterate
   # the currency sign, percent and permille characters.
+
+  @doc false
   def assemble_format(number_string, meta, backend, options) do
     format = meta.format[options.pattern]
     number = meta.number
@@ -614,8 +656,18 @@ defmodule Cldr.Number.Formatter.Decimal do
     [symbol | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
-  defp assemble_parts([{:format, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
-    [maybe_wrap(number_string, :number, wrapper) | assemble_parts(rest, number_string, number, backend, meta, options)]
+  defp assemble_parts(
+         [{:format, _} | rest],
+         number_string,
+         number,
+         backend,
+         meta,
+         %{wrapper: wrapper} = options
+       ) do
+    [
+      maybe_wrap(number_string, :number, wrapper)
+      | assemble_parts(rest, number_string, number, backend, meta, options)
+    ]
   end
 
   defp assemble_parts([{:pad, _} | rest], number_string, number, backend, meta, options) do
@@ -625,14 +677,28 @@ defmodule Cldr.Number.Formatter.Decimal do
     ]
   end
 
-  defp assemble_parts([{:plus, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
+  defp assemble_parts(
+         [{:plus, _} | rest],
+         number_string,
+         number,
+         backend,
+         meta,
+         %{wrapper: wrapper} = options
+       ) do
     [
       maybe_wrap(options.symbols.plus_sign, :plus, wrapper)
       | assemble_parts(rest, number_string, number, backend, meta, options)
     ]
   end
 
-  defp assemble_parts([{:minus, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
+  defp assemble_parts(
+         [{:minus, _} | rest],
+         number_string,
+         number,
+         backend,
+         meta,
+         %{wrapper: wrapper} = options
+       ) do
     sign =
       if(number_string == "0", do: "", else: options.symbols.minus_sign)
       |> maybe_wrap(:minus, wrapper)
@@ -640,26 +706,60 @@ defmodule Cldr.Number.Formatter.Decimal do
     [sign | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
 
-  defp assemble_parts([{:percent, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
+  defp assemble_parts(
+         [{:percent, _} | rest],
+         number_string,
+         number,
+         backend,
+         meta,
+         %{wrapper: wrapper} = options
+       ) do
     [
       maybe_wrap(options.symbols.percent_sign, :percent, wrapper)
       | assemble_parts(rest, number_string, number, backend, meta, options)
     ]
   end
 
-  defp assemble_parts([{:permille, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
+  defp assemble_parts(
+         [{:permille, _} | rest],
+         number_string,
+         number,
+         backend,
+         meta,
+         %{wrapper: wrapper} = options
+       ) do
     [
       maybe_wrap(options.symbols.per_mille, :permille, wrapper)
       | assemble_parts(rest, number_string, number, backend, meta, options)
     ]
   end
 
-  defp assemble_parts([{:literal, literal} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
-    [maybe_wrap(literal, :literal, wrapper) | assemble_parts(rest, number_string, number, backend, meta, options)]
+  defp assemble_parts(
+         [{:literal, literal} | rest],
+         number_string,
+         number,
+         backend,
+         meta,
+         %{wrapper: wrapper} = options
+       ) do
+    [
+      maybe_wrap(literal, :literal, wrapper)
+      | assemble_parts(rest, number_string, number, backend, meta, options)
+    ]
   end
 
-  defp assemble_parts([{:quote, _} | rest], number_string, number, backend, meta, %{wrapper: wrapper} = options) do
-    [maybe_wrap("'", :quote, wrapper) | assemble_parts(rest, number_string, number, backend, meta, options)]
+  defp assemble_parts(
+         [{:quote, _} | rest],
+         number_string,
+         number,
+         backend,
+         meta,
+         %{wrapper: wrapper} = options
+       ) do
+    [
+      maybe_wrap("'", :quote, wrapper)
+      | assemble_parts(rest, number_string, number, backend, meta, options)
+    ]
   end
 
   defp assemble_parts(
@@ -676,6 +776,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   # Invokes a wrapping function. It can return a Phoenix :safe
   # string or a string.
   defp maybe_wrap(string, _tag, nil), do: string
+
   defp maybe_wrap(string, tag, wrapper) do
     case wrapper.(string, tag) do
       {:safe, iodata} -> iodata
@@ -685,6 +786,8 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   # Calculate the padding by subtracting the length of the number
   # string from the padding length.
+
+  @doc false
   def padding_string(%{padding_length: 0}, _number_string) do
     @empty_string
   end
@@ -702,6 +805,7 @@ defmodule Cldr.Number.Formatter.Decimal do
     end
   end
 
+  @doc false
   def transliterate(number_string, _meta, backend, %{locale: locale, number_system: number_system}) do
     Cldr.Number.Transliterate.transliterate(number_string, locale, number_system, backend)
   end
@@ -710,11 +814,14 @@ defmodule Cldr.Number.Formatter.Decimal do
   # digits to match the currency definition.  We also need to adjust the
   # rounding increment to match the currency definition. Note that here
   # we are just adjusting the meta data, not the number itself
+
+  @doc false
   def adjust_fraction_for_currency(meta, nil, _currency_digits, _backend) do
     meta
   end
 
-  def adjust_fraction_for_currency(meta, currency, _currency_digits, _backend) when is_digital_token(currency) do
+  def adjust_fraction_for_currency(meta, currency, _currency_digits, _backend)
+      when is_digital_token(currency) do
     %{meta | fractional_digits: %{max: @max_token_fractional_digits, min: 0}}
   end
 
@@ -733,20 +840,20 @@ defmodule Cldr.Number.Formatter.Decimal do
     do_adjust_fraction(meta, currency.iso_digits, currency.iso_digits)
   end
 
-  def do_adjust_fraction(meta, digits, rounding) do
+  defp do_adjust_fraction(meta, digits, rounding) do
     rounding = power_of_10(-digits) * rounding
     %{meta | fractional_digits: %{max: digits, min: digits}, round_nearest: rounding}
   end
 
-  #
   # Functions to update metadata to reflect the
-  # options passed at runtime
-  #
+  # options passed at runtime.
 
   # If we round to sigificant digits then the format won't (usually)
   # have any fractional part specified and if we don't do something
   # then we're truncating the number - not really what is intended
   # for significant digits display.
+
+  @doc false
 
   # For when there is no number format
   def adjust_fraction_for_significant_digits(%{significant_digits: nil} = meta, _number) do
@@ -780,6 +887,8 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   # To allow overriding fractional digits
   # This causes rounding of the number
+
+  @doc false
   def adjust_for_fractional_digits(meta, nil) do
     meta
   end
@@ -790,6 +899,8 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   # To allow overriding fractional digits
   # This causes rounding of the number
+
+  @doc false
   def adjust_for_integer_digits(meta, nil) do
     meta
   end
@@ -807,6 +918,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   # which impacts the precision of the number
   # and is commonly required for currency
   # formatting
+
+  @doc false
   def adjust_for_round_nearest(meta, nil) do
     meta
   end
@@ -824,6 +937,7 @@ defmodule Cldr.Number.Formatter.Decimal do
         case Compiler.compile(format) do
           {:ok, meta, formatting_pipeline} ->
             {format, meta, formatting_pipeline}
+
           {:error, message} ->
             raise Cldr.FormatCompileError, "#{message} compiling #{inspect(format)}"
         end
@@ -893,7 +1007,11 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   @currency_match_symbol ~r/[\P{S}]$/u
   @currency_match_separator ~r/[\P{Z}]$/u
-  defp after_currency_match?(number_string, symbol, %{currency_match: "[[:^S:]&[:^Z:]]"} = spacing) do
+  defp after_currency_match?(
+         number_string,
+         symbol,
+         %{currency_match: "[[:^S:]&[:^Z:]]"} = spacing
+       ) do
     # IO.inspect number_string, label: "Number string"
     # IO.inspect symbol, label: "Symbol"
     # IO.inspect String.match?(number_string, Regex.compile!("^" <> spacing[:surrounding_match], "u")), label: "Surrounding match"

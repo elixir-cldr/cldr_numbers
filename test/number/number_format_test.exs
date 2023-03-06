@@ -62,9 +62,9 @@ defmodule Number.Format.Test do
 
   test "that an rbnf format request fails if the locale doesn't define the ruleset" do
     assert TestBackend.Cldr.Number.to_string(123, format: :spellout_ordinal_verbose, locale: "zh") ==
-      {:error,
-       {Cldr.Rbnf.NoRule,
-        "Locale :zh does not define an rbnf ruleset :spellout_ordinal_verbose"}}
+             {:error,
+              {Cldr.Rbnf.NoRule,
+               "Locale :zh does not define an rbnf ruleset :spellout_ordinal_verbose"}}
   end
 
   test "that we get default formats_for" do
@@ -102,13 +102,16 @@ defmodule Number.Format.Test do
   end
 
   test "fraction digits of 0" do
-    assert Cldr.Number.to_string(50.12, MyApp.Cldr, fractional_digits: 0, currency: :USD) == {:ok, "$50"}
-    assert Cldr.Number.to_string(50.82, MyApp.Cldr, fractional_digits: 0, currency: :USD) == {:ok, "$51"}
+    assert Cldr.Number.to_string(50.12, MyApp.Cldr, fractional_digits: 0, currency: :USD) ==
+             {:ok, "$50"}
+
+    assert Cldr.Number.to_string(50.82, MyApp.Cldr, fractional_digits: 0, currency: :USD) ==
+             {:ok, "$51"}
   end
 
   test "to_string with :percent format" do
-    assert MyApp.Cldr.Number.to_string!(123.456,format: :percent, fractional_digits: 1) ==
-      "12,345.6%"
+    assert MyApp.Cldr.Number.to_string!(123.456, format: :percent, fractional_digits: 1) ==
+             "12,345.6%"
   end
 
   test "negative decimal short formatting" do
@@ -121,37 +124,72 @@ defmodule Number.Format.Test do
   end
 
   test "Decimal currency short formatting" do
-    assert MyApp.Cldr.Number.to_string(Decimal.new(1_000_000), format: :currency_short) == {:ok, "$1M"}
-    assert MyApp.Cldr.Number.to_string(Decimal.new(1_100_000), format: :currency_short, fractional_digits: 1) == {:ok, "$1.1M"}
+    assert MyApp.Cldr.Number.to_string(Decimal.new(1_000_000), format: :currency_short) ==
+             {:ok, "$1M"}
+
+    assert MyApp.Cldr.Number.to_string(Decimal.new(1_100_000),
+             format: :currency_short,
+             fractional_digits: 1
+           ) == {:ok, "$1.1M"}
+
     assert MyApp.Cldr.Number.to_string(Decimal.new(1_000_000), format: :short) == {:ok, "1M"}
-    assert MyApp.Cldr.Number.to_string(Decimal.new(1_100_000), format: :short, fractional_digits: 1) == {:ok, "1.1M"}
+
+    assert MyApp.Cldr.Number.to_string(Decimal.new(1_100_000),
+             format: :short,
+             fractional_digits: 1
+           ) == {:ok, "1.1M"}
   end
 
   test "Currency with :narrow formatting uses standard format with narrow symbol" do
     assert MyApp.Cldr.Number.to_string(Decimal.new(1_000_000), currency: :USD, format: :narrow) ==
-      {:ok, "$1,000,000.00"}
+             {:ok, "$1,000,000.00"}
   end
 
   test "Decimal currency short with fractional digits formatting" do
-    assert Cldr.Number.to_string(Decimal.new("214564569.50"), format: :short, currency: :USD, fractional_digits: 2) ==
-      {:ok, "$214.56M"}
-    assert Cldr.Number.to_string(Decimal.new("219.50"), format: :short, currency: :USD, fractional_digits: 2) ==
-      {:ok, "$219.50"}
-    assert Cldr.Number.to_string(Decimal.from_float(219.50), format: :short, currency: :USD, fractional_digits: 2) ==
-      {:ok, "$219.50"}
+    assert Cldr.Number.to_string(Decimal.new("214564569.50"),
+             format: :short,
+             currency: :USD,
+             fractional_digits: 2
+           ) ==
+             {:ok, "$214.56M"}
+
+    assert Cldr.Number.to_string(Decimal.new("219.50"),
+             format: :short,
+             currency: :USD,
+             fractional_digits: 2
+           ) ==
+             {:ok, "$219.50"}
+
+    assert Cldr.Number.to_string(Decimal.from_float(219.50),
+             format: :short,
+             currency: :USD,
+             fractional_digits: 2
+           ) ==
+             {:ok, "$219.50"}
   end
 
   test "Currency format long with symbol" do
     assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol, locale: "fr") ==
-      {:ok, "1 milliard €"}
+             {:ok, "1 milliard €"}
+
     assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol) ==
-      {:ok, "$1 billion"}
+             {:ok, "$1 billion"}
+
     assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol, locale: "hr") ==
-      {:ok, "1 milijardi €"}
-    assert Cldr.Number.to_string(1_000_000_000, format: :currency_long_with_symbol, locale: "hr", currency: :USD) ==
-      {:ok, "1 milijardi USD"}
-    assert Cldr.Number.to_string(1234545656.456789, currency: "BTC", format: :currency_long_with_symbol) ==
-      {:ok, "₿1 billion"}
+             {:ok, "1 milijardi €"}
+
+    assert Cldr.Number.to_string(1_000_000_000,
+             format: :currency_long_with_symbol,
+             locale: "hr",
+             currency: :USD
+           ) ==
+             {:ok, "1 milijardi USD"}
+
+    assert Cldr.Number.to_string(1_234_545_656.456789,
+             currency: "BTC",
+             format: :currency_long_with_symbol
+           ) ==
+             {:ok, "₿1 billion"}
   end
 
   test "NaN and Inf decimal number formatting" do
@@ -161,15 +199,31 @@ defmodule Number.Format.Test do
     assert {:ok, "-∞"} = Cldr.Number.to_string(Decimal.new("-Inf"))
     assert {:ok, "∞"} = Cldr.Number.to_string(Decimal.new("Inf"), locale: :de)
     assert {:ok, "-∞"} = Cldr.Number.to_string(Decimal.new("-Inf"), locale: :de)
-    assert {:ok, "-∞"} = Cldr.Number.to_string(Decimal.new("-Inf"), format: "########", locale: :de)
-    assert {:ok, "∞ and beyond"} = Cldr.Number.to_string(Decimal.new("Inf"), format: "# and beyond")
+
+    assert {:ok, "-∞"} =
+             Cldr.Number.to_string(Decimal.new("-Inf"), format: "########", locale: :de)
+
+    assert {:ok, "∞ and beyond"} =
+             Cldr.Number.to_string(Decimal.new("Inf"), format: "# and beyond")
   end
 
   test "Digital tokens with overriden symbols" do
-    assert {:ok, "₿ 1,234,545,656.456789"} = Cldr.Number.to_string(1234545656.456789, currency: "BTC", currency_symbol: :narrow)
-    assert {:ok, "BTC 1,234,545,656.456789"} = Cldr.Number.to_string(1234545656.456789, currency: "BTC", currency_symbol: :iso )
-    assert {:ok, "₿ 1,234,545,656.456789"} = Cldr.Number.to_string(1234545656.456789, currency: "BTC", currency_symbol: :symbol)
-    assert {:ok, "₿ 1,234,545,656.456789"} = Cldr.Number.to_string(1234545656.456789, currency: "BTC", currency_symbol: :standard)
-    assert {:ok, "XBTC 1,234,545,656.456789"} = Cldr.Number.to_string(1234545656.456789, currency: "BTC", currency_symbol: "XBTC")
+    assert {:ok, "₿ 1,234,545,656.456789"} =
+             Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: :narrow)
+
+    assert {:ok, "BTC 1,234,545,656.456789"} =
+             Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: :iso)
+
+    assert {:ok, "₿ 1,234,545,656.456789"} =
+             Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: :symbol)
+
+    assert {:ok, "₿ 1,234,545,656.456789"} =
+             Cldr.Number.to_string(1_234_545_656.456789,
+               currency: "BTC",
+               currency_symbol: :standard
+             )
+
+    assert {:ok, "XBTC 1,234,545,656.456789"} =
+             Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: "XBTC")
   end
 end

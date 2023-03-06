@@ -24,8 +24,7 @@ defmodule Rbnf.Test do
   end
 
   test "rbnf spellout in mandarin" do
-    assert {:ok, "二万五千三百四十"} =
-             Cldr.Number.to_string(25_340, format: :spellout, locale: "zh")
+    assert {:ok, "二万五千三百四十"} = Cldr.Number.to_string(25_340, format: :spellout, locale: "zh")
   end
 
   test "rbnf spellout in hebrew" do
@@ -43,7 +42,7 @@ defmodule Rbnf.Test do
              Cldr.Number.to_string(25_340, format: :spellout_ordinal_feminine, locale: "ar")
 
     assert {:ok, "خمسة وعشرون ألف وثلاثة مائة وأربعون"} =
-            Cldr.Number.to_string(25_340, format: :spellout_ordinal_masculine, locale: "ar")
+             Cldr.Number.to_string(25_340, format: :spellout_ordinal_masculine, locale: "ar")
   end
 
   test "rbnf spellout in thai" do
@@ -124,23 +123,23 @@ defmodule Rbnf.Test do
 
   test "no rule is available for number" do
     assert Cldr.Rbnf.Spellout.spellout_numbering_year(-24, "zh-Hant") ==
-      {
-        :error,
-        {
-          Elixir.Cldr.Rbnf.NoRuleForNumber,
-          "rule group :spellout_numbering_year for locale :\"zh-Hant\" does not know how to process -24"
-        }
-      }
+             {
+               :error,
+               {
+                 Elixir.Cldr.Rbnf.NoRuleForNumber,
+                 "rule group :spellout_numbering_year for locale :\"zh-Hant\" does not know how to process -24"
+               }
+             }
   end
 
   test "that rbnf rules lookup fall back to the root locale (und)" do
     # implemented in und locale
-    assert Cldr.Number.to_string(123, format: :digits_ordinal, locale: "de")  ==
-      {:ok, "123."}
+    assert Cldr.Number.to_string(123, format: :digits_ordinal, locale: "de") ==
+             {:ok, "123."}
 
     # implemented in en locale
     assert Cldr.Number.to_string(123, format: :digits_ordinal, locale: "en") ==
-      {:ok, "123rd"}
+             {:ok, "123rd"}
   end
 
   Elixir.Cldr.Rbnf.TestSupport.rbnf_tests(fn name, tests, module, function, locale ->
@@ -151,9 +150,7 @@ defmodule Rbnf.Test do
              unquote(Macro.escape(locale))
            ]) != test_result do
           IO.puts(
-            "Test is failing on locale #{unquote(locale.requested_locale_name)} for value #{
-              test_data
-            }"
+            "Test is failing on locale #{unquote(locale.requested_locale_name)} for value #{test_data}"
           )
         end
 

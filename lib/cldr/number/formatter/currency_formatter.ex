@@ -47,11 +47,10 @@ defmodule Cldr.Number.Formatter.Currency do
   @doc false
   def to_string(number, _format, _backend, _options) when is_binary(number) do
     {:error,
-      {
-        ArgumentError,
-        "Not a number: #{inspect number}. Currency long formats only support number or Decimal arguments"
-      }
-    }
+     {
+       ArgumentError,
+       "Not a number: #{inspect(number)}. Currency long formats only support number or Decimal arguments"
+     }}
   end
 
   # The format :currency_medium is a composition of :currency_long
@@ -96,7 +95,8 @@ defmodule Cldr.Number.Formatter.Currency do
     cardinal.pluralize(number, locale, currency.count)
   end
 
-  defp currency_string(_number, currency, _cardinal, _locale, _backend) when is_digital_token(currency) do
+  defp currency_string(_number, currency, _cardinal, _locale, _backend)
+       when is_digital_token(currency) do
     {:ok, currency_string} = DigitalToken.long_name(currency)
     currency_string
   end
@@ -123,5 +123,4 @@ defmodule Cldr.Number.Formatter.Currency do
     |> Options.resolve_standard_format(backend)
     |> Options.maybe_expand_currency_symbol(number)
   end
-
 end

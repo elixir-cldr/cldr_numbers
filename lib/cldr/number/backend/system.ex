@@ -27,15 +27,15 @@ defmodule Cldr.Number.Backend.System do
 
         ## Examples
 
-            iex> #{inspect __MODULE__}.number_system_from_locale "en-US-u-nu-thai"
+            iex> #{inspect(__MODULE__)}.number_system_from_locale "en-US-u-nu-thai"
             :thai
 
-            iex> #{inspect __MODULE__}.number_system_from_locale "en-US"
+            iex> #{inspect(__MODULE__)}.number_system_from_locale "en-US"
             :latn
 
         """
         @spec number_system_from_locale(Cldr.Locale.locale_reference()) ::
-          Cldr.Number.System.system_name
+                Cldr.Number.System.system_name()
 
         def number_system_from_locale(locale) do
           Cldr.Number.System.number_system_from_locale(locale, unquote(backend))
@@ -61,7 +61,7 @@ defmodule Cldr.Number.Backend.System do
 
         """
         @spec number_systems_for(Cldr.Locale.locale_reference()) ::
-          {:ok, map()} | {:error, {module(), String.t()}}
+                {:ok, map()} | {:error, {module(), String.t()}}
 
         def number_systems_for(locale)
 
@@ -157,19 +157,19 @@ defmodule Cldr.Number.Backend.System do
 
         ## Examples
 
-            iex> #{inspect __MODULE__}.number_system_for "th", :latn
+            iex> #{inspect(__MODULE__)}.number_system_for "th", :latn
             {:ok, %{digits: "0123456789", type: :numeric}}
 
-            iex> #{inspect __MODULE__}.number_system_for "en", :default
+            iex> #{inspect(__MODULE__)}.number_system_for "en", :default
             {:ok, %{digits: "0123456789", type: :numeric}}
 
-            iex> #{inspect __MODULE__}.number_system_for "he", :traditional
+            iex> #{inspect(__MODULE__)}.number_system_for "he", :traditional
             {:ok, %{rules: "hebrew", type: :algorithmic}}
 
-            iex> #{inspect __MODULE__}.number_system_for "en", :native
+            iex> #{inspect(__MODULE__)}.number_system_for "en", :native
             {:ok, %{digits: "0123456789", type: :numeric}}
 
-            iex> #{inspect __MODULE__}.number_system_for "en", :finance
+            iex> #{inspect(__MODULE__)}.number_system_for "en", :finance
             {
               :error,
               {Cldr.UnknownNumberSystemError,
@@ -178,7 +178,7 @@ defmodule Cldr.Number.Backend.System do
 
         """
         @spec number_system_for(Cldr.Locale.locale_reference(), Cldr.Number.System.system_name()) ::
-          {:ok, list(atom())} | {:error, {module(), String.t()}}
+                {:ok, list(atom())} | {:error, {module(), String.t()}}
 
         def number_system_for(locale, system_name) do
           with {:ok, locale} <- unquote(backend).validate_locale(locale),
@@ -358,8 +358,11 @@ defmodule Cldr.Number.Backend.System do
           Cldr.Number.System.system_name_from(system_name, locale, unquote(backend))
         end
 
-        @spec number_systems_like(Cldr.Locale.locale_reference(), Cldr.Number.System.system_name()) ::
-          {:ok, list()} | {:error, tuple}
+        @spec number_systems_like(
+                Cldr.Locale.locale_reference(),
+                Cldr.Number.System.system_name()
+              ) ::
+                {:ok, list()} | {:error, tuple}
 
         def number_systems_like(locale, number_system) do
           Cldr.Number.System.number_systems_like(locale, number_system, unquote(backend))
