@@ -377,9 +377,9 @@ defmodule Cldr.Number.Format.Options do
     {:ok, currency}
   end
 
-  defp validate_option(:currency, _options, backend, currency) do
+  defp validate_option(:currency, options, backend, currency) do
     with {:ok, currency_code} <- Cldr.validate_currency(currency),
-         {:ok, currency} <- Cldr.Currency.currency_for_code(currency_code, backend) do
+         {:ok, currency} <- Cldr.Currency.currency_for_code(currency_code, backend, locale: options.locale) do
       {:ok, currency}
     else
       {:error, _} ->
@@ -611,7 +611,7 @@ defmodule Cldr.Number.Format.Options do
   # Returns a Cldr.Currency.t from a locale and backend
   defp currency_from_locale(locale, backend) do
     with currency_code when is_atom(currency_code) <- Cldr.Currency.currency_from_locale(locale),
-         {:ok, currency} <- Cldr.Currency.currency_for_code(currency_code, backend) do
+         {:ok, currency} <- Cldr.Currency.currency_for_code(currency_code, backend, locale: locale) do
       {:ok, currency}
     end
   end
@@ -639,15 +639,15 @@ defmodule Cldr.Number.Format.Options do
   # the actual symbole. This replaces :narrow, :iso and
   # so on with the actual symbol
 
-  defp maybe_expand_currency_symbol(%{currency: %Currency{} = currency} = options, number) do
+  @doc false
+  def maybe_expand_currency_symbol(%{currency: %Currency{} = currency, format: format} = options, number) when is_binary(format) do
     backend = options.locale.backend
     size = Module.concat(backend, Number.Formatter.Decimal).metadata!(options.format).currency.symbol_count
-    IO.inspect size
     symbol = currency_symbol(currency, options.currency_symbol, number, size, options.locale, backend)
     Map.put(options, :currency_symbol, symbol)
   end
 
-  defp maybe_expand_currency_symbol(options, _number) do
+  def maybe_expand_currency_symbol(options, _number) do
     options
   end
 
@@ -661,6 +661,7 @@ defmodule Cldr.Number.Format.Options do
   #
   # Can also be forced to :narrow, :symbol, :iso or a string
 
+  @doc false
   def currency_symbol(%Currency{} = currency, :narrow, _number, _size, _locale, _backend) do
     currency.narrow_symbol || currency.symbol
   end

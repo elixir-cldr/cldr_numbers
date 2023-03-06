@@ -102,8 +102,11 @@ defmodule Cldr.Number.Formatter.Short do
       |> Map.fetch!(style)
 
     {normalized_number, format} = choose_short_format(number, format_rules, options, backend)
-    options = digits(options, options.fractional_digits)
-    # format = Options.maybe_adjust_currency_symbol(format, options.currency_symbol)
+    options =
+      options
+      |> digits(options.fractional_digits)
+      |> Map.put(:format, format)
+      |> Options.maybe_expand_currency_symbol(number)
 
     Formatter.Decimal.to_string(normalized_number, format, backend, options)
   end

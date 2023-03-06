@@ -42,7 +42,6 @@ defmodule Cldr.Number.Formatter.Currency do
   alias Cldr.Number.Format.Options
   alias Cldr.Number.Formatter.Decimal
 
-  import Cldr.Number.Formatter.Decimal, only: [is_currency: 1]
   import DigitalToken, only: [is_digital_token: 1]
 
   @doc false
@@ -102,7 +101,7 @@ defmodule Cldr.Number.Formatter.Currency do
     currency_string
   end
 
-  defp set_fractional_digits(options, currency, nil) when is_currency(currency) do
+  defp set_fractional_digits(options, %Cldr.Currency{}, nil) do
     Map.put(options, :fractional_digits, 0)
   end
 
