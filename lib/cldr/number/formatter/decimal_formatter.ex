@@ -51,26 +51,18 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   ## Arguments
 
-  * `number` is an integer, float or Decimal
+  * `number` is an integer, float or Decimal.
 
-  * `format` is a format string.  See `Cldr.Number` for further information.
+  * `format` is a format string.  See `Cldr.Number` for further
+    information.
 
   * `backend` is any module that includes `use Cldr` and therefore
-    is a `Cldr` backend module
+    is a `Cldr` backend module.
 
-  * `options` is a map of options.  See `Cldr.Number.to_string/2` for further information.
+  * `options` is a map of validated options.  See `Cldr.Number.to_string/2`
+    for further information.
 
   """
-  def to_string(number, format, backend, options \\ [])
-
-  @spec to_string(Math.number_or_decimal() | String.t(), String.t(), Cldr.backend(), list()) ::
-          {:ok, String.t()} | {:error, {module(), String.t()}}
-
-  def to_string(number, format, backend, options) when is_list(options) do
-    with {:ok, options} <- Options.validate_options(number, backend, options) do
-      Module.concat(backend, Number.Formatter.Decimal).to_string(number, format, options)
-    end
-  end
 
   @spec to_string(Math.number_or_decimal() | String.t(), String.t(), Cldr.backend(), Options.t()) ::
           {:ok, String.t()} | {:error, {atom, String.t()}}
@@ -549,7 +541,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   defp assemble_parts(
-         [{:format, _}, {:currency, type} | rest],
+         [{:format, _}, {:currency, _type} | rest],
          number_string,
          number,
          backend,
@@ -557,9 +549,8 @@ defmodule Cldr.Number.Formatter.Decimal do
          %{currency_spacing: spacing} = options
        )
        when not is_nil(spacing) do
-    %{currency: currency, currency_symbol: currency_symbol, locale: locale, wrapper: wrapper} = options
+    %{currency_symbol: symbol, wrapper: wrapper} = options
     before_spacing = spacing[:before_currency]
-    symbol =  currency_symbol( currency, currency_symbol, number, type, locale, backend)
     before_currency_match? = before_currency_match?(number_string, symbol, before_spacing)
     symbol = maybe_wrap(symbol, :currency_symbol, wrapper)
     number_string = maybe_wrap(number_string, :number, wrapper)
@@ -581,7 +572,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   defp assemble_parts(
-         [{:currency, type}, {:format, _} | rest],
+         [{:currency, _type}, {:format, _} | rest],
          number_string,
          number,
          backend,
@@ -589,9 +580,8 @@ defmodule Cldr.Number.Formatter.Decimal do
          %{currency_spacing: spacing} = options
        )
        when not is_nil(spacing) do
-    %{currency: currency, currency_symbol: currency_symbol, locale: locale, wrapper: wrapper} = options
+    %{currency_symbol: symbol, wrapper: wrapper} = options
     after_spacing = spacing[:after_currency]
-    symbol =  currency_symbol( currency, currency_symbol, number, type, locale, backend)
     after_currency_match? = after_currency_match?(number_string, symbol, after_spacing)
     symbol = maybe_wrap(symbol, :currency_symbol, wrapper)
     number_string = maybe_wrap(number_string, :number, wrapper)
@@ -616,13 +606,10 @@ defmodule Cldr.Number.Formatter.Decimal do
     []
   end
 
-  defp assemble_parts([{:currency, type} | rest], number_string, number, backend, meta, options) do
-    %{currency: currency, currency_symbol: currency_symbol, locale: locale, wrapper: wrapper} = options
+  defp assemble_parts([{:currency, _type} | rest], number_string, number, backend, meta, options) do
+    %{currency_symbol: symbol, wrapper: wrapper} = options
 
-    symbol =
-      currency
-      |> currency_symbol(currency_symbol, number, type, locale, backend)
-      |> maybe_wrap(:currency_symbol, wrapper)
+    symbol = maybe_wrap(symbol, :currency_symbol, wrapper)
 
     [symbol | assemble_parts(rest, number_string, number, backend, meta, options)]
   end
@@ -713,59 +700,6 @@ defmodule Cldr.Number.Formatter.Decimal do
     else
       @empty_string
     end
-  end
-
-  # Extract the appropriate currency symbol based upon how many currency
-  # placeholders are in the format as follows:
-  #   ¤      Standard currency symbol
-  #   ¤¤     ISO currency symbol (constant)
-  #   ¤¤¤    Appropriate currency display name for the currency, based on the
-  #          plural rules in effect for the locale
-  #   ¤¤¤¤   Narrow currency symbol.
-  #
-  # Can also be forced to :narrow, :symbol or a string
-
-  def currency_symbol(%Currency{} = currency, :narrow, _number, _size, _locale, _backend) do
-    currency.narrow_symbol || currency.symbol
-  end
-
-  def currency_symbol(%Currency{} = currency, :symbol, _number, _size, _locale, _backend) do
-    currency.symbol
-  end
-
-  def currency_symbol(%Currency{} = _currency, symbol, _number, _size, _locale, _backend)
-      when is_binary(symbol) do
-    symbol
-  end
-
-  def currency_symbol(%Currency{} = currency, _symbol,  _number, 1, _locale, _backend) do
-    currency.symbol
-  end
-
-  def currency_symbol(%Currency{} = currency, _symbol, _number, 2, _locale, _backend) do
-    currency.code
-  end
-
-  def currency_symbol(%Currency{} = currency, _symbol, number, 3, locale, backend) do
-    Module.concat(backend, Number.Cardinal).pluralize(number, locale, currency.count)
-  end
-
-  def currency_symbol(%Currency{} = currency, _symbol, _number, 4, _locale, _backend) do
-    currency.narrow_symbol || currency.symbol
-  end
-
-  def currency_symbol(currency, symbol, number, size, locale, backend) when is_currency(currency) do
-    {:ok, currency} = Currency.currency_for_code(currency, backend, locale: locale)
-    currency_symbol(currency, symbol, number, size, locale, backend)
-  end
-
-  def currency_symbol(digital_token, symbol, _number, _size, _locale, _backend) when is_digital_token(digital_token) and is_binary(symbol) do
-    symbol
-  end
-
-  def currency_symbol(digital_token, _symbol, _number, size, _locale, _backend) when is_digital_token(digital_token) do
-    {:ok, symbol} = DigitalToken.symbol(digital_token, size)
-    symbol
   end
 
   def transliterate(number_string, _meta, backend, %{locale: locale, number_system: number_system}) do
@@ -885,41 +819,67 @@ defmodule Cldr.Number.Formatter.Decimal do
   def define_to_string(backend) do
     config = Module.get_attribute(backend, :config)
 
-    for format <- Cldr.Config.decimal_format_list(config) do
-      case Compiler.compile(format) do
-        {:ok, meta, formatting_pipeline} ->
-          quote do
-            def to_string(string, unquote(format), options) when is_binary(string) do
-              Decimal.do_to_string(string, unquote(Macro.escape(meta)), unquote(backend), options)
-            end
+    compiled_artifacts =
+      for format <- Cldr.Config.decimal_format_list(config) do
+        case Compiler.compile(format) do
+          {:ok, meta, formatting_pipeline} ->
+            {format, meta, formatting_pipeline}
+          {:error, message} ->
+            raise Cldr.FormatCompileError, "#{message} compiling #{inspect(format)}"
+        end
+      end
 
-            # Formatting for NaN and Inf
-            def to_string(%Elixir.Decimal{coef: :NaN} = number, unquote(format), options) do
-              Decimal.do_to_string(number, unquote(Macro.escape(meta)), unquote(backend), options)
-            end
+    metadata =
+      for {format, meta, _formatting_pipeline} <- compiled_artifacts do
+        {format, meta}
+      end
+      |> Map.new()
 
-            def to_string(%Elixir.Decimal{coef: :inf} = number, unquote(format), options) do
-              Decimal.do_to_string(number, unquote(Macro.escape(meta)), unquote(backend), options)
-            end
+    to_string_function =
+      for {format, _meta, formatting_pipeline} <- compiled_artifacts do
+        quote do
+          def to_string(number_or_string, unquote(format) = format, options) do
+            case number_or_string do
+              string when is_binary(string) ->
+                Decimal.do_to_string(string, metadata!(format), unquote(backend), options)
 
-            # All other numbers
-            def to_string(number, unquote(format), options) when is_map(options) do
-              meta =
-                Decimal.update_meta(
-                  unquote(Macro.escape(meta)),
-                  number,
-                  unquote(backend),
-                  options
-                )
+              %Elixir.Decimal{coef: coef} = number when coef in [:NaN, :inf] ->
+                Decimal.do_to_string(number, metadata!(format), unquote(backend), options)
 
-              backend = unquote(backend)
-              unquote(formatting_pipeline)
+              number ->
+                meta =
+                  format
+                  |> metadata!()
+                  |> Decimal.update_meta(number, unquote(backend), options)
+
+                backend = unquote(backend)
+                unquote(formatting_pipeline)
             end
           end
-
-        {:error, message} ->
-          raise Cldr.FormatCompileError, "#{message} compiling #{inspect(format)}"
+        end
       end
+
+    metadata_function =
+      quote do
+        @doc false
+        def metadata(format) do
+          case Map.fetch(unquote(Macro.escape(metadata)), format) do
+            {:ok, meta} -> {:ok, meta}
+            :error -> Compiler.format_to_metadata(format)
+          end
+        end
+
+        def metadata!(format) do
+          case metadata(format) do
+            {:ok, meta} -> meta
+            {:error, reason} -> raise reason
+          end
+        end
+      end
+
+    quote do
+      unquote(to_string_function)
+      unquote(metadata_function)
     end
   end
 

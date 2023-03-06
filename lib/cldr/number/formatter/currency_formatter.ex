@@ -93,8 +93,7 @@ defmodule Cldr.Number.Formatter.Currency do
     |> :erlang.iolist_to_binary()
   end
 
-  defp currency_string(number, currency, cardinal, locale, backend) when is_currency(currency) do
-    {:ok, currency} = Currency.currency_for_code(currency, backend, locale: locale)
+  defp currency_string(number, %Cldr.Currency{} = currency, cardinal, locale, _backend) do
     cardinal.pluralize(number, locale, currency.count)
   end
 

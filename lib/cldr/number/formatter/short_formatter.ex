@@ -103,7 +103,7 @@ defmodule Cldr.Number.Formatter.Short do
 
     {normalized_number, format} = choose_short_format(number, format_rules, options, backend)
     options = digits(options, options.fractional_digits)
-    format = Options.maybe_adjust_currency_symbol(format, options.currency_symbol)
+    # format = Options.maybe_adjust_currency_symbol(format, options.currency_symbol)
 
     Formatter.Decimal.to_string(normalized_number, format, backend, options)
   end
@@ -287,7 +287,7 @@ defmodule Cldr.Number.Formatter.Short do
   # The pluralization key has to consider when there is an
   # exact match and when the number would be rounded up. When
   # rounded up it also has to not be an exact match.
-  defp pluralization_key(number, options) do
+  defp pluralization_key(number, options) when is_number(number) do
     rounding_mode = Map.get_lazy(options, :rounding_mode, &Cldr.Math.default_rounding_mode/0)
 
     if (rounded = Cldr.Math.round(number, 0, rounding_mode)) <= number do
@@ -304,5 +304,11 @@ defmodule Cldr.Number.Formatter.Short do
       # which as of CLDR39 they are).
       rounded + 0.1
     end
+  end
+
+  defp pluralization_key(%Decimal{} = number, options) do
+    number
+    |> Decimal.to_float()
+    |> pluralization_key(options)
   end
 end

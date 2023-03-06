@@ -808,6 +808,16 @@ defmodule Cldr.Number do
   end
 
   @doc """
+  Returns the metadata representing the given
+  format.
+
+  """
+  @spec decimal_format_metadata(String.t(), Cldr.backend()) :: {:ok, Cldr.Number.Format.Meta.t()} | {:error, String.t()}
+  def decimal_format_metadata(format, backend \\ default_backend()) when is_binary(format) do
+    backend.decimal_format_metadata(format)
+  end
+
+  @doc """
   Return the precision (number of digits) of a number
 
   This function delegates to `Cldr.Digits.number_of_digits/1`

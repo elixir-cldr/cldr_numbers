@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.29.1
+
+This is the changelog for Cldr v2.29.1 released on March _____, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix short formatting for decimal numbers. Thanks to @dbernheisel for the report. Closes #34.
+
 ## Cldr_Numbers v2.29.0
 
 This is the changelog for Cldr v2.29.0 released on January 17th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

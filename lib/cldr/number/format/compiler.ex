@@ -328,6 +328,7 @@ defmodule Cldr.Number.Format.Compiler do
 
   The metadata is used to generate the formatted output.  A numeric format
   is optional and in such cases no analysis is required.
+
   """
   def format_to_metadata(format) when is_binary(format) do
     with {:ok, parsed} <- parse(format) do
@@ -341,6 +342,21 @@ defmodule Cldr.Number.Format.Compiler do
   def format_to_metadata(format) when is_list(format) do
     metadata = analyse(format, format[:positive][:format])
     {:ok, metadata}
+  end
+
+  @doc """
+  Extract the metadata from the format or raise
+  an exception..
+
+  The metadata is used to generate the formatted output.  A numeric format
+  is optional and in such cases no analysis is required.
+
+  """
+  def format_to_metadata!(format) do
+    case format_to_metadata(format) do
+      {:ok, metadata} -> metadata
+      {:error, reason} -> raise ArgumentError, reason
+    end
   end
 
   defp analyse(format, positive_format) do
@@ -364,10 +380,27 @@ defmodule Cldr.Number.Format.Compiler do
       padding_length: padding_length(format[:positive][:pad], format),
       padding_char: padding_char(format),
       multiplier: multiplier(format),
+      currency: currency_location(format[:positive]),
       format: format
     }
 
     reconcile_significant_and_scientific_digits(meta)
+  end
+
+  # Keep track of if this is a currency format, where
+  # the currency is placed and how many symbols are
+  # in the format (this determines how to format the symbol)
+  defp currency_location([{:currency, count} | _rest]) do
+    %{location: :first, symbol_count: count}
+  end
+
+  defp currency_location(parts) do
+    case Enum.reverse(parts) do
+      [{:currency, count} | _rest] ->
+        %{location: :last, symbol_count: count}
+      _other ->
+        nil
+    end
   end
 
   # If we have significant digits defined then they take

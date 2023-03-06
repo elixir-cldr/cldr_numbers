@@ -120,6 +120,7 @@ defmodule Cldr.Number.Format.Meta do
             padding_length: 0,
             padding_char: " ",
             multiplier: 1,
+            currency: nil,
             format: [
               positive: [format: "#"],
               negative: [minus: '-', format: :same_as_positive]
