@@ -234,9 +234,9 @@ See `MyApp.Cldr.Number.Formatter.Short` and `MyApp.Cldr.Number.Formatter.Currenc
 
 A locale identifier can specify options that affect number formatting. These options are:
 
-* `cu`: defines what currency is implied when no currency is specified in the call to `to_string/2`.
+* `cu`: defines the currency to be used when `currency: :from_locale` is specified.
 
-* `cf`: defines whether to use currency or accounting format for formatting currencies. This overrides the `format: :currency` and `format: :accounting` options.
+* `cf`: defines whether to use currency or accounting format for formatting currencies when no `:format` is specified but a `:currency` is specified. In the case where the backend configuration sets the `:default_currency_format` to either `:currency` or `:accounting` that format overrides the format specified in the locale.
 
 * `nu`: defines the number system to be used if no `:number_system` option to `to_string/2` is provided.
 
@@ -244,10 +244,17 @@ These keys are part of the [u extension](https://unicode.org/reports/tr35/#u_Ext
 that document should be consulted for details on how to construct a locale identifier with these
 extensions. The following examples illustrate:
 ```
-iex> MyApp.Number.to_string 123, locale: "th-u-nu-thai"
-{:ok, "๑๒๓"}
+# No :format is specified but a currency is. The format (:currency or
+# :accounting) is derived from the locale. Whenever a
+# :currency option is specified it forces a format of either
+# :currency or :accounting.
+iex> MyApp.Cldr.Number.to_string 123, locale: "th-u-nu-thai", currency: :from_locale
+{:ok, "฿๑๒๓.๐๐"}
 
-iex> MyApp.Number.to_string 123, format: :currency, locale: "en-u-cu-thb"
+# A :format is specified and takes precedence over the format
+# implied by the locale. The currency itself is derived from the
+# locale.
+iex> MyApp.Cldr.Number.to_string 123, format: :currency, locale: "en-u-cu-thb", currency: :from_locale
 {:ok, "THB 123.00"}
 ```
 

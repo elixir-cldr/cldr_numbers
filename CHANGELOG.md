@@ -8,11 +8,13 @@ This is the changelog for Cldr v2.30.0 released on March 7th, 2023.  For older c
 
 * Fix short formatting for decimal numbers. Thanks to @dbernheisel for the report. Closes #34.
 
-* Fix formatting negative numbers when the currency symbol results in an alphabetic character next to the number. In these cases a special format `:currency_alpha_next_to_number` (or `:accounting_alpha_next_to_number`).
+* Fix formatting negative numbers when the currency symbol results in an alphabetic character next to the number. In these cases a special format `:currency_alpha_next_to_number` (or `:accounting_alpha_next_to_number`) is used. These formats are only available in CLDR42 or later and therefore `ex_cldr` version 2.35.0 or later is required.
 
 ### Enhancements
 
 * Supports the `:default_currency_format` backend configuration option introduced in `ex_cldr` version 2.35.0.
+
+* Adds `:from_locale` as a valid value to the `:currency` option to `Cldr.Number.to_string/3`. If set, the currency is derived from the locale.
 
 ## Cldr_Numbers v2.29.0
 

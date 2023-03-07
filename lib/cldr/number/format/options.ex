@@ -94,7 +94,7 @@ defmodule Cldr.Number.Format.Options do
   @type t :: %__MODULE__{
           locale: LanguageTag.t(),
           number_system: System.system_name(),
-          currency: Currency.t(),
+          currency: Currency.t() | :from_locale,
           format: format(),
           currency_format: :currency | :accounting,
           currency_digits: pos_integer(),
@@ -356,6 +356,10 @@ defmodule Cldr.Number.Format.Options do
   end
 
   # Currency validation returns a t: Cldr.Currency.t/0
+
+  defp validate_option(:currency, %{locale: locale}, backend, :from_locale) do
+    currency_from_locale(locale, backend)
+  end
 
   defp validate_option(:currency, %{format: format, locale: locale}, backend, nil)
        when format in @currency_formats_requiring_a_currency do
