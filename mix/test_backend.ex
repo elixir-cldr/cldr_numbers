@@ -25,7 +25,7 @@ defmodule MyApp.Cldr do
     ],
     precompile_transliterations: [{:latn, :arab}, {:arab, :thai}, {:arab, :latn}],
     providers: [Cldr.Number],
-    supress_warnings: true
+    suppress_warnings: true
 end
 
 defmodule MyApp.Cldr2 do
@@ -36,5 +36,5 @@ defmodule MyApp.Cldr2 do
     locales: ["en-GB", "hu", "ar", "de"],
     precompile_transliterations: [{:latn, :arab}, {:arab, :thai}, {:arab, :latn}, {:thai, :latn}],
     providers: [Cldr.Number],
-    supress_warnings: true
+    suppress_warnings: true
 end

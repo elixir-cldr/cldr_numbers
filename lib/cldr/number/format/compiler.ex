@@ -166,7 +166,7 @@ defmodule Cldr.Number.Format.Compiler do
   # runtime, but only once
   @doc false
   defmacro maybe_log_compile_warning(format, config, message) do
-    if Code.ensure_loaded?(:persistent_term) && !config.supress_warnings do
+    if Code.ensure_loaded?(:persistent_term) && !config.suppress_warnings do
       quote do
         require Cldr.Macros
         Cldr.Macros.warn_once(unquote(format), unquote(message))

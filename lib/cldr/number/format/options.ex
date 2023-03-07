@@ -172,7 +172,7 @@ defmodule Cldr.Number.Format.Options do
 
   @doc false
   defp maybe_adjust_currency_format(options, currency, :narrow) when not is_nil(currency) do
-    currency_format = Currency.currency_format_from_locale(options.locale)
+    currency_format = derive_currency_format(options)
 
     options
     |> Map.put(:currency_symbol, :narrow)
@@ -394,13 +394,13 @@ defmodule Cldr.Number.Format.Options do
   end
 
   # If a currency code is provided but no format then a currency
-  # format is forced
+  # format is forced.
 
-  defp validate_option(:format, options, _backend, nil) do
+  defp validate_option(:format, options, backend, nil) do
     locale = Map.fetch!(options, :locale)
 
     if Map.fetch!(options, :currency) do
-      {:ok, Currency.currency_format_from_locale(locale)}
+      {:ok, derive_currency_format(backend, locale)}
     else
       {:ok, :standard}
     end
@@ -439,14 +439,12 @@ defmodule Cldr.Number.Format.Options do
   ]
 
   # If a currency is specified with a non-currency format
-  # then derive a currency format from the locale
+  # then derive a currency format from the locale.
 
   defp validate_option(:format, options, _backend, format)
        when is_atom(format) and format not in @exclude_formats do
-    locale = Map.fetch!(options, :locale)
-
     if Map.get(options, :currency) do
-      {:ok, Currency.currency_format_from_locale(locale)}
+      {:ok, derive_currency_format(options)}
     else
       {:ok, format}
     end
@@ -468,7 +466,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   # :currency_format isn't really a user specified option (it is set
-  # based upon :format) but we validate anyway
+  # based upon :format) but we validate anyway.
 
   defp validate_option(:currency_format, _options, _backend, currency_format)
        when currency_format in [:currency, :accounting, nil] do
@@ -480,7 +478,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   # Currency spacing isn't really a user option
-  # Its derived for currency formats only
+  # Its derived for currency formats only.
 
   defp validate_option(:currency_spacing, %{format: format} = options, backend, _spacing)
        when format in [:currency, :accounting, :currency_short] do
@@ -607,6 +605,27 @@ defmodule Cldr.Number.Format.Options do
 
   defp validate_option(:pattern, _options, _backend, _pattern) do
     {:ok, nil}
+  end
+
+  # When no format is requested but a currency is then we derive
+  # the currency format which will be either :currency or :accounting
+
+  defp derive_currency_format(%Cldr.LanguageTag{backend: backend} = locale) do
+    derive_currency_format(backend, locale)
+  end
+
+  defp derive_currency_format(%{locale: locale}) do
+    derive_currency_format(locale)
+  end
+
+  defp derive_currency_format(backend, locale) do
+    default_currency_format = Map.get(backend.__cldr__(:config), :default_currency_format)
+
+    if default_currency_format do
+      default_currency_format
+    else
+      Currency.currency_format_from_locale(locale)
+    end
   end
 
   # Returns a Cldr.Currency.t from a locale and backend

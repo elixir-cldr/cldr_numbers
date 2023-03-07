@@ -1,14 +1,18 @@
 # Changelog
 
-## Cldr Numbers v2.29.1
+## Cldr Numbers v2.30.0
 
-This is the changelog for Cldr v2.29.1 released on March 6th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+This is the changelog for Cldr v2.30.0 released on March 7th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
 * Fix short formatting for decimal numbers. Thanks to @dbernheisel for the report. Closes #34.
 
 * Fix formatting negative numbers when the currency symbol results in an alphabetic character next to the number. In these cases a special format `:currency_alpha_next_to_number` (or `:accounting_alpha_next_to_number`).
+
+### Enhancements
+
+* Supports the `:default_currency_format` backend configuration option introduced in `ex_cldr` version 2.35.0.
 
 ## Cldr_Numbers v2.29.0
 
@@ -32,8 +36,8 @@ iex> Cldr.Number.to_string(100, format: :currency, currency: :USD, wrapper: fn
 ...> end)
 {:ok, "<span class=\"symbol\">$</span><span class=\"number\">100.00</span>"}
 
-# It is also possible and recommended to use the `Phoenix.HTML.Tag.content_tag/3` 
-# function if wrapping HTML tags since these will ensure HTML entities are 
+# It is also possible and recommended to use the `Phoenix.HTML.Tag.content_tag/3`
+# function if wrapping HTML tags since these will ensure HTML entities are
 # correctly encoded.  For example:
 iex> Cldr.Number.to_string(100, format: :currency, currency: :USD, wrapper: fn
 ...>   string, :currency_symbol -> Phoenix.HTML.Tag.content_tag(:span, string, class: "symbol")
