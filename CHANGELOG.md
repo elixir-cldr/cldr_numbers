@@ -10,6 +10,8 @@ This is the changelog for Cldr v2.30.0 released on March 7th, 2023.  For older c
 
 * Fix formatting negative numbers when the currency symbol results in an alphabetic character next to the number. In these cases a special format `:currency_alpha_next_to_number` (or `:accounting_alpha_next_to_number`) is used. These formats are only available in CLDR42 or later and therefore `ex_cldr` version 2.35.0 or later is required.
 
+* Specifies Elixir 1.11 or later in alignment with the requirements for `ex_cldr`.
+
 ### Enhancements
 
 * Supports the `:default_currency_format` backend configuration option introduced in `ex_cldr` version 2.35.0.

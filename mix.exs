@@ -9,7 +9,7 @@ defmodule Cldr.Numbers.Mixfile do
     [
       app: :ex_cldr_numbers,
       version: @version,
-      elixir: "~> 1.10",
+      elixir: "~> 1.11",
       name: "Cldr Numbers",
       description: description(),
       source_url: "https://github.com/elixir-cldr/cldr_numbers",
