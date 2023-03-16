@@ -987,7 +987,7 @@ defmodule Cldr.Number.Formatter.Decimal do
         def metadata!(format) do
           case metadata(format) do
             {:ok, meta} -> meta
-            {:error, reason} -> raise reason
+            {:error, reason} -> raise Cldr.FormatCompileError, reason
           end
         end
       end
