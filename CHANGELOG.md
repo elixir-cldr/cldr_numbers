@@ -1,5 +1,17 @@
 # Changelog
 
+## Cldr Numbers v2.31.0
+
+This is the changelog for Cldr v2.31.0 released on _____, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Support any `:wrapper` function to return `iodata` when used as an option to `Cldr.Number.to_string/2`.
+
+### Enhancements
+
+* Updates to [ex_cldr version 2.37.0](https://hex.pm/packages/ex_cldr/2.37.0) which includes data from [CLDR release 43](https://cldr.unicode.org/index/downloads/cldr-43)
+
 ## Cldr Numbers v2.30.0
 
 This is the changelog for Cldr v2.30.0 released on March 7th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

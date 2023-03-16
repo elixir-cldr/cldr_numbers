@@ -780,6 +780,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   defp maybe_wrap(string, tag, wrapper) do
     case wrapper.(string, tag) do
       {:safe, iodata} -> iodata
+      iodata when is_list(iodata) -> iodata
       string when is_binary(string) -> string
     end
   end
