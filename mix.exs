@@ -41,7 +41,7 @@ defmodule Cldr.Numbers.Mixfile do
 
   defp deps do
     [
-      #{:ex_cldr, "~> 2.37"},
+      # {:ex_cldr, "~> 2.37"},
       {:ex_cldr, path: "../cldr43", override: true},
 
       {:ex_cldr_currencies, ">= 2.14.2"},
