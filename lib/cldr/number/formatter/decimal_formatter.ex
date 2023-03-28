@@ -59,7 +59,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   * `backend` is any module that includes `use Cldr` and therefore
     is a `Cldr` backend module.
 
-  * `options` is a `t:Cldr.Number.Format.Options.t/0 of validated options.
+  * `options` is a `t:Cldr.Number.Format.Options.t/0` of validated options.
     See `Cldr.Number.to_string/2` for further information.
 
   """

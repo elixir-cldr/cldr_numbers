@@ -81,7 +81,7 @@ defmodule Cldr.Number.Format.Meta do
 
   * `[currency: 1..4]` inserts a localised currency
     symbol of the given `type`.  A `:currency` must be
-    provided as an option to `Cldr.Number.Formatter.Decimal.to_string/3`.
+    provided as an option to `Cldr.Number.Formatter.Decimal.to_string/4`.
 
   * `[pad: "char"]` inserts the correct number of `char`s
     to pad the number format to the width specified by
