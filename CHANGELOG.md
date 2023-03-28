@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.30.1
+
+This is the changelog for Cldr v2.30.1 released on March 28th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fixes currency formats where the currency symbol is neither the first or last token. Thanks to @simoncocking for the issue. Closes #35.
+
 ## Cldr Numbers v2.30.0
 
 This is the changelog for Cldr v2.30.0 released on March 7th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

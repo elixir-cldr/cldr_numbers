@@ -398,14 +398,36 @@ defmodule Cldr.Number.Format.Compiler do
   end
 
   defp currency_location(parts) do
-    case Enum.reverse(parts) do
-      [{:currency, count} | _rest] ->
-        %{location: :last, symbol_count: count}
+    location =
+      Enum.reduce_while(parts, 0, fn
+        {:currency, count}, offset ->  {:halt, %{location: offset, symbol_count: count}}
+        _other, offset -> {:cont, offset + 1}
+      end)
 
-      _other ->
-        nil
+    if location == 0 do
+      nil
+    else
+      adjust_location(location, Kernel.length(parts))
     end
   end
+
+  defp adjust_location(%{location: offset} = location, count) when count == offset + 1 do
+    %{location | location: :last}
+  end
+
+  defp adjust_location(location, _count) do
+    location
+  end
+
+  # defp currency_location(parts) do
+  #   case Enum.reverse(parts) do
+  #     [{:currency, count} | _rest] ->
+  #       %{location: :last, symbol_count: count}
+  #
+  #     _other ->
+  #       nil
+  #   end
+  # end
 
   # If we have significant digits defined then they take
   # priority over using the default pattern for significant digits

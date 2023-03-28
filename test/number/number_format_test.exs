@@ -207,6 +207,10 @@ defmodule Number.Format.Test do
              Cldr.Number.to_string(Decimal.new("Inf"), format: "# and beyond")
   end
 
+  test "A free form currency format where the currency symbol is not first or last" do
+    assert {:ok, "US$1,234.00"} = MyApp.Cldr.Number.to_string(1234, currency: "USD", format: "US¤#,###")
+  end
+
   test "Digital tokens with overriden symbols" do
     assert {:ok, "₿ 1,234,545,656.456789"} =
              Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: :narrow)
