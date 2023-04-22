@@ -6,7 +6,7 @@ This is the changelog for Cldr v2.31.0 released on _____, 2023.  For older chang
 
 ### Bug Fixes
 
-* Support any `:wrapper` function to return `iodata` when used as an option to `Cldr.Number.to_string/2`.
+* Support a `:wrapper` function to return `iodata` when used as an option to `Cldr.Number.to_string/2`.
 
 ### Enhancements
 
