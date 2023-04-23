@@ -21,9 +21,22 @@ defmodule Cldr.Number.Backend.Rbnf do
           defined in the Unicode CLDR data repository.  Available rules are identified by:
 
               iex> #{inspect(__MODULE__)}.rule_sets(#{inspect(unquote(root_locale))})
-              [:zz_default, :tamil, :roman_upper, :roman_lower, :hebrew_item,
-               :hebrew, :greek_upper, :greek_lower, :georgian,
-               :ethiopic, :cyrillic_lower, :armenian_upper, :armenian_lower]
+              ...> |> Enum.sort()
+              [
+                :armenian_lower,
+                :armenian_upper,
+                :cyrillic_lower,
+                :ethiopic,
+                :georgian,
+                :greek_lower,
+                :greek_upper,
+                :hebrew,
+                :hebrew_item,
+                :roman_lower,
+                :roman_upper,
+                :tamil,
+                :zz_default
+              ]
 
           A rule can then be invoked on an available rule_set.  For example
 
@@ -59,9 +72,16 @@ defmodule Cldr.Number.Backend.Rbnf do
           defined in the Unicode CLDR data repository.  Available rules are identified by:
 
               iex> #{inspect(__MODULE__)}.rule_sets("en")
-              [:spellout_ordinal_verbose, :spellout_ordinal, :spellout_numbering_year,
-                :spellout_numbering_verbose, :spellout_numbering, :spellout_cardinal_verbose,
-                :spellout_cardinal]
+              ...> |> Enum.sort()
+              [
+                :spellout_cardinal,
+                :spellout_cardinal_verbose,
+                :spellout_numbering,
+                :spellout_numbering_verbose,
+                :spellout_numbering_year,
+                :spellout_ordinal,
+                :spellout_ordinal_verbose
+              ]
 
           A rule can then be invoked on an available rule_set. For example:
 
@@ -100,12 +120,13 @@ defmodule Cldr.Number.Backend.Rbnf do
               [:digits_ordinal]
 
               iex> #{inspect(__MODULE__)}.rule_sets("fr")
+              ...> |> Enum.sort()
               [
-                :digits_ordinal_masculine_plural,
-                :digits_ordinal_masculine,
-                :digits_ordinal_feminine_plural,
+                :digits_ordinal,
                 :digits_ordinal_feminine,
-                :digits_ordinal
+                :digits_ordinal_feminine_plural,
+                :digits_ordinal_masculine,
+                :digits_ordinal_masculine_plural
               ]
 
           A rule can then be invoked on an available rule_set.  For example
