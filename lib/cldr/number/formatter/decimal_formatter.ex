@@ -8,22 +8,20 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   The available format styles for a locale can be returned by:
 
-      iex> Cldr.Number.Format.decimal_format_styles_for("en", :latn, TestBackend.Cldr)
-      {
-        :ok,
-        [
-          :accounting,
-          :accounting_alpha_next_to_number,
-          :accounting_no_symbol,
-          :currency,
-          :currency_alpha_next_to_number,
-          :currency_long,
-          :currency_no_symbol,
-          :percent,
-          :scientific,
-          :standard
-        ]
-      }
+      iex> {:ok, decimal_format_styles} = Cldr.Number.Format.decimal_format_styles_for("en", :latn, TestBackend.Cldr)
+      iex> Enum.sort(decimal_format_styles)
+      [
+        :accounting,
+        :accounting_alpha_next_to_number,
+        :accounting_no_symbol,
+        :currency,
+        :currency_alpha_next_to_number,
+        :currency_long,
+        :currency_no_symbol,
+        :percent,
+        :scientific,
+        :standard
+      ]
 
   This allows a number to be formatted in a locale-specific way but using
   a standard method of describing the purpose of the format.
@@ -780,6 +778,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   defp maybe_wrap(string, tag, wrapper) do
     case wrapper.(string, tag) do
       {:safe, iodata} -> iodata
+      iodata when is_list(iodata) -> iodata
       string when is_binary(string) -> string
     end
   end
@@ -986,7 +985,7 @@ defmodule Cldr.Number.Formatter.Decimal do
         def metadata!(format) do
           case metadata(format) do
             {:ok, meta} -> meta
-            {:error, reason} -> raise reason
+            {:error, reason} -> raise Cldr.FormatCompileError, reason
           end
         end
       end

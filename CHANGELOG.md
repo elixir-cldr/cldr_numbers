@@ -1,5 +1,6 @@
 # Changelog
 
+<<<<<<< HEAD
 ## Cldr Numbers v2.30.1
 
 This is the changelog for Cldr v2.30.1 released on March 28th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
@@ -7,6 +8,19 @@ This is the changelog for Cldr v2.30.1 released on March 28th, 2023.  For older 
 ### Bug Fixes
 
 * Fixes currency formats where the currency symbol is neither the first or last token. Thanks to @simoncocking for the issue. Closes #35.
+=======
+## Cldr Numbers v2.31.0
+
+This is the changelog for Cldr v2.31.0 released on _____, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Support a `:wrapper` function to return `iodata` when used as an option to `Cldr.Number.to_string/2`.
+
+### Enhancements
+
+* Updates to [ex_cldr version 2.37.0](https://hex.pm/packages/ex_cldr/2.37.0) which includes data from [CLDR release 43](https://cldr.unicode.org/index/downloads/cldr-43)
+>>>>>>> cldr43
 
 ## Cldr Numbers v2.30.0
 

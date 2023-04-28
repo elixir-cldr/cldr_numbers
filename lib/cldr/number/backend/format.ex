@@ -215,6 +215,8 @@ defmodule Cldr.Number.Backend.Format do
 
         def default_grouping_for(locale \\ unquote(backend).get_locale())
 
+        @default_standard_format "#,##0.###"
+
         for locale_name <- Cldr.Locale.Loader.known_locale_names(config) do
           locale_data =
             locale_name
@@ -242,7 +244,7 @@ defmodule Cldr.Number.Backend.Format do
             locale_data
             |> get_in([:number_systems, :default])
 
-          standard_format = number_formats[default_number_system].standard
+          standard_format = number_formats[default_number_system].standard || @default_standard_format
           {:ok, meta} = Cldr.Number.Format.Compiler.format_to_metadata(standard_format)
 
           def default_grouping_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do

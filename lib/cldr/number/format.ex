@@ -441,25 +441,23 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      iex> Cldr.Number.Format.format_styles_for("en", :latn, MyApp.Cldr)
-      {
-        :ok,
-        [
-          :accounting,
-          :accounting_alpha_next_to_number,
-          :accounting_no_symbol,
-          :currency,
-          :currency_alpha_next_to_number,
-          :currency_long,
-          :currency_no_symbol,
-          :currency_short,
-          :decimal_long,
-          :decimal_short,
-          :percent,
-          :scientific,
-          :standard
-        ]
-      }
+      iex> {:ok, format_styles} = Cldr.Number.Format.format_styles_for("en", :latn, MyApp.Cldr)
+      iex> Enum.sort(format_styles)
+      [
+        :accounting,
+        :accounting_alpha_next_to_number,
+        :accounting_no_symbol,
+        :currency,
+        :currency_alpha_next_to_number,
+        :currency_long,
+        :currency_no_symbol,
+        :currency_short,
+        :decimal_long,
+        :decimal_short,
+        :percent,
+        :scientific,
+        :standard
+      ]
 
   """
   @reject_styles [:__struct__, :currency_spacing, :other]
@@ -505,8 +503,9 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      iex> Cldr.Number.Format.short_format_styles_for("he", :latn, MyApp.Cldr)
-      {:ok, [:currency_short, :decimal_long, :decimal_short]}
+      iex> {:ok, short_format_styles} = Cldr.Number.Format.short_format_styles_for("he", :latn, MyApp.Cldr)
+      iex> Enum.sort(short_format_styles)
+      [:currency_short, :decimal_long, :decimal_short]
 
   """
   @isnt_really_a_short_format [:currency_long]
@@ -557,22 +556,20 @@ defmodule Cldr.Number.Format do
 
   ## Example
 
-      iex> Cldr.Number.Format.decimal_format_styles_for("en", :latn, MyApp.Cldr)
-      {
-        :ok,
-        [
-          :accounting,
-          :accounting_alpha_next_to_number,
-          :accounting_no_symbol,
-          :currency,
-          :currency_alpha_next_to_number,
-          :currency_long,
-          :currency_no_symbol,
-          :percent,
-          :scientific,
-          :standard
-        ]
-      }
+      iex> {:ok, styles} = Cldr.Number.Format.decimal_format_styles_for("en", :latn, MyApp.Cldr)
+      iex> Enum.sort(styles)
+      [
+        :accounting,
+        :accounting_alpha_next_to_number,
+        :accounting_no_symbol,
+        :currency,
+        :currency_alpha_next_to_number,
+        :currency_long,
+        :currency_no_symbol,
+        :percent,
+        :scientific,
+        :standard
+      ]
 
   """
   @spec decimal_format_styles_for(
