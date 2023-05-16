@@ -247,6 +247,24 @@ defmodule Cldr.Rbnf do
     }
   end
 
+  # Function names need to start with a letter. At least one
+  # rule in CLDR does not (2d_year). We prepend an "r" to the
+  # rule. This is also done in rbnf_parse.yrl so the strategies
+  # need to match.
+
+  @doc false
+  def force_valid_function_name(rule_group) do
+    function = to_string(rule_group)
+
+    case function do
+      <<digit::utf8, _rest :: binary>> when digit in ?0..?9 ->
+        "r" <> function
+      _other ->
+        function
+    end
+    |> String.to_atom()
+  end
+
   if Mix.env() == :test do
     # Returns all the rules in rbnf without any tagging for rulegroup or set.
     # This is helpful for testing only.

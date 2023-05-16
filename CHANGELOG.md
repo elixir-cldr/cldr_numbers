@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.31.1
+
+This is the changelog for Cldr v2.31.1 released on May 17th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Ensure all RBNF rule names are valid function names. In at least one case ("2d_year") a rule name does not map to a valid Elixir function name.  The rules are built with atom function names which is valid, but the string versions of that name do not parse. `MyApp.Cldr.Rbnf.Spellout.2d_year/2` does not parse, evening though the function exists. This can cause interoperabiity issues with other libraries the introspect code, like `inch_ex`.  From this release, rule names are forced to be valid, parseable function names by prepending an "r" to the rule name if the rule name starts with a digit. Thanks to @ggarciajr for the report.
+
 ## Cldr Numbers v2.31.0
 
 This is the changelog for Cldr v2.31.0 released on April 28th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

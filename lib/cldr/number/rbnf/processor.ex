@@ -140,7 +140,7 @@ defmodule Cldr.Rbnf.Processor do
   def define_rules(rule_group_name, backend, env) do
     Module.register_attribute(env.module, @public_rulesets, [])
 
-    iterate_rules(rule_group_name, backend, fn
+    enumerate_rules(rule_group_name, backend, fn
       rule_group, locale, "public", :error ->
         define_rule(:error, nil, rule_group, locale, nil)
         |> Code.eval_quoted([], env)
@@ -156,18 +156,19 @@ defmodule Cldr.Rbnf.Processor do
         nil
 
       rule_group, locale, access, rule ->
+        function_name = Cldr.Rbnf.force_valid_function_name(rule_group)
         {:ok, parsed} = Cldr.Rbnf.Rule.parse(rule.definition)
 
         function_body = rule_body(locale, rule_group, rule, parsed, backend)
 
         rule.base_value
-        |> define_rule(rule.range, rule_group, locale, function_body)
+        |> define_rule(rule.range, function_name, locale, function_body)
         |> add_function_to_exports(access, env.module, locale)
         |> Code.eval_quoted([], env)
     end)
   end
 
-  defp iterate_rules(rule_group_type, backend, fun) do
+  defp enumerate_rules(rule_group_type, backend, fun) do
     all_rules = Cldr.Rbnf.for_all_locales(backend)[rule_group_type]
 
     unless is_nil(all_rules) do

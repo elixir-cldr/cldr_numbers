@@ -70,13 +70,22 @@ append({literal, Literal1}, {literal, Literal2}) ->
 % We will turn rule names into functions later on so
 % we normalise the names to a format that is acceptable.
 normalize_rule_name({_,_,[$%, $% | Name]}) ->
-  erlang:binary_to_atom(unicode:characters_to_binary(underscore(Name)), utf8);
+  erlang:binary_to_atom(unicode:characters_to_binary(force_valid_function_name(Name)), utf8);
 normalize_rule_name({_,_,[$% | Name]}) ->
-  erlang:binary_to_atom(unicode:characters_to_binary(underscore(Name)), utf8).
+  erlang:binary_to_atom(unicode:characters_to_binary(force_valid_function_name(Name)), utf8).
 
 % Return a token value as a binary
 unwrap({_,_,V}) when is_list(V) -> unicode:characters_to_binary(V);
 unwrap({_,_,V}) -> V.
+
+% Force a valid function name. This is in two parts:
+% 1.  If the function name starts with a number, prepend
+%     a letter
+% 2.  Replace "-" with "_"
+force_valid_function_name([Digit | Rest]) when Digit >= $0 andalso Digit =< $9 ->
+  underscore([$r, Digit | Rest]);
+force_valid_function_name(Other) ->
+  underscore(Other).
 
 % Substitute "_" for "-" since we will use these rule names
 % as functions later on.
