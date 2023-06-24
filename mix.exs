@@ -3,7 +3,7 @@ defmodule Cldr.Numbers.Mixfile do
 
   use Mix.Project
 
-  @version "2.31.1"
+  @version "2.31.2"
 
   def project do
     [

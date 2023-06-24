@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.31.2
+
+This is the changelog for Cldr v2.31.2 released on _____, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fixes formatting of numbers in locales where the locale has no RBNF. Thanks to @petrus-jvrensburg for the report. Closes #37.
+
 ## Cldr Numbers v2.31.1
 
 This is the changelog for Cldr v2.31.1 released on May 17th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
