@@ -226,7 +226,7 @@ defmodule Cldr.Rbnf do
   end
 
   def rbnf_locale_error(locale_name) when is_binary(locale_name) do
-    {Cldr.Rbnf.NotAvailable, "RBNF is not available for the locale #{inspect(locale_name)}"}
+    {Cldr.Rbnf.NotAvailable, "xRBNF is not available for the locale #{inspect(locale_name)}"}
   end
 
   def rbnf_locale_error(%LanguageTag{cldr_locale_name: locale_name}) do
@@ -237,7 +237,7 @@ defmodule Cldr.Rbnf do
         %LanguageTag{rbnf_locale_name: nil, cldr_locale_name: cldr_locale_name},
         _format
       ) do
-    {Cldr.Rbnf.NotAvailable, "RBNF is not available for the locale #{inspect(cldr_locale_name)}"}
+    {Cldr.Rbnf.NotAvailable, "x2 RBNF is not available for the locale #{inspect(cldr_locale_name)}"}
   end
 
   def rbnf_rule_error(%LanguageTag{rbnf_locale_name: rbnf_locale_name}, format) do

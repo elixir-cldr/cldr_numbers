@@ -527,6 +527,11 @@ defmodule Cldr.Number do
     Formatter.Short.to_string(number, format, backend, options)
   end
 
+  # For format strings
+  defp to_string(number, format, backend, options) when is_binary(format) do
+    Formatter.Decimal.to_string(number, format, backend, options)
+  end
+
   # For executing arbitrary RBNF rules that might exist for a given locale
   defp to_string(_number, format, _backend, %{locale: %{rbnf_locale_name: nil} = locale}) do
     {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
@@ -536,11 +541,6 @@ defmodule Cldr.Number do
     with {:ok, module, locale} <- find_rbnf_format_module(options.locale, format, backend) do
       apply(module, format, [number, locale])
     end
-  end
-
-  # For all other formats
-  defp to_string(number, format, backend, options) when is_binary(format) do
-    Formatter.Decimal.to_string(number, format, backend, options)
   end
 
   # For all other formats.  The known atom-based formats are described

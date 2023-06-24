@@ -230,4 +230,8 @@ defmodule Number.Format.Test do
     assert {:ok, "XBTC 1,234,545,656.456789"} =
              Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: "XBTC")
   end
+
+  test "Formatting a number with standard format in a locale with no RBNF" do
+    assert {:ok, "1,234"} = Cldr.Number.to_string(1234, locale: :ur)
+  end
 end
