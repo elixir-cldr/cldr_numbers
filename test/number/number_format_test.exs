@@ -232,6 +232,8 @@ defmodule Number.Format.Test do
   end
 
   test "Formatting a number with standard format in a locale with no RBNF" do
-    assert {:ok, "1,234"} = Cldr.Number.to_string(1234, locale: :ur)
+    for {_locale, language_tag} <- Cldr.Config.all_language_tags, is_nil(language_tag.rbnf_locale_name) do
+      assert {:ok, _formatted_number} = Cldr.Number.to_string(1234, locale: language_tag)
+    end
   end
 end
