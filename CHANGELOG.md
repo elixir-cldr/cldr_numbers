@@ -2,7 +2,7 @@
 
 ## Cldr Numbers v2.31.2
 
-This is the changelog for Cldr v2.31.2 released on _____, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+This is the changelog for Cldr v2.31.2 released on July 7th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
