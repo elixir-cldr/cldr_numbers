@@ -17,6 +17,7 @@ defmodule Cldr.Number.Format.Options do
     :locale,
     :number_system,
     :currency,
+    :scientific,
     :format,
     :currency_format,
     :currency_digits,
@@ -59,6 +60,7 @@ defmodule Cldr.Number.Format.Options do
     :standard,
     :accounting,
     :currency,
+    :scientific,
     :percent,
     :currency_no_symbol,
     :accounting_no_symbol,
@@ -395,6 +397,10 @@ defmodule Cldr.Number.Format.Options do
           {:error, _} -> {:error, Cldr.unknown_currency_error(currency)}
         end
     end
+  end
+
+  defp validate_option(:scientific, _options, _backend, nil) do
+    {:ok, :scientific}
   end
 
   # If a currency code is provided but no format then a currency

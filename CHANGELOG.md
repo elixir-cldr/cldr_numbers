@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.31.3
+
+This is the changelog for Cldr v2.31.3 released on July 23rd, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Support `format: :scientific` which is documented but was not implemented as a valid option.  Thanks to @petrus-jvrensburg for the report. Closes #38.
+
 ## Cldr Numbers v2.31.2
 
 This is the changelog for Cldr v2.31.2 released on July 7th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

@@ -92,6 +92,7 @@ defmodule Cldr.Test.Number.Format do
       {12.34, "1.234E1", [format: "#E0"]},
       {123.4, "1.234E2", [format: "#E0"]},
       {1234, "1.234E3", [format: "#E0"]},
+      {1234, "1.234E3", [format: :scientific]},
 
       # Scientific with exponent sign
       {1234, "1.234E+3", [format: "#E+0"]},
