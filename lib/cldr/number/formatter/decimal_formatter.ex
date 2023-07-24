@@ -826,22 +826,22 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   def adjust_fraction_for_currency(meta, currency, :accounting, backend) do
     {:ok, currency} = Currency.currency_for_code(currency, backend)
-    do_adjust_fraction(meta, meta.fractional_digits.max, currency.rounding)
+    do_adjust_fraction(meta, currency.digits, currency.rounding)
   end
 
   def adjust_fraction_for_currency(meta, currency, :cash, backend) do
     {:ok, currency} = Currency.currency_for_code(currency, backend)
-    do_adjust_fraction(meta, meta.fractional_digits.max, currency.cash_rounding)
+    do_adjust_fraction(meta, currency.cash_digits, currency.cash_rounding)
   end
 
   def adjust_fraction_for_currency(meta, currency, :iso, backend) do
     {:ok, currency} = Currency.currency_for_code(currency, backend)
-    do_adjust_fraction(meta, meta.fractional_digits.max, currency.iso_digits)
+    do_adjust_fraction(meta, currency.iso_digits, currency.iso_digits)
   end
 
   defp do_adjust_fraction(meta, digits, rounding) do
     rounding = power_of_10(-digits) * rounding
-    %{meta | fractional_digits: %{max: digits, min: digits}, round_nearest: rounding}
+    %{meta | round_nearest: rounding}
   end
 
   # Functions to update metadata to reflect the
