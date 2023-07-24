@@ -2,11 +2,13 @@
 
 ## Cldr Numbers v2.31.3
 
-This is the changelog for Cldr v2.31.3 released on July 23rd, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+This is the changelog for Cldr v2.31.3 released on July 24th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
 * Support `format: :scientific` which is documented but was not implemented as a valid option.  Thanks to @petrus-jvrensburg for the report. Closes #38.
+
+* Don't override currency fractional digits when formatting a number. The format should always define the fractional digits unless overriden by the `:fractional_digits` option.
 
 ## Cldr Numbers v2.31.2
 

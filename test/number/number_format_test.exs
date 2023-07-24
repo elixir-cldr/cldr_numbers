@@ -208,7 +208,7 @@ defmodule Number.Format.Test do
   end
 
   test "A free form currency format where the currency symbol is not first or last" do
-    assert {:ok, "US$1,234.00"} = MyApp.Cldr.Number.to_string(1234, currency: "USD", format: "US¤#,###")
+    assert {:ok, "US$1,234"} = MyApp.Cldr.Number.to_string(1234, currency: "USD", format: "US¤#,###")
   end
 
   test "Digital tokens with overriden symbols" do

@@ -15,7 +15,8 @@ defmodule Cldr.Test.Number.Format do
       {1234.567, "1234,5670", [format: "###0.0000#", locale: "fr"]},
       {1234.567, "01234,5670", [format: "00000.0000", locale: "fr"]},
       {1234.567, "1 234,57 €", [format: "#,##0.00 ¤", locale: "fr", currency: :EUR]},
-      {1234.567, "1 235 JPY", [format: "#,##0.00 ¤", locale: "fr", currency: "JPY"]},
+      {1234.567, "1 235 JPY", [format: "#,##0 ¤", locale: "fr", currency: "JPY"]},
+      {1234.567, "1 234,57 JPY", [format: "#,##0.00 ¤", locale: "fr", currency: "JPY"]},
 
       # Fraction grouping
       {1234.4353244565, "1234,435 324 456 5", [format: "#,###.###,#########", locale: "pl"]},
