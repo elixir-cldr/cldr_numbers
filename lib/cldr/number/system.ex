@@ -66,9 +66,72 @@ defmodule Cldr.Number.System do
 
   @doc """
   Number systems that have their own digit characters defined.
+
   """
   def systems_with_digits do
     @systems_with_digits
+  end
+
+  @algorithmic_systems Enum.filter(@number_systems, fn {_name, system} ->
+                         system.type == :algorithmic
+                       end)
+                       |> Map.new()
+
+  @doc """
+  Returns number systems that are algorithmic.
+
+  Algorithmic number systems don't have decimal
+  digits. Numbers are formed by algorithm using
+  rules based number formats.
+
+  """
+  def algorithmic_systems do
+    @algorithmic_systems
+  end
+
+  @doc """
+  Returns the default RBNF rule name for an
+  algorithmic number system.
+
+  ### Arguments
+
+  * `system_name` is any number system name returned by
+    `Cldr.known_number_systems/0` or a number system type
+    returned by `Cldr.known_number_system_types/0`.
+
+  * `backend` is any `Cldr` backend. That is, any module that
+    contains `use Cldr`.
+
+  ### Returns
+
+  * `{:ok, {module, rule_function, locale}}` or
+
+  * `{:error, {module(), reason}}`
+
+  ### Example
+
+      iex> Cldr.Number.System.default_rbnf_rule :taml, MyApp.Cldr
+      {:ok, {MyApp.Cldr.Rbnf.NumberSystem, :tamil, :und}}
+
+      iex> Cldr.Number.System.default_rbnf_rule :hebr, MyApp.Cldr
+      {:ok, {MyApp.Cldr.Rbnf.NumberSystem, :hebrew, :und}}
+
+      iex> Cldr.Number.System.default_rbnf_rule :jpanfin, MyApp.Cldr
+      {:ok, {MyApp.Cldr.Rbnf.Spellout, :spellout_cardinal_financial, :ja}}
+
+      iex> Cldr.Number.System.default_rbnf_rule :latn, MyApp.Cldr
+      {:error,
+       {Cldr.UnknownNumberSystemError, "The number system :latn is not algorithmic"}}
+
+  """
+  def default_rbnf_rule(system_name, backend) do
+    case Map.fetch(algorithmic_systems(), system_name) do
+      {:ok, definition} ->
+        {:ok, Cldr.Config.rbnf_rule_function(definition.rules, backend)}
+
+      :error ->
+        {:error, algorithmic_system_error(system_name)}
+    end
   end
 
   @doc """
@@ -85,7 +148,7 @@ defmodule Cldr.Number.System do
 
   ## Returns
 
-  * A number system name as an atom
+  * A number system name as an atom.
 
   ## Examples
 
@@ -171,10 +234,10 @@ defmodule Cldr.Number.System do
   ## Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
-    or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
+    or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`.
 
   ## Examples
 
@@ -578,7 +641,7 @@ defmodule Cldr.Number.System do
       {:ok, "0123456789"}
 
       iex> Cldr.Number.System.number_system_digits(:nope)
-      {:error, {Cldr.UnknownNumberSystemError, "The number system :nope is not known or does not have digits"}}
+      {:error, {Cldr.UnknownNumberSystemError, "The number system :nope is not known"}}
 
   """
   @spec number_system_digits(system_name()) ::
@@ -835,9 +898,36 @@ defmodule Cldr.Number.System do
 
   @doc false
   def number_system_digits_error(system_name) do
+    case number_systems()[system_name] do
+      nil ->
+        unknown_number_system_error(system_name)
+
+    _system ->
+      {
+        Cldr.UnknownNumberSystemError,
+        "The number system #{inspect(system_name)} does not have digits"
+      }
+    end
+  end
+
+  @doc false
+  def algorithmic_system_error(system_name) do
+    case number_systems()[system_name] do
+      nil ->
+        unknown_number_system_error(system_name)
+
+    _system ->
+      {
+        Cldr.UnknownNumberSystemError,
+        "The number system #{inspect(system_name)} is not algorithmic"
+      }
+    end
+  end
+
+  defp unknown_number_system_error(system_name) do
     {
       Cldr.UnknownNumberSystemError,
-      "The number system #{inspect(system_name)} is not known or does not have digits"
+      "The number system #{inspect(system_name)} is not known"
     }
   end
 end

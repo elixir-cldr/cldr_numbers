@@ -62,30 +62,17 @@ defmodule Number.Format.Test do
 
   test "that an rbnf format request fails if the locale doesn't define the ruleset" do
     assert TestBackend.Cldr.Number.to_string(123, format: :spellout_ordinal_verbose, locale: "zh") ==
-             {:error,
-              {Cldr.Rbnf.NoRule,
-               "Locale :zh does not define an rbnf ruleset :spellout_ordinal_verbose"}}
+    {
+      :error,
+      {
+        Cldr.Rbnf.NoRule,
+        "RBNF rule :spellout_ordinal_verbose is unknown to locale #Cldr.LanguageTag<zh [validated]>"
+      }
+    }
   end
 
   test "that we get default formats_for" do
     assert TestBackend.Cldr.Number.Format.formats_for!().__struct__ == Cldr.Number.Format
-  end
-
-  test "that when there is no format defined for a number system we get an error return" do
-    assert TestBackend.Cldr.Number.to_string(1234, locale: "he", number_system: :hebr) ==
-             {
-               :error,
-               {
-                 Cldr.UnknownFormatError,
-                 "The locale :he with number system :hebr does not define a format :standard"
-               }
-             }
-  end
-
-  test "that when there is no format defined for a number system raises" do
-    assert_raise Cldr.UnknownFormatError, ~r/The locale .* does not define/, fn ->
-      TestBackend.Cldr.Number.to_string!(1234, locale: "he", number_system: :hebr)
-    end
   end
 
   test "setting currency_format: :iso" do
@@ -234,6 +221,16 @@ defmodule Number.Format.Test do
   test "Formatting a number with standard format in a locale with no RBNF" do
     for {_locale, language_tag} <- Cldr.Config.all_language_tags, is_nil(language_tag.rbnf_locale_name) do
       assert {:ok, _formatted_number} = Cldr.Number.to_string(1234, locale: language_tag)
+    end
+  end
+
+  test "that each number system for each locale can format a number with standard format" do
+    for locale <- TestBackend.Cldr.known_locale_names do
+      {:ok, systems} = TestBackend.Cldr.Number.System.number_systems_for(locale)
+      number_systems = Enum.uniq(Map.keys(systems) ++ Map.values(systems))
+      for number_system <- number_systems do
+        assert {:ok, _} = TestBackend.Cldr.Number.to_string(123, locale: locale, number_system: number_system)
+      end
     end
   end
 end

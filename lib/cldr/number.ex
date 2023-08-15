@@ -385,7 +385,7 @@ defmodule Cldr.Number do
 
   ## Errors
 
-  An error tuple `{:error, reason}` will be returned if an error is detected.
+  An error tuple `{:error, {exception, reason}}` will be returned if an error is detected.
   The two most likely causes of an error return are:
 
     * A format cannot be compiled. In this case the error tuple will look like:
@@ -402,9 +402,9 @@ defmodule Cldr.Number do
       return looks like:
 
   ```
-      iex> Cldr.Number.to_string(1234, TestBackend.Cldr, locale: "he", number_system: "hebr")
+      iex> Cldr.Number.to_string(1234, TestBackend.Cldr, locale: "he", number_system: "hebr", format: :percent)
       {:error, {Cldr.UnknownFormatError,
-      "The locale :he with number system :hebr does not define a format :standard"}}
+      "The locale :he with number system :hebr does not define a format :percent"}}
   ```
   """
   @spec to_string(
@@ -533,10 +533,6 @@ defmodule Cldr.Number do
   end
 
   # For executing arbitrary RBNF rules that might exist for a given locale
-  defp to_string(_number, format, _backend, %{locale: %{rbnf_locale_name: nil} = locale}) do
-    {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
-  end
-
   defp to_string(number, format, backend, options) when is_atom(format) do
     with {:ok, module, locale} <- find_rbnf_format_module(options.locale, format, backend) do
       apply(module, format, [number, locale])

@@ -177,9 +177,7 @@ defmodule Cldr.Number.Parser do
          "The string \\"＋1.000,34\\" could not be parsed as a number"}}
 
       iex> Cldr.Number.Parser.parse "一万二千三百四十五", locale: "ja-u-nu-jpan"
-      {:error,
-       {Cldr.UnknownNumberSystemError,
-        "The number system :jpan is not known or does not have digits"}}
+      {:error, {Cldr.UnknownNumberSystemError, "The number system :jpan does not have digits"}}
 
   """
   @spec parse(String.t(), Keyword.t()) ::

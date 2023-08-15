@@ -72,7 +72,7 @@ defmodule Cldr.Rbnf do
   end
 
   def rule_names_for_locale(locale_name, backend \\ Cldr.default_backend!())
-      when is_binary(locale_name) do
+      when is_binary(locale_name) or is_atom(locale_name) do
     with {:ok, locale} <- Cldr.Locale.canonical_language_tag(locale_name, backend) do
       rule_names_for_locale(locale)
     end
@@ -225,25 +225,14 @@ defmodule Cldr.Rbnf do
     |> Cldr.Map.merge_map_list()
   end
 
-  def rbnf_locale_error(locale_name) when is_binary(locale_name) do
-    {Cldr.Rbnf.NotAvailable, "xRBNF is not available for the locale #{inspect(locale_name)}"}
+  def rbnf_locale_error(%LanguageTag{} = locale)  do
+    {Cldr.Rbnf.NotAvailable, "RBNF is not available for locale #{inspect(locale)}"}
   end
 
-  def rbnf_locale_error(%LanguageTag{cldr_locale_name: locale_name}) do
-    rbnf_locale_error(locale_name)
-  end
-
-  def rbnf_rule_error(
-        %LanguageTag{rbnf_locale_name: nil, cldr_locale_name: cldr_locale_name},
-        _format
-      ) do
-    {Cldr.Rbnf.NotAvailable, "x2 RBNF is not available for the locale #{inspect(cldr_locale_name)}"}
-  end
-
-  def rbnf_rule_error(%LanguageTag{rbnf_locale_name: rbnf_locale_name}, format) do
+  def rbnf_rule_error(%LanguageTag{} = locale, format) do
     {
       Cldr.Rbnf.NoRule,
-      "Locale #{inspect(rbnf_locale_name)} does not define an rbnf ruleset #{inspect(format)}"
+      "RBNF rule #{inspect(format)} is unknown to locale #{inspect(locale)}"
     }
   end
 

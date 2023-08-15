@@ -378,9 +378,9 @@ defmodule Cldr.Number.Backend.Number do
             return looks like:
 
         ```
-            iex> #{inspect(__MODULE__)}.to_string(1234, locale: "he", number_system: "hebr")
+            iex> #{inspect(__MODULE__)}.to_string(1234, locale: "he", number_system: "hebr", format: :percent)
             {:error, {Cldr.UnknownFormatError,
-              "The locale :he with number system :hebr does not define a format :standard"}}
+              "The locale :he with number system :hebr does not define a format :percent"}}
         ```
         """
         @spec to_string(number | Decimal.t(), Keyword.t() | map()) ::

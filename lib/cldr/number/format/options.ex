@@ -37,7 +37,7 @@ defmodule Cldr.Number.Format.Options do
   @valid_options @options --
                    ([:currency_spacing, :pattern] ++ [:cash])
 
-  @short_format_styles [
+  @short_formats [
     :currency_short,
     :currency_long_with_symbol,
     :currency_long,
@@ -193,9 +193,6 @@ defmodule Cldr.Number.Format.Options do
     options
   end
 
-  # As of CLDR 42 there is a format for a currency that excludes the
-  # currency symbol.
-
   @doc false
   def resolve_standard_format(%{format: :currency, currency: nil} = options, backend) do
     options = Map.put(options, :format, :currency_no_symbol)
@@ -209,31 +206,66 @@ defmodule Cldr.Number.Format.Options do
 
   def resolve_standard_format(%{format: format} = options, backend)
       when format in @standard_formats do
-    locale = Map.fetch!(options, :locale)
-    number_system = Map.fetch!(options, :number_system)
+    %{locale: locale, number_system: number_system} = options
 
     with {:ok, formats} <- Format.formats_for(locale, number_system, backend),
-         {:ok, resolved_format} <- get_standard_format(formats, format, locale, number_system) do
+         {:ok, resolved_format} <- standard_format(formats, format, locale, number_system, backend) do
       Map.put(options, :format, resolved_format)
     end
   end
 
-  def resolve_standard_format(other, _backend) do
-    other
+  def resolve_standard_format(%{format: format} = options, backend)
+      when format in @short_formats do
+    %{locale: locale, number_system: number_system} = options
+
+    # :currency_long_with_symbol is a derived format that depends on
+    # the availability of :currency_long
+    check_format = if format == :currency_long_with_symbol, do: :currency_long, else: format
+
+    with {:ok, formats} <- Format.formats_for(locale, number_system, backend) do
+      if Map.get(formats, check_format) do
+        options
+      else
+        {:error, unknown_format_error(format, locale, number_system)}
+      end
+    end
   end
 
-  def get_standard_format(formats, format, locale, number_system) do
+  def resolve_standard_format(options, _backend) do
+    options
+  end
+
+  # The standard format is either defined as a format string
+  # for digits number systems and as an RBNF rule name for
+  # algorithmic number systems like hebrew and tamil.
+
+  def standard_format(formats, format, locale, number_system, backend) do
     case Map.fetch(formats, format) do
       {:ok, nil} ->
-        {:error,
-         {Cldr.UnknownFormatError,
-          "The locale #{inspect(Map.fetch!(locale, :cldr_locale_name))} " <>
-            "with number system #{inspect(number_system)} " <>
-            "does not define a format #{inspect(format)}"}}
+        rbnf_rule(number_system, format, backend) ||
+          {:error, unknown_format_error(format, locale, number_system)}
 
       {:ok, format} ->
         {:ok, format}
     end
+  end
+
+  defp rbnf_rule(number_system, :standard, backend) do
+    case System.default_rbnf_rule(number_system, backend) do
+      {:ok, {_module, rule_function, _locale}} -> {:ok, rule_function}
+      {:error, _} -> nil
+    end
+  end
+
+  defp rbnf_rule(_number_system, _format, _backend) do
+    nil
+  end
+
+  defp unknown_format_error(format, locale, number_system) do
+    {Cldr.UnknownFormatError,
+     "The locale #{inspect(Map.fetch!(locale, :cldr_locale_name))} " <>
+       "with number system #{inspect(number_system)} " <>
+       "does not define a format #{inspect(format)}"}
   end
 
   @currency_placeholder Compiler.placeholder(:currency)
@@ -455,6 +487,7 @@ defmodule Cldr.Number.Format.Options do
     end
   end
 
+
   defp validate_option(:format, _options, _backend, format) do
     {:ok, format}
   end
@@ -645,7 +678,7 @@ defmodule Cldr.Number.Format.Options do
   @doc false
   @spec short_format_styles() :: list(atom())
   def short_format_styles do
-    @short_format_styles
+    @short_formats
   end
 
   # # Sometimes we want the standard format for a currency but we want the

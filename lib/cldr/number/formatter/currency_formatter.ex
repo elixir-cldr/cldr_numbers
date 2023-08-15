@@ -53,8 +53,9 @@ defmodule Cldr.Number.Formatter.Currency do
      }}
   end
 
-  # The format :currency_medium is a composition of :currency_long
-  # and the default :currency format.
+  # The format :currency_long_with_symbol is a composition of :currency_long
+  # and the default :currency format. It is a derived format, not one
+  # defined by CLDR.
 
   def to_string(number, :currency_long_with_symbol, backend, options) do
     decimal_options = decimal_options(options, backend, number)

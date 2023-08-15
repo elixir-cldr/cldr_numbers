@@ -1,5 +1,17 @@
 # Changelog
 
+## Cldr Numbers v2.31.4
+
+This is the changelog for Cldr v2.31.4 released on _____, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix formatting numbers with format `:standard` when the standard format is an RBNF rule.
+
+* Fix formatting numbers with an RBNF format that is defined on locale `:und` even when the formatting locale doesn't have an `:rbnf_locale_name`
+
+* Improve several error messages around number systems and RBNF rules.
+
 ## Cldr Numbers v2.31.3
 
 This is the changelog for Cldr v2.31.3 released on July 24th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

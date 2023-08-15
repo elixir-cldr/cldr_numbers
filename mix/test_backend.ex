@@ -10,7 +10,6 @@ defmodule MyApp.Cldr do
       "zh",
       "zh-Hant",
       "it",
-      "fr",
       "de",
       "th",
       "id",
@@ -22,7 +21,11 @@ defmodule MyApp.Cldr do
       "nb",
       "no",
       "en-IN",
-      "ur"
+      "ur",
+      "fr-CH",
+      "fr-BE",
+      "ta",
+      "he"
     ],
     precompile_transliterations: [{:latn, :arab}, {:arab, :thai}, {:arab, :latn}],
     providers: [Cldr.Number],
