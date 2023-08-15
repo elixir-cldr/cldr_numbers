@@ -225,7 +225,7 @@ defmodule Cldr.Number.System do
       }
 
   """
-  @doc since: "2.31.4"
+  @doc since: "2.32.0"
   def algorithmic_systems do
     @algorithmic_systems
   end
@@ -300,7 +300,8 @@ defmodule Cldr.Number.System do
       :latn
 
   """
-  @spec number_system_from_locale(Locale.locale_reference(), Cldr.backend()) :: system_name
+  @spec number_system_from_locale(Locale.locale_reference(), Cldr.backend()) ::
+    system_name | {:error, {module(), String.t()}}
 
   def number_system_from_locale(%LanguageTag{locale: %{numbers: nil}} = locale, backend) do
     locale
@@ -350,7 +351,8 @@ defmodule Cldr.Number.System do
       :arab
 
   """
-  @spec number_system_from_locale(Locale.locale_reference()) :: system_name
+  @spec number_system_from_locale(Locale.locale_reference()) ::
+      system_name | {:error, {module(), String.t()}}
 
   def number_system_from_locale(%LanguageTag{locale: %{numbers: nil}} = locale) do
     number_system_from_locale(locale.cldr_locale_name, locale.backend)
@@ -364,8 +366,9 @@ defmodule Cldr.Number.System do
     number_system_from_locale(locale, backend)
   end
 
-  def number_system_from_locale(locale_name) do
-    number_system_from_locale(locale_name, Cldr.default_backend!())
+  def number_system_from_locale(locale) do
+    {locale, backend} = Cldr.locale_and_backend_from(locale, nil)
+    number_system_from_locale(locale, backend)
   end
 
   @doc """

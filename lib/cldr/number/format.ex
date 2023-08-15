@@ -12,7 +12,7 @@ defmodule Cldr.Number.Format do
   French locale, with the number "1234.567". Notice how the pattern characters
   ',' and '.' are replaced by the characters appropriate for the locale.
 
-  ## Number Pattern Examples
+  ### Number Pattern Examples
 
   | Pattern	      | Currency	      | Text        |
   | ------------- | :-------------: | ----------: |
@@ -70,12 +70,17 @@ defmodule Cldr.Number.Format do
   This function exists to allow the decimal formatter
   to precompile all the known formats at compile time.
 
-  ## Arguments
+  ### Arguments
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
-  ## Example
+  ### Returns
+
+  * [decimal_formats_as_strings]`.
+
+  ##@ Example
 
       => Cldr.Number.Format.decimal_format_list(MyApp.Cldr)
       ["#", "#,##,##0%", "#,##,##0.###", "#,##,##0.00¤", "#,##,##0.00¤;(#,##,##0.00¤)",
@@ -92,26 +97,33 @@ defmodule Cldr.Number.Format do
   """
 
   @spec decimal_format_list(Cldr.backend()) :: list(format())
-  def decimal_format_list(backend) do
+  def decimal_format_list(backend \\ Cldr.default_backend!()) do
     Module.concat(backend, Number.Format).decimal_format_list
   end
 
   @doc """
   Returns the list of decimal formats for a configured locale.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/1`
+    is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
   This function exists to allow the decimal formatter to precompile all
   the known formats at compile time. Its use is not otherwise recommended.
 
-  ## Example
+  ### Returns
+
+  * `{:ok, list_of_decimal_formats_as_strings}` or
+
+  * `{:error, {exception, reason}}`.
+
+  ### Example
 
       iex> Cldr.Number.Format.decimal_format_list_for("en", MyApp.Cldr)
       {:ok, ["#,##0%", "#,##0.###", "#,##0.00", "#,##0.00;(#,##0.00)","#E0",
@@ -128,23 +140,30 @@ defmodule Cldr.Number.Format do
   @spec decimal_format_list_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) ::
           {:ok, list(String.t())} | {:error, {module(), String.t()}}
 
-  def decimal_format_list_for(locale, backend) do
+  def decimal_format_list_for(locale, backend \\ Cldr.default_backend!()) do
     Module.concat(backend, Number.Format).decimal_format_list_for(locale)
   end
 
   @doc """
   Returns the decimal formats defined for a given locale.
 
-  ## Options
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/1`
+    is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
-  ## Examples
+  ### Returns
+
+  * `{:ok, map_of_formats_by_number_system}` or
+
+  * `{:error, {exception, reason}}`.
+
+  ### Examples
 
       Cldr.Number.Format.all_formats_for("en", MyApp.Cldr)
       #=> {:ok, %{latn: %Cldr.Number.Format{
@@ -172,23 +191,24 @@ defmodule Cldr.Number.Format do
   @spec all_formats_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) ::
           {:ok, map()} | {:error, {module(), String.t()}}
 
-  def all_formats_for(locale, backend) do
+  def all_formats_for(locale, backend \\ Cldr.default_backend!()) do
     Module.concat(backend, Number.Format).all_formats_for(locale)
   end
 
   @doc """
   Returns the decimal formats defined for a given locale.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/1`
+    is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
-  ## Returns
+  ### Returns
 
   * a list of decimal formats or
 
@@ -197,29 +217,30 @@ defmodule Cldr.Number.Format do
   See `Cldr.Number.Format.all_formats_for/2` for further information.
 
   """
-  def all_formats_for!(locale, backend) do
+  def all_formats_for!(locale, backend \\ Cldr.default_backend!()) do
     Module.concat(backend, Number.Format).all_formats_for!(locale)
   end
 
   @doc """
   Returns the minimum grouping digits for a locale.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/0`
+    is `Cldr.get_locale/0`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
-  ## Returns
+  ### Returns
 
   * `{:ok, minumum_digits}` or
 
   * `{:error, {exception, message}}`
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.Format.minimum_grouping_digits_for("en", MyApp.Cldr)
       {:ok, 1}
@@ -228,23 +249,28 @@ defmodule Cldr.Number.Format do
   @spec minimum_grouping_digits_for(LanguageTag.t(), Cldr.backend()) ::
           {:ok, non_neg_integer} | {:error, {module(), String.t()}}
 
-  def minimum_grouping_digits_for(locale, backend) do
+  def minimum_grouping_digits_for(locale, backend \\ Cldr.default_backend!()) do
     Module.concat(backend, Number.Format).minimum_grouping_digits_for(locale)
   end
 
   @doc """
   Returns the minimum grouping digits for a locale or raises if there is an error.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/1`
+    is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
-  ## Examples
+  ### Returns
+
+  * the number of grouping digits as an integer
+
+  ### Examples
 
       iex> Cldr.Number.Format.minimum_grouping_digits_for!("en", MyApp.Cldr)
       1
@@ -253,29 +279,30 @@ defmodule Cldr.Number.Format do
       ** (Cldr.UnknownLocaleError) The locale :invalid is invalid
 
   """
-  def minimum_grouping_digits_for!(locale, backend) do
+  def minimum_grouping_digits_for!(locale, backend \\ Cldr.default_backend!()) do
     Module.concat(backend, Number.Format).minimum_grouping_digits_for!(locale)
   end
 
   @doc """
   Returns the default grouping for a locale.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/0`
+    is `Cldr.get_locale/0`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
-  ## Returns
+  ### Returns
 
   * `{:ok, minumum_digits}` or
 
   * `{:error, {exception, message}}`
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.Format.default_grouping_for("en", MyApp.Cldr)
       {:ok, %{fraction: %{first: 0, rest: 0}, integer: %{first: 3, rest: 3}}}
@@ -284,23 +311,28 @@ defmodule Cldr.Number.Format do
   @spec default_grouping_for(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.backend()) ::
           {:ok, non_neg_integer} | {:error, {module(), String.t()}}
 
-  def default_grouping_for(locale, backend) do
+  def default_grouping_for(locale, backend \\ Cldr.default_backend!()) do
     Module.concat(backend, Number.Format).default_grouping_for(locale)
   end
 
   @doc """
   Returns the default grouping for a locale or raises if there is an error.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/1`
+    is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
-  ## Examples
+  ### Returns
+
+  * default grouping definition as a map.
+
+  ### Examples
 
       iex> Cldr.Number.Format.default_grouping_for!("en", MyApp.Cldr)
       %{fraction: %{first: 0, rest: 0}, integer: %{first: 3, rest: 3}}
@@ -312,7 +344,7 @@ defmodule Cldr.Number.Format do
   @spec default_grouping_for!(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.backend()) ::
           map() | no_return
 
-  def default_grouping_for!(locale, backend) do
+  def default_grouping_for!(locale, backend \\ Cldr.default_backend!()) do
     Module.concat(backend, Number.Format).default_grouping_for!(locale)
   end
 
@@ -320,17 +352,39 @@ defmodule Cldr.Number.Format do
   Returns the currency space for a given locale and
   number system.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/1`
+    is `Cldr.get_locale/1`.
 
   * `number_system` is any valid number system or number system type returned
-    by `Cldr.Number.System.number_systems_for/2`
+    by `Cldr.Number.System.number_systems_for/2`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
+
+  ### Returns
+
+  * A map defining how spacing between a currency symbol and
+    its number format should be applied.
+
+  ### Example
+
+      iex> Cldr.Number.Format.currency_spacing(:en, :latn, MyApp.Cldr)
+      %{
+        before_currency: %{
+          insert_between: " ",
+          surrounding_match: "[[:digit:]]",
+          currency_match: "[[:^S:]&[:^Z:]]"
+        },
+        after_currency: %{
+          insert_between: " ",
+          surrounding_match: "[[:digit:]]",
+          currency_match: "[[:^S:]&[:^Z:]]"
+        }
+      }
 
   """
   @spec currency_spacing(
@@ -339,26 +393,33 @@ defmodule Cldr.Number.Format do
           Cldr.backend()
         ) :: map() | {:error, {module(), String.t()}}
 
-  def currency_spacing(locale, number_system, backend) do
-    backend.currency_spacing(locale, number_system)
+  def currency_spacing(locale, number_system, backend \\ Cldr.default_backend!()) do
+    Module.concat(backend, Number.Format).currency_spacing(locale, number_system)
   end
 
   @doc """
   Return the predfined formats for a given `locale` and `number_system`.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/1`
+    is `Cldr.get_locale/1`.
 
   * `number_system` is any valid number system or number system type returned
-    by `Cldr.Number.System.number_systems_for/2` or `Cldr.Number.System.number_system_names_for/2`
+    by `Cldr.Number.System.number_systems_for/2` or `Cldr.Number.System.number_system_names_for/2`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
-  ## Example
+  ### Returns
+
+  * `{:ok, Cldr.Number.Format struct}` or
+
+  * `{:error, {exception, reason}}`.
+
+  ### Example
 
       Cldr.Number.Format.formats_for "fr", :native, MyApp.Cldr
       #=> {:ok, %Cldr.Number.Format{
@@ -386,7 +447,7 @@ defmodule Cldr.Number.Format do
   @spec formats_for(LanguageTag.t() | Locale.locale_name(), atom | String.t(), Cldr.backend()) ::
           {:ok, map()} | {:error, {module(), String.t()}}
 
-  def formats_for(locale, number_system, backend) do
+  def formats_for(locale, number_system, backend \\ Cldr.default_backend!()) do
     Module.concat(backend, Number.Format).formats_for(locale, number_system)
   end
 
@@ -394,23 +455,30 @@ defmodule Cldr.Number.Format do
   Return the predfined formats for a given `locale` and `number_system` or raises
   if either the `locale` or `number_system` is invalid.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/1`
+    is `Cldr.get_locale/1`.
 
   * `number_system` is any valid number system or number system type returned
-    by `Cldr.Number.System.number_systems_for/2`
+    by `Cldr.Number.System.number_systems_for/2`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
+
+  ### Returns
+
+  * `Cldr.Number.Format struct` or
+
+  * `raises an exception.
 
   """
   @spec formats_for!(LanguageTag.t(), Cldr.Number.System.system_name(), Cldr.backend()) ::
           map() | no_return()
 
-  def formats_for!(locale, number_system, backend) do
+  def formats_for!(locale, number_system, backend \\ Cldr.default_backend!()) do
     case formats_for(locale, number_system, backend) do
       {:ok, formats} -> formats
       {:error, {exception, message}} -> raise exception, message
@@ -420,17 +488,18 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the format styles available for a `locale`.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/1`
+    is `Cldr.get_locale/1`.
 
   * `number_system` is any valid number system or number system type returned
-    by `Cldr.Number.System.number_systems_for/2`
+    by `Cldr.Number.System.number_systems_for/2`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
   Format styles standardise the access to a format defined for a common
   use.  These types are `:standard`, `:currency`, `:accounting`, `:scientific`
@@ -439,7 +508,13 @@ defmodule Cldr.Number.Format do
   These types can be used when formatting a number for output.  For example
   `Cldr.Number.to_string(123.456, format: :percent)`.
 
-  ## Example
+  ### Returns
+
+  * `[format_styles]` or
+
+  * `{:error, {exception, reason}}`.
+
+  ### Example
 
       iex> {:ok, format_styles} = Cldr.Number.Format.format_styles_for("en", :latn, MyApp.Cldr)
       iex> Enum.sort(format_styles)
@@ -467,6 +542,8 @@ defmodule Cldr.Number.Format do
           Cldr.backend()
         ) :: {:ok, list(atom())} | {:error, {module(), String.t()}}
 
+  def format_styles_for(locale, number_system, backend \\ Cldr.default_backend!())
+
   def format_styles_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, formats} <- formats_for(locale, number_system, backend) do
       {
@@ -489,19 +566,20 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the short formats available for a locale.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/1`
+    is `Cldr.get_locale/1`.
 
   * `number_system` is any valid number system or number system type returned
-    by `Cldr.Number.System.number_systems_for/2`
+    by `Cldr.Number.System.number_systems_for/2`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
-  ## Example
+  ### Example
 
       iex> {:ok, short_format_styles} = Cldr.Number.Format.short_format_styles_for("he", :latn, MyApp.Cldr)
       iex> Enum.sort(short_format_styles)
@@ -519,6 +597,8 @@ defmodule Cldr.Number.Format do
           {:ok, list(atom())} | {:error, {module(), String.t()}}
 
   @dialyzer {:nowarn_function, short_format_styles_for: 3}
+
+  def short_format_styles_for(locale, number_system, backend \\ Cldr.default_backend!())
 
   def short_format_styles_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, formats} <- format_styles_for(locale, number_system, backend) do
@@ -542,7 +622,7 @@ defmodule Cldr.Number.Format do
   Returns the decimal format styles that are supported by
   `Cldr.Number.Formatter.Decimal`.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
@@ -552,9 +632,10 @@ defmodule Cldr.Number.Format do
     by `Cldr.Number.System.number_systems_for/2`
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
-  ## Example
+  ### Example
 
       iex> {:ok, styles} = Cldr.Number.Format.decimal_format_styles_for("en", :latn, MyApp.Cldr)
       iex> Enum.sort(styles)
@@ -580,6 +661,8 @@ defmodule Cldr.Number.Format do
 
   @dialyzer {:nowarn_function, decimal_format_styles_for: 3}
 
+  def decimal_format_styles_for(locale, number_system, backend \\ Cldr.default_backend!())
+
   def decimal_format_styles_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, styles} <- format_styles_for(locale, number_system, backend),
          {:ok, short_styles} <- short_format_styles_for(locale, number_system, backend) do
@@ -596,14 +679,15 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the number system types available for a `locale`
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
     is `Cldr.get_locale/1`
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
   A number system type is an identifier that categorises number systems
   that comprise a site of digits or rules for transliterating or translating
@@ -613,7 +697,7 @@ defmodule Cldr.Number.Format do
   If that all sounds a bit complicated then the default `number system type`
   called `:default` is probably what you want nearly all the time.
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.Format.format_system_types_for("pl", MyApp.Cldr)
       {:ok, [:default, :native]}
@@ -628,9 +712,10 @@ defmodule Cldr.Number.Format do
   @spec format_system_types_for(Cldr.Locale.locale_name() | LanguageTag.t(), Cldr.backend()) ::
           {:ok, Keyword.t()} | {:error, {module(), String.t()}}
 
-  def format_system_types_for(%LanguageTag{} = locale, backend) do
-    with {:ok, _} <- Cldr.validate_locale(locale, backend) do
-      {:ok, systems} = System.number_systems_for(locale, backend)
+  def format_system_types_for(locale, backend \\ Cldr.default_backend!())
+
+  def format_system_types_for(%LanguageTag{} = locale, _backend) do
+    with {:ok, systems} = System.number_systems_for(locale, locale.backend) do
       {:ok, Map.keys(systems)}
     end
   end
@@ -644,16 +729,17 @@ defmodule Cldr.Number.Format do
   @doc """
   Returns the names of the number systems for the `locale`.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`. The default
-    is `Cldr.get_locale/1`
+    is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    will raiee an exception if not default backend is configured.
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.Format.format_system_names_for("th", MyApp.Cldr)
       {:ok, [:latn, :thai]}
@@ -665,8 +751,10 @@ defmodule Cldr.Number.Format do
   @spec format_system_names_for(LanguageTag.t() | Cldr.Locale.locale_name(), Cldr.backend()) ::
           {:ok, list(atom)} | {:error, {module(), String.t()}}
 
-  def format_system_names_for(%LanguageTag{} = locale, backend) do
-    Cldr.Number.System.number_system_names_for(locale, backend)
+  def format_system_names_for(locale, backend \\ Cldr.default_backend!())
+
+  def format_system_names_for(%LanguageTag{} = locale, _backend) do
+    Cldr.Number.System.number_system_names_for(locale, locale.backend)
   end
 
   def format_system_names_for(locale_name, backend) do
