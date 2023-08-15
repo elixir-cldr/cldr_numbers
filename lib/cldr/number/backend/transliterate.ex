@@ -47,7 +47,7 @@ defmodule Cldr.Number.Backend.Transliterate do
           Where each tuple in the list configures one transliteration map.  In this example, two maps are
           configured: from `:latn` to `:thai` and from `:arab` to `:thai`.
 
-          A list of configurable number systems is returned by `Cldr.Number.System.systems_with_digits/0`.
+          A list of configurable number systems is returned by `Cldr.Number.System.numeric_systems/0`.
 
           If a transliteration is requested between two number pairs that have not been configured for
           precompilation, a warning is logged.
@@ -138,7 +138,7 @@ defmodule Cldr.Number.Backend.Transliterate do
 
         # We can only transliterate if the target {locale, number_system} has defined
         # digits.  Some systems don't have digits, just rules.
-        for {number_system, %{digits: _digits}} <- System.systems_with_digits() do
+        for {number_system, %{digits: _digits}} <- System.numeric_systems() do
           def transliterate(sequence, locale, unquote(number_system)) do
             sequence
             |> String.graphemes()
@@ -221,7 +221,7 @@ defmodule Cldr.Number.Backend.Transliterate do
         end
 
         # Functions to transliterate the digits
-        for {name, %{digits: digits}} <- System.systems_with_digits() do
+        for {name, %{digits: digits}} <- System.numeric_systems() do
           graphemes = String.graphemes(digits)
 
           for latin_digit <- 0..9 do
@@ -245,7 +245,7 @@ defmodule Cldr.Number.Backend.Transliterate do
         * `digits` is binary representation of a number
 
         * `from_system` and `to_system` are number system names in atom form.  See
-        `Cldr.Number.System.systems_with_digits/0` for available number systems.
+        `Cldr.Number.System.numeric_systems/0` for available number systems.
 
         ## Example
 

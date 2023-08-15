@@ -12,6 +12,14 @@ This is the changelog for Cldr v2.31.4 released on _____, 2023.  For older chang
 
 * Improve several error messages around number systems and RBNF rules.
 
+### Deprecations
+
+* `Cldr.Number.System.systems_with_digits/0` is deprecated in favour of `Cldr.Number.System.numeric_systems/0`. 
+
+### Enhancements
+
+* Adds `Cldr.Number.System.algorithmic_systems/0` which is the counterpoint to `Cldr.Number.System.numeric_systems/0`.
+
 ## Cldr Numbers v2.31.3
 
 This is the changelog for Cldr v2.31.3 released on July 24th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

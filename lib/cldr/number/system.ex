@@ -107,18 +107,19 @@ defmodule Cldr.Number.System do
   defdelegate known_number_systems, to: Cldr
   defdelegate known_number_system_types(backend), to: Cldr
 
+  @deprecated "Use numeric_systems/0 instead"
+  defdelegate systems_with_digits, to: __MODULE__, as: :numeric_systems
+
   @doc """
   Return the default number system type name.
 
-  Currently this is `:default`.  Note that this is
-  not the number system itself but the type of the
-  number system.  It can be used to find the
-  default number system for a given locale with
-  `number_systems_for(locale)[default_number_system()]`.
+  The default number system type is `#{inspect @default_number_system_type}`.
+  Note that this is not the number system itself but the type of the
+  number system.
 
   ## Example
 
-      iex> Cldr.Number.System.default_number_system_type
+      iex> Cldr.Number.System.default_number_system_type()
       :default
 
   """
@@ -127,11 +128,12 @@ defmodule Cldr.Number.System do
   end
 
   @doc """
-  Return a map of all CLDR number systems and definitions.
+  Return a map of all CLDR number systems and their
+  definitions.
 
   ## Example
 
-      iex> Cldr.Number.System.number_systems |> Enum.count
+      iex> Cldr.Number.System.number_systems() |> Enum.count
       88
 
   """
@@ -142,18 +144,20 @@ defmodule Cldr.Number.System do
     @number_systems
   end
 
-  @systems_with_digits Enum.reject(@number_systems, fn {_name, system} ->
+  @numeric_systems Enum.reject(@number_systems, fn {_name, system} ->
                          is_nil(system[:digits])
                        end)
                        |> Map.new()
 
   @doc """
   Returns a map of the number systems that have
-  their own digit characters defined.
+  their own digit character representations.
+
+  See also `Cldr.Number.System.algorithmic_systems/0`.
 
   ### Example
 
-      ==> Cldr.Number.System.systems_with_digits()
+      ==> Cldr.Number.System.numeric_systems()
       %{
         gonm: %{type: :numeric, digits: "𑵐𑵑𑵒𑵓𑵔𑵕𑵖𑵗𑵘𑵙"},
         mathdbl: %{type: :numeric, digits: "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡"},
@@ -171,8 +175,9 @@ defmodule Cldr.Number.System do
       }
 
   """
-  def systems_with_digits do
-    @systems_with_digits
+
+  def numeric_systems do
+    @numeric_systems
   end
 
   @algorithmic_systems Enum.filter(@number_systems, fn {_name, system} ->
@@ -193,9 +198,11 @@ defmodule Cldr.Number.System do
   a number with `format: :standard` (which is
   also the default when no `:format` is specified).
 
+  See also `Cldr.Number.System.numeric_systems/0`.
+
   ### Example
 
-      ==> Cldr.Number.System.algorithmic_systems
+      ==> Cldr.Number.System.algorithmic_systems()
       %{
         roman: %{type: :algorithmic, rules: "roman-upper"},
         armn: %{type: :algorithmic, rules: "armenian-upper"},
@@ -218,6 +225,7 @@ defmodule Cldr.Number.System do
       }
 
   """
+  @doc since: "2.31.4"
   def algorithmic_systems do
     @algorithmic_systems
   end
@@ -243,16 +251,16 @@ defmodule Cldr.Number.System do
 
   ### Example
 
-      iex> Cldr.Number.System.default_rbnf_rule :taml, MyApp.Cldr
+      iex> Cldr.Number.System.default_rbnf_rule(:taml, MyApp.Cldr)
       {:ok, {MyApp.Cldr.Rbnf.NumberSystem, :tamil, :und}}
 
-      iex> Cldr.Number.System.default_rbnf_rule :hebr, MyApp.Cldr
+      iex> Cldr.Number.System.default_rbnf_rule(:hebr, MyApp.Cldr)
       {:ok, {MyApp.Cldr.Rbnf.NumberSystem, :hebrew, :und}}
 
-      iex> Cldr.Number.System.default_rbnf_rule :jpanfin, MyApp.Cldr
+      iex> Cldr.Number.System.default_rbnf_rule(:jpanfin, MyApp.Cldr)
       {:ok, {MyApp.Cldr.Rbnf.Spellout, :spellout_cardinal_financial, :ja}}
 
-      iex> Cldr.Number.System.default_rbnf_rule :latn, MyApp.Cldr
+      iex> Cldr.Number.System.default_rbnf_rule(:latn, MyApp.Cldr)
       {:error,
        {Cldr.UnknownNumberSystemError, "The number system :latn is not algorithmic"}}
 
@@ -285,10 +293,10 @@ defmodule Cldr.Number.System do
 
   ### Examples
 
-      iex> Cldr.Number.System.number_system_from_locale "en-US-u-nu-thai", MyApp.Cldr
+      iex> Cldr.Number.System.number_system_from_locale("en-US-u-nu-thai", MyApp.Cldr)
       :thai
 
-      iex> Cldr.Number.System.number_system_from_locale :"en-US", MyApp.Cldr
+      iex> Cldr.Number.System.number_system_from_locale(:"en-US", MyApp.Cldr)
       :latn
 
   """
@@ -384,13 +392,13 @@ defmodule Cldr.Number.System do
 
   ### Examples
 
-      iex> Cldr.Number.System.number_systems_for :en
+      iex> Cldr.Number.System.number_systems_for(:en)
       {:ok, %{default: :latn, native: :latn}}
 
-      iex> Cldr.Number.System.number_systems_for :th
+      iex> Cldr.Number.System.number_systems_for(:th)
       {:ok, %{default: :latn, native: :thai}}
 
-      iex> Cldr.Number.System.number_systems_for "zz", TestBackend.Cldr
+      iex> Cldr.Number.System.number_systems_for("zz", TestBackend.Cldr)
       {:error, {Cldr.InvalidLanguageError, "The language \\"zz\\" is invalid"}}
 
   """
@@ -426,10 +434,10 @@ defmodule Cldr.Number.System do
 
   ### Examples
 
-      iex> Cldr.Number.System.number_systems_for! "en"
+      iex> Cldr.Number.System.number_systems_for!("en")
       %{default: :latn, native: :latn}
 
-      iex> Cldr.Number.System.number_systems_for! "th", TestBackend.Cldr
+      iex> Cldr.Number.System.number_systems_for!("th", TestBackend.Cldr)
       %{default: :latn, native: :thai}
 
   """
@@ -479,16 +487,16 @@ defmodule Cldr.Number.System do
 
   ### Examples
 
-      iex> Cldr.Number.System.number_system_for "th", :latn, TestBackend.Cldr
+      iex> Cldr.Number.System.number_system_for("th", :latn, TestBackend.Cldr)
       {:ok, %{digits: "0123456789", type: :numeric}}
 
-      iex> Cldr.Number.System.number_system_for "en", :default, TestBackend.Cldr
+      iex> Cldr.Number.System.number_system_for("en", :default, TestBackend.Cldr)
       {:ok, %{digits: "0123456789", type: :numeric}}
 
-      iex> Cldr.Number.System.number_system_for "he", :traditional, TestBackend.Cldr
+      iex> Cldr.Number.System.number_system_for("he", :traditional, TestBackend.Cldr)
       {:ok, %{rules: "hebrew", type: :algorithmic}}
 
-      iex> Cldr.Number.System.number_system_for "en", :finance, TestBackend.Cldr
+      iex> Cldr.Number.System.number_system_for("en", :finance, TestBackend.Cldr)
       {
         :error,
         {
@@ -497,7 +505,7 @@ defmodule Cldr.Number.System do
         }
       }
 
-      iex> Cldr.Number.System.number_system_for "en", :native, TestBackend.Cldr
+      iex> Cldr.Number.System.number_system_for("en", :native, TestBackend.Cldr)
       {:ok, %{digits: "0123456789", type: :numeric}}
 
   """
@@ -831,7 +839,7 @@ defmodule Cldr.Number.System do
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
   def number_system_digits(system_name) do
-    if system = Map.get(systems_with_digits(), system_name) do
+    if system = Map.get(numeric_systems(), system_name) do
       {:ok, Map.get(system, :digits)}
     else
       {:error, number_system_digits_error(system_name)}
@@ -921,16 +929,16 @@ defmodule Cldr.Number.System do
 
   ### Examples
 
-      iex> Cldr.Number.System.to_system 123456, :hebr, TestBackend.Cldr
+      iex> Cldr.Number.System.to_system(123456, :hebr, TestBackend.Cldr)
       {:ok, "קכ״ג׳תנ״ו"}
 
-      iex> Cldr.Number.System.to_system 123, :hans, TestBackend.Cldr
+      iex> Cldr.Number.System.to_system(123, :hans, TestBackend.Cldr)
       {:ok, "一百二十三"}
 
-      iex> Cldr.Number.System.to_system 123, :hant, TestBackend.Cldr
+      iex> Cldr.Number.System.to_system(123, :hant, TestBackend.Cldr)
       {:ok, "一百二十三"}
 
-      iex> Cldr.Number.System.to_system 123, :hansfin, TestBackend.Cldr
+      iex> Cldr.Number.System.to_system(123, :hansfin, TestBackend.Cldr)
       {:ok, "壹佰贰拾叁"}
 
   """
@@ -967,13 +975,13 @@ defmodule Cldr.Number.System do
 
   ### Examples
 
-      iex> Cldr.Number.System.to_system! 123, :hans, TestBackend.Cldr
+      iex> Cldr.Number.System.to_system!(123, :hans, TestBackend.Cldr)
       "一百二十三"
 
-      iex> Cldr.Number.System.to_system! 123, :hant, TestBackend.Cldr
+      iex> Cldr.Number.System.to_system!(123, :hant, TestBackend.Cldr)
       "一百二十三"
 
-      iex> Cldr.Number.System.to_system! 123, :hansfin, TestBackend.Cldr
+      iex> Cldr.Number.System.to_system!(123, :hansfin, TestBackend.Cldr)
       "壹佰贰拾叁"
 
   """
@@ -1007,7 +1015,7 @@ defmodule Cldr.Number.System do
 
   ### Examples
 
-      iex> Cldr.Number.System.generate_transliteration_map "0123456789", "9876543210"
+      iex> Cldr.Number.System.generate_transliteration_map("0123456789", "9876543210")
       %{
         "0" => "9",
         "1" => "8",
@@ -1021,7 +1029,7 @@ defmodule Cldr.Number.System do
         "9" => "0"
       }
 
-      iex> Cldr.Number.System.generate_transliteration_map "0123456789", "987654321"
+      iex> Cldr.Number.System.generate_transliteration_map("0123456789", "987654321")
       {:error,
        {ArgumentError, "\\"0123456789\\" and \\"987654321\\" aren't the same length"}}
 

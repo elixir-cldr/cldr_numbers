@@ -35,7 +35,7 @@ defmodule Cldr.Number.Transliterate do
   Where each tuple in the list configures one transliteration map.  In this example, two maps are
   configured: from :latn to :thai and from :arab to :thai.
 
-  A list of configurable number systems is returned by `Cldr.Number.System.systems_with_digits/0`.
+  A list of configurable number systems is returned by `Cldr.Number.System.numeric_systems/0`.
 
   If a transliteration is requested between two number pairs that have not been configured for
   precompilation, a warning is logged.
