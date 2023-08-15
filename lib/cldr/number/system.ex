@@ -51,7 +51,7 @@ defmodule Cldr.Number.System do
      that In locales where the native number system is the default, it is
      assumed that the number system "latn" (Western digits 0-9) is always
      acceptable, and can be selected using the `-nu` keyword as part of a Unicode
-     locale identifier.
+     locale name.
 
   * `:traditional` defines the traditional numerals for a locale. This numbering
     system may be numeric or algorithmic. If the traditional number system is
@@ -74,7 +74,7 @@ defmodule Cldr.Number.System do
   `:hans` and `:hansfin` are supported. These number systems are a mix of
   nuemeric systems and algorithmic systems.
 
-  ### Specifying the number system in a locale identifier
+  ### Specifying the number system in a locale name
 
   The types defined for other number systems can be used in a Unicode locale
   identifier to select the proper number system without having to know the
@@ -269,12 +269,12 @@ defmodule Cldr.Number.System do
 
   @doc """
   Returns the default number system from a language tag
-  or locale identifier.
+  or locale name.
 
   ### Arguments
 
   * `locale` is any language tag returned be `Cldr.Locale.new/2`
-    or a locale identifier in the list returned by `Cldr.known_locale_names/1`
+    or a locale name in the list returned by `Cldr.known_locale_names/1`
 
   * `backend` is any `Cldr` backend. That is, any module that
     contains `use Cldr`
@@ -318,7 +318,7 @@ defmodule Cldr.Number.System do
 
   @doc """
   Returns the number system from a language tag
-  or locale identifier.
+  or locale name.
 
   ### Arguments
 
@@ -370,7 +370,7 @@ defmodule Cldr.Number.System do
 
   ### Arguments
 
-  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``.
 
   * `backend` is any `Cldr` backend. That is, any module that
@@ -412,7 +412,7 @@ defmodule Cldr.Number.System do
 
   ### Arguments
 
-  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `backend` is any `Cldr` backend. That is, any module that
@@ -455,7 +455,7 @@ defmodule Cldr.Number.System do
 
   ### Arguments
 
-  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `system_name` is any number system name returned by
@@ -493,7 +493,7 @@ defmodule Cldr.Number.System do
         :error,
         {
           Cldr.UnknownNumberSystemError,
-          "The number system :finance is unknown for the locale identifierd :en. Valid number systems are %{default: :latn, native: :latn}"
+          "The number system :finance is unknown for the locale named :en. Valid number systems are %{default: :latn, native: :latn}"
         }
       }
 
@@ -563,7 +563,7 @@ defmodule Cldr.Number.System do
 
   ## Arguments
 
-  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `backend` is any `Cldr` backend. That is, any module that
@@ -610,7 +610,7 @@ defmodule Cldr.Number.System do
     `Cldr.known_number_systems/0` or a number system type
     returned by `Cldr.known_number_system_types/0`
 
-  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `backend` is any `Cldr` backend. That is, any module that
@@ -689,7 +689,7 @@ defmodule Cldr.Number.System do
     `Cldr.known_number_systems/0` or a number system type
     returned by `Cldr.known_number_system_types/0`
 
-  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `backend` is any `Cldr` backend. That is, any module that
@@ -732,7 +732,7 @@ defmodule Cldr.Number.System do
 
   ### Arguments
 
-  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `system_name` is any number system name returned by
@@ -1062,7 +1062,7 @@ defmodule Cldr.Number.System do
 
   * `number_system` is any number system name **not** returned by `Cldr.known_number_systems/0`
 
-  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `valid_number_systems` is a map returned by `Cldr.Number.System.number_systems_for/2`.
@@ -1076,7 +1076,7 @@ defmodule Cldr.Number.System do
     {
       Cldr.UnknownNumberSystemError,
       "The number system #{inspect(number_system)} is unknown " <>
-        "for the locale identifierd #{Cldr.locale_name(locale)}. " <>
+        "for the locale named #{Cldr.locale_name(locale)}. " <>
         "Valid number systems are #{inspect(valid_number_systems)}"
     }
   end
