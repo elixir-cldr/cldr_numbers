@@ -1,13 +1,96 @@
 defmodule Cldr.Number.System do
   @moduledoc """
-  Functions to manage number systems which describe the numbering characteristics for a locale.
+  Number systems information is used to define different representations
+  for numeric values to an end user. Numbering systems are defined in CLDR
+  as one of two different types: algorithmic and numeric.
 
-  A number system defines the digits (if they exist in this number system) or
-  or rules (if the number system does not have decimal digits).
+  Numeric systems are simply a decimal based system that uses a
+  predefined set of digits to represent numbers. Examples are
+  Western digits (ASCII digits), Thai digits, Devanagari digits.
 
-  The system name is also used as a key to define the separators that are used
-  when formatting a number is this number_system. See
-  `Cldr.Number.Symbol.number_symbols_for/2`.
+  Algorithmic systems are more complex in nature, since the proper
+  formatting and presentation of a numeric quantity is based on some
+  algorithm or set of rules. Examples are Chinese numerals, Hebrew numerals,
+  or Roman numerals.
+
+  In CLDR, the rules for presentation of numbers in an algorithmic system
+  are defined using the rules based number formats (RBNF) which are
+  implemented in `Cldr.Number.Rbnf`.
+
+  ### Number system attributes
+
+  Attributes for a number system map are as follows:
+
+  * `:id` specifies the name of the number system that can be used to designate
+    its use in formatting.
+  * `:type` specifies whether the number system is algorithmic or numeric.
+  * `:digits`For numeric systems, specifies the digits used to represent numbers,
+    in order, starting from zero.
+  * `:rules` specifies the RBNF ruleset to be used for formatting numbers from this
+    number system. The rules specifier can contain simply a ruleset name, in
+    which case the ruleset is assumed to be found in the rule set grouping
+    "NumberingSystemRules". Alternatively, the specifier can denote a specific
+    locale, ruleset grouping, and ruleset name, separated by slashes.
+
+  An example of a number system map is:
+
+      iex> Cldr.Number.System.number_systems[:latn]
+      %{type: :numeric, digits: "0123456789"}
+
+      iex> Cldr.Number.System.number_systems[:taml]
+      %{type: :algorithmic, rules: "tamil"}
+
+  ### Number system types
+
+  Each number system also categories number systems into various types:
+
+  * `:native` defines the number system used for the native digits,
+     usually defined as a part of the script used to write the language.
+    `:native` number system can only be a numeric positional decimal-digit
+     number system, using digits with General_Category=Decimal_Number. Note
+     that In locales where the native number system is the default, it is
+     assumed that the number system "latn" (Western digits 0-9) is always
+     acceptable, and can be selected using the `-nu` keyword as part of a Unicode
+     locale identifier.
+
+  * `:traditional` defines the traditional numerals for a locale. This numbering
+    system may be numeric or algorithmic. If the traditional number system is
+    not defined, the native number system is used as a fallback.
+
+  * `:finance` defines the number system used for financial quantities. This
+    number system may be numeric or algorithmic. This is often used for
+    ideographic languages such as Chinese, where it would be easy to alter an amount
+    represented in the default number system simply by adding additional strokes.
+    If the financial number system is not specified, the
+    default number system is used as a fallback.
+
+  An example of a number system map for the `:zh` locale is:
+
+      iex> Cldr.Number.System.number_systems_for(:zh, MyApp.Cldr)
+      {:ok,
+       %{default: :latn, native: :hanidec, traditional: :hans, finance: :hansfin}}
+
+  This indicates that for the locale `:zh`, the number systems `:latn`, `:hanidec`,
+  `:hans` and `:hansfin` are supported. These number systems are a mix of
+  nuemeric systems and algorithmic systems.
+
+  ### Specifying the number system in a locale identifier
+
+  The types defined for other number systems can be used in a Unicode locale
+  identifier to select the proper number system without having to know the
+  specific number system by name. For example:
+
+  * To select the Hindi language using the native digits for numeric formatting, use
+    locale ID: "hi-IN-u-nu-native".
+
+  * To select the Chinese language using the appropriate financial numerals, use
+    locale ID: "zh-u-nu-finance".
+
+  * To select the Tamil language using the traditional Tamil numerals, use
+    locale ID: "ta-u-nu-traditio".
+
+  * To select the Arabic language using western digits 0-9, use locale ID:
+    "ar-u-nu-latn".
 
   """
 
@@ -65,7 +148,27 @@ defmodule Cldr.Number.System do
                        |> Map.new()
 
   @doc """
-  Number systems that have their own digit characters defined.
+  Returns a map of the number systems that have
+  their own digit characters defined.
+
+  ### Example
+
+      ==> Cldr.Number.System.systems_with_digits()
+      %{
+        gonm: %{type: :numeric, digits: "𑵐𑵑𑵒𑵓𑵔𑵕𑵖𑵗𑵘𑵙"},
+        mathdbl: %{type: :numeric, digits: "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡"},
+        bhks: %{type: :numeric, digits: "𑱐𑱑𑱒𑱓𑱔𑱕𑱖𑱗𑱘𑱙"},
+        deva: %{type: :numeric, digits: "०१२३४५६७८९"},
+        adlm: %{type: :numeric, digits: "𞥐𞥑𞥒𞥓𞥔𞥕𞥖𞥗𞥘𞥙"},
+        telu: %{type: :numeric, digits: "౦౧౨౩౪౫౬౭౮౯"},
+        cakm: %{type: :numeric, digits: "𑄶𑄷𑄸𑄹𑄺𑄻𑄼𑄽𑄾𑄿"},
+        mathsans: %{
+          type: :numeric,
+          digits: "𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩𝟪𝟫"
+        },
+        nkoo: %{type: :numeric, digits: "߀߁߂߃߄߅߆߇߈߉"},
+        ...
+      }
 
   """
   def systems_with_digits do
@@ -78,11 +181,41 @@ defmodule Cldr.Number.System do
                        |> Map.new()
 
   @doc """
-  Returns number systems that are algorithmic.
+  Returns a map of the number systems that are
+  algorithmic.
 
   Algorithmic number systems don't have decimal
   digits. Numbers are formed by algorithm using
   rules based number formats.
+
+  The `:rules` field contains the name of the
+  RBNF rule that will be used with formatting
+  a number with `format: :standard` (which is
+  also the default when no `:format` is specified).
+
+  ### Example
+
+      ==> Cldr.Number.System.algorithmic_systems
+      %{
+        roman: %{type: :algorithmic, rules: "roman-upper"},
+        armn: %{type: :algorithmic, rules: "armenian-upper"},
+        armnlow: %{type: :algorithmic, rules: "armenian-lower"},
+        cyrl: %{type: :algorithmic, rules: "cyrillic-lower"},
+        ethi: %{type: :algorithmic, rules: "ethiopic"},
+        geor: %{type: :algorithmic, rules: "georgian"},
+        grek: %{type: :algorithmic, rules: "greek-upper"},
+        greklow: %{type: :algorithmic, rules: "greek-lower"},
+        hanidays: %{
+          type: :algorithmic,
+          rules: "zh/SpelloutRules/spellout-numbering-days"
+        },
+        hans: %{type: :algorithmic, rules: "zh/SpelloutRules/spellout-cardinal"},
+        hansfin: %{
+          type: :algorithmic,
+          rules: "zh/SpelloutRules/spellout-cardinal-financial"
+        },
+        ...
+      }
 
   """
   def algorithmic_systems do
@@ -136,21 +269,21 @@ defmodule Cldr.Number.System do
 
   @doc """
   Returns the default number system from a language tag
-  or locale name.
+  or locale identifier.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any language tag returned be `Cldr.Locale.new/2`
-    or a locale name in the list returned by `Cldr.known_locale_names/1`
+    or a locale identifier in the list returned by `Cldr.known_locale_names/1`
 
   * `backend` is any `Cldr` backend. That is, any module that
     contains `use Cldr`
 
-  ## Returns
+  ### Returns
 
   * A number system name as an atom.
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.System.number_system_from_locale "en-US-u-nu-thai", MyApp.Cldr
       :thai
@@ -185,17 +318,17 @@ defmodule Cldr.Number.System do
 
   @doc """
   Returns the number system from a language tag
-  or locale name.
+  or locale identifier.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any language tag returned be `Cldr.Locale.new/2`
 
-  ## Returns
+  ### Returns
 
-  * A number system name as an atom
+  * A number system name as an atom.
 
-  ## Examples
+  ### Examples
 
       iex> {:ok, locale} = MyApp.Cldr.validate_locale("en-US-u-nu-thai")
       iex> Cldr.Number.System.number_system_from_locale(locale)
@@ -228,18 +361,28 @@ defmodule Cldr.Number.System do
   end
 
   @doc """
-  Returns the number systems available for a locale
-  or `{:error, message}` if the locale is not known.
+  Returns the number system types mapped to a number
+  system name for a locale.
 
-  ## Arguments
+  When formatting a nummber it is acceptable to refer
+  to either the nuumber system type or the number system
+  name.
 
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+  ### Arguments
+
+  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``.
 
   * `backend` is any `Cldr` backend. That is, any module that
     contains `use Cldr`.
 
-  ## Examples
+  ### Returns
+
+  * `{:ok, number_system_map}` or
+
+  * `{:error, {exception, reason}}`.
+
+  ### Examples
 
       iex> Cldr.Number.System.number_systems_for :en
       {:ok, %{default: :latn, native: :latn}}
@@ -264,18 +407,24 @@ defmodule Cldr.Number.System do
   end
 
   @doc """
-  Returns the number systems available for a locale
-  or raises if the locale is not known.
+  Returns the number system types mapped to a number
+  system name for a locale or raises an exception.
 
-  ## Arguments
+  ### Arguments
 
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `backend` is any `Cldr` backend. That is, any module that
     contains `use Cldr`. The default is `Cldr.default_backend!/0`.
 
-  ## Examples
+  ### Returns
+
+  * `number_system_map` or
+
+  * raises an exception.
+
+  ### Examples
 
       iex> Cldr.Number.System.number_systems_for! "en"
       %{default: :latn, native: :latn}
@@ -304,9 +453,9 @@ defmodule Cldr.Number.System do
   @doc """
   Returns the actual number system from a number system type.
 
-  ## Arguments
+  ### Arguments
 
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `system_name` is any number system name returned by
@@ -316,19 +465,19 @@ defmodule Cldr.Number.System do
   * `backend` is any `Cldr` backend. That is, any module that
     contains `use Cldr`
 
-  ## Returns
+  ### Returns
 
   * `{:ok, number_system_map}` or
 
-  * `{:error, {exception, reason}}`
+  * `{:error, {exception, reason}}`.
 
-  ## Notes
+  ### Notes
 
   This function will decode a number system type into the actual
   number system.  If the number system provided can't be decoded
   it is returned as is.
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.System.number_system_for "th", :latn, TestBackend.Cldr
       {:ok, %{digits: "0123456789", type: :numeric}}
@@ -344,7 +493,7 @@ defmodule Cldr.Number.System do
         :error,
         {
           Cldr.UnknownNumberSystemError,
-          "The number system :finance is unknown for the locale named :en. Valid number systems are %{default: :latn, native: :latn}"
+          "The number system :finance is unknown for the locale identifierd :en. Valid number systems are %{default: :latn, native: :latn}"
         }
       }
 
@@ -366,18 +515,22 @@ defmodule Cldr.Number.System do
 
   @doc """
   Returns the names of the number systems available for
-  a locale or an `{:error, message}` tuple if the locale
-  is not known.
+  a locale.
 
-  ## Arguments
+  ### Arguments
 
-  * `locale` is any locale returned by ``Cldr.Locale.new!/2`` or
-    a `Cldr.LanguageTag` struct
+  * `locale` is any locale returned by `Cldr.Locale.new!/2`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`.
 
-  ## Examples
+  ### Returns
+
+  * `{:ok, list_of_number_system_names}` or
+
+  * `{:error, {exception, reason}}`.
+
+  ### Examples
 
       iex> Cldr.Number.System.number_system_names_for("en", TestBackend.Cldr)
       {:ok, [:latn]}
@@ -406,16 +559,21 @@ defmodule Cldr.Number.System do
 
   @doc """
   Returns the names of the number systems available for
-  a locale or an `{:error, message}` tuple if the locale
-  is not known.
+  a locale or raises an exception.
 
   ## Arguments
 
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`.
+
+  ### Returns
+
+  * `list_of_number_system_names` or
+
+  * raises and exception.
 
   ## Examples
 
@@ -443,21 +601,28 @@ defmodule Cldr.Number.System do
   end
 
   @doc """
-  Returns a number system name for a given locale and number system reference.
+  Returns a number system name for a given locale and number
+  system reference.
 
-  ## Arguments
+  ### Arguments
 
   * `system_name` is any number system name returned by
     `Cldr.known_number_systems/0` or a number system type
     returned by `Cldr.known_number_system_types/0`
 
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`.
 
-  ## Notes
+  ### Returns
+
+  * `{:ok, number_system_name}` or
+
+  * `{:error, {exception, reason}}`.
+
+  ### Notes
 
   Number systems can be references in one of two ways:
 
@@ -471,7 +636,7 @@ defmodule Cldr.Number.System do
   This function dereferences the supplied `system_name` and returns the
   actual system name.
 
-  ## Examples
+  ### Examples
 
       ex> Cldr.Number.System.system_name_from(:default, "en", TestBackend.Cldr)
       {:ok, :latn}
@@ -515,22 +680,28 @@ defmodule Cldr.Number.System do
   end
 
   @doc """
-  Returns a number system name for a given locale and number system reference
-  and raises if the number system is not available for the given locale.
+  Returns a number system name for a given locale and number system
+  reference or raises an exception.
 
-  ## Arguments
+  ### Arguments
 
   * `system_name` is any number system name returned by
     `Cldr.known_number_systems/0` or a number system type
     returned by `Cldr.known_number_system_types/0`
 
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`.
 
-  ## Examples
+  ### Returns
+
+  * `number_system_name` or
+
+  * raises an exception.
+
+  ### Examples
 
       iex> Cldr.Number.System.system_name_from!(:default, "en", TestBackend.Cldr)
       :latn
@@ -559,9 +730,9 @@ defmodule Cldr.Number.System do
   Returns locale and number systems that have the same digits and
   separators as the supplied one.
 
-  ## Arguments
+  ### Arguments
 
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
   * `system_name` is any number system name returned by
@@ -571,17 +742,29 @@ defmodule Cldr.Number.System do
   * `backend` is any `Cldr` backend. That is, any module that
     contains `use Cldr`
 
-  ## Returns
+  ### Returns
 
-  ## Notes
+  ### Notes
 
-  Transliterating between locale & number systems is expensive.  To avoid
-  unnecessary transliteration we look for locale and number systems that have
-  the same digits and separators.  Typically we are comparing to locale "en"
-  and number system "latn" since this is what the number formatting routines use
-  as placeholders.
+  * Transliterating between locale & number systems is expensive.  To avoid
+    unnecessary transliteration we look for locale and number systems that have
+    the same digits and separators.  Typically we are comparing to locale "en"
+    and number system "latn" since this is what the number formatting routines use
+    as placeholders.
 
-  ## Examples
+  ### Examples
+
+      ==> import Cldr.LanguageTag.Sigil
+      ==> Cldr.Number.System.number_systems_like(:en, :latn, MyApp.Cldr)
+      {:ok,
+        [
+          {~l[en], :latn},
+          {~l[en-IN], :latn},
+          {~l[ta], :latn},
+          {~l[th], :latn},
+          {~l[zh], :latn}
+        ]
+      }
 
 
   """
@@ -620,22 +803,22 @@ defmodule Cldr.Number.System do
   end
 
   @doc """
-  Returns `{:ok, digits}` for a number system, or an `{:error, message}` if the
-  number system is not known.
+  Returns the digits for a number system as a
+  string.
 
-  ## Arguments
+  ### Arguments
 
   * `system_name` is any number system name returned by
     `Cldr.known_number_systems/0` or a number system type
     returned by `Cldr.known_number_system_types/0`
 
-  ## Returns
+  ### Returns
 
   * `{:ok, string_of_digits}` or
 
-  * `{:error, {exception, reason}}`
+  * `{:error, {exception, reason}}`.
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.System.number_system_digits(:latn)
       {:ok, "0123456789"}
@@ -656,22 +839,21 @@ defmodule Cldr.Number.System do
   end
 
   @doc """
-  Returns `digits` for a number system, or raises an exception if the
-  number system is not know.
+  Returns `digits` for a number system, or raises an exception.
 
-  ## Arguments
+  ### Arguments
 
   * `system_name` is any number system name returned by
     `Cldr.known_number_systems/0` or a number system type
     returned by `Cldr.known_number_system_types/0`
 
-  ## Returns
+  ### Returns
 
   * A string of the number systems digits or
 
   * raises an exception
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.System.number_system_digits! :latn
       "0123456789"
@@ -700,7 +882,7 @@ defmodule Cldr.Number.System do
   number system only, it does not provide number
   formatting.
 
-  ## Arguments
+  ### Arguments
 
   * `number` is a `float`, `integer` or `Decimal`
 
@@ -711,13 +893,13 @@ defmodule Cldr.Number.System do
   * `backend` is any `Cldr` backend. That is, any module that
     contains `use Cldr`
 
-  ## Returns
+  ### Returns
 
   * `{:ok, string_of_digits}` or
 
   * `{:error, {exception, reason}}`
 
-  ## Notes
+  ### Notes
 
   There are two types of number systems in CLDR:
 
@@ -737,7 +919,7 @@ defmodule Cldr.Number.System do
     and caution and testing for a specific use case
     is recommended.
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.System.to_system 123456, :hebr, TestBackend.Cldr
       {:ok, "קכ״ג׳תנ״ו"}
@@ -761,10 +943,9 @@ defmodule Cldr.Number.System do
 
   @doc """
   Converts a number into the representation of
-  a non-latin number system. Returns a converted
-  string or raises on error.
+  a non-latin number system or raises an exception.
 
-  ## Arguments
+  ### Arguments
 
   * `number` is a `float`, `integer` or `Decimal`
 
@@ -775,7 +956,7 @@ defmodule Cldr.Number.System do
   * `backend` is any `Cldr` backend. That is, any module that
     contains `use Cldr`
 
-  ## Returns
+  ### Returns
 
   * `string_of_digits` or
 
@@ -784,7 +965,7 @@ defmodule Cldr.Number.System do
   See `Cldr.Number.System.to_system/3` for further
   information.
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.System.to_system! 123, :hans, TestBackend.Cldr
       "一百二十三"
@@ -807,9 +988,9 @@ defmodule Cldr.Number.System do
   end
 
   @doc """
-  Generate a transliteration map between two character classes
+  Generate a transliteration map between two character classes.
 
-  ## Arguments
+  ### Arguments
 
   * `from` is any `String.t()` intended to represent the
     digits of a number system but that's not a requirement.
@@ -817,14 +998,14 @@ defmodule Cldr.Number.System do
   * `to` is any `String.t()` that is the same length as `from`
     intended to represent the digits of a number system.
 
-  ## Returns
+  ### Returns
 
   * A map where the keys are the graphemes in `from` and the
     values are the graphemes in `to` or
 
   * `{:error, {exception, reason}}`
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.System.generate_transliteration_map "0123456789", "9876543210"
       %{
@@ -877,21 +1058,25 @@ defmodule Cldr.Number.System do
   @doc """
   Returns an error tuple for an number system unknown to a given locale.
 
-  ## Arguments
+  ### Arguments
 
   * `number_system` is any number system name **not** returned by `Cldr.known_number_systems/0`
 
-  * `locale` is any valid locale name returned by `Cldr.known_locale_names/0`
+  * `locale` is any valid locale identifier returned by `Cldr.known_locale_names/0`
     or a `Cldr.LanguageTag` struct returned by ``Cldr.Locale.new!/2``
 
-  * `valid_number_systems` is a map returned by `Cldr.Number.System.number_systems_for/2`
+  * `valid_number_systems` is a map returned by `Cldr.Number.System.number_systems_for/2`.
+
+  ### Returns
+
+  * `{Cldr.UnknownNumberSystemError, reason}`
 
   """
   def unknown_number_system_for_locale_error(number_system, locale, valid_number_systems) do
     {
       Cldr.UnknownNumberSystemError,
       "The number system #{inspect(number_system)} is unknown " <>
-        "for the locale named #{Cldr.locale_name(locale)}. " <>
+        "for the locale identifierd #{Cldr.locale_name(locale)}. " <>
         "Valid number systems are #{inspect(valid_number_systems)}"
     }
   end
@@ -924,7 +1109,8 @@ defmodule Cldr.Number.System do
     end
   end
 
-  defp unknown_number_system_error(system_name) do
+  @doc false
+  def unknown_number_system_error(system_name) do
     {
       Cldr.UnknownNumberSystemError,
       "The number system #{inspect(system_name)} is not known"
