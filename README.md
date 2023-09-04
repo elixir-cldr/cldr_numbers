@@ -1,7 +1,9 @@
 # Number and Currency Localization and Formatting
-![Build Status](http://sweatbox.noexpectations.com.au:8080/buildStatus/icon?job=cldr_numbers)
+
+![Build status](https://github.com/elixir-cldr/cldr_numbers/actions/workflows/ci.yml/badge.svg)
 [![Hex.pm](https://img.shields.io/hexpm/v/ex_cldr_numbers.svg)](https://hex.pm/packages/ex_cldr_numbers)
 [![Hex.pm](https://img.shields.io/hexpm/dw/ex_cldr_numbers.svg?)](https://hex.pm/packages/ex_cldr_numbers)
+[![Hex.pm](https://img.shields.io/hexpm/dt/ex_cldr_numbers.svg?)](https://hex.pm/packages/ex_cldr_numbers)
 [![Hex.pm](https://img.shields.io/hexpm/l/ex_cldr_numbers.svg)](https://hex.pm/packages/ex_cldr_numbers)
 
 ## Introduction and Getting Started
@@ -61,7 +63,7 @@ Add `ex_cldr_numbers` as a dependency to your `mix` project:
 
     defp deps do
       [
-        {:ex_cldr_numbers, "~> 2.0"}
+        {:ex_cldr_numbers, "~> 2.33"}
       ]
     end
 
