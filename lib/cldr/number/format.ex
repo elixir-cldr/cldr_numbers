@@ -73,12 +73,12 @@ defmodule Cldr.Number.Format do
   ### Arguments
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Returns
 
-  * [decimal_formats_as_strings]`.
+  * `[decimal_formats_as_strings]`.
 
   ##@ Example
 
@@ -111,7 +111,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   This function exists to allow the decimal formatter to precompile all
@@ -154,7 +154,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Returns
@@ -205,7 +205,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Returns
@@ -231,7 +231,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/0`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Returns
@@ -263,7 +263,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Returns
@@ -293,7 +293,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/0`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Returns
@@ -325,7 +325,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Returns
@@ -362,7 +362,7 @@ defmodule Cldr.Number.Format do
     by `Cldr.Number.System.number_systems_for/2`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Returns
@@ -410,7 +410,7 @@ defmodule Cldr.Number.Format do
     by `Cldr.Number.System.number_systems_for/2` or `Cldr.Number.System.number_system_names_for/2`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Returns
@@ -465,14 +465,14 @@ defmodule Cldr.Number.Format do
     by `Cldr.Number.System.number_systems_for/2`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Returns
 
   * `Cldr.Number.Format struct` or
 
-  * `raises an exception.
+  * raises an exception.
 
   """
   @spec formats_for!(LanguageTag.t(), Cldr.Number.System.system_name(), Cldr.backend()) ::
@@ -498,7 +498,7 @@ defmodule Cldr.Number.Format do
     by `Cldr.Number.System.number_systems_for/2`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   Format styles standardise the access to a format defined for a common
@@ -576,7 +576,7 @@ defmodule Cldr.Number.Format do
     by `Cldr.Number.System.number_systems_for/2`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Example
@@ -632,7 +632,7 @@ defmodule Cldr.Number.Format do
     by `Cldr.Number.System.number_systems_for/2`
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Example
@@ -686,7 +686,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/1`
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   A number system type is an identifier that categorises number systems
@@ -736,7 +736,7 @@ defmodule Cldr.Number.Format do
     is `Cldr.get_locale/1`.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`. The default is `Cldr.default_backend1/9` which
+    contains `use Cldr`. The default is `Cldr.default_backend!/0` which
     will raiee an exception if not default backend is configured.
 
   ### Examples
