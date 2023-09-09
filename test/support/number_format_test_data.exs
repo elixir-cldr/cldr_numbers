@@ -56,6 +56,10 @@ defmodule Cldr.Test.Number.Format do
       {1234, "COP 1,234.00", [currency: :COP, currency_digits: :iso]},
       {1234, "COP 1,234.00", [currency: :COP]},
 
+      # Currency default fractional digits
+      {1234, "¥1,234", [currency: :JPY]},
+      {1234, "TND 1,234.000", [currency: :TND]},
+
       # Currency with varying currency symbol
       {1234, "CUSTOM 1,234.00", [currency: :AUD, currency_symbol: "CUSTOM"]},
       {1234, "$1,234.00", [currency: :AUD, currency_symbol: :narrow]},

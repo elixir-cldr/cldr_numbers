@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.32.1
+
+This is the changelog for Cldr v2.32.0 released on September 9th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Use currency default fractional digits for currency formats if no `:fractional_digits` option is provided. Thanks to @dhedlund  for the report.  This reverts that change made in 2.31.3 which was described as "Don't override currency fractional digits when formatting a number. The format should always define the fractional digits unless overriden by the `:fractional_digits` option." Fractional digits will also be set to the currency definition of digits unless overriden.
+
 ## Cldr Numbers v2.32.0
 
 This is the changelog for Cldr v2.32.0 released on September 4th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
