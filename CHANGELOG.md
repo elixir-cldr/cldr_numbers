@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.32.2
+
+This is the changelog for Cldr v2.32.0 released on September 12th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fixes RBNF rules for fractions. Previous the rule `:spellout_cardinal` was being used to format the fractional part of a number. However this rule is not defined for many locales. This is changed to `:spellout_numbering` which is available in all known locales.
+
 ## Cldr Numbers v2.32.1
 
 This is the changelog for Cldr v2.32.0 released on September 9th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

@@ -128,7 +128,7 @@ defmodule Cldr.Rbnf.Processor do
           |> Integer.to_string()
           |> String.split("", trim: true)
           |> Enum.map(&String.to_integer/1)
-          |> Enum.map(&unquote(spellout_module).spellout_cardinal(&1, locale))
+          |> Enum.map(&unquote(spellout_module).spellout_numbering(&1, locale))
           |> Enum.join(" ")
       end
 

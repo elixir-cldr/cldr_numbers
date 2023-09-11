@@ -142,6 +142,14 @@ defmodule Rbnf.Test do
              {:ok, "123rd"}
   end
 
+  test "RBNF Spellout for spanish" do
+    assert TestBackend.Cldr.Number.to_string(123.456, format: :spellout_cardinal_masculine, locale: :es) ==
+      {:ok, "ciento veintitrés punto cuatro cinco seis"}
+
+    assert TestBackend.Cldr.Number.to_string(123.456, format: :spellout_cardinal_feminine, locale: :es) ==
+      {:ok, "ciento veintitrés punto cuatro cinco seis"}
+  end
+
   Elixir.Cldr.Rbnf.TestSupport.rbnf_tests(fn name, tests, module, function, locale ->
     test name do
       Enum.each(unquote(Macro.escape(tests)), fn {test_data, test_result} ->
