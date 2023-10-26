@@ -415,8 +415,11 @@ defmodule Cldr.Number.Backend.Number do
             "12 345"
 
         """
-        @spec to_string!(number | Decimal.t(), Keyword.t() | map()) ::
-                String.t() | module()
+        @spec to_string!(
+                number | Decimal.t() | String.t(),
+                Keyword.t() | map()
+              ) ::
+          String.t() | no_return()
         def to_string!(number, options \\ default_options()) do
           Cldr.Number.to_string!(number, unquote(backend), options)
         end
