@@ -34,10 +34,10 @@ defmodule Cldr.Number.System do
 
   An example of a number system map is:
 
-      iex> Cldr.Number.System.number_systems[:latn]
+      iex> Cldr.Number.System.number_systems()[:latn]
       %{type: :numeric, digits: "0123456789"}
 
-      iex> Cldr.Number.System.number_systems[:taml]
+      iex> Cldr.Number.System.number_systems()[:taml]
       %{type: :algorithmic, rules: "tamil"}
 
   ### Number system types
@@ -344,7 +344,7 @@ defmodule Cldr.Number.System do
       :thai
 
       iex> {:ok, locale} = MyApp.Cldr.validate_locale("en-US")
-      iex> Cldr.Number.System.number_system_from_locale locale
+      iex> Cldr.Number.System.number_system_from_locale(locale)
       :latn
 
       iex> Cldr.Number.System.number_system_from_locale("ar")
