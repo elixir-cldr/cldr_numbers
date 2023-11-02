@@ -25,7 +25,8 @@ defmodule MyApp.Cldr do
       "fr-CH",
       "fr-BE",
       "ta",
-      "he"
+      "he",
+      "pt-CV"
     ],
     precompile_transliterations: [{:latn, :arab}, {:arab, :thai}, {:arab, :latn}],
     providers: [Cldr.Number],

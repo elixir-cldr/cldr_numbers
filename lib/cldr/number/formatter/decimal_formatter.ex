@@ -563,7 +563,8 @@ defmodule Cldr.Number.Formatter.Decimal do
         []
       end
 
-    :erlang.iolist_to_binary([integer, fraction, exponent])
+    [integer, fraction, exponent]
+    |> :erlang.iolist_to_binary()
   end
 
   # Now we can assemble the final format.  Based upon
@@ -576,8 +577,14 @@ defmodule Cldr.Number.Formatter.Decimal do
     format = meta.format[options.pattern]
     number = meta.number
 
-    assemble_parts(format, number_string, number, backend, meta, options)
-    |> :erlang.iolist_to_binary()
+    formatted =
+      assemble_parts(format, number_string, number, backend, meta, options)
+      |> :erlang.iolist_to_binary()
+      |> String.trim_trailing()
+
+      IO.inspect String.to_charlist(options.currency.symbol)
+      IO.inspect String.to_charlist(formatted)
+      formatted
   end
 
   defp assemble_parts(
@@ -805,7 +812,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   @doc false
-  def transliterate(number_string, _meta, backend, %{locale: locale, number_system: number_system}) do
+  def transliterate(number_string, _meta, backend, options) do
+    %{locale: locale, number_system: number_system} = options
     Cldr.Number.Transliterate.transliterate(number_string, locale, number_system, backend)
   end
 
