@@ -219,13 +219,13 @@ defmodule Number.Format.Test do
   end
 
   test "Formatting a number with standard format in a locale with no RBNF" do
-    for {_locale, language_tag} <- Cldr.Config.all_language_tags, is_nil(language_tag.rbnf_locale_name) do
+    for {_locale, language_tag} <- Cldr.Config.all_language_tags(), is_nil(language_tag.rbnf_locale_name) do
       assert {:ok, _formatted_number} = Cldr.Number.to_string(1234, locale: language_tag)
     end
   end
 
   test "that each number system for each locale can format a number with standard format" do
-    for locale <- TestBackend.Cldr.known_locale_names do
+    for locale <- TestBackend.Cldr.known_locale_names() do
       {:ok, systems} = TestBackend.Cldr.Number.System.number_systems_for(locale)
       number_systems = Enum.uniq(Map.keys(systems) ++ Map.values(systems))
       for number_system <- number_systems do

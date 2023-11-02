@@ -3,7 +3,7 @@ defmodule Cldr.Numbers.Mixfile do
 
   use Mix.Project
 
-  @version "2.32.2"
+  @version "2.32.3"
 
   def project do
     [
@@ -19,6 +19,7 @@ defmodule Cldr.Numbers.Mixfile do
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
       package: package(),
+      compilers: [:leex, :yecc] ++ Mix.compilers(),
       dialyzer: [
         ignore_warnings: ".dialyzer_ignore_warnings",
         plt_add_apps: ~w(inets jason mix)a
