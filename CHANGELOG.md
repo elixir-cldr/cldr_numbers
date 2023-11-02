@@ -8,6 +8,8 @@ This is the changelog for Cldr v2.32.0 released on November 2nd, 2023.  For olde
 
 * Fix compiler warnings on Elixir 1.16.
 
+* Fix return spec for `Cldr.Number.to_string/2`. Thanks to @Munksgaard for the PR. Closes #45.
+
 ## Cldr Numbers v2.32.2
 
 This is the changelog for Cldr v2.32.0 released on September 12th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
