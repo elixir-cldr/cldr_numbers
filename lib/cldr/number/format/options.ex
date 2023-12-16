@@ -328,13 +328,14 @@ defmodule Cldr.Number.Format.Options do
   # If there is a currency, and it has a decimal_separator then replace
   # symbols,decimal with that separator.
 
+  defp maybe_adjust_decimal_symbol(%{currency: %{decimal_separator: decimal_separator}} = options)
+      when not is_nil(decimal_separator) do
+    symbols = Map.put(options.symbols, :decimal, decimal_separator)
+    %{options | symbols: symbols}
+  end
+
   defp maybe_adjust_decimal_symbol(options) do
-    if options.currency && options.currency.decimal_separator do
-      symbols = Map.put(options.symbols, :decimal, options.currency.decimal_separator)
-      %{options | symbols: symbols}
-    else
-      options
-    end
+    options
   end
 
   # From TR35

@@ -1,5 +1,15 @@
 # Changelog
 
+## Cldr Numbers v2.33.0
+
+This is the changelog for Cldr v2.33.0 released on _______, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Update to [CLDR 44.1](https://cldr.unicode.org/index/downloads/cldr-44) data.
+
+* Support currency formatting when the given currency in a given locale uses a specific symbol that replaces the decimal separator. The only known example is the [Cape Verde escudo](https://en.wikipedia.org/wiki/Cape_Verdean_escudo). A formatted example formatting 20 CVE is `20$00`.
+
 ## Cldr Numbers v2.32.3
 
 This is the changelog for Cldr v2.32.0 released on November 2nd, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
