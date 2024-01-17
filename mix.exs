@@ -3,7 +3,11 @@ defmodule Cldr.Numbers.Mixfile do
 
   use Mix.Project
 
+<<<<<<< HEAD
   @version "2.33.0"
+=======
+  @version "2.32.4"
+>>>>>>> 2dbb8a4 (Fix formatting number with currency but format has no currency symbol)
 
   def project do
     [

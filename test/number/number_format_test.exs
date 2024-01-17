@@ -233,4 +233,8 @@ defmodule Number.Format.Test do
       end
     end
   end
+
+  test "Formatting when a currency is specified but the format has no currency symbol" do
+    assert {:ok, _} = Cldr.Number.to_string(1234, curency: :CAD, format: "#,##0.###;-#,##0.###", locale: :en)
+  end
 end

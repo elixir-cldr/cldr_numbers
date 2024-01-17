@@ -766,14 +766,18 @@ defmodule Cldr.Number.Format.Options do
 
   defp expand_currency_symbol(%{currency: currency, format: format} = options, number) do
     backend = options.locale.backend
+    metadata = Module.concat(backend, Number.Formatter.Decimal).metadata!(format)
 
-    size =
-      Module.concat(backend, Number.Formatter.Decimal).metadata!(format).currency.symbol_count
+    case metadata.currency do
+      %{symbol_count: symbol_count} ->
+        symbol =
+          currency_symbol(currency, options.currency_symbol, number, symbol_count, options.locale, backend)
 
-    symbol =
-      currency_symbol(currency, options.currency_symbol, number, size, options.locale, backend)
+        Map.put(options, :currency_symbol, symbol)
 
-    Map.put(options, :currency_symbol, symbol)
+      _other ->
+        options
+    end
   end
 
   # Extract the appropriate currency symbol based upon how many currency
