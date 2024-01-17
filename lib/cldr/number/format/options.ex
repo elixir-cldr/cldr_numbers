@@ -130,6 +130,7 @@ defmodule Cldr.Number.Format.Options do
       |> resolve_standard_format(backend)
       |> maybe_expand_currency_symbol(number)
       |> maybe_apply_alpha_next_to_number(backend)
+      |> maybe_adjust_decimal_symbol()
       |> set_pattern(number)
       |> structify(__MODULE__)
       |> wrap_ok()
@@ -322,6 +323,19 @@ defmodule Cldr.Number.Format.Options do
 
   defp confirm_currency_format_has_currency(other) do
     other
+  end
+
+  # If there is a currency, and it has a decimal_separator then replace
+  # symbols,decimal with that separator.
+
+  defp maybe_adjust_decimal_symbol(%{currency: %{decimal_separator: decimal_separator}} = options)
+      when not is_nil(decimal_separator) do
+    symbols = Map.put(options.symbols, :decimal, decimal_separator)
+    %{options | symbols: symbols}
+  end
+
+  defp maybe_adjust_decimal_symbol(options) do
+    options
   end
 
   # From TR35
@@ -752,14 +766,18 @@ defmodule Cldr.Number.Format.Options do
 
   defp expand_currency_symbol(%{currency: currency, format: format} = options, number) do
     backend = options.locale.backend
+    metadata = Module.concat(backend, Number.Formatter.Decimal).metadata!(format)
 
-    size =
-      Module.concat(backend, Number.Formatter.Decimal).metadata!(format).currency.symbol_count
+    case metadata.currency do
+      %{symbol_count: symbol_count} ->
+        symbol =
+          currency_symbol(currency, options.currency_symbol, number, symbol_count, options.locale, backend)
 
-    symbol =
-      currency_symbol(currency, options.currency_symbol, number, size, options.locale, backend)
+        Map.put(options, :currency_symbol, symbol)
 
-    Map.put(options, :currency_symbol, symbol)
+      _other ->
+        options
+    end
   end
 
   # Extract the appropriate currency symbol based upon how many currency
