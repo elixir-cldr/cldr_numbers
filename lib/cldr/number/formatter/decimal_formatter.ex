@@ -542,14 +542,14 @@ defmodule Cldr.Number.Formatter.Decimal do
         options
       ) do
     decimal_separator = decimal_separator(options, @decimal_separator)
-    integer = if integer == [], do: ['0'], else: integer
+    integer = if integer == [], do: [~c"0"], else: integer
     fraction = if fraction == [], do: fraction, else: [decimal_separator, fraction]
 
     exponent_sign =
       cond do
         exponent_sign < 0 -> @minus_placeholder
         meta.exponent_sign -> @exponent_sign
-        true -> ''
+        true -> ~c""
       end
 
     exponent =
@@ -583,7 +583,7 @@ defmodule Cldr.Number.Formatter.Decimal do
       |> :erlang.iolist_to_binary()
       |> String.trim_trailing()
 
-      formatted
+    formatted
   end
 
   defp assemble_parts(

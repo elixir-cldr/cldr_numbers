@@ -400,7 +400,7 @@ defmodule Cldr.Number.Format.Compiler do
   defp currency_location(parts) do
     location =
       Enum.reduce_while(parts, 0, fn
-        {:currency, count}, offset ->  {:halt, %{location: offset, symbol_count: count}}
+        {:currency, count}, offset -> {:halt, %{location: offset, symbol_count: count}}
         _other, offset -> {:cont, offset + 1}
       end)
 

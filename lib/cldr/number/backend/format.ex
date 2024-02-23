@@ -244,7 +244,9 @@ defmodule Cldr.Number.Backend.Format do
             locale_data
             |> get_in([:number_systems, :default])
 
-          standard_format = number_formats[default_number_system].standard || @default_standard_format
+          standard_format =
+            number_formats[default_number_system].standard || @default_standard_format
+
           {:ok, meta} = Cldr.Number.Format.Compiler.format_to_metadata(standard_format)
 
           def default_grouping_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
@@ -331,8 +333,8 @@ defmodule Cldr.Number.Backend.Format do
                 %{
                   fraction: %{first: non_neg_integer(), rest: non_neg_integer()},
                   integer: %{first: non_neg_integer(), rest: non_neg_integer()}
-                } |
-                no_return()
+                }
+                | no_return()
 
         def default_grouping_for!(locale) do
           case default_grouping_for(locale) do

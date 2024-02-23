@@ -62,13 +62,13 @@ defmodule Number.Format.Test do
 
   test "that an rbnf format request fails if the locale doesn't define the ruleset" do
     assert TestBackend.Cldr.Number.to_string(123, format: :spellout_ordinal_verbose, locale: "zh") ==
-    {
-      :error,
-      {
-        Cldr.Rbnf.NoRule,
-        "RBNF rule :spellout_ordinal_verbose is unknown to locale #Cldr.LanguageTag<zh [validated]>"
-      }
-    }
+             {
+               :error,
+               {
+                 Cldr.Rbnf.NoRule,
+                 "RBNF rule :spellout_ordinal_verbose is unknown to locale #Cldr.LanguageTag<zh [validated]>"
+               }
+             }
   end
 
   test "that we get default formats_for" do
@@ -195,18 +195,25 @@ defmodule Number.Format.Test do
   end
 
   test "A free form currency format where the currency symbol is not first or last" do
-    assert {:ok, "US$1,234"} = MyApp.Cldr.Number.to_string(1234, currency: "USD", format: "US¤#,###")
+    assert {:ok, "US$1,234"} =
+             MyApp.Cldr.Number.to_string(1234, currency: "USD", format: "US¤#,###")
   end
 
   test "Digital tokens with overriden symbols" do
     assert {:ok, "₿ 1,234,545,656.456789"} =
-             Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: :narrow)
+             Cldr.Number.to_string(1_234_545_656.456789,
+               currency: "BTC",
+               currency_symbol: :narrow
+             )
 
     assert {:ok, "BTC 1,234,545,656.456789"} =
              Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: :iso)
 
     assert {:ok, "₿ 1,234,545,656.456789"} =
-             Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: :symbol)
+             Cldr.Number.to_string(1_234_545_656.456789,
+               currency: "BTC",
+               currency_symbol: :symbol
+             )
 
     assert {:ok, "₿ 1,234,545,656.456789"} =
              Cldr.Number.to_string(1_234_545_656.456789,
@@ -219,7 +226,8 @@ defmodule Number.Format.Test do
   end
 
   test "Formatting a number with standard format in a locale with no RBNF" do
-    for {_locale, language_tag} <- Cldr.Config.all_language_tags(), is_nil(language_tag.rbnf_locale_name) do
+    for {_locale, language_tag} <- Cldr.Config.all_language_tags(),
+        is_nil(language_tag.rbnf_locale_name) do
       assert {:ok, _formatted_number} = Cldr.Number.to_string(1234, locale: language_tag)
     end
   end
@@ -228,13 +236,23 @@ defmodule Number.Format.Test do
     for locale <- TestBackend.Cldr.known_locale_names() do
       {:ok, systems} = TestBackend.Cldr.Number.System.number_systems_for(locale)
       number_systems = Enum.uniq(Map.keys(systems) ++ Map.values(systems))
+
       for number_system <- number_systems do
-        assert {:ok, _} = TestBackend.Cldr.Number.to_string(123, locale: locale, number_system: number_system)
+        assert {:ok, _} =
+                 TestBackend.Cldr.Number.to_string(123,
+                   locale: locale,
+                   number_system: number_system
+                 )
       end
     end
   end
 
   test "Formatting when a currency is specified but the format has no currency symbol" do
-    assert {:ok, _} = Cldr.Number.to_string(1234, curency: :CAD, format: "#,##0.###;-#,##0.###", locale: :en)
+    assert {:ok, _} =
+             Cldr.Number.to_string(1234,
+               curency: :CAD,
+               format: "#,##0.###;-#,##0.###",
+               locale: :en
+             )
   end
 end

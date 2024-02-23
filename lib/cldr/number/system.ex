@@ -113,7 +113,7 @@ defmodule Cldr.Number.System do
   @doc """
   Return the default number system type name.
 
-  The default number system type is `#{inspect @default_number_system_type}`.
+  The default number system type is `#{inspect(@default_number_system_type)}`.
   Note that this is not the number system itself but the type of the
   number system.
 
@@ -145,9 +145,9 @@ defmodule Cldr.Number.System do
   end
 
   @numeric_systems Enum.reject(@number_systems, fn {_name, system} ->
-                         is_nil(system[:digits])
-                       end)
-                       |> Map.new()
+                     is_nil(system[:digits])
+                   end)
+                   |> Map.new()
 
   @doc """
   Returns a map of the number systems that have
@@ -301,7 +301,7 @@ defmodule Cldr.Number.System do
 
   """
   @spec number_system_from_locale(Locale.locale_reference(), Cldr.backend()) ::
-    system_name | {:error, {module(), String.t()}}
+          system_name | {:error, {module(), String.t()}}
 
   def number_system_from_locale(%LanguageTag{locale: %{numbers: nil}} = locale, backend) do
     locale
@@ -352,7 +352,7 @@ defmodule Cldr.Number.System do
 
   """
   @spec number_system_from_locale(Locale.locale_reference()) ::
-      system_name | {:error, {module(), String.t()}}
+          system_name | {:error, {module(), String.t()}}
 
   def number_system_from_locale(%LanguageTag{locale: %{numbers: nil}} = locale) do
     number_system_from_locale(locale.cldr_locale_name, locale.backend)
@@ -1098,11 +1098,11 @@ defmodule Cldr.Number.System do
       nil ->
         unknown_number_system_error(system_name)
 
-    _system ->
-      {
-        Cldr.UnknownNumberSystemError,
-        "The number system #{inspect(system_name)} does not have digits"
-      }
+      _system ->
+        {
+          Cldr.UnknownNumberSystemError,
+          "The number system #{inspect(system_name)} does not have digits"
+        }
     end
   end
 
@@ -1112,11 +1112,11 @@ defmodule Cldr.Number.System do
       nil ->
         unknown_number_system_error(system_name)
 
-    _system ->
-      {
-        Cldr.UnknownNumberSystemError,
-        "The number system #{inspect(system_name)} is not algorithmic"
-      }
+      _system ->
+        {
+          Cldr.UnknownNumberSystemError,
+          "The number system #{inspect(system_name)} is not algorithmic"
+        }
     end
   end
 
