@@ -351,8 +351,8 @@ defmodule Cldr.Number.Backend.System do
         """
         @spec system_name_from(
                 Cldr.Number.System.system_name(),
-                Cldr.Locale.locale_name() | LanguageTag.t()
-              ) :: {:ok, atom} | {:error, {module(), String.t()}}
+                Cldr.Locale.locale_reference()
+              ) :: {:ok, Cldr.Number.System.system_name()} | {:error, {module(), String.t()}}
 
         def system_name_from(system_name, locale) do
           Cldr.Number.System.system_name_from(system_name, locale, unquote(backend))
@@ -362,7 +362,7 @@ defmodule Cldr.Number.Backend.System do
                 Cldr.Locale.locale_reference(),
                 Cldr.Number.System.system_name()
               ) ::
-                {:ok, list()} | {:error, tuple}
+                {:ok, list()} | {:error, {module(), String.t()}}
 
         def number_systems_like(locale, number_system) do
           Cldr.Number.System.number_systems_like(locale, number_system, unquote(backend))
