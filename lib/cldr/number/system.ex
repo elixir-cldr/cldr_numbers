@@ -137,7 +137,7 @@ defmodule Cldr.Number.System do
       88
 
   """
-  @spec number_systems :: map()
+  @spec number_systems :: unquote(Cldr.Type.number_systems())
   @number_systems Cldr.Config.number_systems()
 
   def number_systems do

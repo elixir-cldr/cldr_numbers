@@ -82,10 +82,10 @@ defmodule Cldr.Number.Format.Options do
     :symbol
   ]
 
-  @type fixed_formats :: :standard | :currency | :accounting | :short | :long
-  @type format :: binary() | fixed_formats()
+  @type fixed_format :: :standard | :currency | :accounting | :short | :long
+  @type format :: binary() | fixed_format()
   @type currency_symbol :: :standard | :iso
-  @type short_format_styles ::
+  @type short_format_style ::
           :currency_short
           | :currency_long
           | :currency_long_with_symbol
@@ -727,7 +727,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   @doc false
-  @spec short_format_styles() :: list(atom())
+  @spec short_format_styles() :: [short_format_style(), ...]
   def short_format_styles do
     @short_formats
   end

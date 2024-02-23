@@ -128,7 +128,25 @@ defmodule Cldr.Number.Format.Meta do
             number: 0
 
   @typedoc "Metadata type that drives how to format a number"
-  @type t :: %__MODULE__{}
+  @type t :: %__MODULE__{
+    :currency => nil | Cldr.Currency.t(),
+    :exponent_digits => non_neg_integer(),
+    :exponent_sign => boolean(),
+    :format => [{:negative, [any(), ...]} | {:positive, [any(), ...]}, ...],
+    :fractional_digits => %{:max => non_neg_integer(), :min => non_neg_integer()},
+    :grouping => %{
+      :fraction => %{:first => non_neg_integer(), :rest => non_neg_integer()},
+      :integer => %{:first => non_neg_integer(), :rest => non_neg_integer()}
+    },
+    :integer_digits => %{:max => non_neg_integer(), :min => non_neg_integer()},
+    :multiplier => non_neg_integer(),
+    :number => non_neg_integer(),
+    :padding_char => String.t(),
+    :padding_length => non_neg_integer(),
+    :round_nearest => non_neg_integer(),
+    :scientific_rounding => non_neg_integer(),
+    :significant_digits => %{:max => non_neg_integer(), :min => non_neg_integer()}
+  }
 
   @doc """
   Returns a new number formatting metadata
