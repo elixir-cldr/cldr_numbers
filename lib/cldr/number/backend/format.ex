@@ -296,7 +296,9 @@ defmodule Cldr.Number.Backend.Format do
             1
 
         """
-        @spec minimum_grouping_digits_for!(Cldr.Locale.locale_reference()) :: 1 | 2 | no_return()
+        @dialyzer {:no_underspecs, minimum_grouping_digits_for!: 1}
+        @spec minimum_grouping_digits_for!(Cldr.Locale.locale_reference()) ::
+          non_neg_integer() | no_return()
 
         def minimum_grouping_digits_for!(locale) do
           case minimum_grouping_digits_for(locale) do
