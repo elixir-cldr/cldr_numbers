@@ -6,7 +6,7 @@ This is the changelog for Cldr v2.33.0 released on _______, 2023.  For older cha
 
 ### Enhancements
 
-* Update to [CLDR 44.1](https://cldr.unicode.org/index/downloads/cldr-44) data.
+* Update to [CLDR 45.0](https://cldr.unicode.org/index/downloads/cldr-45) data.
 
 * Support currency formatting when the given currency in a given locale uses a specific symbol that replaces the decimal separator. The only known example is the [Cape Verde escudo](https://en.wikipedia.org/wiki/Cape_Verdean_escudo). A formatted example formatting 20 CVE is `20$00`.
 
