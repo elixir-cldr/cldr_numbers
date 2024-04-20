@@ -419,7 +419,7 @@ defmodule Cldr.Number.Backend.Number do
                 number | Decimal.t() | String.t(),
                 Keyword.t() | map()
               ) ::
-          String.t() | no_return()
+                String.t() | no_return()
         def to_string!(number, options \\ default_options()) do
           Cldr.Number.to_string!(number, unquote(backend), options)
         end

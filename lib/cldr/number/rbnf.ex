@@ -225,7 +225,7 @@ defmodule Cldr.Rbnf do
     |> Cldr.Map.merge_map_list()
   end
 
-  def rbnf_locale_error(%LanguageTag{} = locale)  do
+  def rbnf_locale_error(%LanguageTag{} = locale) do
     {Cldr.Rbnf.NotAvailable, "RBNF is not available for locale #{inspect(locale)}"}
   end
 
@@ -246,8 +246,9 @@ defmodule Cldr.Rbnf do
     function = to_string(rule_group)
 
     case function do
-      <<digit::utf8, _rest :: binary>> when digit in ?0..?9 ->
+      <<digit::utf8, _rest::binary>> when digit in ?0..?9 ->
         "r" <> function
+
       _other ->
         function
     end

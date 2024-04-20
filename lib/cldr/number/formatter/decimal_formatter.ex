@@ -539,16 +539,17 @@ defmodule Cldr.Number.Formatter.Decimal do
         {_sign, integer, fraction, exponent_sign, exponent},
         meta,
         _backend,
-        _options
+        options
       ) do
-    integer = if integer == [], do: ['0'], else: integer
-    fraction = if fraction == [], do: fraction, else: [@decimal_separator, fraction]
+    decimal_separator = decimal_separator(options, @decimal_separator)
+    integer = if integer == [], do: [~c"0"], else: integer
+    fraction = if fraction == [], do: fraction, else: [decimal_separator, fraction]
 
     exponent_sign =
       cond do
         exponent_sign < 0 -> @minus_placeholder
         meta.exponent_sign -> @exponent_sign
-        true -> ''
+        true -> ~c""
       end
 
     exponent =
@@ -563,7 +564,8 @@ defmodule Cldr.Number.Formatter.Decimal do
         []
       end
 
-    :erlang.iolist_to_binary([integer, fraction, exponent])
+    [integer, fraction, exponent]
+    |> :erlang.iolist_to_binary()
   end
 
   # Now we can assemble the final format.  Based upon
@@ -576,8 +578,12 @@ defmodule Cldr.Number.Formatter.Decimal do
     format = meta.format[options.pattern]
     number = meta.number
 
-    assemble_parts(format, number_string, number, backend, meta, options)
-    |> :erlang.iolist_to_binary()
+    formatted =
+      assemble_parts(format, number_string, number, backend, meta, options)
+      |> :erlang.iolist_to_binary()
+      |> String.trim_trailing()
+
+    formatted
   end
 
   defp assemble_parts(
@@ -646,12 +652,17 @@ defmodule Cldr.Number.Formatter.Decimal do
     []
   end
 
+  @nbsp "\u200b"
+
   defp assemble_parts([{:currency, _type} | rest], number_string, number, backend, meta, options) do
     %{currency_symbol: symbol, wrapper: wrapper} = options
 
-    symbol = maybe_wrap(symbol, :currency_symbol, wrapper)
-
-    [symbol | assemble_parts(rest, number_string, number, backend, meta, options)]
+    if symbol == @nbsp do
+      assemble_parts(rest, number_string, number, backend, meta, options)
+    else
+      symbol = maybe_wrap(symbol, :currency_symbol, wrapper)
+      [symbol | assemble_parts(rest, number_string, number, backend, meta, options)]
+    end
   end
 
   defp assemble_parts(
@@ -805,7 +816,8 @@ defmodule Cldr.Number.Formatter.Decimal do
   end
 
   @doc false
-  def transliterate(number_string, _meta, backend, %{locale: locale, number_system: number_system}) do
+  def transliterate(number_string, _meta, backend, options) do
+    %{locale: locale, number_system: number_system} = options
     Cldr.Number.Transliterate.transliterate(number_string, locale, number_system, backend)
   end
 
@@ -1023,5 +1035,17 @@ defmodule Cldr.Number.Formatter.Decimal do
   defp after_currency_match?(number_string, symbol, spacing) do
     String.match?(number_string, Regex.compile!("^" <> spacing[:surrounding_match], "u")) &&
       String.match?(symbol, Regex.compile!(spacing[:currency_match] <> "$", "u"))
+  end
+
+  defp decimal_separator(%{currency: %{decimal_separator: nil}}, default_decimal_separator) do
+    default_decimal_separator
+  end
+
+  defp decimal_separator(%{currency: %{decimal_separator: separator}}, _default_decimal_separator) do
+    separator
+  end
+
+  defp decimal_separator(_options, default_decimal_separator) do
+    default_decimal_separator
   end
 end

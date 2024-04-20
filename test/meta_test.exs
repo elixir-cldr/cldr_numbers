@@ -8,7 +8,7 @@ defmodule Cldr.Number.Format.Meta.Test do
                exponent_sign: false,
                format: [
                  positive: [format: "#"],
-                 negative: [minus: '-', format: :same_as_positive]
+                 negative: [minus: ~c"-", format: :same_as_positive]
                ],
                fractional_digits: %{max: 0, min: 0},
                grouping: %{fraction: %{first: 0, rest: 0}, integer: %{first: 0, rest: 0}},

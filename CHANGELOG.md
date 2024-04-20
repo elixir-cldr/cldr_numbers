@@ -1,16 +1,34 @@
 # Changelog
 
+## Cldr Numbers v2.33.0
+
+This is the changelog for Cldr v2.33.0 released on April 21st, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Update to [CLDR 45.0](https://cldr.unicode.org/index/downloads/cldr-45) data.
+
+* Support currency formatting when the given currency in a given locale uses a specific symbol that replaces the decimal separator. The only known example is the [Cape Verde escudo](https://en.wikipedia.org/wiki/Cape_Verdean_escudo). A formatted example formatting 20 CVE is `20$00`.
+
 ## Cldr Numbers v2.32.4
 
 This is the changelog for Cldr v2.32.4 released on January 18th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
 
+<<<<<<< HEAD
 * Fix formatting a number when a currency is specified but the format has no currency symbol. Closes [ex_money 162](https://github.com/kipcole9/money/issues/162). 
 
 ## Cldr Numbers v2.32.3
 
 This is the changelog for Cldr v2.32.3 released on November 2nd, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+=======
+* Fix formatting a number when a currency is specified but the format has no currency symbol. Closes [ex_money 162](https://github.com/kipcole9/money/issues/162).
+
+## Cldr Numbers v2.32.3
+
+This is the changelog for Cldr v2.32.0 released on November 2nd, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+>>>>>>> cldr45
 
 ### Bug Fixes
 
@@ -48,7 +66,7 @@ This is the changelog for Cldr v2.32.0 released on September 4th, 2023.  For old
 
 ### Deprecations
 
-* `Cldr.Number.System.systems_with_digits/0` is deprecated in favour of `Cldr.Number.System.numeric_systems/0`. 
+* `Cldr.Number.System.systems_with_digits/0` is deprecated in favour of `Cldr.Number.System.numeric_systems/0`.
 
 ### Enhancements
 

@@ -82,10 +82,10 @@ defmodule Cldr.Number.Format.Options do
     :symbol
   ]
 
-  @type fixed_formats :: :standard | :currency | :accounting | :short | :long
-  @type format :: binary() | fixed_formats()
+  @type fixed_format :: :standard | :currency | :accounting | :short | :long
+  @type format :: binary() | fixed_format()
   @type currency_symbol :: :standard | :iso
-  @type short_format_styles ::
+  @type short_format_style ::
           :currency_short
           | :currency_long
           | :currency_long_with_symbol
@@ -173,7 +173,8 @@ defmodule Cldr.Number.Format.Options do
   # :narrow, the format to :currency
 
   @doc false
-  defp maybe_adjust_currency_format(options, currency, :narrow, backend) when not is_nil(currency) do
+  defp maybe_adjust_currency_format(options, currency, :narrow, backend)
+       when not is_nil(currency) do
     currency_format = derive_currency_format(options)
 
     options
@@ -197,34 +198,43 @@ defmodule Cldr.Number.Format.Options do
     options
   end
 
-  defp set_default_fractional_digits(%{fractional_digits: nil, currency_digits: :accounting} = options, backend) do
+  defp set_default_fractional_digits(
+         %{fractional_digits: nil, currency_digits: :accounting} = options,
+         backend
+       ) do
     case Cldr.Currency.currency_for_code(options.currency, backend, locale: options.locale) do
       {:ok, currency} ->
         Map.put(options, :fractional_digits, currency.digits)
 
       _other ->
         options
-     end
+    end
   end
 
-  defp set_default_fractional_digits(%{fractional_digits: nil, currency_digits: :cash} = options, backend) do
+  defp set_default_fractional_digits(
+         %{fractional_digits: nil, currency_digits: :cash} = options,
+         backend
+       ) do
     case Cldr.Currency.currency_for_code(options.currency, backend, locale: options.locale) do
       {:ok, currency} ->
         Map.put(options, :fractional_digits, currency.cash_digits)
 
       _other ->
         options
-     end
+    end
   end
 
-  defp set_default_fractional_digits(%{fractional_digits: nil, currency_digits: :iso} = options, backend) do
+  defp set_default_fractional_digits(
+         %{fractional_digits: nil, currency_digits: :iso} = options,
+         backend
+       ) do
     case Cldr.Currency.currency_for_code(options.currency, backend, locale: options.locale) do
       {:ok, currency} ->
         Map.put(options, :fractional_digits, currency.iso_digits)
 
       _other ->
         options
-     end
+    end
   end
 
   defp set_default_fractional_digits(options, _backend) do
@@ -247,7 +257,8 @@ defmodule Cldr.Number.Format.Options do
     %{locale: locale, number_system: number_system} = options
 
     with {:ok, formats} <- Format.formats_for(locale, number_system, backend),
-         {:ok, resolved_format} <- standard_format(formats, format, locale, number_system, backend) do
+         {:ok, resolved_format} <-
+           standard_format(formats, format, locale, number_system, backend) do
       Map.put(options, :format, resolved_format)
     end
   end
@@ -538,7 +549,6 @@ defmodule Cldr.Number.Format.Options do
     end
   end
 
-
   defp validate_option(:format, _options, _backend, format) do
     {:ok, format}
   end
@@ -727,7 +737,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   @doc false
-  @spec short_format_styles() :: list(atom())
+  @spec short_format_styles() :: [short_format_style(), ...]
   def short_format_styles do
     @short_formats
   end
@@ -771,7 +781,14 @@ defmodule Cldr.Number.Format.Options do
     case metadata.currency do
       %{symbol_count: symbol_count} ->
         symbol =
-          currency_symbol(currency, options.currency_symbol, number, symbol_count, options.locale, backend)
+          currency_symbol(
+            currency,
+            options.currency_symbol,
+            number,
+            symbol_count,
+            options.locale,
+            backend
+          )
 
         Map.put(options, :currency_symbol, symbol)
 

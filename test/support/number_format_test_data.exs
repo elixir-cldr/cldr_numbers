@@ -56,6 +56,9 @@ defmodule Cldr.Test.Number.Format do
       {1234, "COP 1,234.00", [currency: :COP, currency_digits: :iso]},
       {1234, "COP 1,234.00", [currency: :COP]},
 
+      # Currency where the symbol replaces the decimal separator
+      {1234, "1234$00", [currency: :CVE, locale: "pt-CV"]},
+
       # Currency default fractional digits
       {1234, "¥1,234", [currency: :JPY]},
       {1234, "TND 1,234.000", [currency: :TND]},

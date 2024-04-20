@@ -3,7 +3,7 @@ defmodule Cldr.Numbers.Mixfile do
 
   use Mix.Project
 
-  @version "2.32.4"
+  @version "2.33.0"
 
   def project do
     [
@@ -22,7 +22,8 @@ defmodule Cldr.Numbers.Mixfile do
       compilers: [:leex, :yecc] ++ Mix.compilers(),
       dialyzer: [
         ignore_warnings: ".dialyzer_ignore_warnings",
-        plt_add_apps: ~w(inets jason mix)a
+        plt_add_apps: ~w(inets jason mix)a,
+        flags: [:underspecs]
       ]
     ]
   end
@@ -42,9 +43,12 @@ defmodule Cldr.Numbers.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 2.37"},
+      # {:ex_cldr, path: "../cldr", override: true},
+      {:ex_cldr, "~> 2.38"},
 
-      {:ex_cldr_currencies, ">= 2.14.2"},
+      # {:ex_cldr_currencies, path: "../cldr_currencies"},
+      {:ex_cldr_currencies, "~> 2.16"},
+
       {:digital_token, "~> 0.3 or ~> 1.0"},
       {:decimal, "~> 1.6 or ~> 2.0"},
       {:jason, "~> 1.0", optional: true},

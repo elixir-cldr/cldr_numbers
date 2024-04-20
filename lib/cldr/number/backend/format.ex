@@ -154,8 +154,8 @@ defmodule Cldr.Number.Backend.Format do
         * `{:error, {exception, message}}`
 
         """
-        @spec all_formats_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
-                {:ok, map()} | {:error, {module(), String.t()}}
+        @spec all_formats_for(Cldr.Locale.locale_reference()) ::
+                {:ok, %{System.system_name() => map()}} | {:error, {module(), String.t()}}
 
         def all_formats_for(locale \\ unquote(backend).get_locale())
 
@@ -182,7 +182,7 @@ defmodule Cldr.Number.Backend.Format do
             {:ok, 1}
 
         """
-        @spec minimum_grouping_digits_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
+        @spec minimum_grouping_digits_for(Cldr.Locale.locale_reference()) ::
                 {:ok, non_neg_integer} | {:error, {module(), String.t()}}
 
         def minimum_grouping_digits_for(locale \\ unquote(backend).get_locale())
@@ -210,7 +210,7 @@ defmodule Cldr.Number.Backend.Format do
             {:ok, %{fraction: %{first: 0, rest: 0}, integer: %{first: 3, rest: 3}}}
 
         """
-        @spec default_grouping_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
+        @spec default_grouping_for(Cldr.Locale.locale_reference()) ::
                 {:ok, map()} | {:error, {module(), String.t()}}
 
         def default_grouping_for(locale \\ unquote(backend).get_locale())
@@ -244,7 +244,9 @@ defmodule Cldr.Number.Backend.Format do
             locale_data
             |> get_in([:number_systems, :default])
 
-          standard_format = number_formats[default_number_system].standard || @default_standard_format
+          standard_format =
+            number_formats[default_number_system].standard || @default_standard_format
+
           {:ok, meta} = Cldr.Number.Format.Compiler.format_to_metadata(standard_format)
 
           def default_grouping_for(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
@@ -286,7 +288,7 @@ defmodule Cldr.Number.Backend.Format do
 
         * `minumum_digits` or
 
-        * raises an exception
+        * raises an exception.
 
         ## Examples
 
@@ -294,8 +296,9 @@ defmodule Cldr.Number.Backend.Format do
             1
 
         """
-        @spec minimum_grouping_digits_for!(LanguageTag.t() | Cldr.Locale.locale_name()) ::
-                non_neg_integer | no_return()
+        @dialyzer {:no_underspecs, minimum_grouping_digits_for!: 1}
+        @spec minimum_grouping_digits_for!(Cldr.Locale.locale_reference()) ::
+          non_neg_integer() | no_return()
 
         def minimum_grouping_digits_for!(locale) do
           case minimum_grouping_digits_for(locale) do
@@ -320,7 +323,7 @@ defmodule Cldr.Number.Backend.Format do
 
         * `grouping` as a map or
 
-        * raises an exception
+        * raises an exception.
 
         ## Examples
 
@@ -328,8 +331,12 @@ defmodule Cldr.Number.Backend.Format do
             %{fraction: %{first: 0, rest: 0}, integer: %{first: 3, rest: 3}}
 
         """
-        @spec default_grouping_for!(LanguageTag.t() | Cldr.Locale.locale_name()) ::
-                map() | no_return()
+        @spec default_grouping_for!(Cldr.Locale.locale_reference()) ::
+                %{
+                  fraction: %{first: non_neg_integer(), rest: non_neg_integer()},
+                  integer: %{first: non_neg_integer(), rest: non_neg_integer()}
+                }
+                | no_return()
 
         def default_grouping_for!(locale) do
           case default_grouping_for(locale) do
@@ -370,13 +377,13 @@ defmodule Cldr.Number.Backend.Format do
         * `{:ok, map}` where map is a map of decimal formats
           keyed by number system or
 
-        * raises an exception
+        * raises an exception.
 
         See `#{inspect(__MODULE__)}.Number.Format.all_formats_for/1` for further information.
 
         """
-        @spec all_formats_for!(LanguageTag.t() | Cldr.Locale.locale_name()) ::
-                map() | no_return()
+        @spec all_formats_for(Cldr.Locale.locale_reference()) ::
+                %{System.system_name() => map()} | no_return()
 
         def all_formats_for!(locale \\ unquote(backend).get_locale()) do
           case all_formats_for(locale) do

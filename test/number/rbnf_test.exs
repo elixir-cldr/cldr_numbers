@@ -143,11 +143,17 @@ defmodule Rbnf.Test do
   end
 
   test "RBNF Spellout for spanish" do
-    assert TestBackend.Cldr.Number.to_string(123.456, format: :spellout_cardinal_masculine, locale: :es) ==
-      {:ok, "ciento veintitrés punto cuatro cinco seis"}
+    assert TestBackend.Cldr.Number.to_string(123.456,
+             format: :spellout_cardinal_masculine,
+             locale: :es
+           ) ==
+             {:ok, "ciento veintitrés punto cuatro cinco seis"}
 
-    assert TestBackend.Cldr.Number.to_string(123.456, format: :spellout_cardinal_feminine, locale: :es) ==
-      {:ok, "ciento veintitrés punto cuatro cinco seis"}
+    assert TestBackend.Cldr.Number.to_string(123.456,
+             format: :spellout_cardinal_feminine,
+             locale: :es
+           ) ==
+             {:ok, "ciento veintitrés punto cuatro cinco seis"}
   end
 
   Elixir.Cldr.Rbnf.TestSupport.rbnf_tests(fn name, tests, module, function, locale ->
