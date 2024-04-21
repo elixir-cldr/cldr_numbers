@@ -16,19 +16,17 @@ This is the changelog for Cldr v2.32.4 released on January 18th, 2023.  For olde
 
 ### Bug Fixes
 
-<<<<<<< HEAD
 * Fix formatting a number when a currency is specified but the format has no currency symbol. Closes [ex_money 162](https://github.com/kipcole9/money/issues/162). 
 
 ## Cldr Numbers v2.32.3
 
 This is the changelog for Cldr v2.32.3 released on November 2nd, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
-=======
+
 * Fix formatting a number when a currency is specified but the format has no currency symbol. Closes [ex_money 162](https://github.com/kipcole9/money/issues/162).
 
 ## Cldr Numbers v2.32.3
 
 This is the changelog for Cldr v2.32.0 released on November 2nd, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
->>>>>>> cldr45
 
 ### Bug Fixes
 
