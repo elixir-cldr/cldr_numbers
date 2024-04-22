@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.33.1
+
+This is the changelog for Cldr v2.33.1 released on April 23rd, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Add `config/prod.exs` so `MIX_ENV=prod` compilation succeeds. Thanks to @camelpunch for the report. Closes #49.
+
 ## Cldr Numbers v2.33.0
 
 This is the changelog for Cldr v2.33.0 released on April 21st, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
