@@ -200,7 +200,7 @@ defmodule Cldr.Number.Format.Compiler do
       iex> Cldr.Number.Format.Compiler.parse "¤ #,##0.00;¤-#,##0.00"
       {:ok,
        [positive: [currency: 1, literal: " ", format: "#,##0.00"],
-        negative: [currency: 1, minus: '-', format: :same_as_positive]]}
+        negative: [currency: 1, minus: ~c"-", format: :same_as_positive]]}
 
   """
   def parse(tokens) when is_list(tokens) do
