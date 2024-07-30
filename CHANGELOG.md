@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.33.2
+
+This is the changelog for Cldr v2.33.2 released on July 30th, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix spec for `all_formats_for!/3`. Thanks to @@AntoineAugusti for the report. Closes #50.
+
 ## Cldr Numbers v2.33.1
 
 This is the changelog for Cldr v2.33.1 released on April 23rd, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

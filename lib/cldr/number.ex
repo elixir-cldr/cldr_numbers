@@ -311,8 +311,6 @@ defmodule Cldr.Number do
   element type. The wrapper function is required to return a string that is then
   inserted in the final formatted number.
 
-
-
   ## Returns
 
   * `{:ok, string}` or
