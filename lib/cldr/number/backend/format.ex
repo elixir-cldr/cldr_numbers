@@ -382,7 +382,7 @@ defmodule Cldr.Number.Backend.Format do
         See `#{inspect(__MODULE__)}.Number.Format.all_formats_for/1` for further information.
 
         """
-        @spec all_formats_for(Cldr.Locale.locale_reference()) ::
+        @spec all_formats_for!(Cldr.Locale.locale_reference()) ::
                 %{System.system_name() => map()} | no_return()
 
         def all_formats_for!(locale \\ unquote(backend).get_locale()) do
