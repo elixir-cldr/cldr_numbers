@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.33.3
+
+This is the changelog for Cldr v2.33.3 released on August 16th, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix specs to suport dialyzer flags `:error_handling, :unknown, :underspecs, :extra_return, :missing_return`
+
 ## Cldr Numbers v2.33.2
 
 This is the changelog for Cldr v2.33.2 released on July 30th, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
@@ -32,7 +40,7 @@ This is the changelog for Cldr v2.32.4 released on January 18th, 2023.  For olde
 
 ### Bug Fixes
 
-* Fix formatting a number when a currency is specified but the format has no currency symbol. Closes [ex_money 162](https://github.com/kipcole9/money/issues/162). 
+* Fix formatting a number when a currency is specified but the format has no currency symbol. Closes [ex_money 162](https://github.com/kipcole9/money/issues/162).
 
 ## Cldr Numbers v2.32.3
 

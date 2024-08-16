@@ -35,7 +35,7 @@ defmodule Cldr.Number.Backend.System do
 
         """
         @spec number_system_from_locale(Cldr.Locale.locale_reference()) ::
-                Cldr.Number.System.system_name()
+                Cldr.Number.System.system_name() | {:error, {module, String.t()}}
 
         def number_system_from_locale(locale) do
           Cldr.Number.System.number_system_from_locale(locale, unquote(backend))

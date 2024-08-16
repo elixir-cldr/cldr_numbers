@@ -775,7 +775,7 @@ defmodule Cldr.Number do
 
   """
   @spec to_number_system(number, atom, Cldr.backend()) ::
-          String.t() | {:error, {module(), String.t()}}
+          {:ok, String.t()} | {:error, {module(), String.t()}}
 
   def to_number_system(number, system, backend \\ default_backend()) do
     Cldr.Number.System.to_system(number, system, backend)

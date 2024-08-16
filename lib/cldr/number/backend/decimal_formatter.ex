@@ -31,6 +31,7 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
           for further information.
 
         """
+        @dialyzer {:nowarn_function, to_string: 3}
 
         @spec to_string(
                 Math.number_or_decimal(),
@@ -47,13 +48,13 @@ defmodule Cldr.Number.Backend.Decimal.Formatter do
           end
         end
 
-        # Precompile the known formats and build the formatting pipeline
-        # specific to this format thereby optimizing the performance.
+        # # Precompile the known formats and build the formatting pipeline
+        # # specific to this format thereby optimizing the performance.
         unquote(Decimal.define_to_string(backend))
 
-        # Other number formatting systems may create the formatting
-        # metadata by other means (like a printf function) in which
-        # case we don't do anything except format
+        # # Other number formatting systems may create the formatting
+        # # metadata by other means (like a printf function) in which
+        # # case we don't do anything except format
         def to_string(number, %Meta{} = meta, %Options{} = options) do
           meta = Decimal.update_meta(meta, number, unquote(backend), options)
           Decimal.do_to_string(number, meta, unquote(backend), options)
