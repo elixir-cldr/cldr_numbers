@@ -33,6 +33,11 @@ defmodule Cldr.Number.Parser do
   * `:locale` is any locale returned by `Cldr.known_locale_names/1`
     or a `t:Cldr.LanguageTag`. The default is `options[:backend].get_locale/1`.
 
+  * `:separators` indicates which of the optional
+    alternative grouping and decimal separators should be used
+    when scanning. The default is `:standard`. To see what other
+    separator variants may be avaialble, see `Cldr.Number.Symbol.number_symbols_for/2`.
+
   ## Returns
 
   * A list of strings and numbers
@@ -80,7 +85,7 @@ defmodule Cldr.Number.Parser do
 
       scanner =
         @number_format
-        |> localize_format_string(locale, backend, symbols)
+        |> localize_format_string(locale, backend, symbols, options)
         |> Regex.compile!([:unicode])
 
       normalized_string = transliterate_digits(string, number_system, :latn, backend)
@@ -687,16 +692,20 @@ defmodule Cldr.Number.Parser do
   end
 
   # Replace canonical forms with localised symbols
-  defp localize_format_string(string, locale, backend, symbols) do
+  defp localize_format_string(string, locale, backend, symbols, options) do
     parse_map = backend.lenient_parse_map(:number, locale.cldr_locale_name)
     plus_matchers = Map.get(parse_map, "+").source |> String.replace(["[", "]"], "")
     minus_matchers = Map.get(parse_map, "_").source |> String.replace(["[", "]"], "")
     grouping_matchers = Map.get(parse_map, ",").source |> String.replace(["[", "]"], "")
 
+    separator_type = Keyword.get(options, :separators, :standard)
+    group_separator = Map.get(symbols.group, separator_type) || Map.get(symbols.group, :standard)
+    decimal_separator = Map.get(symbols.decimal, separator_type) || Map.get(symbols.decimal, :standard)
+
     string
     |> String.replace("[-+]", "[" <> plus_matchers <> minus_matchers <> "]")
-    |> String.replace(",", grouping_matchers <> maybe_add_space(symbols.group))
-    |> String.replace("\\.", "\\" <> symbols.decimal)
+    |> String.replace(",", grouping_matchers <> maybe_add_space(group_separator))
+    |> String.replace("\\.", "\\" <> decimal_separator)
   end
 
   # If the grouping symbol is a pop space then
