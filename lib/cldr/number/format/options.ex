@@ -12,7 +12,7 @@ defmodule Cldr.Number.Format.Options do
   import DigitalToken, only: :macros
 
   # These are the options set in the
-  # struct guide formatting
+  # struct that guide formatting
   @options [
     :locale,
     :number_system,
@@ -29,7 +29,8 @@ defmodule Cldr.Number.Format.Options do
     :fractional_digits,
     :maximum_integer_digits,
     :round_nearest,
-    :wrapper
+    :wrapper,
+    :separators
   ]
 
   # These are the options that can be supplied
@@ -82,9 +83,15 @@ defmodule Cldr.Number.Format.Options do
     :symbol
   ]
 
+  @valid_separators [
+    :standard,
+    :us
+  ]
+
   @type fixed_format :: :standard | :currency | :accounting | :short | :long
   @type format :: binary() | fixed_format()
   @type currency_symbol :: :standard | :iso
+  @type separators :: :standard | :us
   @type short_format_style ::
           :currency_short
           | :currency_long
@@ -107,7 +114,8 @@ defmodule Cldr.Number.Format.Options do
           fractional_digits: pos_integer(),
           maximum_integer_digits: pos_integer(),
           round_nearest: pos_integer(),
-          wrapper: (String.t(), atom -> String.t())
+          wrapper: (String.t(), atom -> String.t()),
+          separators: separators()
         }
 
   defstruct @options
@@ -448,6 +456,15 @@ defmodule Cldr.Number.Format.Options do
   defp validate_option(:number_system, options, backend, number_system) do
     locale = Map.fetch!(options, :locale)
     System.system_name_from(number_system, locale, backend)
+  end
+
+  defp validate_option(:separators, _options, _backend, separators)
+      when separators in @valid_separators do
+    {:ok, separators}
+  end
+
+  defp validate_option(:separators, _options, _backend, nil) do
+    {:ok, nil}
   end
 
   # Currency validation returns a t:Cldr.Currency.t/0

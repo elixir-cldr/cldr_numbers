@@ -56,7 +56,7 @@ defmodule Cldr.Number.Parser do
       iex> Cldr.Number.Parser.scan("The lottery number is 23 for the next draw")
       ["The lottery number is ", 23, " for the next draw"]
 
-      iex> Cldr.Number.Parser.scan("The loss is -1.000 euros", locale: "de", number: :integer)
+      iex> Cldr.Number.Parser.scan("The loss is -1.000 euros", locale: :de, number: :integer)
       ["The loss is ", -1000, " euros"]
 
       iex> Cldr.Number.Parser.scan "1kg"
@@ -83,7 +83,7 @@ defmodule Cldr.Number.Parser do
         |> localize_format_string(locale, backend, symbols)
         |> Regex.compile!([:unicode])
 
-      normalized_string = transliterate(string, number_system, :latn, backend)
+      normalized_string = transliterate_digits(string, number_system, :latn, backend)
 
       scanner
       |> Regex.split(normalized_string, include_captures: true, trim: true)
@@ -157,21 +157,21 @@ defmodule Cldr.Number.Parser do
 
   ## Examples
 
-      iex> Cldr.Number.Parser.parse("＋1.000,34", locale: "de")
+      iex> Cldr.Number.Parser.parse("＋1.000,34", locale: :de)
       {:ok, 1000.34}
 
       iex> Cldr.Number.Parser.parse("-1_000_000.34")
       {:ok, -1000000.34}
 
-      iex> Cldr.Number.Parser.parse("1.000", locale: "de", number: :integer)
+      iex> Cldr.Number.Parser.parse("1.000", locale: :de, number: :integer)
       {:ok, 1000}
 
-      iex> Cldr.Number.Parser.parse "١٢٣٤٥", locale: "ar"
+      iex> Cldr.Number.Parser.parse "١٢٣٤٥", locale: :ar
       {:ok, 12345}
 
       # 1_000.34 cannot be coerced into an integer
       # without precision loss so an error is returned.
-      iex> Cldr.Number.Parser.parse("＋1.000,34", locale: "de", number: :integer)
+      iex> Cldr.Number.Parser.parse("＋1.000,34", locale: :de, number: :integer)
       {:error,
         {Cldr.Number.ParseError,
          "The string \\"＋1.000,34\\" could not be parsed as a number"}}
@@ -191,11 +191,12 @@ defmodule Cldr.Number.Parser do
          {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend),
          {:ok, number_system} <- digits_number_system_from(locale) do
       symbols = symbols_for_number_system(symbols, number_system)
+      separator_type = Keyword.get(options, :separators, :standard)
 
       normalized_string =
         string
-        |> transliterate(number_system, :latn, backend)
-        |> normalize_number_string(locale, backend, symbols)
+        |> transliterate_digits(number_system, :latn, backend)
+        |> normalize_number_string(locale, backend, symbols, separator_type)
         |> String.trim()
 
       case parse_number(normalized_string, Keyword.get(options, :number)) do
@@ -647,18 +648,24 @@ defmodule Cldr.Number.Parser do
   end
 
   # Replace localised symbols with canonical forms
-  defp normalize_number_string(string, locale, backend, symbols) do
+  defp normalize_number_string(string, locale, backend, symbols, separator_type) do
+    group_separator =
+      Map.get(symbols.group, separator_type) || Map.get(symbols.group, :standard)
+
+    decimal_separator =
+      Map.get(symbols.decimal, separator_type) || Map.get(symbols.decimal, :standard)
+
     string
     |> String.replace("_", "")
     |> backend.normalize_lenient_parse(:number, locale)
     |> backend.normalize_lenient_parse(:general, locale)
-    |> String.replace(symbols.group, "")
+    |> String.replace(group_separator, "")
     |> String.replace(" ", "")
-    |> String.replace(symbols.decimal, ".")
+    |> String.replace(decimal_separator, ".")
     |> String.replace("_", "-")
   end
 
-  defp transliterate(string, from, to, backend) do
+  defp transliterate_digits(string, from, to, backend) do
     module = Module.concat(backend, Number.Transliterate)
 
     case module.transliterate_digits(string, from, to) do

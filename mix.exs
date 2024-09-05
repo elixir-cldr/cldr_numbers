@@ -9,7 +9,7 @@ defmodule Cldr.Numbers.Mixfile do
     [
       app: :ex_cldr_numbers,
       version: @version,
-      elixir: "~> 1.11",
+      elixir: "~> 1.12",
       name: "Cldr Numbers",
       description: description(),
       source_url: "https://github.com/elixir-cldr/cldr_numbers",
@@ -49,8 +49,9 @@ defmodule Cldr.Numbers.Mixfile do
 
   defp deps do
     [
+      {:ex_cldr, github: "elixir-cldr/cldr46", override: true},
       # {:ex_cldr, path: "../cldr", override: true},
-      {:ex_cldr, "~> 2.38"},
+      # {:ex_cldr, "~> 2.38"},
 
       # {:ex_cldr_currencies, path: "../cldr_currencies"},
       {:ex_cldr_currencies, "~> 2.16"},
