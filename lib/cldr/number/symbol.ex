@@ -90,7 +90,7 @@ defmodule Cldr.Number.Symbol do
       }
 
   """
-  @spec number_symbols_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) ::
+  @spec number_symbols_for(Locale.locale_reference(), Cldr.backend()) ::
           {:ok, map()} | {:error, {module(), String.t()}}
 
   def number_symbols_for(locale, backend) do
@@ -136,7 +136,7 @@ defmodule Cldr.Number.Symbol do
 
   """
   @spec number_symbols_for(
-          LanguageTag.t() | Locale.locale_name(),
+          Locale.locale_reference(),
           System.system_name(),
           Cldr.backend()
         ) :: {:ok, map()} | {:error, {Cldr.NoNumberSymbols, String.t()}}
