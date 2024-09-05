@@ -33,10 +33,11 @@ defmodule Cldr.Number.Parser do
   * `:locale` is any locale returned by `Cldr.known_locale_names/1`
     or a `t:Cldr.LanguageTag`. The default is `options[:backend].get_locale/1`.
 
-  * `:separators` indicates which of the optional
+  * `:separators` selects which of the optional
     alternative grouping and decimal separators should be used
     when scanning. The default is `:standard`. To see what other
-    separator variants may be avaialble, see `Cldr.Number.Symbol.number_symbols_for/2`.
+    separator variants may be avaialble in a given locale and
+    number system, see `Cldr.Number.Symbol.number_symbols_for/2`.
 
   ## Returns
 
@@ -126,6 +127,12 @@ defmodule Cldr.Number.Parser do
 
   * `:locale` is any locale returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag.t`. The default is `options[:backend].get_locale/1`.
+
+  * `:separators` selects which of the optional
+    alternative grouping and decimal separators should be used
+    when scanning. The default is `:standard`. To see what other
+    separator variants may be avaialble in a given locale and
+    number system, see `Cldr.Number.Symbol.number_symbols_for/2`.
 
   ## Returns
 
@@ -257,11 +264,17 @@ defmodule Cldr.Number.Parser do
   ## Options
 
   * `:backend` is any module() that includes `use Cldr` and therefore
-    is a `Cldr` backend module(). The default is `Cldr.default_backend!/0`
+    is a `Cldr` backend module(). The default is `Cldr.default_backend!/0`.
 
   * `:locale` is any valid locale returned by `Cldr.known_locale_names/1`
     or a `t:Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
-    The default is `options[:backend].get_locale()`
+    The default is `options[:backend].get_locale()`.
+
+  * `:separators` selects which of the optional
+    alternative grouping and decimal separators should be used
+    when scanning. The default is `:standard`. To see what other
+    separator variants may be avaialble in a given locale and
+    number system, see `Cldr.Number.Symbol.number_symbols_for/2`.
 
   * `:only` is an `atom` or list of `atoms` representing the
     currencies or currency types to be considered for a match.
