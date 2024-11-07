@@ -165,8 +165,8 @@ defmodule Cldr.Number.Format.Compiler do
   # Log a warning when a number format is being compiled at
   # runtime, but only once
   @doc false
-  defmacro maybe_log_compile_warning(format, config, message) do
-    if Code.ensure_loaded?(:persistent_term) && !config.suppress_warnings do
+  defmacro maybe_log_compile_warning(format, suppress_warnings, message) do
+    if Code.ensure_loaded?(:persistent_term) && !suppress_warnings do
       quote do
         require Cldr.Macros
         Cldr.Macros.warn_once(unquote(format), unquote(message))
