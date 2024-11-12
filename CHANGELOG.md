@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.33.4
+
+This is the changelog for Cldr v2.33.4 released on November 13th, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fixes unquoting invalid AST on the upcoming Elixir 1.18. Thanks very much to @sabiwara for the [PR](https://github.com/elixir-cldr/cldr_numbers/pull/52). Thanks too to @SteffenDE for the report. Closes #53.
+
 ## Cldr Numbers v2.33.3
 
 This is the changelog for Cldr v2.33.3 released on August 16th, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
