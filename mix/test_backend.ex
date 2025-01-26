@@ -7,6 +7,7 @@ defmodule MyApp.Cldr do
     default_locale: "en",
     locales: [
       "en",
+      "bn",
       "zh",
       "zh-Hant",
       "it",

@@ -1,4 +1,5 @@
 import Config
 
 config :ex_cldr,
-  default_backend: MyApp.Cldr
+  default_backend: MyApp.Cldr,
+  json_library: JSON

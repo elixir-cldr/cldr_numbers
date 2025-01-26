@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.33.5
+
+This is the changelog for Cldr v2.33.5 released on January 26th, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix formatting currencies when the CLDR regex for "before currency match" is invalid in the Erlang regex engine.  Thanks to @Terbium-135 for the issue. Closes [ex_money issue #178](https://github.com/kipcole9/money/issues/178).
+
 ## Cldr Numbers v2.33.4
 
 This is the changelog for Cldr v2.33.4 released on November 13th, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
