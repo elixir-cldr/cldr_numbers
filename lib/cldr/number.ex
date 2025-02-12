@@ -179,8 +179,8 @@ defmodule Cldr.Number do
   * `:format` may also be a format defined by CLDR's Rules Based Number
     Formats (RBNF).  Further information is found in the module `Cldr.Rbnf`.
     The most commonly used formats in this category are to spell out the
-    number in a the locales language.  The applicable formats are `:spellout`,
-    `:spellout_year`, `:ordinal`.  A number can also be formatted as roman
+    number in a locale's language.  The applicable formats are `:spellout`,
+    `:spellout_year` and `:ordinal`.  A number can also be formatted as roman
     numbers by using the format `:roman` or `:roman_lower`.
 
   * `currency`: is the currency for which the number is formatted. If `currency`
@@ -202,6 +202,7 @@ defmodule Cldr.Number do
       for each currency and can be safely used.
     * `:standard` (the default and recommended) uses the CLDR-defined symbol
       based upon the currency format for the locale.
+    * `:none` means format the number without any currency symbol.
     * "string" uses `string` as the currency symbol
 
   * `:cash`: a boolean which indicates whether a number being formatted as a
@@ -229,7 +230,7 @@ defmodule Cldr.Number do
 
   * `:locale`: determines the locale in which the number is formatted. See
     `Cldr.known_locale_names/0`. The default is`Cldr.get_locale/0` which is the
-    locale currently in affect for this `Process` and which is set by
+    locale currently in affect for the current process and which is set by
     `Cldr.put_locale/1`.
 
   * If `:fractional_digits` is set to a positive integer value then the number

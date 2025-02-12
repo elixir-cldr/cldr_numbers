@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.33.6
+
+This is the changelog for Cldr v2.33.6 released on February 13th, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Document `currency_symbol: :none`. This option formats a currency amount using a format that does not include a currency symbol.
+
 ## Cldr Numbers v2.33.5
 
 This is the changelog for Cldr v2.33.5 released on January 26th, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

@@ -3,13 +3,13 @@ defmodule Cldr.Numbers.Mixfile do
 
   use Mix.Project
 
-  @version "2.33.5"
+  @version "2.33.6"
 
   def project do
     [
       app: :ex_cldr_numbers,
       version: @version,
-      elixir: "~> 1.11",
+      elixir: "~> 1.12",
       name: "Cldr Numbers",
       description: description(),
       source_url: "https://github.com/elixir-cldr/cldr_numbers",

@@ -79,12 +79,13 @@ defmodule Cldr.Number.Format.Options do
     :standard,
     :iso,
     :narrow,
-    :symbol
+    :symbol,
+    :none
   ]
 
   @type fixed_format :: :standard | :currency | :accounting | :short | :long
   @type format :: binary() | fixed_format()
-  @type currency_symbol :: :standard | :iso
+  @type currency_symbol :: :standard | :iso | :narrow | :symbol | :none
   @type short_format_style ::
           :currency_short
           | :currency_long
@@ -242,6 +243,11 @@ defmodule Cldr.Number.Format.Options do
   end
 
   @doc false
+  def resolve_standard_format(%{format: :currency, currency_symbol: :none} = options, backend) do
+    options = Map.put(options, :format, :currency_no_symbol)
+    resolve_standard_format(options, backend)
+  end
+
   def resolve_standard_format(%{format: :currency, currency: nil} = options, backend) do
     options = Map.put(options, :format, :currency_no_symbol)
     resolve_standard_format(options, backend)
@@ -609,7 +615,7 @@ defmodule Cldr.Number.Format.Options do
   defp validate_option(:currency_symbol, _options, _backend, other) do
     {:error,
      {ArgumentError,
-      ":currency_symbol must be :standard, :iso, :narrow, :symbol, " <>
+      ":currency_symbol must be :standard, :iso, :narrow, :symbol, :none " <>
         "a string or nil. Found #{inspect(other)}"}}
   end
 
