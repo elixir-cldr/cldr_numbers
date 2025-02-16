@@ -25,6 +25,7 @@ defmodule Cldr.Rbnf.TestSupport do
       |> List.delete(:gu)
       |> List.delete(:hi)
 
+    _force_atom_instantiation =  [OrdinalRules, CardinalRules]
 
     for locale_name <- locales do
       json_data_file = "./test/support/rbnf/#{locale_name}/rbnf_test.json"
