@@ -89,6 +89,11 @@ defmodule Cldr.Number.Format.Options do
     :us
   ]
 
+  @valid_separators [
+    :standard,
+    :us
+  ]
+
   @type fixed_format :: :standard | :currency | :accounting | :short | :long
   @type format :: binary() | fixed_format()
   @type currency_symbol :: :standard | :iso | :narrow | :symbol | :none

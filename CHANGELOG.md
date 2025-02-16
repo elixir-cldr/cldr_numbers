@@ -36,6 +36,16 @@ This is the changelog for Cldr v2.34.0 released on October _____, 2024.  For old
 
 ## Cldr Numbers v2.33.3
 
+This is the changelog for Cldr v2.34.0 released on October _____, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Adds `:separators` option to `Cldr.Number.to_string/2`, `Cldr.Number.Parser.parse/2` and `Cldr.Number.Parser.scan/2`. This option also selecting from the available alternative grouping and decimal separators. The default is `separators: :standard` which is avaialble for all locales and number systems that have separators. Some locales, for example `en-ZA`, may have an alternative set of separators. In the case of `en-ZA`, the alternative is `separators: :us`.
+
+* Adds `:number_system` as an option to `Cldr.Number.Parser.parse/2`.
+
+## Cldr Numbers v2.33.3
+
 This is the changelog for Cldr v2.33.3 released on August 16th, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Bug Fixes
