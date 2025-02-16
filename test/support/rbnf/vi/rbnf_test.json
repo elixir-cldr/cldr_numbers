@@ -1,13 +1,6 @@
 {
   "SpelloutRules": {
     "spellout-ordinal": {
-      "-1141": "thứ âm một nghìn một trăm bốn mươi mốt",
-      "-1142": "thứ âm một nghìn một trăm bốn mươi hai",
-      "-1143": "thứ âm một nghìn một trăm bốn mươi ba",
-      "-100": "thứ âm một trăm",
-      "-75": "thứ âm bảy mươi lăm",
-      "-50": "thứ âm năm mươi",
-      "-24": "thứ âm hai mươi bốn",
       "0": "thứ không",
       "1": "thứ nhất",
       "2": "thứ nhì",

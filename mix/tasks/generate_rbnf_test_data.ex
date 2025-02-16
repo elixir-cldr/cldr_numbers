@@ -9,6 +9,8 @@ defmodule Mix.Tasks.Cldr.Number.GenerateRbnfTestData do
   @shortdoc "Generate RBNF test data"
 
   @output_directory "test/support/rbnf"
+
+  # Check out possible bug being surfaced in PL
   @locales [
     :af, :be, :bg, :ca, :es, :gu, :he, :hi, :hr, :hu, :it, :ja, :ko, :ms, :pl, :ru,
     :uk, :vi, :zh, :"zh-Hant"
@@ -37,6 +39,8 @@ defmodule Mix.Tasks.Cldr.Number.GenerateRbnfTestData do
         rule_string
         |> String.replace("-", "_")
         |> String.to_atom()
+
+      IO.puts "Building examples for rule #{rule} in locale #{locale}"
 
       examples =
         Enum.map(examples, fn {number, _result} ->
