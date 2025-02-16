@@ -10,31 +10,15 @@ defmodule Mix.Tasks.Cldr.Number.GenerateRbnfTestData do
 
   @output_directory "test/support/rbnf"
   @locales [
-    :ru,
-    :be,
-    :es,
-    :zh,
-    :vi,
-    :ko,
-    :it,
-    :ms,
-    :ja,
-    :pl,
-    :he,
-    :"zh-Hant",
-    :af,
-    :hr,
-    :uk,
-    :hu,
-    :ca,
-    :gu,
-    :hi,
-    :bg
+    :af, :be, :bg, :ca, :es, :gu, :he, :hi, :hr, :hu, :it, :ja, :ko, :ms, :pl, :ru,
+    :uk, :vi, :zh, :"zh-Hant"
   ]
 
   @doc false
   def run(_) do
     for locale <- @locales do
+      IO.puts "Generating RBNF test data for locale #{locale}"
+
       tests =
         "#{@output_directory}/#{locale}/rbnf_test.json"
         |> File.read!()
