@@ -2,9 +2,7 @@ defmodule Cldr.Rbnf.TestSupport do
   def rbnf_tests(fun) when is_function(fun) do
 
     # Possible bug being surfaced by :pl
-    locales =
-      TestBackend.Cldr.known_locale_names()
-      |> List.delete(:pl)
+    locales = TestBackend.Cldr.known_locale_names()
 
     _force_atom_instantiation =  [OrdinalRules, CardinalRules]
 

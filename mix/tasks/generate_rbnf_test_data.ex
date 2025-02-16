@@ -12,8 +12,9 @@ defmodule Mix.Tasks.Cldr.Number.GenerateRbnfTestData do
 
   # Check out possible bug being surfaced in PL
   @locales [
-    :af, :be, :bg, :ca, :es, :gu, :he, :hi, :hr, :hu, :it, :ja, :ko, :ms, :ru,
-    :uk, :vi, :zh, :"zh-Hant"
+    :pl
+    # :af, :be, :bg, :ca, :es, :gu, :he, :hi, :hr, :hu, :it, :ja, :ko, :ms, :ru,
+    # :uk,:vi, :zh, :"zh-Hant"
   ]
 
   @doc false

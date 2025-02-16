@@ -45,6 +45,13 @@ defmodule Cldr.Rbnf.Processor do
         string
       end
 
+      # When a rule is specified in a -x rule
+      defp do_operation(:modulo, number, locale, _function, rule, {:rule, rule_name})
+           when is_number(number) and number < 0 do
+        apply(__MODULE__, rule_name, [abs(number), locale])
+      end
+
+      # When a rule is not specifieid in a -x rule
       defp do_operation(:modulo, number, locale, function, rule, nil)
            when is_number(number) and number < 0 do
         apply(__MODULE__, function, [abs(number), locale])
