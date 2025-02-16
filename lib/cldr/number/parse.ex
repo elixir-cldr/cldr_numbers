@@ -33,6 +33,15 @@ defmodule Cldr.Number.Parser do
   * `:locale` is any locale returned by `Cldr.known_locale_names/1`
     or a `t:Cldr.LanguageTag`. The default is `options[:backend].get_locale/1`.
 
+  * `:number_system`: determines which of the number systems for a locale
+    should be used to identify the separators and digits in the parsed
+    number. If `number_system` is an `atom` then `number_system` is
+    interpreted as a number system. See
+    `Cldr.Number.System.number_systems_for/2`. If the `:number_system` is
+    `binary` then it is interpreted as a number system name. See
+    `Cldr.Number.System.number_system_names_for/2`. The default is to use
+    the number system returned from `Cldr.Number.System.number_system_from_locale/2`.
+
   * `:separators` selects which of the optional
     alternative grouping and decimal separators should be used
     when scanning. The default is `:standard`. To see what other
@@ -65,10 +74,13 @@ defmodule Cldr.Number.Parser do
       iex> Cldr.Number.Parser.scan("The loss is -1.000 euros", locale: :de, number: :integer)
       ["The loss is ", -1000, " euros"]
 
-      iex> Cldr.Number.Parser.scan "1kg"
+      iex> Cldr.Number.Parser.scan("1kg")
       [1, "kg"]
 
-      iex> Cldr.Number.Parser.scan "A number is the arab script ١٢٣٤٥", locale: "ar"
+      iex> Cldr.Number.Parser.scan("A number is the arab script ١٢٣٤٥", locale: "ar", number_system: :arab)
+      ["A number is the arab script ", 12345]
+
+      iex> Cldr.Number.Parser.scan("A number is the arab script ١٢٣٤٥", locale: "ar-u-nu-arab")
       ["A number is the arab script ", 12345]
 
   """
@@ -81,7 +93,7 @@ defmodule Cldr.Number.Parser do
 
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend),
-         {:ok, number_system} <- digits_number_system_from(locale) do
+         {:ok, number_system} <- digits_number_system_from(locale, options) do
       symbols = symbols_for_number_system(symbols, number_system)
 
       scanner =
@@ -127,6 +139,15 @@ defmodule Cldr.Number.Parser do
 
   * `:locale` is any locale returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag.t`. The default is `options[:backend].get_locale/1`.
+
+  * `:number_system`: determines which of the number systems for a locale
+    should be used to identify the separators and digits in the parsed
+    number. If `number_system` is an `atom` then `number_system` is
+    interpreted as a number system. See
+    `Cldr.Number.System.number_systems_for/2`. If the `:number_system` is
+    `binary` then it is interpreted as a number system name. See
+    `Cldr.Number.System.number_system_names_for/2`. The default is to use
+    the number system returned from `Cldr.Number.System.number_system_from_locale/2`.
 
   * `:separators` selects which of the optional
     alternative grouping and decimal separators should be used
@@ -178,7 +199,10 @@ defmodule Cldr.Number.Parser do
       iex> Cldr.Number.Parser.parse("1.000", locale: :de, number: :integer)
       {:ok, 1000}
 
-      iex> Cldr.Number.Parser.parse "١٢٣٤٥", locale: :"ar-EG""
+      iex> Cldr.Number.Parser.parse "١٢٣٤٥", locale: :"ar-EG"
+      {:ok, 12345}
+
+      iex> Cldr.Number.Parser.parse "١٢٣٤٥", locale: :ar, number_system: :arab
       {:ok, 12345}
 
       # 1_000.34 cannot be coerced into an integer
@@ -201,7 +225,7 @@ defmodule Cldr.Number.Parser do
 
     with {:ok, locale} <- Cldr.validate_locale(locale, backend),
          {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend),
-         {:ok, number_system} <- digits_number_system_from(locale) do
+         {:ok, number_system} <- digits_number_system_from(locale, options) do
       symbols = symbols_for_number_system(symbols, number_system)
       separator_type = Keyword.get(options, :separators, :standard)
 
@@ -632,7 +656,7 @@ defmodule Cldr.Number.Parser do
     {fuzzy, _options} = Keyword.pop(options, :fuzzy, nil)
 
     with {:ok, locale} <- backend.validate_locale(locale),
-         {:ok, per_strings} <- per_strings(locale, backend),
+         {:ok, per_strings} <- per_strings(locale, backend, options),
          {:ok, per} <- find_and_replace(per_strings, string, fuzzy) do
       per
     else
@@ -644,8 +668,8 @@ defmodule Cldr.Number.Parser do
     end
   end
 
-  defp per_strings(locale, backend) do
-    with {:ok, number_system} <- digits_number_system_from(locale),
+  defp per_strings(locale, backend, options) do
+    with {:ok, number_system} <- digits_number_system_from(locale, options),
          {:ok, symbols} <- Cldr.Number.Symbol.number_symbols_for(locale, backend) do
       symbols = symbols_for_number_system(symbols, number_system)
       parse_map = backend.lenient_parse_map(:general, locale.cldr_locale_name)
@@ -692,8 +716,9 @@ defmodule Cldr.Number.Parser do
     end
   end
 
-  defp digits_number_system_from(locale) do
-    number_system = Cldr.Number.System.number_system_from_locale(locale)
+  defp digits_number_system_from(locale, options) do
+    locale_number_system = Cldr.Number.System.number_system_from_locale(locale)
+    number_system = Keyword.get(options, :number_system, locale_number_system)
 
     with {:ok, _digits} <- Cldr.Number.System.number_system_digits(number_system) do
       {:ok, number_system}
