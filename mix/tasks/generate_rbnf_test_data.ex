@@ -12,7 +12,7 @@ defmodule Mix.Tasks.Cldr.Number.GenerateRbnfTestData do
 
   # Check out possible bug being surfaced in PL
   @locales [
-    :af, :be, :bg, :ca, :es, :gu, :he, :hi, :hr, :hu, :it, :ja, :ko, :ms, :pl, :ru,
+    :af, :be, :bg, :ca, :es, :gu, :he, :hi, :hr, :hu, :it, :ja, :ko, :ms, :ru,
     :uk, :vi, :zh, :"zh-Hant"
   ]
 
@@ -29,7 +29,7 @@ defmodule Mix.Tasks.Cldr.Number.GenerateRbnfTestData do
         |> Map.new()
         |> Jason.encode!(pretty: true)
 
-      File.write("#{@output_directory}/#{locale}/rbnf_test_2.json", tests)
+      File.write("#{@output_directory}/#{locale}/rbnf_test.json", tests)
     end
   end
 
@@ -40,7 +40,7 @@ defmodule Mix.Tasks.Cldr.Number.GenerateRbnfTestData do
         |> String.replace("-", "_")
         |> String.to_atom()
 
-      IO.puts "Building examples for rule #{rule} in locale #{locale}"
+      IO.puts "  Building examples for rule #{rule}"
 
       examples =
         Enum.map(examples, fn {number, _result} ->

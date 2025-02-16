@@ -1,29 +1,10 @@
 defmodule Cldr.Rbnf.TestSupport do
   def rbnf_tests(fun) when is_function(fun) do
-    # Come back later an investigate why we get different results
+
+    # Possible bug being surfaced by :pl
     locales =
       TestBackend.Cldr.known_locale_names()
-      |> List.delete(:ru)
-      |> List.delete(:be)
-      |> List.delete(:es)
-      |> List.delete(:zh)
-      |> List.delete(:vi)
-      |> List.delete(:ko)
-      |> List.delete(:it)
-      |> List.delete(:ms)
-      |> List.delete(:ja)
       |> List.delete(:pl)
-      |> List.delete(:he)
-      |> List.delete(:"zh-Hant")
-      |> List.delete(:af)
-      |> List.delete(:hr)
-      |> List.delete(:uk)
-      |> List.delete(:hu)
-      # As of CLDR47
-      |> List.delete(:ca)
-      |> List.delete(:bg)
-      |> List.delete(:gu)
-      |> List.delete(:hi)
 
     _force_atom_instantiation =  [OrdinalRules, CardinalRules]
 
