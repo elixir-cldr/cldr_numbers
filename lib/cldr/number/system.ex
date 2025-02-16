@@ -134,7 +134,7 @@ defmodule Cldr.Number.System do
   ## Example
 
       iex> Cldr.Number.System.number_systems() |> Enum.count
-      88
+      96
 
   """
   @spec number_systems :: unquote(Cldr.Type.number_systems())
@@ -347,7 +347,7 @@ defmodule Cldr.Number.System do
       iex> Cldr.Number.System.number_system_from_locale(locale)
       :latn
 
-      iex> Cldr.Number.System.number_system_from_locale("ar")
+      iex> Cldr.Number.System.number_system_from_locale("ar-EG")
       :arab
 
   """

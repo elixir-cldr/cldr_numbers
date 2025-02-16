@@ -90,8 +90,9 @@ defmodule Cldr.Number.Transliterate do
       "Some number is: ๑๒๓๕๕๖"
 
   """
-  def transliterate(sequence, locale, number_system, backend) do
-    Module.concat(backend, Number.Transliterate).transliterate(sequence, locale, number_system)
+  def transliterate(sequence, locale, number_system, backend, options \\ []) do
+    backend = Module.concat(backend, Number.Transliterate)
+    backend.transliterate(sequence, locale, number_system, options)
   end
 
   def transliterate_digits(digits, from_system, from_system) do

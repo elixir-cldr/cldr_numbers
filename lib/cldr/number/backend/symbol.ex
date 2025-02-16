@@ -43,36 +43,39 @@ defmodule Cldr.Number.Backend.Symbol do
         ## Example:
 
             iex> #{inspect(__MODULE__)}.number_symbols_for(:th)
-            {:ok, %{
-               latn: %Cldr.Number.Symbol{
-                 decimal: ".",
-                 exponential: "E",
-                 group: ",",
-                 infinity: "∞",
-                 list: ";",
-                 minus_sign: "-",
-                 nan: "NaN",
-                 per_mille: "‰",
-                 percent_sign: "%",
-                 plus_sign: "+",
-                 superscripting_exponent: "×",
-                 time_separator: ":"
-               },
-               thai: %Cldr.Number.Symbol{
-                 decimal: ".",
-                 exponential: "E",
-                 group: ",",
-                 infinity: "∞",
-                 list: ";",
-                 minus_sign: "-",
-                 nan: "NaN",
-                 per_mille: "‰",
-                 percent_sign: "%",
-                 plus_sign: "+",
-                 superscripting_exponent: "×",
-                 time_separator: ":"
-               }
-             }}
+            {
+              :ok,
+              %{
+                latn: %Cldr.Number.Symbol{
+                  decimal: %{standard: "."},
+                  exponential: "E",
+                  group: %{standard: ","},
+                  infinity: "∞",
+                  list: ";",
+                  minus_sign: "-",
+                  nan: "NaN",
+                  per_mille: "‰",
+                  percent_sign: "%",
+                  plus_sign: "+",
+                  superscripting_exponent: "×",
+                  time_separator: ":"
+                },
+                thai: %Cldr.Number.Symbol{
+                  decimal: %{standard: "."},
+                  exponential: "E",
+                  group: %{standard: ","},
+                  infinity: "∞",
+                  list: ";",
+                  minus_sign: "-",
+                  nan: "NaN",
+                  per_mille: "‰",
+                  percent_sign: "%",
+                  plus_sign: "+",
+                  superscripting_exponent: "×",
+                  time_separator: ":"
+                }
+              }
+            }
 
         """
         @spec number_symbols_for(LanguageTag.t() | Cldr.Locale.locale_name()) ::
@@ -106,16 +109,18 @@ defmodule Cldr.Number.Backend.Symbol do
           for {_locale, locale_symbols} <- all_symbols,
               {_number_system, symbols} <- locale_symbols,
               !is_nil(symbols) do
-            symbols.decimal
+            Map.values(symbols.decimal)
           end
+          |> List.flatten()
           |> Enum.uniq()
 
         all_grouping_symbols =
           for {_locale, locale_symbols} <- all_symbols,
               {_number_system, symbols} <- locale_symbols,
               !is_nil(symbols) do
-            symbols.group
+            Map.values(symbols.group)
           end
+          |> List.flatten()
           |> Enum.uniq()
 
         @doc """
@@ -135,7 +140,7 @@ defmodule Cldr.Number.Backend.Symbol do
 
         """
         def all_grouping_symbols do
-          unquote(all_grouping_symbols)
+          unquote(Macro.escape(all_grouping_symbols))
         end
 
         @doc """
@@ -148,7 +153,7 @@ defmodule Cldr.Number.Backend.Symbol do
 
         """
         def all_decimal_symbols_class do
-          unquote(all_decimal_symbols)
+          unquote(Macro.escape(all_decimal_symbols))
         end
 
         @doc """

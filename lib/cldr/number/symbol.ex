@@ -55,36 +55,39 @@ defmodule Cldr.Number.Symbol do
   ## Example:
 
       iex> Cldr.Number.Symbol.number_symbols_for("th", TestBackend.Cldr)
-      {:ok, %{
-         latn: %Cldr.Number.Symbol{
-           decimal: ".",
-           exponential: "E",
-           group: ",",
-           infinity: "∞",
-           list: ";",
-           minus_sign: "-",
-           nan: "NaN",
-           per_mille: "‰",
-           percent_sign: "%",
-           plus_sign: "+",
-           superscripting_exponent: "×",
-           time_separator: ":"
-         },
-         thai: %Cldr.Number.Symbol{
-           decimal: ".",
-           exponential: "E",
-           group: ",",
-           infinity: "∞",
-           list: ";",
-           minus_sign: "-",
-           nan: "NaN",
-           per_mille: "‰",
-           percent_sign: "%",
-           plus_sign: "+",
-           superscripting_exponent: "×",
-           time_separator: ":"
-         }
-       }}
+      {
+        :ok,
+        %{
+          latn: %Cldr.Number.Symbol{
+            decimal: %{standard: "."},
+            exponential: "E",
+            group: %{standard: ","},
+            infinity: "∞",
+            list: ";",
+            minus_sign: "-",
+            nan: "NaN",
+            per_mille: "‰",
+            percent_sign: "%",
+            plus_sign: "+",
+            superscripting_exponent: "×",
+            time_separator: ":"
+          },
+          thai: %Cldr.Number.Symbol{
+            decimal: %{standard: "."},
+            exponential: "E",
+            group: %{standard: ","},
+            infinity: "∞",
+            list: ";",
+            minus_sign: "-",
+            nan: "NaN",
+            per_mille: "‰",
+            percent_sign: "%",
+            plus_sign: "+",
+            superscripting_exponent: "×",
+            time_separator: ":"
+          }
+        }
+      }
 
   """
   @spec number_symbols_for(LanguageTag.t() | Locale.locale_name(), Cldr.backend()) ::
@@ -113,20 +116,23 @@ defmodule Cldr.Number.Symbol do
   ## Example
 
       iex> Cldr.Number.Symbol.number_symbols_for("th", "thai", TestBackend.Cldr)
-      {:ok, %Cldr.Number.Symbol{
-         decimal: ".",
-         exponential: "E",
-         group: ",",
-         infinity: "∞",
-         list: ";",
-         minus_sign: "-",
-         nan: "NaN",
-         per_mille: "‰",
-         percent_sign: "%",
-         plus_sign: "+",
-         superscripting_exponent: "×",
-         time_separator: ":"
-       }}
+      {
+        :ok,
+        %Cldr.Number.Symbol{
+          decimal: %{standard: "."},
+          exponential: "E",
+          group: %{standard: ","},
+          infinity: "∞",
+          list: ";",
+          minus_sign: "-",
+          nan: "NaN",
+          per_mille: "‰",
+          percent_sign: "%",
+          plus_sign: "+",
+          superscripting_exponent: "×",
+          time_separator: ":"
+        }
+      }
 
   """
   @spec number_symbols_for(

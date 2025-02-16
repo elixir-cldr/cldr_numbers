@@ -112,15 +112,21 @@ defmodule Cldr.Number.Backend.Transliterate do
         @spec transliterate(
                 String.t(),
                 LanguageTag.t() | Cldr.Locale.locale_name(),
-                Cldr.Number.System.system_name() | Cldr.Number.System.types()
+                Cldr.Number.System.system_name() | Cldr.Number.System.types(),
+                Map.t() | Keywprd.t()
               ) ::
                 String.t() | {:error, {module(), String.t()}}
 
         def transliterate(
               sequence,
               locale \\ unquote(backend).get_locale(),
-              number_system \\ System.default_number_system_type()
+              number_system \\ System.default_number_system_type(),
+              options \\ %{}
             )
+
+        def transliterate(sequence, locale, number_system, options) when is_list(options) do
+          transliterate(sequence, locale, number_system, Map.new(options))
+        end
 
         # No transliteration required when the digits and separators as the same
         # as the ones we use in formatting.
@@ -129,7 +135,8 @@ defmodule Cldr.Number.Backend.Transliterate do
             def transliterate(
                   sequence,
                   %LanguageTag{cldr_locale_name: unquote(locale)},
-                  unquote(system)
+                  unquote(system),
+                  options
                 ) do
               sequence
             end
@@ -139,32 +146,32 @@ defmodule Cldr.Number.Backend.Transliterate do
         # We can only transliterate if the target {locale, number_system} has defined
         # digits.  Some systems don't have digits, just rules.
         for {number_system, %{digits: _digits}} <- System.numeric_systems() do
-          def transliterate(sequence, locale, unquote(number_system)) do
+          def transliterate(sequence, locale, unquote(number_system), options) do
             sequence
             |> String.graphemes()
-            |> Enum.map(&transliterate_char(&1, locale, unquote(number_system)))
+            |> Enum.map(&transliterate_char(&1, locale, unquote(number_system), options))
             |> Elixir.List.to_string()
           end
         end
 
         # String locale name needs validation
-        def transliterate(sequence, locale_name, number_system) when is_binary(locale_name) do
+        def transliterate(sequence, locale_name, number_system, options) when is_binary(locale_name) do
           with {:ok, locale} <- Module.concat(unquote(backend), :Locale).new(locale_name) do
-            transliterate(sequence, locale, number_system)
+            transliterate(sequence, locale, number_system, options)
           end
         end
 
         # For when the system name is not known (because its probably a system type
         # like :default, or :native)
-        def transliterate(sequence, locale_name, number_system) do
+        def transliterate(sequence, locale_name, number_system, options) do
           with {:ok, system_name} <-
                  System.system_name_from(number_system, locale_name, unquote(backend)) do
-            transliterate(sequence, locale_name, system_name)
+            transliterate(sequence, locale_name, system_name, options)
           end
         end
 
-        def transliterate!(sequence, locale, number_system) do
-          case transliterate(sequence, locale, number_system) do
+        def transliterate!(sequence, locale, number_system, options) do
+          case transliterate(sequence, locale, number_system, options) do
             {:error, {exception, reason}} -> raise exception, reason
             string -> string
           end
@@ -178,25 +185,32 @@ defmodule Cldr.Number.Backend.Transliterate do
           defp transliterate_char(
                  unquote(Compiler.placeholder(:group)),
                  %LanguageTag{cldr_locale_name: unquote(locale_name)},
-                 unquote(name)
+                 unquote(name),
+                 options
                ) do
-            unquote(symbols.group)
+            group_symbols = unquote(Macro.escape(symbols.group))
+            group_option = Map.get(options, :separators, :standard)
+            Map.get(group_symbols, group_option)
           end
 
           # Mapping for the decimal separator
           defp transliterate_char(
                  unquote(Compiler.placeholder(:decimal)),
                  %LanguageTag{cldr_locale_name: unquote(locale_name)},
-                 unquote(name)
+                 unquote(name),
+                 options
                ) do
-            unquote(symbols.decimal)
+            decimal_symbols = unquote(Macro.escape(symbols.decimal))
+            decimal_option = Map.get(options, :separators, :standard)
+            Map.get(decimal_symbols, decimal_option)
           end
 
           # Mapping for the exponent
           defp transliterate_char(
                  unquote(Compiler.placeholder(:exponent)),
                  %LanguageTag{cldr_locale_name: unquote(locale_name)},
-                 unquote(name)
+                 unquote(name),
+                 _options
                ) do
             unquote(symbols.exponential)
           end
@@ -205,7 +219,8 @@ defmodule Cldr.Number.Backend.Transliterate do
           defp transliterate_char(
                  unquote(Compiler.placeholder(:plus)),
                  %LanguageTag{cldr_locale_name: unquote(locale_name)},
-                 unquote(name)
+                 unquote(name),
+                 _options
                ) do
             unquote(symbols.plus_sign)
           end
@@ -214,7 +229,8 @@ defmodule Cldr.Number.Backend.Transliterate do
           defp transliterate_char(
                  unquote(Compiler.placeholder(:minus)),
                  %LanguageTag{cldr_locale_name: unquote(locale_name)},
-                 unquote(name)
+                 unquote(name),
+                 _options
                ) do
             unquote(symbols.minus_sign)
           end
@@ -228,14 +244,14 @@ defmodule Cldr.Number.Backend.Transliterate do
             grapheme = :lists.nth(latin_digit + 1, graphemes)
             latin_char = Integer.to_string(latin_digit)
 
-            defp transliterate_char(unquote(latin_char), _locale, unquote(name)) do
+            defp transliterate_char(unquote(latin_char), _locale, unquote(name), _options) do
               unquote(grapheme)
             end
           end
         end
 
         # Any unknown mapping gets returned as is
-        defp transliterate_char(digit, _locale, _name) do
+        defp transliterate_char(digit, _locale, _name, _options) do
           digit
         end
 

@@ -19,6 +19,12 @@ defmodule Cldr.Rbnf.TestSupport do
       |> List.delete(:hr)
       |> List.delete(:uk)
       |> List.delete(:hu)
+      # As of CLDR47
+      |> List.delete(:ca)
+      |> List.delete(:bg)
+      |> List.delete(:gu)
+      |> List.delete(:hi)
+
 
     for locale_name <- locales do
       json_data_file = "./test/support/rbnf/#{locale_name}/rbnf_test.json"

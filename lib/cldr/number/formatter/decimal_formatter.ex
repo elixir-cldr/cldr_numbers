@@ -818,7 +818,7 @@ defmodule Cldr.Number.Formatter.Decimal do
   @doc false
   def transliterate(number_string, _meta, backend, options) do
     %{locale: locale, number_system: number_system} = options
-    Cldr.Number.Transliterate.transliterate(number_string, locale, number_system, backend)
+    Cldr.Number.Transliterate.transliterate(number_string, locale, number_system, backend, options)
   end
 
   # When formatting a currency we need to adjust the number of fractional

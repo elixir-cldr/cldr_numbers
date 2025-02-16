@@ -896,7 +896,8 @@ defmodule Cldr.Number.Backend.Number do
             minimum_grouping_digits: 0,
             rounding_mode: :half_even,
             number_system: :default,
-            locale: unquote(backend).get_locale()
+            locale: unquote(backend).get_locale(),
+            separators: :standard
           ]
         end
       end
