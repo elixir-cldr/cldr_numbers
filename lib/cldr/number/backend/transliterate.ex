@@ -113,7 +113,7 @@ defmodule Cldr.Number.Backend.Transliterate do
                 String.t(),
                 LanguageTag.t() | Cldr.Locale.locale_name(),
                 Cldr.Number.System.system_name() | Cldr.Number.System.types(),
-                Map.t() | Keywprd.t()
+                map() | Keyword.t()
               ) ::
                 String.t() | {:error, {module(), String.t()}}
 
