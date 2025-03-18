@@ -46,7 +46,7 @@ defmodule Cldr.Number.Parser do
     alternative grouping and decimal separators should be used
     when scanning. The default is `:standard`. To see what other
     separator variants may be avaialble in a given locale and
-    number system, see `Cldr.Number.Symbol.number_symbols_for/2`.
+    number system, see `Cldr.Number.Symbol.number_symbols_for/3`.
 
   ## Returns
 

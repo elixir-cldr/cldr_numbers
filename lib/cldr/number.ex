@@ -167,21 +167,21 @@ defmodule Cldr.Number do
     See `Cldr.Number.Format.format_styles_for/3` to return available format styles
     for a locale. The default `format` is `:standard`.
 
-  * If `:format` is set to `:long` or `:short` then the formatting depends on
-    whether `:currency` is specified. If not specified then the number is
-    formatted as `:decimal_long` or `:decimal_short`. If `:currency` is
-    specified the number is formatted as `:currency_long` or
-    `:currency_short` and `:fractional_digits` is set to 0 as a default.
+    * If `:format` is set to `:long` or `:short` then the formatting depends on
+      whether `:currency` is specified. If not specified then the number is
+      formatted as `:decimal_long` or `:decimal_short`. If `:currency` is
+      specified the number is formatted as `:currency_long` or
+      `:currency_short` and `:fractional_digits` is set to 0 as a default.
 
-  * If `:format` is set to `:currency_long_with_symbol` then a format composed
-    of `:currency_long` with the locale's currency format is used.
+    * If `:format` is set to `:currency_long_with_symbol` then a format composed
+      of `:currency_long` with the locale's currency format is used.
 
-  * `:format` may also be a format defined by CLDR's Rules Based Number
-    Formats (RBNF).  Further information is found in the module `Cldr.Rbnf`.
-    The most commonly used formats in this category are to spell out the
-    number in a locale's language.  The applicable formats are `:spellout`,
-    `:spellout_year` and `:ordinal`.  A number can also be formatted as roman
-    numbers by using the format `:roman` or `:roman_lower`.
+    * `:format` may also be a format defined by CLDR's Rules Based Number
+      Formats (RBNF).  Further information is found in the module `Cldr.Rbnf`.
+      The most commonly used formats in this category are to spell out the
+      number in a locale's language.  The applicable formats are `:spellout`,
+      `:spellout_year` and `:ordinal`.  A number can also be formatted as roman
+      numbers by using the format `:roman` or `:roman_lower`.
 
   * `currency`: is the currency for which the number is formatted. If `currency`
     is set and no `:format` is set, `:format` will be set to `:currency` as well.
@@ -227,6 +227,12 @@ defmodule Cldr.Number do
     `Cldr.Number.System.number_systems_for/2`. If the `:number_system` is
     `binary` then it is interpreted as a number system name. See
     `Cldr.Number.System.number_system_names_for/2`. The default is `:default`.
+
+  * `:separators` selects which of the available symbol
+    sets should be used when attempting to parse a string into a number.
+    The default is `:standard`. Some limited locales have an alternative `:us`
+    variant that can be used. See `Cldr.Number.Symbol.number_symbols_for/3`
+    for the symbols supported for a given locale and number system.
 
   * `:locale`: determines the locale in which the number is formatted. See
     `Cldr.known_locale_names/0`. The default is`Cldr.get_locale/0` which is the
