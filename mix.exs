@@ -3,7 +3,7 @@ defmodule Cldr.Numbers.Mixfile do
 
   use Mix.Project
 
-  @version "2.33.6"
+  @version "2.34.0"
 
   def project do
     [
@@ -49,11 +49,7 @@ defmodule Cldr.Numbers.Mixfile do
 
   defp deps do
     [
-      # {:ex_cldr, github: "elixir-cldr/cldr47", override: true},
-      {:ex_cldr, path: "../cldr", override: true},
-      # {:ex_cldr, "~> 2.38"},
-
-      # {:ex_cldr_currencies, path: "../cldr_currencies"},
+      {:ex_cldr, "~> 2.41"},
       {:ex_cldr_currencies, "~> 2.16"},
 
       {:digital_token, "~> 0.3 or ~> 1.0"},
