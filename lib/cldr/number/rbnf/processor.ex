@@ -348,7 +348,7 @@ defmodule Cldr.Rbnf.Processor do
     all_rule_sets =
       rule_sets
       |> Map.values()
-      |> List.flatten()
+      |> Elixir.List.flatten()
       |> Enum.uniq()
       |> Enum.sort()
 

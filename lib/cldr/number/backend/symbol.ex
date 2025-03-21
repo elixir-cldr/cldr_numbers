@@ -111,7 +111,7 @@ defmodule Cldr.Number.Backend.Symbol do
               !is_nil(symbols) do
             Map.values(symbols.decimal)
           end
-          |> List.flatten()
+          |> Elixir.List.flatten()
           |> Enum.uniq()
 
         all_grouping_symbols =
@@ -120,7 +120,7 @@ defmodule Cldr.Number.Backend.Symbol do
               !is_nil(symbols) do
             Map.values(symbols.group)
           end
-          |> List.flatten()
+          |> Elixir.List.flatten()
           |> Enum.uniq()
 
         @doc """
