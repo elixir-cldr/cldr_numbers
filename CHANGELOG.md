@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.34.1
+
+This is the changelog for Cldr v2.34.1 released on March 22nd, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix compilation failures related to compile-time nested alias issues. Thanks to @TimisRobert for the issues. Closes [ex_cldr #256](https://github.com/elixir-cldr/cldr/issues/256).
+
 ## Cldr Numbers v2.34.0
 
 This is the changelog for Cldr v2.34.0 released on March 18th, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
