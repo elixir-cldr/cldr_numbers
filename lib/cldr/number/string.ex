@@ -2,23 +2,25 @@ defmodule Cldr.Number.String do
   @moduledoc false
 
   @doc """
-  Returns a regex which matches all latin1 characters
+  Returns a regex which matches all latin1 characters.
+
   """
-  @latin1 "([\x00-\x7F])"
+  @latin1 "([\\x00-\\x7F])"
   def latin1 do
     ~r/#{@latin1}/
   end
 
   @doc """
-  Returns a regex which matches all non-latin1 characters
+  Returns a regex which matches all non-latin1 characters.
+
   """
-  @not_latin1 "([^\x00-\x7F])"
+  @not_latin1 "([^\\x00-\\x7F])"
   def not_latin1 do
     ~r/#{@not_latin1}/
   end
 
   @doc """
-  Replaces characters with a string hex representation
+  Replaces characters with a string hex representation.
   """
   def hex_string(string) do
     String.to_charlist(string)
@@ -32,9 +34,9 @@ defmodule Cldr.Number.String do
 
   ## Options
 
-  * `number` is a string representation of a number
+  * `number` is a string representation of a number.
 
-  * `count` is the final length required of the string
+  * `count` is the final length required of the string.
 
   """
   @spec pad_leading_zeros(String.t(), integer) :: String.t()
@@ -52,9 +54,9 @@ defmodule Cldr.Number.String do
 
   ## Options
 
-  * `number` is a string representation of a number
+  * `number` is a string representation of a number.
 
-  * `count` is the final length required of the string
+  * `count` is the final length required of the string.
 
   """
   @spec pad_trailing_zeros(String.t(), integer) :: String.t()
