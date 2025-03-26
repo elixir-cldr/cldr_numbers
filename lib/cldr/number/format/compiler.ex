@@ -119,10 +119,8 @@ defmodule Cldr.Number.Format.Compiler do
   # @max_fraction_digits  0
   @min_fraction_digits 0
 
-  @rounding_pattern Regex.compile!(
-                      "[" <>
-                        @digit_omit_zeroes <> @significant_digit <> @grouping_separator <> "]"
-                    )
+  @rounding_pattern "[" <> @digit_omit_zeroes <> @significant_digit <> @grouping_separator <> "]"
+
 
   # Default rounding increment (not the same as rounding decimal
   # digits.  `0` means no rounding increment to be applied.
@@ -763,7 +761,7 @@ defmodule Cldr.Number.Format.Compiler do
   defp round_nearest(%{"integer" => integer_format, "fraction" => fraction_format}) do
     format =
       (integer_format <> @decimal_separator <> fraction_format)
-      |> String.replace(@rounding_pattern, "")
+      |> String.replace(~r/#{@rounding_pattern}/, "")
       |> String.trim_trailing(@decimal_separator)
 
     case Float.parse(format) do
@@ -786,9 +784,10 @@ defmodule Cldr.Number.Format.Compiler do
   @integer_digits "(?<integer>[@#0-9,]+)"
   @fraction_digits "([.](?<fraction>[#0-9,]+))?"
   @exponent "([Ee](?<exponent_sign>[+-])?(?<exponent_digits>[0-9]+))?"
-  @format Regex.compile!(@integer_digits <> @fraction_digits <> @exponent)
+  @format @integer_digits <> @fraction_digits <> @exponent
+
   def number_match_regex do
-    @format
+    ~r/#{@format}/
   end
 
   # Separate the format into the integer, fraction and exponent parts.
@@ -798,7 +797,7 @@ defmodule Cldr.Number.Format.Compiler do
   end
 
   defp split_format(format) do
-    parts = Regex.named_captures(@format, format)
+    parts = Regex.named_captures(~r/#{@format}/, format)
 
     parts
     |> Map.put("compact_integer", String.replace(parts["integer"], @grouping_separator, ""))
