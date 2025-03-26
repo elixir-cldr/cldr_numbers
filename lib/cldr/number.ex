@@ -429,7 +429,7 @@ defmodule Cldr.Number do
 
   # Decimal -0 is formatted like 0, without the sign
   def to_string(%Decimal{coef: 0, sign: -1} = number, backend, options) do
-    %Decimal{number | sign: 1}
+    %{number | sign: 1}
     |> to_string(backend, options)
   end
 

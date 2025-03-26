@@ -49,7 +49,8 @@ defmodule Cldr.Numbers.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 2.41"},
+      # {:ex_cldr, "~> 2.41"},
+      {:ex_cldr, path: "../cldr", override: true},
       {:ex_cldr_currencies, "~> 2.16"},
 
       {:digital_token, "~> 0.3 or ~> 1.0"},
@@ -59,7 +60,7 @@ defmodule Cldr.Numbers.Mixfile do
       {:dialyxir, "~> 1.0", only: [:dev, :test], optional: true, runtime: false},
       {:phoenix_html, "~> 3.0", only: [:dev, :test, :release], optional: true, runtime: false},
       {:exprof, "~> 0.2", only: :dev, optional: true, runtime: false},
-      {:benchee, "~> 1.0", only: :dev, optional: true, runtime: false}
+      # {:benchee, "~> 1.0", only: :dev, optional: true, runtime: false}
     ]
   end
 

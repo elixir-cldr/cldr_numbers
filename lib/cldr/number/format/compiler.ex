@@ -439,9 +439,9 @@ defmodule Cldr.Number.Format.Compiler do
 
   # Extract how many integer digits are to be displayed.
 
-  @digits_match Regex.compile!("(?<digits>" <> @digits <> "+)")
+  @digits_match "(?<digits>" <> @digits <> "+)"
   defp required_integer_digits(%{"compact_integer" => integer_format}) do
-    if captures = Regex.named_captures(@digits_match, integer_format) do
+    if captures = Regex.named_captures(~r/#{@digits_match}/, integer_format) do
       String.length(captures["digits"])
     else
       @min_integer_digits
@@ -459,7 +459,7 @@ defmodule Cldr.Number.Format.Compiler do
   defp required_fraction_digits(%{"compact_fraction" => nil}), do: 0
 
   defp required_fraction_digits(%{"compact_fraction" => fraction_format}) do
-    if captures = Regex.named_captures(@digits_match, fraction_format) do
+    if captures = Regex.named_captures(~r/#{@digits_match}/, fraction_format) do
       String.length(captures["digits"])
     else
       @min_fraction_digits
@@ -470,11 +470,11 @@ defmodule Cldr.Number.Format.Compiler do
 
   # Extract how many additional fraction digits may be displayed.
 
-  @hashes_match Regex.compile!("(?<hashes>[" <> @digit_omit_zeroes <> "]+)")
+  @hashes_match "(?<hashes>[" <> @digit_omit_zeroes <> "]+)"
   defp optional_fraction_digits(%{"compact_fraction" => ""}), do: 0
 
   defp optional_fraction_digits(%{"compact_fraction" => fraction_format}) do
-    if captures = Regex.named_captures(@hashes_match, fraction_format) do
+    if captures = Regex.named_captures(~r/#{@hashes_match}/, fraction_format) do
       String.length(captures["hashes"])
     else
       0
@@ -503,7 +503,7 @@ defmodule Cldr.Number.Format.Compiler do
   # to.  If we've already calculated a significant digits number
   # usingthe "@@###" form then we'll use that instead.
 
-  @scientific_match Regex.compile!("(?<scientific_rounding>0[0#]*)?")
+  @scientific_match "(?<scientific_rounding>0[0#]*)?"
   defp scientific_rounding(%{"exponent_digits" => ""}), do: 0
 
   defp scientific_rounding(%{
@@ -512,7 +512,7 @@ defmodule Cldr.Number.Format.Compiler do
        }) do
     format = integer_format <> fraction_format
 
-    if captures = Regex.named_captures(@scientific_match, format) do
+    if captures = Regex.named_captures(~r/#{@scientific_match}/, format) do
       String.length(captures["scientific_rounding"])
     else
       0
@@ -700,10 +700,7 @@ defmodule Cldr.Number.Format.Compiler do
   @min_significant_digits "(?<ats>" <> @significant_digit <> "+)"
   @max_significant_digits "(?<hashes>" <> @digit_omit_zeroes <> "*)?"
   @leading_digits "([" <> @digit_omit_zeroes <> @grouping_separator <> "]" <> "*)?"
-  @significant_digits_match Regex.compile!(
-                              @leading_digits <>
-                                @min_significant_digits <> @max_significant_digits
-                            )
+  @significant_digits_match  @leading_digits <> @min_significant_digits <> @max_significant_digits
 
   defp significant_digits(%{
          "compact_integer" => integer_format,
@@ -711,7 +708,7 @@ defmodule Cldr.Number.Format.Compiler do
        }) do
     format = integer_format <> fraction_format
 
-    if captures = Regex.named_captures(@significant_digits_match, format) do
+    if captures = Regex.named_captures(~r/#{@significant_digits_match}/, format) do
       minimum = String.length(captures["ats"])
       maximum = minimum + String.length(captures["hashes"])
       %{min: minimum, max: maximum}

@@ -475,11 +475,11 @@ defmodule Cldr.Number.Parser do
   Tokens are numbers or atoms.
 
   """
-  @whitespace ~r/^\s*$/u
+  @whitespace "^\s*$"
 
   def remove_whitespace_between_tokens([first, second, third | rest])
       when is_token(first) and is_token(third) do
-    if String.match?(second, @whitespace) do
+    if String.match?(second, ~r/#{@whitespace}/u) do
       [first | remove_whitespace_between_tokens([third | rest])]
     else
       [first | remove_whitespace_between_tokens([second, third | rest])]
@@ -682,7 +682,6 @@ defmodule Cldr.Number.Parser do
   defp per_map(parse_map, char) do
     parse_map
     |> Map.fetch!(char)
-    |> Map.fetch!(:source)
     |> String.replace("[", "")
     |> String.replace("]", "")
     |> String.graphemes()
@@ -732,9 +731,9 @@ defmodule Cldr.Number.Parser do
   # Replace canonical forms with localised symbols
   defp localize_format_string(string, locale, backend, symbols, options) do
     parse_map = backend.lenient_parse_map(:number, locale.cldr_locale_name)
-    plus_matchers = Map.get(parse_map, "+").source |> String.replace(["[", "]"], "")
-    minus_matchers = Map.get(parse_map, "_").source |> String.replace(["[", "]"], "")
-    grouping_matchers = Map.get(parse_map, ",").source |> String.replace(["[", "]"], "")
+    plus_matchers = Map.get(parse_map, "+") |> String.replace(["[", "]"], "")
+    minus_matchers = Map.get(parse_map, "_") |> String.replace(["[", "]"], "")
+    grouping_matchers = Map.get(parse_map, ",") |> String.replace(["[", "]"], "")
 
     separator_type = Keyword.get(options, :separators, :standard)
     group_separator = Map.get(symbols.group, separator_type) || Map.get(symbols.group, :standard)

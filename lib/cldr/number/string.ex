@@ -4,17 +4,17 @@ defmodule Cldr.Number.String do
   @doc """
   Returns a regex which matches all latin1 characters
   """
-  @latin1 ~r/([\x00-\x7F])/
+  @latin1 "([\x00-\x7F])"
   def latin1 do
-    @latin1
+    ~r/#{@latin1}/
   end
 
   @doc """
   Returns a regex which matches all non-latin1 characters
   """
-  @not_latin1 ~r/([^\x00-\x7F])/
+  @not_latin1 "([^\x00-\x7F])"
   def not_latin1 do
-    @not_latin1
+    ~r/#{@not_latin1}/
   end
 
   @doc """

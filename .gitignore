@@ -22,3 +22,6 @@ erl_crash.dump
 # asdf
 .tool-versions
 
+# mis
+mise.toml
+
