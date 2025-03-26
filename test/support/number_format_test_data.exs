@@ -173,8 +173,24 @@ defmodule Cldr.Test.Number.Format do
       # Specify accounting or currency in the locale doesn't change the format
       {-123.4, "-123.40", [format: :currency, locale: "en-AU-u-cu-aud-cf-standard"]},
       {-123.4, "-123.40", [format: :currency, locale: "en-AU-u-cu-aud-cf-account"]},
+    ]
+    |> merge_crypto_tests(System.otp_release())
+  end
 
-      # Formatting digital tokens (Crypto currencies)
+  # Formatting digital tokens (Crypto currencies)
+  # Because OTP 28 introduces a new re module, OTP 28 will correctly
+  # detect that "₿" is a symbol whereas early versions do not.
+
+  def merge_crypto_tests(tests, version) when version >= "28" do
+    tests ++ [
+      {1_234_545_656.456789, "₿1,234,545,656.456789", [currency: "BTC"]},
+      {1_234_545_656.456789, "₿1B", [format: :short, currency: "BTC"]},
+      {1_234_545_656.456789, "1,234,545,656.456789 Bitcoin", [format: :long, currency: "BTC"]}
+    ]
+  end
+
+  def merge_crypto_tests(tests, _version) do
+    tests ++ [
       {1_234_545_656.456789, "₿ 1,234,545,656.456789", [currency: "BTC"]},
       {1_234_545_656.456789, "₿ 1B", [format: :short, currency: "BTC"]},
       {1_234_545_656.456789, "1,234,545,656.456789 Bitcoin", [format: :long, currency: "BTC"]}

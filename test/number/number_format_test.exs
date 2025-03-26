@@ -199,30 +199,58 @@ defmodule Number.Format.Test do
              MyApp.Cldr.Number.to_string(1234, currency: "USD", format: "US¤#,###")
   end
 
-  test "Digital tokens with overriden symbols" do
-    assert {:ok, "₿ 1,234,545,656.456789"} =
-             Cldr.Number.to_string(1_234_545_656.456789,
-               currency: "BTC",
-               currency_symbol: :narrow
-             )
+  if System.otp_release() < "28" do
+    test "Digital tokens with overriden symbols" do
+      assert {:ok, "₿ 1,234,545,656.456789"} =
+               Cldr.Number.to_string(1_234_545_656.456789,
+                 currency: "BTC",
+                 currency_symbol: :narrow
+               )
 
-    assert {:ok, "BTC 1,234,545,656.456789"} =
-             Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: :iso)
+      assert {:ok, "BTC 1,234,545,656.456789"} =
+               Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: :iso)
 
-    assert {:ok, "₿ 1,234,545,656.456789"} =
-             Cldr.Number.to_string(1_234_545_656.456789,
-               currency: "BTC",
-               currency_symbol: :symbol
-             )
+      assert {:ok, "₿ 1,234,545,656.456789"} =
+               Cldr.Number.to_string(1_234_545_656.456789,
+                 currency: "BTC",
+                 currency_symbol: :symbol
+               )
 
-    assert {:ok, "₿ 1,234,545,656.456789"} =
-             Cldr.Number.to_string(1_234_545_656.456789,
-               currency: "BTC",
-               currency_symbol: :standard
-             )
+      assert {:ok, "₿ 1,234,545,656.456789"} =
+               Cldr.Number.to_string(1_234_545_656.456789,
+                 currency: "BTC",
+                 currency_symbol: :standard
+               )
 
-    assert {:ok, "XBTC 1,234,545,656.456789"} =
-             Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: "XBTC")
+      assert {:ok, "XBTC 1,234,545,656.456789"} =
+               Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: "XBTC")
+    end
+  else
+    test "Digital tokens with overriden symbols" do
+      assert {:ok, "₿1,234,545,656.456789"} =
+               Cldr.Number.to_string(1_234_545_656.456789,
+                 currency: "BTC",
+                 currency_symbol: :narrow
+               )
+
+      assert {:ok, "BTC 1,234,545,656.456789"} =
+               Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: :iso)
+
+      assert {:ok, "₿1,234,545,656.456789"} =
+               Cldr.Number.to_string(1_234_545_656.456789,
+                 currency: "BTC",
+                 currency_symbol: :symbol
+               )
+
+      assert {:ok, "₿1,234,545,656.456789"} =
+               Cldr.Number.to_string(1_234_545_656.456789,
+                 currency: "BTC",
+                 currency_symbol: :standard
+               )
+
+      assert {:ok, "XBTC 1,234,545,656.456789"} =
+               Cldr.Number.to_string(1_234_545_656.456789, currency: "BTC", currency_symbol: "XBTC")
+    end
   end
 
   test "Formatting a number with standard format in a locale with no RBNF" do
