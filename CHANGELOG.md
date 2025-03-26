@@ -1,5 +1,17 @@
 # Changelog
 
+## Cldr Numbers v2.35.0
+
+This is the changelog for Cldr v2.35.0 released on March 26th, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Breaking changes
+
+* The new [OTP 28 re module](https://www.erlang.org/docs/28/upcoming_incompatibilities.html#the-re-module-will-use-a-different-regular-expression-engine) is largely - but not completely - compatible with the version on OTP 27 and earlier. One of the noted differences during testing is that on OTP 27, the bitcoin symbol `₿` is not part of the set of Unicode symbols (category `Sc`). In OTP 28 it is. Therefore there may be minor differences in how numbers and money with the currency bitcoin are formatted. During testing, these were the only test failures detected between OTP 27 and OTP 28.
+
+### Bug Fixes
+
+* Support Elixir 1.19 and OTP 28 without errors or warnings. Primarily this relates to changes to [OTP's new :re module](https://www.erlang.org/docs/28/upcoming_incompatibilities.html#the-re-module-will-use-a-different-regular-expression-engine) and Elixir's evolving type system.
+
 ## Cldr Numbers v2.34.1
 
 This is the changelog for Cldr v2.34.1 released on March 22nd, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
