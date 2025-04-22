@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.35.1
+
+This is the changelog for Cldr v2.35.1 released on April 23rd, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix formatting currency amounts when the currency format does not have a digit placeholder (`0` and `#`) directly next to the currency placeholder (`¤`). Thanks to @benregn for the report. Closes #54.
+
 ## Cldr Numbers v2.35.0
 
 This is the changelog for Cldr v2.35.0 released on March 26th, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

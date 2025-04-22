@@ -283,4 +283,9 @@ defmodule Number.Format.Test do
                locale: :en
              )
   end
+
+  test "Formatting a currency the standard format if the it has a space before the currency placeholder" do
+    assert {:ok, "123,45\u00A0kr."} =
+      TestBackend.Cldr.Number.to_string(123.45, locale: :da, currency: :DKK)
+  end
 end

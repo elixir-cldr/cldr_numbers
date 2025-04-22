@@ -370,14 +370,21 @@ defmodule Cldr.Number.Format.Options do
   # standard currency pattern does not have a space between currency symbol and numeric value; the
   # alphaNextToNumber variant adds a non-breaking space if appropriate for the locale.
 
+  # From Unicode slack (Mark Davis)
+  # The alternate format is used if in the regular format, the ¤ is next to a placeholder that
+  # can become an Nd (#, 0), and the side of the currency symbol facing that digit is L (or if
+  # on the trailing side, LM*). If the regular format has no number placeholders next to ¤, then
+  # the alternate format can be exactly the same as the regular format (so people can just
+  # vote for inheritance)
+
   defp maybe_apply_alpha_next_to_number(%{currency_format: currency_format} = options, backend)
        when currency_format in [:currency, :accounting] do
     cond do
-      String.starts_with?(options.format, @currency_placeholder) &&
+      Regex.match?(~r/^#{@currency_placeholder}[0#]/, options.format) &&
           Regex.match?(~r/\p{L}$/u, options.currency_symbol) ->
         resolve_alpha_next_to_number(options, backend)
 
-      String.ends_with?(options.format, @currency_placeholder) &&
+      Regex.match?(~r/[0#]#{@currency_placeholder}$/, options.format) &&
           Regex.match?(~r/^\p{L}/u, options.currency_symbol) ->
         resolve_alpha_next_to_number(options, backend)
 
