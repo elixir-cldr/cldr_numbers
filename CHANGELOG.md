@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.35.2
+
+This is the changelog for Cldr v2.35.2 released on September 10th, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fixes stray doc backtick. Thanks to @Munksgaard. Closes #56.
+
 ## Cldr Numbers v2.35.1
 
 This is the changelog for Cldr v2.35.1 released on April 23rd, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
