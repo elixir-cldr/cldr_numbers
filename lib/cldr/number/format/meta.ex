@@ -41,7 +41,7 @@ defmodule Cldr.Number.Format.Meta do
 
   The simplest formatting list might be:
   ```
-  [format: _]`
+  [format: _]
   ```
   The `:format` keyword indicates
   that this is where the formatting number will be
