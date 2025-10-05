@@ -455,16 +455,16 @@ defmodule Cldr.Number do
 
   ## Options
 
-  * `number` is an integer, float or Decimal to be formatted
+  * `number` is an integer, float or Decimal to be formatted.
 
   * `options` is a keyword list defining how the number is to be formatted. See
-    `Cldr.Number.to_string/2`
+    `Cldr.Number.to_string/2`.
 
   ## Returns
 
   * a formatted number as a string or
 
-  * raises an exception
+  * raises an exception.
 
   ## Examples
 
@@ -629,10 +629,10 @@ defmodule Cldr.Number do
 
   ## Arguments
 
-  * `number` is an integer, float or Decimal to be formatted
+  * `number` is an integer, float or Decimal to be formatted.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`.
 
   * `options` is a keyword list defining how the number is to be formatted.
     See `Cldr.Number.to_string/3` for a description of the available
@@ -664,10 +664,10 @@ defmodule Cldr.Number do
 
   ## Arguments
 
-  * `number` is an integer, float or Decimal to be formatted
+  * `number` is an integer, float or Decimal to be formatted.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`.
 
   * `options` is a keyword list defining how the number is to be formatted.
     See `Cldr.Number.to_string/3` for a description of the available
@@ -699,10 +699,10 @@ defmodule Cldr.Number do
 
   ## Arguments
 
-  * `number` is an integer, float or Decimal to be formatted
+  * `number` is an integer, float or Decimal to be formatted.
 
   * `backend` is any `Cldr` backend. That is, any module that
-    contains `use Cldr`
+    contains `use Cldr`.
 
   * `options` is a keyword list defining how the number is to be formatted.
     See `Cldr.Number.to_string/3` for a description of the available
@@ -770,7 +770,7 @@ defmodule Cldr.Number do
     `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
     for further information.
 
-  * `system` is any number system returned by `Cldr.known_number_systems/0`
+  * `system` is any number system returned by `Cldr.known_number_systems/0`.
 
   ## Examples
 
@@ -797,7 +797,7 @@ defmodule Cldr.Number do
     `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
     for further information.
 
-  * `system` is any number system returned by `Cldr.Number.System.known_number_systems/0`
+  * `system` is any number system returned by `Cldr.Number.System.known_number_systems/0`.
 
   ## Example
 
@@ -823,9 +823,9 @@ defmodule Cldr.Number do
   end
 
   @doc """
-  Return the precision (number of digits) of a number
+  Return the precision (number of digits) of a number.
 
-  This function delegates to `Cldr.Digits.number_of_digits/1`
+  This function delegates to `Cldr.Digits.number_of_digits/1`.
 
   ## Example
 

@@ -583,14 +583,11 @@ defmodule Cldr.Number.Format.Options do
     {:ok, format}
   end
 
-  # Currency digits is an opaque option that is a proxy
-  # for the `:cash` parameter which is set to true or false
-
-  defp validate_option(:currency_digits, options, _backend, _currency_digits) do
-    if Map.get(options, :cash) do
-      {:ok, :cash}
+  defp validate_option(:currency_digits, _options, _backend, currency_digits) do
+    if currency_digits in [:cash, :accounting, :iso] do
+      {:ok, currency_digits}
     else
-      {:ok, :accounting}
+      {:error, "currency_digits must be one of :cash, :accounting, :iso"}
     end
   end
 

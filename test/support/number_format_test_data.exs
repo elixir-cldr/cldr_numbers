@@ -54,7 +54,7 @@ defmodule Cldr.Test.Number.Format do
       {123.4, "123.40 $", [format: "#,##0.00 ¤¤¤¤", currency: :AUD]},
       {1234, "A$1,234.00", [currency: :AUD]},
       {1234, "COP 1,234.00", [currency: :COP, currency_digits: :iso]},
-      {1234, "COP 1,234.00", [currency: :COP]},
+      {1234, "COP 1,234", [currency: :COP]},
       {1234, "১,২৩৪.০০€", [currency: :EUR, locale: :bn]},
 
       # Currency where the symbol replaces the decimal separator

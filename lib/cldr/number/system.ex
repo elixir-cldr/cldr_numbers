@@ -134,7 +134,7 @@ defmodule Cldr.Number.System do
   ## Example
 
       iex> Cldr.Number.System.number_systems() |> Enum.count
-      96
+      97
 
   """
   @spec number_systems :: unquote(Cldr.Type.number_systems())
