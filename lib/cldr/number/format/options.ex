@@ -146,6 +146,29 @@ defmodule Cldr.Number.Format.Options do
     end
   end
 
+  def validate_ratio_options(number, backend, options) do
+    {ratio_options, number_options} = extract_options(options)
+
+    with {:ok, number_options} <- validate_options(number, backend, number_options) do
+      {:ok, ratio_options, number_options}
+    end
+  end
+
+  defp extract_options(options) do
+    {max_denominator, options} = Keyword.pop(options, :max_denominator, 10)
+    {max_iterations, options} = Keyword.pop(options, :max_iterations, 20)
+    {epsilon, options} = Keyword.pop(options, :epsilon, 1.0e-10)
+    {_prefer, options} = Keyword.pop(options, :prefer, :default)
+
+    ratio_options = [
+      max_iterations: max_iterations,
+      max_denominator: max_denominator,
+      epsilon: epsilon
+    ]
+
+    {ratio_options, options}
+  end
+
   defp validate_each_option(options, backend) do
     Enum.reduce_while(@options, options, fn option, options ->
       case validate_option(option, options, backend, Map.get(options, option)) do

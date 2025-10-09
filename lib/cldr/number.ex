@@ -84,6 +84,9 @@ defmodule Cldr.Number do
   alias Cldr.Config
   alias Cldr.Number.Formatter
   alias Cldr.Number.Format.Options
+  alias Cldr.Substitution
+
+  import Kernel, except: [to_string: 1]
 
   @type format_type ::
           :standard
@@ -737,6 +740,141 @@ defmodule Cldr.Number do
         |> :erlang.iolist_to_binary()
 
       {:ok, final_format}
+    end
+  end
+
+  @doc """
+  Formats a number as a possibly approximate ratio.
+
+  `Cldr.Math.float_to_ratio/2` is used to form a ratio that
+  represents the float number. The representation is intentionall not
+  precise - if a binary precise ratio is required, use `Float.ratio/1`.
+
+  The focus of this function is to produce human readable and
+  understandable ratios, hence the deliberately relaxed precision.
+
+  When formatting, the returned string is composed of the integer
+  part (if the integer is not zero) and the fractional part.
+
+  ## Arguments
+
+  * `number` is an integer or float to be formatted. Decimal
+    numbers are not currently supported.
+
+  * `backend` is optional and is any `Cldr` backend. That is, any module that
+    contains `use Cldr`.
+
+  * `options` is a keyword list of options.
+
+  ## Options
+
+  * `:max_denominator` is the largest integer permitted for
+     the derived denominator. The default is 10.
+
+  * `:max_iterations` is the maximum number if iterations in the
+    [continued fraction](https://en.wikipedia.org/wiki/Continued_fraction)
+    calculations of the ratio. The default is 20.
+
+  * `:epsilon` is the tolerance for float comparisons when
+     deriving the ration. The default is 1.0e-10.
+
+  * All other options are passed to `Cldr.Number.to_string/3` when
+    formatting the integer, the numerator and the denominator.
+
+  ## Example
+
+      iex> Cldr.Number.to_ratio_string(3.14159, TestBackend.Cldr)
+      {:ok, "3 1⁄7"}
+
+      iex(44)> Cldr.Number.to_ratio_string(-0.75)
+      {:ok, "-3⁄4"}
+
+      iex> Cldr.Number.to_ratio_string(3.14159, locale: :ar, number_system: :arab)
+      {:ok, "٧⁄١ ٣"}
+
+      iex> Cldr.Number.to_ratio_string(-3.14159)
+      {:ok, "-3 1⁄7"}
+
+      iex> Cldr.Number.to_ratio_string(-0.14159)
+      {:ok, "-1⁄7"}
+
+  """
+  @spec to_ratio_string(number(), Cldr.backend(), Keyword.t() | map()) ::
+          {:ok, String.t()} | {:error, {module(), String.t()}}
+
+  def to_ratio_string(number, backend \\ default_backend(), options \\ [])
+
+  def to_ratio_string(number, options, []) when is_list(options) do
+    {backend, options} = Keyword.pop_lazy(options, :backend, &default_backend/0)
+    to_ratio_string(number, backend, options)
+  end
+
+  def to_ratio_string(number, backend, options) when is_number(number) do
+    format_backend = Module.concat(backend, Number.Format)
+
+    with {:ok, ratio_options, number_options} <- Options.validate_ratio_options(number, backend, options),
+         {:ok, formats} <- format_backend.formats_for(number_options.locale, number_options.number_system),
+         {:ok, ratio_formats} <- rational_formats(formats, number_options.locale) do
+      case number_to_integer_and_fraction(number) do
+        {integer, fraction} when integer == 0 and fraction == 0.0 ->
+          to_string(number)
+
+        {integer, fraction} when integer == 0 and fraction != 0.0 ->
+          format_fraction(fraction, ratio_formats, backend, ratio_options, number_options)
+
+        {integer, fraction} ->
+          format_integer_and_fraction(integer, fraction, ratio_formats, backend, ratio_options, number_options)
+      end
+    end
+  end
+
+  defp rational_formats(%{rational: nil}, locale) do
+    {:error, {Cldr.Number.NoRationalFormatError,
+      "No rational formats defined for locale #{inspect locale}"}}
+  end
+
+  defp rational_formats(%{rational: rational_formats}, _locale) do
+    {:ok, rational_formats}
+  end
+
+  defp number_to_integer_and_fraction(number) when is_integer(number) do
+    {number, 0.0}
+  end
+
+  defp number_to_integer_and_fraction(number) do
+    integer = trunc(number)
+    fraction = number - integer
+
+    {integer, fraction}
+  end
+
+  defp format_integer_and_fraction(integer, fraction, formats, backend, ratio_options, number_options) do
+    fraction_options =
+      if integer > 0, do: number_options, else: Map.put(number_options, :pattern, :positive)
+
+    with {:ok, integer_string} <-
+            to_string(integer, backend, number_options),
+         {:ok, fraction_string} <-
+            format_fraction(fraction, formats, backend, ratio_options, fraction_options) do
+      ratio_format = formats.integer_and_rational_pattern.default
+      formatted = Substitution.substitute([integer_string, fraction_string], ratio_format)
+      {:ok, List.to_string(formatted)}
+    end
+  end
+
+  defp format_fraction(fraction, formats, backend, ratio_options, number_options) do
+    denominator_options = Map.put(number_options, :pattern, :positive)
+
+    with {numerator, denominator} <- Cldr.Math.float_to_ratio(fraction, ratio_options),
+         {:ok, numerator_string} <- to_string(numerator, backend, number_options),
+         {:ok, denominator_string} <- to_string(denominator, backend, denominator_options) do
+      fraction_format = formats.rational_pattern.default
+      fraction_parts = [numerator_string, denominator_string]
+      fraction_string = Substitution.substitute(fraction_parts, fraction_format)
+      {:ok, List.to_string(fraction_string)}
+    else _other ->
+        {:error, {Cldr.Number.FloatToFractionError,
+          "Could not convert #{inspect fraction} into a ratio"}}
     end
   end
 

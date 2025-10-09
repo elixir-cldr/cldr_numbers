@@ -70,3 +70,27 @@ defmodule Cldr.Number.ParseError do
     %__MODULE__{message: message}
   end
 end
+
+defmodule Cldr.Number.FloatToFractionError do
+  @moduledoc """
+  Exception raised when when trying to convert
+  a float or integer into a ratio.
+  """
+  defexception [:message]
+
+  def exception(message) do
+    %__MODULE__{message: message}
+  end
+end
+
+defmodule Cldr.Number.NoRationalFormatError do
+  @moduledoc """
+  Exception raised when when a locale does not
+  define rational formats.
+  """
+  defexception [:message]
+
+  def exception(message) do
+    %__MODULE__{message: message}
+  end
+end
