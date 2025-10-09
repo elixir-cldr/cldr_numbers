@@ -158,12 +158,13 @@ defmodule Cldr.Number.Format.Options do
     {max_denominator, options} = Keyword.pop(options, :max_denominator, 10)
     {max_iterations, options} = Keyword.pop(options, :max_iterations, 20)
     {epsilon, options} = Keyword.pop(options, :epsilon, 1.0e-10)
-    {_prefer, options} = Keyword.pop(options, :prefer, :default)
+    {prefer, options} = Keyword.pop(options, :prefer, :default)
 
     ratio_options = [
       max_iterations: max_iterations,
       max_denominator: max_denominator,
-      epsilon: epsilon
+      epsilon: epsilon,
+      prefer: List.wrap(prefer)
     ]
 
     {ratio_options, options}
