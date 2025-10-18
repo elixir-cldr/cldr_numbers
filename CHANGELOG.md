@@ -1,5 +1,15 @@
 # Changelog
 
+## Cldr Numbers v2.36.0
+
+This is the changelog for Cldr v2.36.0 released on October _____, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Enhancements
+
+* Updates to [CLDR 48](https://cldr.unicode.org/downloads/cldr-48) data
+
+* Adds `Cldr.Number.to_ratio_string/3` to format numbers as a rational string.
+
 ## Cldr Numbers v2.35.2
 
 This is the changelog for Cldr v2.35.2 released on September 10th, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
