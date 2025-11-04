@@ -232,6 +232,44 @@ iex> MyApp.Cldr.Number.to_string 12456.56, format: :long, currency: :USD
 
 See `MyApp.Cldr.Number.Formatter.Short` and `MyApp.Cldr.Number.Formatter.Currency`.
 
+### Formating numbers as a ratio
+
+Numbers can also be formatted as an integer and a ratio. Since different rendering systems
+(browsers, terminals etc) reproduce ratios with differing fidelity, there are options to format the
+ratio as a precomposed fraction, super- and subscript numerals separated by a [fraction slash](https://www.compart.com/en/unicode/U+2044)
+or normal numerals separated by a fraction slash.
+
+For number systems other than `Latn`, the `:prefer: :precomposed` and `prefer: :super_sub`
+options have no effect.  See `Cldr.Number.to_ratio_string/2` for further information.
+
+  | Function call                                                            | Result              | 
+  | ------------------------------------------------------------------------ | :------------------ | 
+  | `Cldr.Number.to_ratio_string(0.75)`                                      | `{:ok, "1⁄2"}`      |
+  | `Cldr.Number.to_ratio_string(0.75, prefer: :super_sub)`                  | `{:ok, "¹⁄₂"}`      |
+  | `Cldr.Number.to_ratio_string(0.75, prefer: :precomposed)`.               | `{:ok, "½"}`        |
+  | `Cldr.Number.to_ratio_string(0.875, prefer: [:precomposed, :super_sub])` | `{:ok, "⅞"}`        |
+  | `Cldr.Number.to_ratio_string(3.875, prefer: [:precomposed, :super_sub])` | `{:ok, "3\u2060⅞"}` |
+  | `Cldr.Number.to_ratio_string(0.923, prefer: [:precomposed, :super_sub])` | `{:ok, "⁹⁄₁₀"}`     |
+  
+### User-Specified Number Formats
+
+User-defined decimal formats are also supported using the formats described by
+[Unicode technical report TR35](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns).
+
+The formats described therein are supported by `ex_cldr_numbers` with some minor omissions and variations.  Some examples of number formats are:
+
+  | Pattern       | Currency        | Text        |
+  | ------------- | :-------------: | ----------: |
+  | #,##0.##      | n/a	            | 1 234,57    |
+  | #,##0.###     | n/a	            | 1 234,567   |
+  | ###0.#####    | n/a	            | 1234,567    |
+  | ###0.0000#    | n/a	            | 1234,5670   |
+  | 00000.0000    | n/a	            | 01234,5670  |
+  | 00            | n/a             | 12          |
+  | #,##0.00 ¤    | EUR	            | 1 234,57 €  |
+
+ See `MyApp.Cldr.Number` and `MyApp.Cldr.Number.Formatter.Decimal`.
+
 ### Locale extensions affecting formatting
 
 A locale identifier can specify options that affect number formatting. These options are:
@@ -259,25 +297,6 @@ iex> MyApp.Cldr.Number.to_string 123, locale: "th-u-nu-thai", currency: :from_lo
 iex> MyApp.Cldr.Number.to_string 123, format: :currency, locale: "en-u-cu-thb", currency: :from_locale
 {:ok, "THB 123.00"}
 ```
-
-### User-Specified Number Formats
-
-User-defined decimal formats are also supported using the formats described by
-[Unicode technical report TR35](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns).
-
-The formats described therein are supported by `ex_cldr_numbers` with some minor omissions and variations.  Some examples of number formats are:
-
-  | Pattern       | Currency        | Text        |
-  | ------------- | :-------------: | ----------: |
-  | #,##0.##      | n/a	            | 1 234,57    |
-  | #,##0.###     | n/a	            | 1 234,567   |
-  | ###0.#####    | n/a	            | 1234,567    |
-  | ###0.0000#    | n/a	            | 1234,5670   |
-  | 00000.0000    | n/a	            | 01234,5670  |
-  | 00            | n/a             | 12          |
-  | #,##0.00 ¤    | EUR	            | 1 234,57 €  |
-
- See `MyApp.Cldr.Number` and `MyApp.Cldr.Number.Formatter.Decimal`.
 
 ### Number Pattern Character Definitions
 
