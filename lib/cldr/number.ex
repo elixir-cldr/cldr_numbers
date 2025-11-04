@@ -110,7 +110,7 @@ defmodule Cldr.Number do
   given locale.  If a number system type is provided, the
   underlying number system is returned.
 
-  ## Arguments
+  ### Arguments
 
   * `locale` is any valid locale name returned by `Cldr.known_locale_names/1`
     or a `Cldr.LanguageTag` struct returned by `Cldr.Locale.new!/2`
@@ -122,7 +122,7 @@ defmodule Cldr.Number do
   * `backend` is any module that includes `use Cldr` and therefore
     is a `Cldr` backend module
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.validate_number_system :en, :latn, TestBackend.Cldr
       {:ok, :latn}
@@ -152,7 +152,7 @@ defmodule Cldr.Number do
   @doc """
   Returns a number formatted into a string according to a format pattern and options.
 
-  ## Arguments
+  ### Arguments
 
   * `number` is an integer, float or Decimal to be formatted
 
@@ -162,7 +162,7 @@ defmodule Cldr.Number do
   * `options` is a keyword list defining how the number is to be formatted. The
     valid options are:
 
-  ## Options
+  ### Options
 
   * `format`: the format style or a format string defining how the number is
     formatted. See `Cldr.Number.Format` for how format strings can be constructed.
@@ -272,7 +272,7 @@ defmodule Cldr.Number do
     or a Phoenix safe string such as that returned by `Phoenix.HTML.Tag.content_tag/3`.
     The function can be used to wrap format elements in HTML or other tags.
 
-  ## Locale extensions affecting formatting
+  ### Locale extensions affecting formatting
 
   A locale identifier can specify options that affect number formatting.
   These options are:
@@ -284,7 +284,7 @@ defmodule Cldr.Number do
   that document should be consulted for details on how to construct a locale identifier with these
   extensions.
 
-  ## Wrapping format elements
+  ### Wrapping format elements
 
   Wrapping elements is particularly useful when formatting a number with a
   currency symbol and the requirement is to have different HTML formatting
@@ -320,13 +320,13 @@ defmodule Cldr.Number do
   element type. The wrapper function is required to return a string that is then
   inserted in the final formatted number.
 
-  ## Returns
+  ### Returns
 
   * `{:ok, string}` or
 
   * `{:error, {exception, message}}`
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.to_string 12345, TestBackend.Cldr
       {:ok, "12,345"}
@@ -390,7 +390,7 @@ defmodule Cldr.Number do
       iex> Cldr.Number.to_string 123, TestBackend.Cldr, locale: "th-u-nu-thai"
       {:ok, "๑๒๓"}
 
-  ## Errors
+  ### Errors
 
   An error tuple `{:error, {exception, reason}}` will be returned if an error is detected.
   The two most likely causes of an error return are:
@@ -455,20 +455,20 @@ defmodule Cldr.Number do
   Same as the execution of `to_string/2` but raises an exception if an error would be
   returned.
 
-  ## Options
+  ### Options
 
   * `number` is an integer, float or Decimal to be formatted.
 
   * `options` is a keyword list defining how the number is to be formatted. See
     `Cldr.Number.to_string/2`.
 
-  ## Returns
+  ### Returns
 
   * a formatted number as a string or
 
   * raises an exception.
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.to_string! 12345, TestBackend.Cldr
       "12,345"
@@ -594,7 +594,7 @@ defmodule Cldr.Number do
   Formats a number and applies the `:at_least` format for
   a locale and number system.
 
-  ## Arguments
+  ### Arguments
 
   * `number` is an integer, float or Decimal to be formatted
 
@@ -605,7 +605,7 @@ defmodule Cldr.Number do
     See `Cldr.Number.to_string/3` for a description of the available
     options.
 
-  ## Example
+  ### Example
 
       iex> Cldr.Number.to_at_least_string 1234, TestBackend.Cldr
       {:ok, "1,234+"}
@@ -629,7 +629,7 @@ defmodule Cldr.Number do
   Formats a number and applies the `:at_most` format for
   a locale and number system.
 
-  ## Arguments
+  ### Arguments
 
   * `number` is an integer, float or Decimal to be formatted.
 
@@ -640,7 +640,7 @@ defmodule Cldr.Number do
     See `Cldr.Number.to_string/3` for a description of the available
     options.
 
-  ## Example
+  ### Example
 
       iex> Cldr.Number.to_at_most_string 1234, TestBackend.Cldr
       {:ok, "≤1,234"}
@@ -664,7 +664,7 @@ defmodule Cldr.Number do
   Formats a number and applies the `:approximately` format for
   a locale and number system.
 
-  ## Arguments
+  ### Arguments
 
   * `number` is an integer, float or Decimal to be formatted.
 
@@ -675,7 +675,7 @@ defmodule Cldr.Number do
     See `Cldr.Number.to_string/3` for a description of the available
     options.
 
-  ## Example
+  ### Example
 
       iex> Cldr.Number.to_approx_string 1234, TestBackend.Cldr
       {:ok, "~1,234"}
@@ -699,7 +699,7 @@ defmodule Cldr.Number do
   Formats the first and last numbers of a range and applies
   the `:range` format for a locale and number system.
 
-  ## Arguments
+  ### Arguments
 
   * `number` is an integer, float or Decimal to be formatted.
 
@@ -710,7 +710,7 @@ defmodule Cldr.Number do
     See `Cldr.Number.to_string/3` for a description of the available
     options.
 
-  ## Example
+  ### Example
 
       iex> Cldr.Number.to_range_string 1234..5678, TestBackend.Cldr
       {:ok, "1,234–5,678"}
@@ -746,7 +746,7 @@ defmodule Cldr.Number do
   Formats a number as a possibly approximate ratio.
 
   `Cldr.Math.float_to_ratio/2` is used to form a ratio that
-  represents the float number. The representation is intentionall not
+  represents a float number. The representation is intentionally not
   precise - if a binary precise ratio is required, use `Float.ratio/1`.
 
   The focus of this function is to produce human readable and
@@ -755,17 +755,17 @@ defmodule Cldr.Number do
   When formatting, the returned string is composed of the integer
   part (if the integer is not zero) and the fractional part.
 
-  ## Arguments
+  ### Arguments
 
   * `number` is an integer or float to be formatted. Decimal
-    numbers are not currently supported.
+    numbers are converted to floats before processing.
 
   * `backend` is optional and is any `Cldr` backend. That is, any module that
     contains `use Cldr`.
 
   * `options` is a keyword list of options.
 
-  ## Options
+  ### Options
 
   * `:prefer` indicates a preference for formatting the ratio. It is either
     `:default`, `:super_sub` or `:precomposed`. `:precomposed` can also be
@@ -800,7 +800,14 @@ defmodule Cldr.Number do
   * All other options are passed to `Cldr.Number.to_string/3` when
     formatting the integer, the numerator and the denominator.
 
-  ## Example
+  ### Returns
+
+    * `{:ok, fraction_string}` where `fraction_string` is a string representation of an
+      integer (if there is an integer part) and a ratio expressed as a fraction, or
+
+    * `{:error, {exception, reason}}`.
+
+  ### Examples
 
       iex> Cldr.Number.to_ratio_string(3.14159, TestBackend.Cldr)
       {:ok, "3 1⁄7"}
@@ -826,11 +833,14 @@ defmodule Cldr.Number do
       iex> Cldr.Number.to_ratio_string(1.5, prefer: :precomposed)
       {:ok, "1 ½"}
 
+      iex> Cldr.Number.to_ratio_string(Decimal.new("1.5"), prefer: :precomposed)
+      {:ok, "1 ½"}
+
       iex> Cldr.Number.to_ratio_string(1.5, prefer: [:super_sub, :precomposed])
       {:ok, "1\u2060½"}
 
   """
-  @spec to_ratio_string(number(), Cldr.backend(), Keyword.t() | map()) ::
+  @spec to_ratio_string(number() | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
           {:ok, String.t()} | {:error, {module(), String.t()}}
 
   def to_ratio_string(number, backend \\ default_backend(), options \\ [])
@@ -842,6 +852,121 @@ defmodule Cldr.Number do
 
   def to_ratio_string(number, backend, options) when is_number(number) do
     Cldr.Number.Formatter.Ratio.to_ratio_string(number, backend, options)
+  end
+
+  def to_ratio_string(%Decimal{} = number, backend, options) do
+    number
+    |> Decimal.to_float()
+    |> to_ratio_string(backend, options)
+  end
+
+  @doc """
+  Formats a number as a possibly approximate ratio or raises
+  an exception.
+
+  `Cldr.Math.float_to_ratio/2` is used to form a ratio that
+  represents a float number. The representation is intentionally not
+  precise - if a binary precise ratio is required, use `Float.ratio/1`.
+
+  The focus of this function is to produce human readable and
+  understandable ratios, hence the deliberately relaxed precision.
+
+  When formatting, the returned string is composed of the integer
+  part (if the integer is not zero) and the fractional part.
+
+  ### Arguments
+
+  * `number` is an integer or float to be formatted. Decimal
+    numbers are converted to floats before processing.
+
+  * `backend` is optional and is any `Cldr` backend. That is, any module that
+    contains `use Cldr`.
+
+  * `options` is a keyword list of options.
+
+  ### Options
+
+  * `:prefer` indicates a preference for formatting the ratio. It is either
+    `:default`, `:super_sub` or `:precomposed`. `:precomposed` can also be
+    combined with either `:default` or `:super_sub` in a list.
+
+      * `:default` which typically uses an ascii space between
+        the integer and the fraction. This is a lowest common
+        denominator format for when the target rendering system
+        does not format an integer and fraction between a [fractional slash](https://www.compart.com/en/unicode/U+2044)
+        correctly.
+
+      * `:super_sub` which uses [superscript and subscript](https://www.compart.com/en/unicode/block/U+2070)
+        digits if the formatting number system is Latin. This format also commonly uses a
+        [word joiner](https://www.compart.com/en/unicode/U+2060)
+        between the integer and the fraction. This is the recommended
+        option however not all rendering systems do a good job of rendering
+        integers alongside fractions separated by a [fractional slash](https://www.compart.com/en/unicode/U+2044),
+
+      * `:precomposed` will use the [Unicode Vulgar Fraction](https://www.compart.com/en/unicode/decomposition/%3Cfraction%3E)
+        character if the resolved ratio is supported.
+
+  * `:max_denominator` is the largest integer permitted for
+     the derived denominator. The default is 10.
+
+  * `:max_iterations` is the maximum number if iterations in the
+    [continued fraction](https://en.wikipedia.org/wiki/Continued_fraction)
+    calculations of the ratio. The default is 20.
+
+  * `:epsilon` is the tolerance for float comparisons when
+     deriving the ration. The default is 1.0e-10.
+
+  * All other options are passed to `Cldr.Number.to_string/3` when
+    formatting the integer, the numerator and the denominator.
+
+  ### Returns
+
+      * A string representation of an integer (if there is an integer
+        part) and a ratio expressed as a fraction, or
+
+      * raises an exception.
+
+  ### Examples
+
+      iex> Cldr.Number.to_ratio_string!(3.14159, TestBackend.Cldr)
+      "3 1⁄7"
+
+      iex(44)> Cldr.Number.to_ratio_string!(-0.75)
+      "-3⁄4"
+
+      iex> Cldr.Number.to_ratio_string!(3.14159, locale: :ar, number_system: :arab)
+      "٧⁄١ ٣"
+
+      iex> Cldr.Number.to_ratio_string!(-3.14159)
+      "-3 1⁄7"
+
+      iex> Cldr.Number.to_ratio_string!(-0.14159)
+      "-1⁄7"
+
+      iex> Cldr.Number.to_ratio_string!(3.14159, prefer: :super_sub)
+      "3\u2060¹⁄₇"
+
+      iex> Cldr.Number.to_ratio_string!(0.5, prefer: :precomposed)
+      "½"
+
+      iex> Cldr.Number.to_ratio_string!(1.5, prefer: :precomposed)
+      "1 ½"
+
+      iex> Cldr.Number.to_ratio_string!(Decimal.new("1.5"), prefer: :precomposed)
+      "1 ½"
+
+      iex> Cldr.Number.to_ratio_string!(1.5, prefer: [:super_sub, :precomposed])
+      "1\u2060½"
+
+  """
+  @spec to_ratio_string!(number() | Decimal.t(), Cldr.backend(), Keyword.t() | map()) ::
+          String.t() | no_return()
+
+  def to_ratio_string!(number, backend \\ default_backend(), options \\ []) do
+    case to_ratio_string(number, backend, options) do
+      {:ok, string} -> string
+      {:error, {exception, reason}} -> raise exception, reason
+    end
   end
 
   @spec other_format(
@@ -870,13 +995,15 @@ defmodule Cldr.Number do
   another number system.  Returns `{:ok, string}` or
   `{:error, reason}`.
 
+  ### Arguments
+
   * `number` is an integer, float.  Decimal is supported only for
     `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
     for further information.
 
   * `system` is any number system returned by `Cldr.known_number_systems/0`.
 
-  ## Examples
+  ### Examples
 
       iex> Cldr.Number.to_number_system 123, :hant, TestBackend.Cldr
       {:ok, "一百二十三"}
@@ -897,13 +1024,15 @@ defmodule Cldr.Number do
   another number system. Returns the converted number
   or raises an exception on error.
 
+  ### Arguments
+
   * `number` is an integer, float.  Decimal is supported only for
     `:numeric` number systems, not `:algorithmic`.  See `Cldr.Number.System.to_system/3`
     for further information.
 
   * `system` is any number system returned by `Cldr.Number.System.known_number_systems/0`.
 
-  ## Example
+  ### Example
 
       iex> Cldr.Number.to_number_system! 123, :hant, TestBackend.Cldr
       "一百二十三"
@@ -931,7 +1060,7 @@ defmodule Cldr.Number do
 
   This function delegates to `Cldr.Digits.number_of_digits/1`.
 
-  ## Example
+  ### Example
 
       iex> Cldr.Number.precision 1.234
       4
