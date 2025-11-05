@@ -743,7 +743,7 @@ defmodule Cldr.Number do
   end
 
   @doc """
-  Formats a number as a possibly approximate ratio.
+  Formats a number as a (possibly approximate) ratio.
 
   `Cldr.Math.float_to_ratio/2` is used to form a ratio that
   represents a float number. The representation is intentionally not
@@ -754,6 +754,9 @@ defmodule Cldr.Number do
 
   When formatting, the returned string is composed of the integer
   part (if the integer is not zero) and the fractional part.
+
+  See [CLDR Rational Numbers](https://www.unicode.org/reports/tr35/dev/tr35-numbers.html#rational-numbers)
+  for additional information.
 
   ### Arguments
 
@@ -807,6 +810,18 @@ defmodule Cldr.Number do
 
     * `{:error, {exception, reason}}`.
 
+  ### Notes
+
+  The availability of both "Integer with rational pattern" and "Integer with rational super_sub pattern"
+  is because ome fonts and rendering systems don’t properly handle the fraction slash, and the
+  user would see something like 51/2 (fifty-one halves) when 5½ is desired.
+
+  | Pattern                                   | Format         | Usage                                       | Description |
+  | :---------------------------------------- | :------------- | :------------------------------------------ | :---------- |
+  | Rational pattern                          | {0}⁄{1}        | All ratios                                  | The format for a rational fraction with arbitrary numerator and denominator; the English pattern uses the Unicode character ‘⁄’ U+2044 FRACTION SLASH which causes composition of fractions such as 22⁄7, when supported properly by rendering systems and fonts. |
+  | Integer with rational pattern             | {0} {1}        | prefer: :default                            | The format for combining an integer with a rational fraction that is composed using the `Rational` pattern; the English pattern uses U+202F NARROW NO-BREAK SPACE (NNBSP) to produce a _non-breaking thin space_. |
+  | Integer with rational "super sub" pattern | {0}⁠{1} | prefer: :super_sub and prefer: :precomposed | The format for combining an integer with a rational fraction that is composed using the rational pattern; the English pattern uses U+2060 WORD JOINER, a _zero-width no-break space_. |
+
   ### Examples
 
       iex> Cldr.Number.to_ratio_string(3.14159, TestBackend.Cldr)
@@ -851,7 +866,7 @@ defmodule Cldr.Number do
   end
 
   def to_ratio_string(number, backend, options) when is_number(number) do
-    Cldr.Number.Formatter.Ratio.to_ratio_string(number, backend, options)
+    Formatter.Ratio.to_ratio_string(number, backend, options)
   end
 
   def to_ratio_string(%Decimal{} = number, backend, options) do
@@ -861,7 +876,7 @@ defmodule Cldr.Number do
   end
 
   @doc """
-  Formats a number as a possibly approximate ratio or raises
+  Formats a number as a (possibly approximate) ratio or raises
   an exception.
 
   `Cldr.Math.float_to_ratio/2` is used to form a ratio that
@@ -925,6 +940,18 @@ defmodule Cldr.Number do
         part) and a ratio expressed as a fraction, or
 
       * raises an exception.
+
+  ### Notes
+
+  The availability of both "Integer with rational pattern" and "Integer with rational super_sub pattern"
+  is because ome fonts and rendering systems don’t properly handle the fraction slash, and the
+  user would see something like 51/2 (fifty-one halves) when 5½ is desired.
+
+  | Pattern                                   | Format         | Usage                                       | Description |
+  | :---------------------------------------- | :------------- | :------------------------------------------ | :---------- |
+  | Rational pattern                          | {0}⁄{1}        | All ratios                                  | The format for a rational fraction with arbitrary numerator and denominator; the English pattern uses the Unicode character ‘⁄’ U+2044 FRACTION SLASH which causes composition of fractions such as 22⁄7, when supported properly by rendering systems and fonts. |
+  | Integer with retional pattern             | {0} {1}        | prefer: :default                            | The format for combining an integer with a rational fraction that is composed using the `Rational` pattern; the English pattern uses U+202F NARROW NO-BREAK SPACE (NNBSP) to produce a _non-breaking thin space_. |
+  | Integer with rational "super sub" pattern | {0}⁠{1} | prefer: :super_sub and prefer: :precomposed | The format for combining an integer with a rational fraction that is composed using the rational pattern; the English pattern uses U+2060 WORD JOINER, a _zero-width no-break space_. |
 
   ### Examples
 

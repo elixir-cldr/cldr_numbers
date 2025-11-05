@@ -16,6 +16,7 @@ defmodule Cldr.Number.Doc.Test do
   doctest Cldr.Number.Formatter.Decimal
   doctest Cldr.Number.Formatter.Short
   doctest Cldr.Number.Formatter.Currency
+  doctest Cldr.Number.Formatter.Ratio
 
   doctest TestBackend.Cldr.Number.System
   doctest TestBackend.Cldr.Number
