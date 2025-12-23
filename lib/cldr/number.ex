@@ -184,7 +184,7 @@ defmodule Cldr.Number do
       number in a locale's language.  The applicable formats are `:spellout`,
       `:spellout_year` and `:ordinal`.  A number can also be formatted as roman
       numbers by using the format `:roman` or `:roman_lower`. If the format is
-      an RBNF format then the options `:gender` and/or `:grammatical_case` may also
+      an RBNF format then the options `:gender` and`:grammatical_case` may also
       be provided. If they are provided then they will be used to try to resolve
       an available RBNF rule for the given `:locale`.
 
@@ -344,6 +344,8 @@ defmodule Cldr.Number do
   * Finally, of not otherwise found, an attempt is made to find the format
     without the requested gender or grammatical case.
 
+  * If `;grammatical_case` is provided but not `:gender`, the `:grammatical_case`
+    is ignored.
 
   ### Returns
 
@@ -353,66 +355,69 @@ defmodule Cldr.Number do
 
   ### Examples
 
-      iex> Cldr.Number.to_string 12345, TestBackend.Cldr
+      iex> Cldr.Number.to_string(12345, TestBackend.Cldr)
       {:ok, "12,345"}
 
-      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, locale: "fr"
+      iex> Cldr.Number.to_string(12345, TestBackend.Cldr, locale: "fr")
       {:ok, "12 345"}
 
-      iex> Cldr.Number.to_string 1345.32, TestBackend.Cldr, currency: :EUR, locale: "es", minimum_grouping_digits: 1
+      iex> Cldr.Number.to_string(1345.32, TestBackend.Cldr, currency: :EUR, locale: "es", minimum_grouping_digits: 1)
       {:ok, "1.345,32 €"}
 
-      iex> Cldr.Number.to_string 1345.32, TestBackend.Cldr, currency: :EUR, locale: "es"
+      iex> Cldr.Number.to_string(1345.32, TestBackend.Cldr, currency: :EUR, locale: "es")
       {:ok, "1345,32 €"}
 
-      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, locale: "fr", currency: "USD"
+      iex> Cldr.Number.to_string(12345, TestBackend.Cldr, locale: "fr", currency: "USD")
       {:ok, "12 345,00 $US"}
 
-      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, format: "#E0"
+      iex> Cldr.Number.to_string(12345, TestBackend.Cldr, format: "#E0")
       {:ok, "1.2345E4"}
 
-      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, format: :accounting, currency: "THB"
+      iex> Cldr.Number.to_string(12345, TestBackend.Cldr, format: :accounting, currency: "THB")
       {:ok, "THB 12,345.00"}
 
-      iex> Cldr.Number.to_string -12345, TestBackend.Cldr, format: :accounting, currency: "THB"
+      iex> Cldr.Number.to_string(-12345, TestBackend.Cldr, format: :accounting, currency: "THB")
       {:ok, "(THB 12,345.00)"}
 
-      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, format: :accounting, currency: "THB",
-      ...> locale: "th"
+      iex> Cldr.Number.to_string(12345, TestBackend.Cldr, format: :accounting, currency: "THB",
+      ...> locale: "th")
       {:ok, "฿12,345.00"}
 
-      iex> Cldr.Number.to_string 12345, TestBackend.Cldr, format: :accounting, currency: "THB",
-      ...> locale: "th", number_system: :native
+      iex> Cldr.Number.to_string(12345, TestBackend.Cldr, format: :accounting, currency: "THB",
+      ...> locale: "th", number_system: :native)
       {:ok, "฿๑๒,๓๔๕.๐๐"}
 
-      iex> Cldr.Number.to_string 1244.30, TestBackend.Cldr, format: :long
+      iex> Cldr.Number.to_string(1244.30, TestBackend.Cldr, format: :long)
       {:ok, "1 thousand"}
 
-      iex> Cldr.Number.to_string 1244.30, TestBackend.Cldr, format: :long, currency: "USD"
+      iex> Cldr.Number.to_string(1244.30, TestBackend.Cldr, format: :long, currency: "USD")
       {:ok, "1,244 US dollars"}
 
-      iex> Cldr.Number.to_string 1244.30, TestBackend.Cldr, format: :short
+      iex> Cldr.Number.to_string(1244.30, TestBackend.Cldr, format: :short)
       {:ok, "1K"}
 
-      iex> Cldr.Number.to_string 1244.30, TestBackend.Cldr, format: :short, currency: "EUR"
+      iex> Cldr.Number.to_string(1244.30, TestBackend.Cldr, format: :short, currency: "EUR")
       {:ok, "€1K"}
 
-      iex> Cldr.Number.to_string 1234, TestBackend.Cldr, format: :spellout
+      iex> Cldr.Number.to_string(1234, TestBackend.Cldr, format: :spellout)
       {:ok, "one thousand two hundred thirty-four"}
 
-      iex> Cldr.Number.to_string 1234, TestBackend.Cldr, format: :spellout_verbose
+      iex> Cldr.Number.to_string(1234, TestBackend.Cldr, format: :spellout_verbose)
       {:ok, "one thousand two hundred and thirty-four"}
 
-      iex> Cldr.Number.to_string 1989, TestBackend.Cldr, format: :spellout_year
+      iex> Cldr.Number.to_string(1989, TestBackend.Cldr, format: :spellout_year)
       {:ok, "nineteen eighty-nine"}
 
-      iex> Cldr.Number.to_string 123, TestBackend.Cldr, format: :ordinal
+      iex> Cldr.Number.to_string(123, TestBackend.Cldr, format: :ordinal)
       {:ok, "123rd"}
 
-      iex> Cldr.Number.to_string 123, TestBackend.Cldr, format: :roman
+      iex> Cldr.Number.to_string(123, format: :ordinal, gender: :feminine, grammatical_case: :accusative, locale: :ru)
+      {:ok, "123-ю"}
+
+      iex> Cldr.Number.to_string(123, TestBackend.Cldr, format: :roman)
       {:ok, "CXXIII"}
 
-      iex> Cldr.Number.to_string 123, TestBackend.Cldr, locale: "th-u-nu-thai"
+      iex> Cldr.Number.to_string(123, TestBackend.Cldr, locale: "th-u-nu-thai")
       {:ok, "๑๒๓"}
 
   ### Errors

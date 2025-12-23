@@ -156,6 +156,38 @@ defmodule Rbnf.Test do
              {:ok, "ciento veintitrés punto cuatro cinco seis"}
   end
 
+  test "RBNF formatting with :gender" do
+    assert {:ok, "123-я"} = Cldr.Number.to_string(123, format: :ordinal, gender: :feminine, locale: :ru)
+    assert {:ok, "123-й"} = Cldr.Number.to_string(123, format: :ordinal, gender: :masculine, locale: :ru)
+    assert {:ok, "123-e"} = Cldr.Number.to_string(123, format: :ordinal, gender: :plural, locale: :ru)
+  end
+
+  test "RBNF formatting with :gender and :grammatical_case" do
+    assert {:ok, "123-й"} = Cldr.Number.to_string(123, format: :ordinal, gender: :feminine, grammatical_case: :genitive, locale: :ru)
+    assert {:ok, "123-ю"} = Cldr.Number.to_string(123, format: :ordinal, gender: :feminine, grammatical_case: :accusative, locale: :ru)
+    assert {:ok, "123-й"} = Cldr.Number.to_string(123, format: :ordinal, gender: :feminine, grammatical_case: :instrumental, locale: :ru)
+  end
+
+  test "RBNF formatting with :grammatical_case alone (which is ignored)" do
+    assert  {:ok, "123"} = Cldr.Number.to_string(123, format: :ordinal, grammatical_case: :instrumental, locale: :ru)
+  end
+
+  test "Invalid gender or grammatical case" do
+    assert Cldr.Number.to_string(123, format: :ordinal_invalid, grammatical_case: :instrumental, locale: :ru) ==
+      {:error,
+       {Elixir.Cldr.Rbnf.NoRule, "RBNF rule :ordinal_invalid is unknown to locale \"ru\""}}
+
+    assert Cldr.Number.to_string(123, format: :ordinal, gender: :invalid_gender, grammatical_case: :instrumental, locale: :ru) ==
+      {:error,
+        {Elixir.Cldr.Number.UnknownGenderError,
+         "The grammatical gender :invalid_gender is not known"}}
+
+    assert Cldr.Number.to_string 123, format: :ordinal, gender: :masculine, grammatical_case: :invalid, locale: :ru
+      {:error,
+        {Elixir.Cldr.Number.UnknownGrammaticalCaseError,
+         "The grammatical case :invalid is not known"}}
+  end
+
   Elixir.Cldr.Rbnf.TestSupport.rbnf_tests(fn name, tests, module, function, locale ->
     test name do
       Enum.each(unquote(Macro.escape(tests)), fn {test_data, test_result} ->
