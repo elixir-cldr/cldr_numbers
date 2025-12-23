@@ -587,17 +587,19 @@ defmodule Cldr.Number do
   # Look for the RBNF rule in the given locale or in the
   # root locale (called "und")
 
-  defp find_rbnf_format_module(format, backend, %Cldr.Number.Format.Options{locale: locale} = options) do
+  defp find_rbnf_format_module(format, backend, %Options{locale: locale} = options) do
     root_locale = Map.put(@root_locale, :backend, backend)
-    %Cldr.Number.Format.Options{gender: gender, grammatical_case: grammatical_case} = options
+    %Options{gender: gender, grammatical_case: grammatical_case} = options
 
     cond do
       module_and_function = find_rbnf_module(locale, format, gender, grammatical_case, backend) ->
         {module, function} = module_and_function
         {:ok, module, function, locale}
+
       module_and_function = find_rbnf_module(root_locale, format, gender, grammatical_case, backend) ->
         {module, function} = module_and_function
         {:ok, module, function, root_locale}
+
       true ->
         {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
     end
