@@ -94,3 +94,27 @@ defmodule Cldr.Number.NoRationalFormatError do
     %__MODULE__{message: message}
   end
 end
+
+defmodule Cldr.Number.UnknownGenderError do
+  @moduledoc """
+  Exception raised when when an unknown
+  grammatical gender is specified.
+  """
+  defexception [:message]
+
+  def exception(message) do
+    %__MODULE__{message: message}
+  end
+end
+
+defmodule Cldr.Number.UnknownGrammaticalCaseError do
+  @moduledoc """
+  Exception raised when when an unknown
+  grammatical case is specified.
+  """
+  defexception [:message]
+
+  def exception(message) do
+    %__MODULE__{message: message}
+  end
+end

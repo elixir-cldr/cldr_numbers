@@ -18,6 +18,8 @@ defmodule Cldr.Number.Format.Options do
     :number_system,
     :currency,
     :format,
+    :gender,
+    :grammatical_case,
     :currency_format,
     :currency_digits,
     :currency_spacing,
@@ -89,6 +91,50 @@ defmodule Cldr.Number.Format.Options do
     :us
   ]
 
+  # See https://unicode.org/reports/tr35/tr35-general.html#Case
+  @grammatical_case [
+    :abessive,
+    :ablative,
+    :accusative,
+    :adessive,
+    :allative,
+    :causal,
+    :comitative,
+    :dative,
+    :delative,
+    :elative,
+    :ergative,
+    :genitive,
+    :illative,
+    :inessive,
+    :instrumental,
+    :locative,
+    :localtivecopulative,
+    :nominative,
+    :oblique,
+    :partitive,
+    :prepositional,
+    :sociative,
+    :sublative,
+    :superessive,
+    :terminative,
+    :translative,
+    :vocative,
+    nil
+  ]
+
+  @grammatical_gender [
+    :animate,
+    :inanimate,
+    :personal,
+    :common,
+    :feminine,
+    :masculine,
+    :neuter,
+    :plural,
+    nil
+  ]
+
   @type fixed_format :: :standard | :currency | :accounting | :short | :long
   @type format :: binary() | fixed_format()
   @type currency_symbol :: :standard | :iso | :narrow | :symbol | :none
@@ -100,11 +146,18 @@ defmodule Cldr.Number.Format.Options do
           | :decimal_short
           | :decimal_long
 
+  type = &Enum.reduce(&1, fn x, acc -> {:|, [], [x, acc]} end)
+
+  @type gender :: unquote(type.(@grammatical_gender))
+  @type grammatical_case :: unquote(type.(@grammatical_case))
+
   @type t :: %__MODULE__{
           locale: LanguageTag.t(),
           number_system: System.system_name(),
           currency: Currency.t() | :from_locale,
           format: format(),
+          gender: gender(),
+          grammatical_case: grammatical_case(),
           currency_format: :currency | :accounting,
           currency_digits: pos_integer(),
           currency_spacing: map(),
@@ -120,6 +173,23 @@ defmodule Cldr.Number.Format.Options do
         }
 
   defstruct @options
+
+  @doc """
+  Returns the list of valid grammatical genders.
+
+  """
+  def grammatical_gender do
+    @grammatical_gender
+  end
+
+  @doc """
+  Returns the list of valid grammatical cases.
+
+  """
+  def grammatical_case do
+    @grammatical_case
+  end
+
 
   @spec validate_options(Cldr.Math.number_or_decimal(), Cldr.backend(), list({atom, term})) ::
           {:ok, t} | {:error, {module(), String.t()}}
@@ -355,6 +425,16 @@ defmodule Cldr.Number.Format.Options do
        "does not define a format #{inspect(format)}"}
   end
 
+  defp unknown_gender_error(gender) do
+    {Cldr.Number.UnknownGenderError,
+     "The grammatical gender #{inspect gender} is not known"}
+  end
+
+  defp unknown_grammatical_case_error(grammatical_case) do
+    {Cldr.Number.UnknownGrammaticalCaseError,
+     "The grammatical case #{inspect grammatical_case} is not known"}
+  end
+
   @currency_placeholder Compiler.placeholder(:currency)
   #  @iso_placeholder Compiler.placeholder(:currency) <> Compiler.placeholder(:currency)
 
@@ -579,6 +659,24 @@ defmodule Cldr.Number.Format.Options do
     else
       {:ok, :decimal_long}
     end
+  end
+
+  defp validate_option(:gender, _options, _backend, gender)
+      when gender in @grammatical_gender do
+    {:ok, gender}
+  end
+
+  defp validate_option(:gender, _options, _backend, gender) do
+    {:error, unknown_gender_error(gender)}
+  end
+
+  defp validate_option(:grammatical_case, _options, _backend, grammatical_case)
+      when grammatical_case in @grammatical_case do
+    {:ok, grammatical_case}
+  end
+
+  defp validate_option(:grammatical_case, _options, _backend, grammatical_case) do
+    {:error, unknown_grammatical_case_error(grammatical_case)}
   end
 
   @exclude_formats [

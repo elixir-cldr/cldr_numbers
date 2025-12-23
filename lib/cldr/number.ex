@@ -183,7 +183,10 @@ defmodule Cldr.Number do
       The most commonly used formats in this category are to spell out the
       number in a locale's language.  The applicable formats are `:spellout`,
       `:spellout_year` and `:ordinal`.  A number can also be formatted as roman
-      numbers by using the format `:roman` or `:roman_lower`.
+      numbers by using the format `:roman` or `:roman_lower`. If the format is
+      an RBNF format then the options `:gender` and/or `:grammatical_case` may also
+      be provided. If they are provided then they will be used to try to resolve
+      an available RBNF rule for the given `:locale`.
 
   * `currency`: is the currency for which the number is formatted. If `currency`
     is set and no `:format` is set, `:format` will be set to `:currency` as well.
@@ -319,6 +322,28 @@ defmodule Cldr.Number do
   with two parameters:  the format element as a string and an atom representing the
   element type. The wrapper function is required to return a string that is then
   inserted in the final formatted number.
+
+  ### RBNF with Grammatical Gender and Case
+
+  RBNF rules are used to format numbers - often to spell out a number
+  or format an ordinal number. In certain locales, such formats require
+  the specification of a grammatical gender (such as `:masculine`,
+  `:feminine` or `:neuter`) and/or grammatical case.
+
+  Not all locales have RBNF rules, and those that do have RBNF rules
+  may not have rules supporting grammatical gender or case. Therefore a
+  fallback mechansms is required.
+
+  * First, an attempt is made to find an RBNF rule
+    that combines the required format (such as `:spellout` or `:ordinal`) and
+    the specified gender and gramnmatical case.
+
+  * If not found, an attempt to find a rule that is the combnation of the
+    format plus the specified gender is made.
+
+  * Finally, of not otherwise found, an attempt is made to find the format
+    without the requested gender or grammatical case.
+
 
   ### Returns
 
@@ -497,15 +522,16 @@ defmodule Cldr.Number do
   end
 
   @format_mapping [
-    {:ordinal, :digits_ordinal, Ordinal},
-    {:spellout, :spellout_numbering, Spellout},
-    {:spellout_verbose, :spellout_numbering_verbose, Spellout},
-    {:spellout_year, :spellout_numbering_year, Spellout}
+    {:ordinal, :digits_ordinal},
+    {:spellout, :spellout_numbering},
+    {:spellout_verbose, :spellout_numbering_verbose},
+    {:spellout_year, :spellout_numbering_year}
   ]
 
-  for {format, function, module} <- @format_mapping do
+  for {format, expanded_format} <- @format_mapping do
     defp to_string(number, unquote(format), backend, options) do
-      evaluate_rule(number, unquote(module), unquote(function), options.locale, backend)
+      to_string(number, unquote(expanded_format), backend, options)
+      # evaluate_rule(number, unquote(module), unquote(function), options.locale, backend)
     end
   end
 
@@ -541,8 +567,8 @@ defmodule Cldr.Number do
 
   # For executing arbitrary RBNF rules that might exist for a given locale
   defp to_string(number, format, backend, options) when is_atom(format) do
-    with {:ok, module, locale} <- find_rbnf_format_module(options.locale, format, backend) do
-      apply(module, format, [number, locale])
+    with {:ok, module, function, locale} <- find_rbnf_format_module(format, backend, options) do
+      apply(module, function, [number, locale])
     end
   end
 
@@ -556,38 +582,63 @@ defmodule Cldr.Number do
   # Look for the RBNF rule in the given locale or in the
   # root locale (called "und")
 
-  defp find_rbnf_format_module(locale, format, backend) do
+  defp find_rbnf_format_module(format, backend, %Cldr.Number.Format.Options{locale: locale} = options) do
     root_locale = Map.put(@root_locale, :backend, backend)
+    %Cldr.Number.Format.Options{gender: gender, grammatical_case: grammatical_case} = options
 
     cond do
-      module = find_rbnf_module(locale, format, backend) -> {:ok, module, locale}
-      module = find_rbnf_module(root_locale, format, backend) -> {:ok, module, root_locale}
-      true -> {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
+      module_and_function = find_rbnf_module(locale, format, gender, grammatical_case, backend) ->
+        {module, function} = module_and_function
+        {:ok, module, function, locale}
+      module_and_function = find_rbnf_module(root_locale, format, gender, grammatical_case, backend) ->
+        {module, function} = module_and_function
+        {:ok, module, function, root_locale}
+      true ->
+        {:error, Cldr.Rbnf.rbnf_rule_error(locale, format)}
     end
   end
 
-  defp find_rbnf_module(locale, format, backend) do
+  defp find_rbnf_module(locale, format, nil, nil, backend) do
     Enum.reduce_while(Cldr.Rbnf.categories_for_locale!(locale), nil, fn category, acc ->
       format_module = Module.concat([backend, :Rbnf, category])
       rules = format_module.rule_sets(locale)
 
       if rules && format in rules do
-        {:halt, format_module}
+        {:halt, {format_module, format}}
       else
         {:cont, acc}
       end
     end)
   end
 
-  defp evaluate_rule(number, module, function, locale, backend) do
-    module = Module.concat([backend, :Rbnf, module])
-    rule_sets = module.rule_sets(locale)
+  defp find_rbnf_module(locale, format, gender, nil, backend) do
+    gendered_format = String.to_existing_atom("#{format}_#{gender}")
 
-    if rule_sets && function in rule_sets do
-      apply(module, function, [number, locale])
-    else
-      {:error, Cldr.Rbnf.rbnf_rule_error(locale, function)}
+    case find_rbnf_module(locale, gendered_format, nil, nil, backend) do
+      {format_module, format} ->
+        {format_module, format}
+
+      nil ->
+        find_rbnf_module(locale, format, nil, nil, backend)
     end
+
+  rescue ArgumentError ->
+    find_rbnf_module(locale, format, nil, nil, backend)
+  end
+
+  defp find_rbnf_module(locale, format, gender, grammatical_case, backend) do
+    gendered_cased_format = String.to_existing_atom("#{format}_#{gender}_#{grammatical_case}")
+
+    case find_rbnf_module(locale, gendered_cased_format, nil, nil, backend) do
+      {format_module, format} ->
+        {format_module, format}
+
+      nil ->
+        find_rbnf_module(locale, format, gender, nil, backend)
+    end
+
+  rescue ArgumentError ->
+    find_rbnf_module(locale, format, gender, nil, backend)
   end
 
   @doc """

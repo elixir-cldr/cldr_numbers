@@ -226,13 +226,13 @@ defmodule Cldr.Rbnf do
   end
 
   def rbnf_locale_error(%LanguageTag{} = locale) do
-    {Cldr.Rbnf.NotAvailable, "RBNF is not available for locale #{inspect(locale)}"}
+    {Cldr.Rbnf.NotAvailable, "RBNF is not available for locale #{inspect(to_string(locale))}"}
   end
 
   def rbnf_rule_error(%LanguageTag{} = locale, format) do
     {
       Cldr.Rbnf.NoRule,
-      "RBNF rule #{inspect(format)} is unknown to locale #{inspect(locale)}"
+      "RBNF rule #{inspect(format)} is unknown to locale #{inspect(to_string(locale))}"
     }
   end
 

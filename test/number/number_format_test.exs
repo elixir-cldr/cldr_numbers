@@ -66,7 +66,7 @@ defmodule Number.Format.Test do
                :error,
                {
                  Cldr.Rbnf.NoRule,
-                 "RBNF rule :spellout_ordinal_verbose is unknown to locale TestBackend.Cldr.Locale.new!(\"zh-Hans-CN\")"
+                 "RBNF rule :spellout_ordinal_verbose is unknown to locale \"zh\""
                }
              }
   end
