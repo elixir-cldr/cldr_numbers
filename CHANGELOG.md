@@ -2,11 +2,13 @@
 
 ## Cldr Numbers v2.37.0
 
-This is the changelog for Cldr v2.37.0 released on _______, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+This is the changelog for Cldr v2.37.0 released on December 23rd, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
 
 ### Enhancements
 
 * Adds `:gender` and `:grammatical_case` options to `Cldr.Number.to_string/3`. When `:format` is an [RBNF]() rule name, these parameters are used to resolve an grammatical gender and grammatical case appropriate rule in the given locale, if one exists. The default falls back to gender only, then a rule without gender or grammatical case. Both options are indeed optional.  Thanks to @tanguilp for the report and motivation. Closes #61.
+
+* Adds `Cldr.Number.Format.Options.valid_gender/0` and `Cldr.Number.Format.Options.valid_grammatical_case/0` to return a list of valid values for the `:gender` and `:grammatical_case` options to `Cldr.Number.to_string/3`.
 
 ## Cldr Numbers v2.36.0
 

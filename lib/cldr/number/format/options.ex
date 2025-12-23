@@ -178,7 +178,7 @@ defmodule Cldr.Number.Format.Options do
   Returns the list of valid grammatical genders.
 
   """
-  def grammatical_gender do
+  def valid_grammatical_gender do
     @grammatical_gender
   end
 
@@ -186,7 +186,7 @@ defmodule Cldr.Number.Format.Options do
   Returns the list of valid grammatical cases.
 
   """
-  def grammatical_case do
+  def valid_grammatical_case do
     @grammatical_case
   end
 
