@@ -50,7 +50,10 @@ defmodule Cldr.Numbers.Mixfile do
   defp deps do
     [
       {:ex_cldr, "~> 2.44"},
-      {:ex_cldr_currencies, "~> 2.16"},
+      #
+      # {:ex_cldr_currencies, "~> 2.16"},
+      {:ex_cldr_currencies, github: "elixir-cldr/cldr_currencies", branch: "custom_currency_code"},
+
       {:digital_token, "~> 0.3 or ~> 1.0"},
 
       {:decimal, "~> 1.6 or ~> 2.0"},

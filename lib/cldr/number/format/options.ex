@@ -613,7 +613,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp validate_option(:currency, options, backend, currency) do
-    with {:ok, currency_code} <- Cldr.validate_currency(currency),
+    with {:ok, currency_code} <- Cldr.Currency.validate_currency(currency),
          {:ok, currency} <-
            Cldr.Currency.currency_for_code(currency_code, backend, locale: options.locale) do
       {:ok, currency}
