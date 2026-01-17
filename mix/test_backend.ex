@@ -1,4 +1,4 @@
-require Cldr.Number.Backend
+{:module, _} = Code.ensure_compiled(Cldr.Number.Backend)
 
 defmodule MyApp.Cldr do
   @moduledoc false

@@ -54,7 +54,6 @@ defmodule Cldr.Number.Format do
 
   defstruct @format_styles ++ [:currency_spacing, :other, :rational]
 
-  require Cldr
   alias Cldr.Number.System
   alias Cldr.Locale
   alias Cldr.LanguageTag

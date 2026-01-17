@@ -4,7 +4,6 @@ defmodule Mix.Tasks.Cldr.Number.GenerateRbnfTestData do
   """
 
   use Mix.Task
-  require Logger
 
   @shortdoc "Generate RBNF test data"
 

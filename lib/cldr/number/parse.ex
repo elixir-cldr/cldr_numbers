@@ -881,7 +881,7 @@ defmodule Cldr.Number.Parser do
           ["", search]
         else
           match_length = match_length + :erlang.byte_size(whitespace)
-          <<_::binary-size(match_length), remainder::binary>> = search
+          <<_::binary-size(^match_length), remainder::binary>> = search
           [code, remainder]
         end
     end
@@ -905,7 +905,7 @@ defmodule Cldr.Number.Parser do
           [search, ""]
         else
           match = :erlang.byte_size(trimmed) - match_length
-          <<remainder::binary-size(match), _rest::binary>> = search
+          <<remainder::binary-size(^match), _rest::binary>> = search
           [remainder, code]
         end
     end
