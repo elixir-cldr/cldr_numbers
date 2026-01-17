@@ -10,7 +10,7 @@ This is the changelog for Cldr v2.38.0 released on January 18th, 2026.  For olde
 
 ### Enhancements
 
-* Add support for customer currencies when currency formatting.
+* Add support for custom currencies when currency formatting.
 
 ## Cldr Numbers v2.37.0
 
