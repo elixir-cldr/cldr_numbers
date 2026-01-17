@@ -1,5 +1,17 @@
 # Changelog
 
+## Cldr Numbers v2.38.0
+
+This is the changelog for Cldr v2.38.0 released on January 18th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix compile errors on Elixir 1.20.
+
+### Enhancements
+
+* Add support for customer currencies when currency formatting.
+
 ## Cldr Numbers v2.37.0
 
 This is the changelog for Cldr v2.37.0 released on December 23rd, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
