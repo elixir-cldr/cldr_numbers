@@ -6,7 +6,7 @@ defmodule Cldr.Number.Backend do
   end
 
   def define_number_modules(config) do
-    quote location: :keep do
+    quote location: :keep, generated: true do
       unquote(Cldr.Number.Backend.Number.define_number_module(config))
       unquote(Cldr.Number.Backend.Format.define_number_module(config))
       unquote(Cldr.Number.Backend.Transliterate.define_number_module(config))

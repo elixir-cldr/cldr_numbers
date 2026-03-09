@@ -6,7 +6,7 @@ defmodule Cldr.Number.Backend.Transliterate do
     backend = config.backend
     config = Macro.escape(config)
 
-    quote location: :keep, bind_quoted: [module: module, backend: backend, config: config] do
+    quote location: :keep, generated: true, bind_quoted: [module: module, backend: backend, config: config] do
       defmodule Number.Transliterate do
         @moduledoc false
         if Cldr.Config.include_module_docs?(config.generate_docs) do

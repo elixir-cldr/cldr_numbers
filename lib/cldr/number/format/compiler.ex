@@ -205,13 +205,13 @@ defmodule Cldr.Number.Format.Compiler do
     :decimal_formats_parser.parse(tokens)
   end
 
+  def parse("") do
+    {:error, "empty format string cannot be compiled"}
+  end
+
   def parse(definition) when is_binary(definition) do
     {:ok, tokens, _end_line} = tokenize(definition)
     tokens |> :decimal_formats_parser.parse()
-  end
-
-  def parse("") do
-    {:error, "empty format string cannot be compiled"}
   end
 
   def parse(nil) do
@@ -416,16 +416,6 @@ defmodule Cldr.Number.Format.Compiler do
   defp adjust_location(location, _count) do
     location
   end
-
-  # defp currency_location(parts) do
-  #   case Enum.reverse(parts) do
-  #     [{:currency, count} | _rest] ->
-  #       %{location: :last, symbol_count: count}
-  #
-  #     _other ->
-  #       nil
-  #   end
-  # end
 
   # If we have significant digits defined then they take
   # priority over using the default pattern for significant digits

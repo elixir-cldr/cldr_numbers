@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.38.1
+
+This is the changelog for Cldr v2.38.1 released on March 9th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Fix type system compile warnings on Elixir 1.20.0-rc.2 by marking `generated: true` where required.
+
 ## Cldr Numbers v2.38.0
 
 This is the changelog for Cldr v2.38.0 released on January 18th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

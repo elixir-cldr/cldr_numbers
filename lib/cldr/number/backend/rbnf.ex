@@ -5,7 +5,7 @@ defmodule Cldr.Number.Backend.Rbnf do
     backend = config.backend
     root_locale = Cldr.Config.root_locale_name()
 
-    quote location: :keep do
+    quote location: :keep, generated: true do
       defmodule Rbnf.NumberSystem do
         @moduledoc false
         if Cldr.Config.include_module_docs?(unquote(config.generate_docs)) do
