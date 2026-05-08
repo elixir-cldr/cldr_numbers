@@ -3,7 +3,7 @@ defmodule Cldr.Numbers.Mixfile do
 
   use Mix.Project
 
-  @version "2.38.1"
+  @version "2.38.2"
 
   def project do
     [
@@ -54,7 +54,7 @@ defmodule Cldr.Numbers.Mixfile do
 
       {:digital_token, "~> 0.3 or ~> 1.0"},
 
-      {:decimal, "~> 1.6 or ~> 2.0"},
+      {:decimal, "~> 1.6 or ~> 2.0 or ~> 3.0"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.18", only: [:dev, :release], optional: true, runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], optional: true, runtime: false},

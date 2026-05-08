@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.38.2
+
+This is the changelog for Cldr v2.38.2 released on May 9th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Adds support for `Decimal` version 3.0 to address a [CVE](https://github.com/ericmj/decimal/security/advisories/GHSA-rhv4-8758-jx7v). 
+
 ## Cldr Numbers v2.38.1
 
 This is the changelog for Cldr v2.38.1 released on March 16th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
