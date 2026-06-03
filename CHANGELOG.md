@@ -1,5 +1,14 @@
 # Changelog
 
+## Cldr Numbers v2.38.3
+
+This is the changelog for Cldr v2.38.3 released on June 3rd, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Adds support for `digital_token` configuration to be `"~> 1.0 or ~> 2.0"`. 
+
+
 ## Cldr Numbers v2.38.2
 
 This is the changelog for Cldr v2.38.2 released on May 9th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
