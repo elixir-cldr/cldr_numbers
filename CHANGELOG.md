@@ -6,8 +6,7 @@ This is the changelog for Cldr v2.38.3 released on June 3rd, 2026.  For older ch
 
 ### Bug Fixes
 
-* Adds support for `digital_token` configuration to be `"~> 1.0 or ~> 2.0"`. 
-
+* Adds support for `digital_token` configuration to be `"~> 1.0 or ~> 2.0"`. Thanks to @tomtaylor for the report. Closes #64.
 
 ## Cldr Numbers v2.38.2
 
