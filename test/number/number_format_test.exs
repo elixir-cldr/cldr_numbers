@@ -35,6 +35,37 @@ defmodule Number.Format.Test do
     assert {:ok, "1,234.00"} = TestBackend.Cldr.Number.to_string(1234, format: :currency)
   end
 
+  describe "to_string/3 with validated options" do
+    alias Cldr.Number.Format.Options
+
+    test "options validated for CHF 0 format CHF -70 as CHF -70.00" do
+      {:ok, options} =
+        Options.validate_options(0, TestBackend.Cldr, locale: "en", currency: :CHF)
+
+      assert Cldr.Number.to_string(-70, TestBackend.Cldr, options) == {:ok, "CHF -70.00"}
+    end
+
+    test "options validated for CHF -1 format CHF 70 as CHF 70.00" do
+      {:ok, options} =
+        Options.validate_options(-1, TestBackend.Cldr, locale: "en", currency: :CHF)
+
+      assert Cldr.Number.to_string(70, TestBackend.Cldr, options) == {:ok, "CHF 70.00"}
+    end
+
+    test "short options validated for 0 format -7000 as -7K" do
+      {:ok, options} = Options.validate_options(0, TestBackend.Cldr, locale: "en", format: :short)
+
+      assert Cldr.Number.to_string(-7000, TestBackend.Cldr, options) == {:ok, "-7K"}
+    end
+
+    test "long currency options validated for CHF 0 format CHF -70 as -70 Swiss francs" do
+      {:ok, options} =
+        Options.validate_options(0, TestBackend.Cldr, locale: "en", currency: :CHF, format: :long)
+
+      assert Cldr.Number.to_string(-70, TestBackend.Cldr, options) == {:ok, "-70 Swiss francs"}
+    end
+  end
+
   test "that -0 is formatted as 0" do
     number = Decimal.new("-0")
     assert TestBackend.Cldr.Number.to_string(number) == {:ok, "0"}
