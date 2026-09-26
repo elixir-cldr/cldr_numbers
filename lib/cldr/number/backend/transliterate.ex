@@ -181,6 +181,24 @@ defmodule Cldr.Number.Backend.Transliterate do
         for locale_name <- Cldr.Locale.Loader.known_locale_names(config),
             {name, symbols} <- Config.number_symbols_for!(locale_name, config),
             !is_nil(symbols) do
+          # Some locales use other separators for currencies. For example "fr-CH"
+          # uses "," as the decimal separator but "." when formatting a currency.
+          for {placeholder, separator} <- [
+                group: symbols.currency_group,
+                decimal: symbols.currency_decimal
+              ],
+              separator do
+            defp transliterate_char(
+                   unquote(Compiler.placeholder(placeholder)),
+                   %LanguageTag{cldr_locale_name: unquote(locale_name)},
+                   unquote(name),
+                   %{currency: currency}
+                 )
+                 when not is_nil(currency) do
+              unquote(separator)
+            end
+          end
+
           # Mapping for the grouping separator
           defp transliterate_char(
                  unquote(Compiler.placeholder(:group)),
