@@ -169,10 +169,12 @@ defmodule Cldr.Number.Format.Options do
           maximum_integer_digits: pos_integer(),
           round_nearest: pos_integer(),
           wrapper: (String.t(), atom -> String.t()),
-          separators: separators()
+          separators: separators(),
+          approximately: boolean() | nil
         }
 
-  defstruct @options
+  # `approximately` is set by `Cldr.Number.to_approx_string/3`, not by the caller.
+  defstruct @options ++ [:approximately]
 
   @doc """
   Returns the list of valid grammatical genders.

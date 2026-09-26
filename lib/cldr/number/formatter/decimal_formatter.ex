@@ -575,7 +575,7 @@ defmodule Cldr.Number.Formatter.Decimal do
 
   @doc false
   def assemble_format(number_string, meta, backend, options) do
-    format = meta.format[options.pattern]
+    format = sign_format(meta.format, options)
     number = meta.number
 
     formatted =
@@ -584,6 +584,22 @@ defmodule Cldr.Number.Formatter.Decimal do
       |> String.trim_trailing()
 
     formatted
+  end
+
+  # CLDR formats an approximate number with the approximately sign in the
+  # place of the minus sign, so a positive number takes the negative pattern.
+  # When that pattern has no minus sign, as in "(#)", the sign goes before
+  # the positive pattern. ICU does the same.
+  defp sign_format(format, %{approximately: true, pattern: :positive}) do
+    negative = format[:negative]
+
+    if Keyword.has_key?(negative, :minus),
+      do: negative,
+      else: [{:minus, ~c"-"} | format[:positive]]
+  end
+
+  defp sign_format(format, options) do
+    format[options.pattern]
   end
 
   defp assemble_parts(
@@ -708,8 +724,22 @@ defmodule Cldr.Number.Formatter.Decimal do
          meta,
          %{wrapper: wrapper} = options
        ) do
+    %{symbols: symbols} = options
+
     sign =
-      if(number_string == "0", do: "", else: options.symbols.minus_sign)
+      case options do
+        %{approximately: true, pattern: :negative} ->
+          symbols.approximately_sign <> symbols.minus_sign
+
+        %{approximately: true} ->
+          symbols.approximately_sign
+
+        _other when number_string == "0" ->
+          ""
+
+        _other ->
+          symbols.minus_sign
+      end
       |> maybe_wrap(:minus, wrapper)
 
     [sign | assemble_parts(rest, number_string, number, backend, meta, options)]

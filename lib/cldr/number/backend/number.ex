@@ -475,8 +475,8 @@ defmodule Cldr.Number.Backend.Number do
         end
 
         @doc """
-        Formats a number and applies the `:approximately` format for
-        a locale and number system.
+        Formats a number as approximate. The locale's approximately sign
+        takes the place of the minus sign, as CLDR specifies.
 
         ## Arguments
 
