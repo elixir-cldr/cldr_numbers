@@ -21,7 +21,8 @@ defmodule Cldr.Number.Symbol do
     :percent_sign,
     :plus_sign,
     :superscripting_exponent,
-    :time_separator
+    :time_separator,
+    :approximately_sign
   ]
 
   @type t :: %__MODULE__{
@@ -36,8 +37,30 @@ defmodule Cldr.Number.Symbol do
           percent_sign: String.t(),
           plus_sign: String.t(),
           superscripting_exponent: String.t(),
-          time_separator: String.t()
+          time_separator: String.t(),
+          approximately_sign: String.t()
         }
+
+  # TODO(revert: ex_cldr releases Cldr.Config.number_symbol!/1 from rubas/cldr#1):
+  # the backend then builds its symbols with Cldr.Config.number_symbols_for!/2
+  # and this function goes.
+
+  # CLDR number symbols left out by name. `time_separator_alt_variant` is the
+  # "." that nb, nn, no and sv use as an alternative time separator. No
+  # formatter reads it.
+  @excluded_symbols [:time_separator_alt_variant]
+
+  # TODO(revert: rubas/cldr_numbers#1 merges): #1 adds these fields.
+  @pending_symbols [:currency_decimal, :currency_group]
+
+  @doc false
+  # Builds the struct from the CLDR symbols of one number system. A symbol
+  # that is neither a field nor listed above raises, so new CLDR data cannot
+  # be dropped without a decision.
+  def new!(symbols) do
+    pending = @pending_symbols -- Map.keys(%__MODULE__{})
+    struct!(__MODULE__, Map.drop(symbols, @excluded_symbols ++ pending))
+  end
 
   @doc """
   Returns a map of `Cldr.Number.Symbol.t` structs of the number symbols for each
@@ -59,6 +82,7 @@ defmodule Cldr.Number.Symbol do
         :ok,
         %{
           latn: %Cldr.Number.Symbol{
+            approximately_sign: "~",
             decimal: %{standard: "."},
             exponential: "E",
             group: %{standard: ","},
@@ -73,6 +97,7 @@ defmodule Cldr.Number.Symbol do
             time_separator: ":"
           },
           thai: %Cldr.Number.Symbol{
+            approximately_sign: "~",
             decimal: %{standard: "."},
             exponential: "E",
             group: %{standard: ","},
@@ -119,6 +144,7 @@ defmodule Cldr.Number.Symbol do
       {
         :ok,
         %Cldr.Number.Symbol{
+          approximately_sign: "~",
           decimal: %{standard: "."},
           exponential: "E",
           group: %{standard: ","},
