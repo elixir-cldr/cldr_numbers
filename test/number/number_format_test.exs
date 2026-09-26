@@ -64,6 +64,15 @@ defmodule Number.Format.Test do
 
       assert Cldr.Number.to_string(-70, TestBackend.Cldr, options) == {:ok, "-70 Swiss francs"}
     end
+
+    test "range -5..5 formats as -5–5" do
+      assert Cldr.Number.to_range_string(-5..5, TestBackend.Cldr, locale: "en") == {:ok, "-5–5"}
+    end
+
+    test "ratio -1.5 with precomposed fractions formats as -1 ½" do
+      options = [locale: "en", prefer: :precomposed]
+      assert Cldr.Number.to_ratio_string(-1.5, TestBackend.Cldr, options) == {:ok, "-1 ½"}
+    end
   end
 
   test "that -0 is formatted as 0" do
