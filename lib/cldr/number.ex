@@ -467,8 +467,12 @@ defmodule Cldr.Number do
 
   # Pre-processed options which is nearly twice as
   # fast as non-preprocessed.  See
-  # Cldr.Number.Options.validate_options/3
+  # Cldr.Number.Options.validate_options/3. The sign
+  # pattern comes from the number being formatted so the
+  # same options format numbers of either sign.
   def to_string(number, backend, %Options{} = options) do
+    options = Options.set_pattern(options, number)
+
     case to_string(number, options.format, backend, options) do
       {:error, reason} -> {:error, reason}
       string -> {:ok, string}

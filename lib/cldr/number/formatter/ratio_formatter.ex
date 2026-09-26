@@ -115,13 +115,10 @@ defmodule Cldr.Number.Formatter.Ratio do
   end
 
   defp format_integer_and_fraction(integer, fraction, formats, backend, ratio_options, number_options) do
-    fraction_options =
-      if integer > 0, do: number_options, else: Map.put(number_options, :pattern, :positive)
-
     with {:ok, integer_string} <-
             Cldr.Number.to_string(integer, backend, number_options),
          {:ok, fraction_string} <-
-            format_fraction(fraction, formats, backend, ratio_options, fraction_options) do
+            format_fraction(abs(fraction), formats, backend, ratio_options, number_options) do
 
       ratio_format =
         if :super_sub in ratio_options[:prefer],
@@ -171,10 +168,8 @@ defmodule Cldr.Number.Formatter.Ratio do
   end
 
   defp format_fraction({numerator, denominator}, formats, backend, ratio_options, number_options, _precomposed?) do
-    denominator_options = Map.put(number_options, :pattern, :positive)
-
     with {:ok, numerator_string} <- Cldr.Number.to_string(numerator, backend, number_options),
-         {:ok, denominator_string} <- Cldr.Number.to_string(denominator, backend, denominator_options) do
+         {:ok, denominator_string} <- Cldr.Number.to_string(denominator, backend, number_options) do
 
       fraction_format =
         formats.rational_pattern.default

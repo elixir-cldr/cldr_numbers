@@ -523,19 +523,20 @@ defmodule Cldr.Number.Format.Options do
     end
   end
 
-  defp set_pattern(options, number) when is_map(options) and is_number(number) and number < 0 do
+  @doc false
+  def set_pattern(options, number) when is_map(options) and is_number(number) and number < 0 do
     Map.put(options, :pattern, :negative)
   end
 
-  defp set_pattern(options, %Decimal{sign: sign}) when is_map(options) and sign < 0 do
+  def set_pattern(options, %Decimal{sign: sign}) when is_map(options) and sign < 0 do
     Map.put(options, :pattern, :negative)
   end
 
-  defp set_pattern(options, _number) when is_map(options) do
+  def set_pattern(options, _number) when is_map(options) do
     Map.put(options, :pattern, :positive)
   end
 
-  defp set_pattern(other, _number) do
+  def set_pattern(other, _number) do
     other
   end
 
