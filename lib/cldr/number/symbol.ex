@@ -12,6 +12,8 @@ defmodule Cldr.Number.Symbol do
   defstruct [
     :decimal,
     :group,
+    :currency_decimal,
+    :currency_group,
     :exponential,
     :infinity,
     :list,
@@ -27,6 +29,8 @@ defmodule Cldr.Number.Symbol do
   @type t :: %__MODULE__{
           decimal: String.t(),
           group: String.t(),
+          currency_decimal: String.t() | nil,
+          currency_group: String.t() | nil,
           exponential: String.t(),
           infinity: String.t(),
           list: String.t(),
