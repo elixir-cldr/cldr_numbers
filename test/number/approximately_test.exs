@@ -48,4 +48,29 @@ defmodule Cldr.Number.ApproximatelyTest do
                format: :accounting
              )
   end
+
+  test "en formats approximately negative 1234 USD in accounting as \"($1,234.00)\", with no sign position for \"~\"" do
+    assert {:ok, "($1,234.00)"} ==
+             TestBackend.Cldr.Number.to_approx_string(-1234,
+               locale: "en",
+               currency: :USD,
+               format: :accounting
+             )
+  end
+
+  # The library formats Decimal -0 like 0, so approximately -0 is "~0". ICU gives "~-0".
+  test "en formats approximately Decimal -0 as \"~0\"" do
+    assert {:ok, "~0"} ==
+             TestBackend.Cldr.Number.to_approx_string(Decimal.new("-0"), locale: "en")
+  end
+
+  # The sign goes where this library puts the minus sign of a currency
+  # amount, after the symbol ("$-70,000.00"; ICU gives "-$70,000.00").
+  test "en formats -70000 CHF in :currency_long_with_symbol as \"CHF-70 thousand\", with one sign" do
+    options = [locale: "en", currency: :CHF, format: :currency_long_with_symbol]
+
+    assert {:ok, "CHF-70 thousand"} == TestBackend.Cldr.Number.to_string(-70_000, options)
+    assert {:ok, "CHF~70 thousand"} == TestBackend.Cldr.Number.to_approx_string(70_000, options)
+    assert {:ok, "CHF~-70 thousand"} == TestBackend.Cldr.Number.to_approx_string(-70_000, options)
+  end
 end

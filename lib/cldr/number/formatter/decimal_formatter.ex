@@ -725,20 +725,13 @@ defmodule Cldr.Number.Formatter.Decimal do
          %{wrapper: wrapper} = options
        ) do
     %{symbols: symbols} = options
+    minus = if number_string == "0", do: "", else: symbols.minus_sign
 
     sign =
       case options do
-        %{approximately: true, pattern: :negative} ->
-          symbols.approximately_sign <> symbols.minus_sign
-
-        %{approximately: true} ->
-          symbols.approximately_sign
-
-        _other when number_string == "0" ->
-          ""
-
-        _other ->
-          symbols.minus_sign
+        %{approximately: true, pattern: :negative} -> symbols.approximately_sign <> minus
+        %{approximately: true} -> symbols.approximately_sign
+        _other -> minus
       end
       |> maybe_wrap(:minus, wrapper)
 
