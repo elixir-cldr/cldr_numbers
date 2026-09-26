@@ -6,6 +6,7 @@ defmodule Number.Symbol.Test do
 
     assert symbols ==
                 %Cldr.Number.Symbol{
+                  approximately_sign: "~",
                   decimal: %{standard: "."},
                   exponential: "E",
                   group: %{standard: ","},
@@ -19,6 +20,18 @@ defmodule Number.Symbol.Test do
                   superscripting_exponent: "×",
                   time_separator: ":"
                 }
+  end
+
+  test "nb's latn symbols keep the approximately sign \"ca.\" and leave out the alternative time separator \".\"" do
+    {:ok, symbols} = TestBackend.Cldr.Number.Symbol.number_symbols_for("nb", :latn)
+
+    assert %Cldr.Number.Symbol{approximately_sign: "ca.", time_separator: ":"} = symbols
+  end
+
+  test "a CLDR number symbol that Cldr.Number.Symbol does not know raises" do
+    assert_raise KeyError, ~r/key :digit_marker not found/, fn ->
+      Cldr.Number.Symbol.new!(%{decimal: %{standard: "."}, digit_marker: "#"})
+    end
   end
 
   test "that we raise an error if we get minimum digits for an invalid locale" do

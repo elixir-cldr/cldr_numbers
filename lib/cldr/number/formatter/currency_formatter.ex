@@ -61,7 +61,9 @@ defmodule Cldr.Number.Formatter.Currency do
     decimal_options = decimal_options(options, backend, number)
     decimal_format = decimal_options.format
 
+    # The currency format adds the sign, so the long number has none.
     number
+    |> unsigned()
     |> Cldr.Number.to_string!(backend, long_options(options))
     |> Formatter.Decimal.to_string(decimal_format, backend, decimal_options)
   end
@@ -110,10 +112,15 @@ defmodule Cldr.Number.Formatter.Currency do
     options
   end
 
+  defp unsigned(%Decimal{} = number), do: Decimal.abs(number)
+  defp unsigned(number), do: abs(number)
+
   defp long_options(options) do
     options
     |> Map.put(:format, :decimal_long)
     |> Map.put(:currency, nil)
+    |> Map.put(:pattern, :positive)
+    |> Map.put(:approximately, nil)
   end
 
   defp decimal_options(options, backend, number) do

@@ -20,7 +20,7 @@ defmodule Cldr.Number.Backend.Symbol do
               |> Map.get(:number_symbols)
               |> Enum.map(fn
                 {number_system, nil} -> {number_system, nil}
-                {number_system, symbols} -> {number_system, struct(Cldr.Number.Symbol, symbols)}
+                {number_system, symbols} -> {number_system, Cldr.Number.Symbol.new!(symbols)}
               end)
               |> Enum.into(%{})
 
@@ -47,6 +47,7 @@ defmodule Cldr.Number.Backend.Symbol do
               :ok,
               %{
                 latn: %Cldr.Number.Symbol{
+                  approximately_sign: "~",
                   decimal: %{standard: "."},
                   exponential: "E",
                   group: %{standard: ","},
@@ -61,6 +62,7 @@ defmodule Cldr.Number.Backend.Symbol do
                   time_separator: ":"
                 },
                 thai: %Cldr.Number.Symbol{
+                  approximately_sign: "~",
                   decimal: %{standard: "."},
                   exponential: "E",
                   group: %{standard: ","},
