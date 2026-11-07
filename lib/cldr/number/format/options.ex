@@ -136,7 +136,10 @@ defmodule Cldr.Number.Format.Options do
   ]
 
   @type fixed_format :: :standard | :currency | :accounting | :short | :long
-  @type format :: binary() | fixed_format()
+
+  # A format is a pattern, a fixed format, a short format style, or the
+  # name of an RBNF rule such as `:spellout` or `:roman`.
+  @type format :: binary() | fixed_format() | short_format_style() | atom()
   @type currency_symbol :: :standard | :iso | :narrow | :symbol | :none
   @type separators :: :standard | :us
   @type short_format_style ::
