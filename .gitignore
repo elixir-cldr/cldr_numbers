@@ -25,3 +25,5 @@ erl_crash.dump
 # mis
 mise.toml
 
+# Claude Code session context
+CLAUDE.local.md

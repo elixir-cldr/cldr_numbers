@@ -1,10 +1,7 @@
-Primarily to integrate better with MF2
+# TODO
 
-* Support the Intl.Number options (see their docs)
-* Support separate minimum_fractional_digits and maximum_fractional_digits, not just fractional_digits
-* Investigate significant digits
-* Investigate compact format
-* Investigate signDisplay, notation
+Known defects and parked work in `ex_cldr_numbers`. The library is in maintenance mode (see `STATUS.md`): defects users report are fixed and released, while defects found in review are recorded here and deferred, because development time goes to Localize. An item is revived when someone reports it.
 
-* Fix The type needs to be :Cardinal / :Ordinal (capitalized). for the function Cldr.Number.PluralRule.plural_type(123, type: Ordinal)  :few
-* Fix the doctests for the function, the formatting is wrong (not indented enough)
+## Deferred
+
+* [ ] **ECMA-402 number options for MF2** — separate minimum and maximum fraction digits (not only `:fractional_digits`), significant digits, compact notation, `signDisplay` and `notation`, so MF2 number functions map onto the formatter. Functional work, parked by maintenance mode; Localize carries it.
