@@ -467,8 +467,12 @@ defmodule Cldr.Number do
 
   # Pre-processed options which is nearly twice as
   # fast as non-preprocessed.  See
-  # Cldr.Number.Options.validate_options/3
+  # Cldr.Number.Options.validate_options/3. The sign
+  # pattern comes from the number being formatted so the
+  # same options format numbers of either sign.
   def to_string(number, backend, %Options{} = options) do
+    options = Options.set_pattern(options, number)
+
     case to_string(number, options.format, backend, options) do
       {:error, reason} -> {:error, reason}
       string -> {:ok, string}
@@ -596,7 +600,8 @@ defmodule Cldr.Number do
         {module, function} = module_and_function
         {:ok, module, function, locale}
 
-      module_and_function = find_rbnf_module(root_locale, format, gender, grammatical_case, backend) ->
+      module_and_function =
+          find_rbnf_module(root_locale, format, gender, grammatical_case, backend) ->
         {module, function} = module_and_function
         {:ok, module, function, root_locale}
 
@@ -628,9 +633,9 @@ defmodule Cldr.Number do
       nil ->
         find_rbnf_module(locale, format, nil, nil, backend)
     end
-
-  rescue ArgumentError ->
-    find_rbnf_module(locale, format, nil, nil, backend)
+  rescue
+    ArgumentError ->
+      find_rbnf_module(locale, format, nil, nil, backend)
   end
 
   defp find_rbnf_module(locale, format, gender, grammatical_case, backend) do
@@ -643,9 +648,9 @@ defmodule Cldr.Number do
       nil ->
         find_rbnf_module(locale, format, gender, nil, backend)
     end
-
-  rescue ArgumentError ->
-    find_rbnf_module(locale, format, gender, nil, backend)
+  rescue
+    ArgumentError ->
+      find_rbnf_module(locale, format, gender, nil, backend)
   end
 
   @doc """

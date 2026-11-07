@@ -190,7 +190,6 @@ defmodule Cldr.Number.Format.Options do
     @grammatical_case
   end
 
-
   @spec validate_options(Cldr.Math.number_or_decimal(), Cldr.backend(), list({atom, term})) ::
           {:ok, t} | {:error, {module(), String.t()}}
 
@@ -426,13 +425,12 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp unknown_gender_error(gender) do
-    {Cldr.Number.UnknownGenderError,
-     "The grammatical gender #{inspect gender} is not known"}
+    {Cldr.Number.UnknownGenderError, "The grammatical gender #{inspect(gender)} is not known"}
   end
 
   defp unknown_grammatical_case_error(grammatical_case) do
     {Cldr.Number.UnknownGrammaticalCaseError,
-     "The grammatical case #{inspect grammatical_case} is not known"}
+     "The grammatical case #{inspect(grammatical_case)} is not known"}
   end
 
   @currency_placeholder Compiler.placeholder(:currency)
@@ -458,7 +456,7 @@ defmodule Cldr.Number.Format.Options do
   # symbols,decimal with that separator.
 
   defp maybe_adjust_decimal_symbol(%{currency: %{decimal_separator: decimal_separator}} = options)
-      when not is_nil(decimal_separator) do
+       when not is_nil(decimal_separator) do
     symbols = Map.put(options.symbols, :decimal, decimal_separator)
     %{options | symbols: symbols}
   end
@@ -523,19 +521,20 @@ defmodule Cldr.Number.Format.Options do
     end
   end
 
-  defp set_pattern(options, number) when is_map(options) and is_number(number) and number < 0 do
+  @doc false
+  def set_pattern(options, number) when is_map(options) and is_number(number) and number < 0 do
     Map.put(options, :pattern, :negative)
   end
 
-  defp set_pattern(options, %Decimal{sign: sign}) when is_map(options) and sign < 0 do
+  def set_pattern(options, %Decimal{sign: sign}) when is_map(options) and sign < 0 do
     Map.put(options, :pattern, :negative)
   end
 
-  defp set_pattern(options, _number) when is_map(options) do
+  def set_pattern(options, _number) when is_map(options) do
     Map.put(options, :pattern, :positive)
   end
 
-  defp set_pattern(other, _number) do
+  def set_pattern(other, _number) do
     other
   end
 
@@ -576,7 +575,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp validate_option(:separators, _options, _backend, separators)
-      when separators in @valid_separators do
+       when separators in @valid_separators do
     {:ok, separators}
   end
 
@@ -662,7 +661,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp validate_option(:gender, _options, _backend, gender)
-      when gender in @grammatical_gender do
+       when gender in @grammatical_gender do
     {:ok, gender}
   end
 
@@ -671,7 +670,7 @@ defmodule Cldr.Number.Format.Options do
   end
 
   defp validate_option(:grammatical_case, _options, _backend, grammatical_case)
-      when grammatical_case in @grammatical_case do
+       when grammatical_case in @grammatical_case do
     {:ok, grammatical_case}
   end
 
