@@ -19,13 +19,15 @@ defmodule Mix.Tasks.Cldr.Number.GenerateRbnfTestData do
   @doc false
   def run(_) do
     for locale <- @locales do
-      IO.puts "Generating RBNF test data for locale #{locale}"
+      IO.puts("Generating RBNF test data for locale #{locale}")
 
       tests =
         "#{@output_directory}/#{locale}/rbnf_test.json"
         |> File.read!()
         |> Jason.decode!()
-        |> Enum.map(fn {rule_group, rule_examples} -> {rule_group, generate_tests(locale, rule_examples)} end)
+        |> Enum.map(fn {rule_group, rule_examples} ->
+          {rule_group, generate_tests(locale, rule_examples)}
+        end)
         |> Map.new()
         |> Jason.encode!(pretty: true)
 
@@ -40,12 +42,15 @@ defmodule Mix.Tasks.Cldr.Number.GenerateRbnfTestData do
         |> String.replace("-", "_")
         |> String.to_atom()
 
-      IO.puts "  Building examples for rule #{rule}"
+      IO.puts("  Building examples for rule #{rule}")
 
       examples =
         Enum.map(examples, fn {number, _result} ->
           int = String.to_integer(number)
-          {:ok, result} = Cldr.Number.to_string int, format: rule, locale: locale, backend: TestBackend.Cldr
+
+          {:ok, result} =
+            Cldr.Number.to_string(int, format: rule, locale: locale, backend: TestBackend.Cldr)
+
           {number, result}
         end)
         |> Map.new()

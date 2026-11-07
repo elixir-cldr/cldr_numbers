@@ -737,7 +737,9 @@ defmodule Cldr.Number.Parser do
 
     separator_type = Keyword.get(options, :separators, :standard)
     group_separator = Map.get(symbols.group, separator_type) || Map.get(symbols.group, :standard)
-    decimal_separator = Map.get(symbols.decimal, separator_type) || Map.get(symbols.decimal, :standard)
+
+    decimal_separator =
+      Map.get(symbols.decimal, separator_type) || Map.get(symbols.decimal, :standard)
 
     string
     |> String.replace("[-+]", "[" <> plus_matchers <> minus_matchers <> "]")

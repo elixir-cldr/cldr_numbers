@@ -121,7 +121,6 @@ defmodule Cldr.Number.Format.Compiler do
 
   @rounding_pattern "[" <> @digit_omit_zeroes <> @significant_digit <> @grouping_separator <> "]"
 
-
   # Default rounding increment (not the same as rounding decimal
   # digits.  `0` means no rounding increment to be applied.
   @default_round_nearest 0
@@ -690,7 +689,7 @@ defmodule Cldr.Number.Format.Compiler do
   @min_significant_digits "(?<ats>" <> @significant_digit <> "+)"
   @max_significant_digits "(?<hashes>" <> @digit_omit_zeroes <> "*)?"
   @leading_digits "([" <> @digit_omit_zeroes <> @grouping_separator <> "]" <> "*)?"
-  @significant_digits_match  @leading_digits <> @min_significant_digits <> @max_significant_digits
+  @significant_digits_match @leading_digits <> @min_significant_digits <> @max_significant_digits
 
   defp significant_digits(%{
          "compact_integer" => integer_format,

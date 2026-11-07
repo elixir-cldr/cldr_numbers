@@ -4,7 +4,7 @@ defmodule Cldr.Rbnf.TestSupport do
   def rbnf_tests(fun) when is_function(fun) do
     locales = TestBackend.Cldr.known_locale_names()
 
-    _force_atom_instantiation =  [OrdinalRules, CardinalRules]
+    _force_atom_instantiation = [OrdinalRules, CardinalRules]
 
     for locale_name <- locales,
         locale_name not in @test_data_needs_correcting do

@@ -665,7 +665,7 @@ defmodule Cldr.Number.Format do
   def decimal_format_styles_for(%LanguageTag{} = locale, number_system, backend) do
     with {:ok, styles} <- format_styles_for(locale, number_system, backend),
          {:ok, short_styles} <- short_format_styles_for(locale, number_system, backend) do
-      {:ok, styles -- short_styles -- [:currency_long, :currency_spacing, :other, :rational]}
+      {:ok, styles -- (short_styles -- [:currency_long, :currency_spacing, :other, :rational])}
     end
   end
 
