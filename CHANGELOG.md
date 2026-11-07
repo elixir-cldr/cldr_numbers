@@ -8,6 +8,8 @@ This is the changelog for Cldr v2.38.4 released on November 8th, 2026.  For olde
 
 * Take the sign from each number formatted with a validated `Cldr.Number.Format.Options` struct, which kept the sign of the number it was validated with. This also fixes ranges that cross zero (`-5..5` gave "-5–-5"). Thanks to @rubas for the PR. Closes #65.
 
+* Format currency amounts with CLDR's currency separators where a locale has them: `fr-CH` now gives "70.00 CHF" and `de-AT` "€ 1.234,56". Plain numbers keep the number separators, and `Cldr.Number.Parser` still reads only those, so these currency amounts do not parse back. Thanks to @rubas for the PR. Closes #66.
+
 ## Cldr Numbers v2.38.3
 
 This is the changelog for Cldr v2.38.3 released on June 3rd, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

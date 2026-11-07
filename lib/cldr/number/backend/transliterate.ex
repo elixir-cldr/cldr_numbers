@@ -6,7 +6,9 @@ defmodule Cldr.Number.Backend.Transliterate do
     backend = config.backend
     config = Macro.escape(config)
 
-    quote location: :keep, generated: true, bind_quoted: [module: module, backend: backend, config: config] do
+    quote location: :keep,
+          generated: true,
+          bind_quoted: [module: module, backend: backend, config: config] do
       defmodule Number.Transliterate do
         @moduledoc false
         if Cldr.Config.include_module_docs?(config.generate_docs) do
@@ -155,7 +157,8 @@ defmodule Cldr.Number.Backend.Transliterate do
         end
 
         # String locale name needs validation
-        def transliterate(sequence, locale_name, number_system, options) when is_binary(locale_name) do
+        def transliterate(sequence, locale_name, number_system, options)
+            when is_binary(locale_name) do
           with {:ok, locale} <- Module.concat(unquote(backend), :Locale).new(locale_name) do
             transliterate(sequence, locale, number_system, options)
           end
@@ -181,6 +184,24 @@ defmodule Cldr.Number.Backend.Transliterate do
         for locale_name <- Cldr.Locale.Loader.known_locale_names(config),
             {name, symbols} <- Config.number_symbols_for!(locale_name, config),
             !is_nil(symbols) do
+          # Some locales use other separators for currencies. For example "fr-CH"
+          # uses "," as the decimal separator but "." when formatting a currency.
+          for {placeholder, separator} <- [
+                group: symbols.currency_group,
+                decimal: symbols.currency_decimal
+              ],
+              separator do
+            defp transliterate_char(
+                   unquote(Compiler.placeholder(placeholder)),
+                   %LanguageTag{cldr_locale_name: unquote(locale_name)},
+                   unquote(name),
+                   %{currency: currency}
+                 )
+                 when not is_nil(currency) do
+              unquote(separator)
+            end
+          end
+
           # Mapping for the grouping separator
           defp transliterate_char(
                  unquote(Compiler.placeholder(:group)),
