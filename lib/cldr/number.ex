@@ -724,8 +724,8 @@ defmodule Cldr.Number do
   end
 
   @doc """
-  Formats a number and applies the `:approximately` format for
-  a locale and number system.
+  Formats a number as approximate. The locale's approximately sign
+  takes the place of the minus sign, as CLDR specifies.
 
   ### Arguments
 
@@ -755,7 +755,28 @@ defmodule Cldr.Number do
   end
 
   def to_approx_string(number, backend, options) do
-    other_format(number, :approximately, backend, options)
+    with {:ok, validated} <- Options.validate_options(number, backend, options) do
+      if approximately_sign_format?(validated) do
+        to_string(number, backend, %{validated | approximately: true})
+      else
+        other_format(number, :approximately, backend, options)
+      end
+    end
+  end
+
+  # A decimal or short format puts the approximately sign where the minus
+  # sign goes. Spellout, roman and the other RBNF formats have no sign
+  # position, and where the approximately sign is the minus sign (`wo`) an
+  # approximate positive number would read as negative, so both keep the
+  # locale's "approximately" pattern.
+  defp approximately_sign_format?(%Options{
+         symbols: %{approximately_sign: sign, minus_sign: sign}
+       }) do
+    false
+  end
+
+  defp approximately_sign_format?(%Options{format: format}) do
+    is_binary(format) or format in @short_format_styles
   end
 
   @doc """

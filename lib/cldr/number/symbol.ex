@@ -23,7 +23,8 @@ defmodule Cldr.Number.Symbol do
     :percent_sign,
     :plus_sign,
     :superscripting_exponent,
-    :time_separator
+    :time_separator,
+    :approximately_sign
   ]
 
   @type t :: %__MODULE__{
@@ -40,7 +41,8 @@ defmodule Cldr.Number.Symbol do
           percent_sign: String.t(),
           plus_sign: String.t(),
           superscripting_exponent: String.t(),
-          time_separator: String.t()
+          time_separator: String.t(),
+          approximately_sign: String.t()
         }
 
   @doc """
@@ -63,6 +65,7 @@ defmodule Cldr.Number.Symbol do
         :ok,
         %{
           latn: %Cldr.Number.Symbol{
+            approximately_sign: "~",
             decimal: %{standard: "."},
             exponential: "E",
             group: %{standard: ","},
@@ -77,6 +80,7 @@ defmodule Cldr.Number.Symbol do
             time_separator: ":"
           },
           thai: %Cldr.Number.Symbol{
+            approximately_sign: "~",
             decimal: %{standard: "."},
             exponential: "E",
             group: %{standard: ","},
@@ -123,6 +127,7 @@ defmodule Cldr.Number.Symbol do
       {
         :ok,
         %Cldr.Number.Symbol{
+          approximately_sign: "~",
           decimal: %{standard: "."},
           exponential: "E",
           group: %{standard: ","},

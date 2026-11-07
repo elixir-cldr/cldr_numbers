@@ -10,6 +10,10 @@ This is the changelog for Cldr v2.38.4 released on November 8th, 2026.  For olde
 
 * Format currency amounts with CLDR's currency separators where a locale has them: `fr-CH` now gives "70.00 CHF" and `de-AT` "€ 1.234,56". Plain numbers keep the number separators, and `Cldr.Number.Parser` still reads only those, so these currency amounts do not parse back. Thanks to @rubas for the PR. Closes #66.
 
+* Put the locale's approximately sign where the minus sign goes in `Cldr.Number.to_approx_string/3`, as CLDR specifies: `fr-BE` now gives "≃1 234" and `nb` "ca.1 234". Spellout and roman formats, and `wo` (whose approximately sign is its minus sign), keep the "approximately" pattern. Thanks to @rubas for the PR. Closes #67.
+
+* Format a negative amount in `:currency_long_with_symbol` with one minus sign ("CHF--70 thousand" is now "CHF-70 thousand"). Thanks to @rubas for the PR in #67.
+
 ## Cldr Numbers v2.38.3
 
 This is the changelog for Cldr v2.38.3 released on June 3rd, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

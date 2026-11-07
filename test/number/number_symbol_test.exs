@@ -5,20 +5,27 @@ defmodule Number.Symbol.Test do
     {:ok, symbols} = TestBackend.Cldr.Number.Symbol.number_symbols_for("en", "latn")
 
     assert symbols ==
-                %Cldr.Number.Symbol{
-                  decimal: %{standard: "."},
-                  exponential: "E",
-                  group: %{standard: ","},
-                  infinity: "∞",
-                  list: ";",
-                  minus_sign: "-",
-                  nan: "NaN",
-                  per_mille: "‰",
-                  percent_sign: "%",
-                  plus_sign: "+",
-                  superscripting_exponent: "×",
-                  time_separator: ":"
-                }
+             %Cldr.Number.Symbol{
+               approximately_sign: "~",
+               decimal: %{standard: "."},
+               exponential: "E",
+               group: %{standard: ","},
+               infinity: "∞",
+               list: ";",
+               minus_sign: "-",
+               nan: "NaN",
+               per_mille: "‰",
+               percent_sign: "%",
+               plus_sign: "+",
+               superscripting_exponent: "×",
+               time_separator: ":"
+             }
+  end
+
+  test "nb's latn symbols keep the approximately sign \"ca.\" and the time separator \":\"" do
+    {:ok, symbols} = TestBackend.Cldr.Number.Symbol.number_symbols_for("nb", :latn)
+
+    assert %Cldr.Number.Symbol{approximately_sign: "ca.", time_separator: ":"} = symbols
   end
 
   test "that we raise an error if we get minimum digits for an invalid locale" do

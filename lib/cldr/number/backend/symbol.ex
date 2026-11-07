@@ -47,6 +47,7 @@ defmodule Cldr.Number.Backend.Symbol do
               :ok,
               %{
                 latn: %Cldr.Number.Symbol{
+                  approximately_sign: "~",
                   decimal: %{standard: "."},
                   exponential: "E",
                   group: %{standard: ","},
@@ -61,6 +62,7 @@ defmodule Cldr.Number.Backend.Symbol do
                   time_separator: ":"
                 },
                 thai: %Cldr.Number.Symbol{
+                  approximately_sign: "~",
                   decimal: %{standard: "."},
                   exponential: "E",
                   group: %{standard: ","},
