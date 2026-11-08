@@ -24,6 +24,7 @@ defmodule MyApp.Cldr do
       "no",
       "en-IN",
       "ur",
+      "fr",
       "fr-CH",
       "fr-BE",
       "ta",
