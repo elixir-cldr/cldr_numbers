@@ -48,4 +48,44 @@ defmodule Cldr.Number.CurrencyTest do
     assert {:ok, "1#{symbols.group.standard}234,56"} ==
              TestBackend.Cldr.Number.to_string(1234.56, locale: "de-AT")
   end
+
+  # The implicit negative subpattern is the minus sign prefixed to the whole
+  # positive subpattern (TR35), so the sign goes before the currency symbol.
+  test "en formats -2 EUR as \"-€2.00\" and -1234.5 USD as \"-$1,234.50\"" do
+    assert {:ok, "-€2.00"} ==
+             TestBackend.Cldr.Number.to_string(-2, locale: "en", currency: :EUR)
+
+    assert {:ok, "-$1,234.50"} ==
+             TestBackend.Cldr.Number.to_string(-1234.5, locale: "en", currency: :USD)
+  end
+
+  test "an implicit negative pattern formats like the explicit one" do
+    options = [locale: "en", currency: :EUR]
+
+    assert TestBackend.Cldr.Number.to_string(-2, [format: "¤#,##0.00"] ++ options) ==
+             TestBackend.Cldr.Number.to_string(-2, [format: "¤#,##0.00;-¤#,##0.00"] ++ options)
+  end
+
+  test "the minus sign goes before a literal, percent or currency prefix" do
+    assert {:ok, "-x2"} == TestBackend.Cldr.Number.to_string(-2, format: "'x'#,##0")
+    assert {:ok, "-%200"} == TestBackend.Cldr.Number.to_string(-2, format: "%#,##0")
+
+    assert {:ok, "-$ 2.00"} ==
+             TestBackend.Cldr.Number.to_string(-2, format: "¤ #,##0.00", currency: :USD)
+  end
+
+  test "a symbol after the number, an explicit negative pattern and padding are unchanged" do
+    assert {:ok, "-2,00 €"} ==
+             TestBackend.Cldr.Number.to_string(-2, locale: "de", currency: :EUR)
+
+    assert {:ok, "(€2.00)"} ==
+             TestBackend.Cldr.Number.to_string(-2,
+               locale: "en",
+               currency: :EUR,
+               format: :accounting
+             )
+
+    assert {:ok, "xxxx-2"} == TestBackend.Cldr.Number.to_string(-2, format: "*x#,##0")
+    assert {:ok, "€2.00"} == TestBackend.Cldr.Number.to_string(2, locale: "en", currency: :EUR)
+  end
 end

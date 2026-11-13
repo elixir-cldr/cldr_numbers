@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Numbers v2.38.5
+
+This is the changelog for Cldr v2.38.5 released on ______, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)
+
+### Bug Fixes
+
+* Put the minus sign in front of the whole pattern when a format has no negative subpattern, as TR35 specifies: `en` now formats -2 EUR as "-€2.00", not "€-2.00", and likewise every such format with a prefix (compact currency, quoted literals). Thanks to @vknez for the report. Closes #68.
+
 ## Cldr Numbers v2.38.4
 
 This is the changelog for Cldr v2.38.4 released on November 8th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_numbers/tags)

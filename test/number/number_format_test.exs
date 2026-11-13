@@ -38,11 +38,11 @@ defmodule Number.Format.Test do
   describe "to_string/3 with validated options" do
     alias Cldr.Number.Format.Options
 
-    test "options validated for CHF 0 format CHF -70 as CHF -70.00" do
+    test "options validated for CHF 0 format CHF -70 as -CHF 70.00" do
       {:ok, options} =
         Options.validate_options(0, TestBackend.Cldr, locale: "en", currency: :CHF)
 
-      assert Cldr.Number.to_string(-70, TestBackend.Cldr, options) == {:ok, "CHF -70.00"}
+      assert Cldr.Number.to_string(-70, TestBackend.Cldr, options) == {:ok, "-CHF 70.00"}
     end
 
     test "options validated for CHF -1 format CHF 70 as CHF 70.00" do

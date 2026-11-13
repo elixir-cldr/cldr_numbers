@@ -64,14 +64,14 @@ defmodule Cldr.Number.ApproximatelyTest do
              TestBackend.Cldr.Number.to_approx_string(Decimal.new("-0"), locale: "en")
   end
 
-  # The sign goes where this library puts the minus sign of a currency
-  # amount, after the symbol ("$-70,000.00"; ICU gives "-$70,000.00").
-  test "en formats -70000 CHF in :currency_long_with_symbol as \"CHF-70 thousand\", with one sign" do
+  # The sign goes where the minus sign of a currency amount goes, before
+  # the symbol ("-$70,000.00"), as the implicit negative pattern has it.
+  test "en formats -70000 CHF in :currency_long_with_symbol as \"-CHF70 thousand\", with one sign" do
     options = [locale: "en", currency: :CHF, format: :currency_long_with_symbol]
 
-    assert {:ok, "CHF-70 thousand"} == TestBackend.Cldr.Number.to_string(-70_000, options)
-    assert {:ok, "CHF~70 thousand"} == TestBackend.Cldr.Number.to_approx_string(70_000, options)
-    assert {:ok, "CHF~-70 thousand"} == TestBackend.Cldr.Number.to_approx_string(-70_000, options)
+    assert {:ok, "-CHF70 thousand"} == TestBackend.Cldr.Number.to_string(-70_000, options)
+    assert {:ok, "~CHF70 thousand"} == TestBackend.Cldr.Number.to_approx_string(70_000, options)
+    assert {:ok, "~-CHF70 thousand"} == TestBackend.Cldr.Number.to_approx_string(-70_000, options)
   end
 
   # CLDR gives wo "-" as both the approximately sign and the minus sign, so
