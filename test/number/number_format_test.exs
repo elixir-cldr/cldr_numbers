@@ -334,4 +334,30 @@ defmodule Number.Format.Test do
     assert {:ok, "123,45\u00A0kr."} =
              TestBackend.Cldr.Number.to_string(123.45, locale: :da, currency: :DKK)
   end
+
+  # These raised in Cldr.Math.round_significant/2 before cldr_utils 2.29.8.
+  test "a Decimal in a scientific format formats like the same float" do
+    for format <- [:scientific, "#E0", "##0.#####E0", "0.###E0", "0.00E0"],
+        string <- ["70000", "-70000", "1.5", "-0.5", "0.00012345", "123456789.123"] do
+      {float, ""} = Float.parse(string)
+
+      assert TestBackend.Cldr.Number.to_string(Decimal.new(string), format: format) ==
+               TestBackend.Cldr.Number.to_string(float, format: format)
+    end
+
+    assert {:ok, "-7E4"} ==
+             TestBackend.Cldr.Number.to_string(Decimal.new("-70000"), format: :scientific)
+  end
+
+  test "zero formats in a scientific format" do
+    for format <- [:scientific, "#E0", "0.###E0", "0E0", "@@@E0"],
+        zero <- [0, 0.0, Decimal.new("0"), Decimal.new("-0")] do
+      assert {:ok, _string} = TestBackend.Cldr.Number.to_string(zero, format: format)
+    end
+
+    assert {:ok, "0E0"} == TestBackend.Cldr.Number.to_string(0, format: "0.###E0")
+
+    assert {:ok, "0.00E0"} ==
+             TestBackend.Cldr.Number.to_string(Decimal.new("0"), format: "0.00E0")
+  end
 end

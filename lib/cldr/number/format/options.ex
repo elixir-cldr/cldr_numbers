@@ -929,10 +929,9 @@ defmodule Cldr.Number.Format.Options do
 
   defp expand_currency_symbol(%{currency: currency, format: format} = options, number) do
     backend = options.locale.backend
-    metadata = Module.concat(backend, Number.Formatter.Decimal).metadata!(format)
 
-    case metadata.currency do
-      %{symbol_count: symbol_count} ->
+    case Module.concat(backend, Number.Formatter.Decimal).metadata(format) do
+      {:ok, %{currency: %{symbol_count: symbol_count}}} ->
         symbol =
           currency_symbol(
             currency,
@@ -945,8 +944,13 @@ defmodule Cldr.Number.Format.Options do
 
         Map.put(options, :currency_symbol, symbol)
 
-      _other ->
+      {:ok, _metadata} ->
         options
+
+      # A format that cannot be compiled is an error return, as it is
+      # when no currency is given, rather than an exception.
+      {:error, message} ->
+        {:error, {Cldr.FormatCompileError, message}}
     end
   end
 

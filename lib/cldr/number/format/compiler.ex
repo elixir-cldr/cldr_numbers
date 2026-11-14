@@ -209,8 +209,14 @@ defmodule Cldr.Number.Format.Compiler do
   end
 
   def parse(definition) when is_binary(definition) do
-    {:ok, tokens, _end_line} = tokenize(definition)
-    tokens |> :decimal_formats_parser.parse()
+    case tokenize(definition) do
+      {:ok, tokens, _end_line} ->
+        :decimal_formats_parser.parse(tokens)
+
+      {:error, {_line, _lexer, reason}, _end_line} ->
+        message = IO.chardata_to_string(:decimal_formats_lexer.format_error(reason))
+        {:error, "Decimal format compiler: #{message}"}
+    end
   end
 
   def parse(nil) do
@@ -336,6 +342,9 @@ defmodule Cldr.Number.Format.Compiler do
     else
       {:error, {_line, _parser, [message, context]}} ->
         {:error, "Decimal format compiler: #{message}#{Enum.join(context)}"}
+
+      {:error, message} when is_binary(message) ->
+        {:error, message}
     end
   end
 

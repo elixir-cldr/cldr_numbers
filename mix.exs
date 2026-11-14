@@ -50,6 +50,7 @@ defmodule Cldr.Numbers.Mixfile do
   defp deps do
     [
       {:ex_cldr, "~> 2.45"},
+      {:cldr_utils, "~> 2.29 and >= 2.29.8"},
       {:ex_cldr_currencies, "~> 2.17"},
       {:digital_token, "~> 1.0 or ~> 2.0"},
       {:decimal, "~> 1.6 or ~> 2.0 or ~> 3.0"},
