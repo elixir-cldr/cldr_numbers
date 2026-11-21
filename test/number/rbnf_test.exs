@@ -32,6 +32,22 @@ defmodule Rbnf.Test do
              Cldr.Number.to_string(25_340, format: :spellout, locale: "he")
   end
 
+  test "rbnf spellout plural forms use the quotient of the rule" do
+    assert {:ok, "одна тысяча"} = Cldr.Number.to_string(1000, format: :spellout, locale: "ru")
+    assert {:ok, "одна тысяча два"} = Cldr.Number.to_string(1002, format: :spellout, locale: "ru")
+    assert {:ok, "пять тысяч"} = Cldr.Number.to_string(5000, format: :spellout, locale: "ru")
+
+    assert {:ok, "два миллиона"} =
+             Cldr.Number.to_string(2_000_000, format: :spellout, locale: "ru")
+
+    assert {:ok, "dwa tysiące"} = Cldr.Number.to_string(2000, format: :spellout, locale: "pl")
+
+    assert {:ok, "siedem tysięcy pięćset"} =
+             Cldr.Number.to_string(7500, format: :spellout, locale: "pl")
+
+    assert {:ok, "одна тисяча"} = Cldr.Number.to_string(1000, format: :spellout, locale: "uk")
+  end
+
   test "rbnf spellout ordinal in de" do
     assert {:ok, "fünf­und­zwanzig­tausend­drei­hundert­vierzigste"} =
              Cldr.Number.to_string(25_340, format: :spellout_ordinal, locale: "de")

@@ -108,13 +108,16 @@ defmodule Cldr.Rbnf.Processor do
         apply(__MODULE__, rule_name, [number, locale])
       end
 
-      defp do_operation(:ordinal, number, locale, _function, _rule, plurals) do
-        plural = unquote(ordinal_module).plural_rule(number, locale)
+      # The plural category is chosen for the number divided by the
+      # rule's divisor, like ICU: in "1000: $(cardinal,one{тысяча}few{тысячи}other{тысяч})$"
+      # 1000 and 1002 select "one" (1) and 5000 selects "many" (5).
+      defp do_operation(:ordinal, number, locale, _function, rule, plurals) do
+        plural = unquote(ordinal_module).plural_rule(plural_operand(number, rule), locale)
         Map.get(plurals, plural) || Map.get(plurals, :other)
       end
 
-      defp do_operation(:cardinal, number, locale, _function, _rule, plurals) do
-        plural = unquote(cardinal_module).plural_rule(number, locale)
+      defp do_operation(:cardinal, number, locale, _function, rule, plurals) do
+        plural = unquote(cardinal_module).plural_rule(plural_operand(number, rule), locale)
         Map.get(plurals, plural) || Map.get(plurals, :other)
       end
 
@@ -126,6 +129,15 @@ defmodule Cldr.Rbnf.Processor do
         else
           ""
         end
+      end
+
+      defp plural_operand(number, %{divisor: divisor})
+           when is_integer(number) and is_integer(divisor) and divisor > 0 do
+        div(number, divisor)
+      end
+
+      defp plural_operand(number, _rule) do
+        number
       end
 
       defp format_fraction(number, locale) do
