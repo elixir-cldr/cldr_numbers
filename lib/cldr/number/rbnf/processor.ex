@@ -160,25 +160,34 @@ defmodule Cldr.Rbnf.Processor do
     Module.register_attribute(env.module, @public_rulesets, [])
 
     enumerate_rules(rule_group_name, backend, fn
-      rule_group, locale, "public", :error ->
+      rule_group, locale, "public", :error, _previous ->
         define_rule(:error, nil, rule_group, locale, nil)
         |> Code.eval_quoted([], env)
 
-      _rule_group, _locale, "private", :error ->
+      _rule_group, _locale, "private", :error, _previous ->
         nil
 
-      rule_group, locale, "public", :redirect ->
+      rule_group, locale, "public", :redirect, _previous ->
         define_rule(:redirect, backend, rule_group, locale, nil)
         |> Code.eval_quoted([], env)
 
-      _rule_group, _locale, "private", :redirect ->
+      _rule_group, _locale, "private", :redirect, _previous ->
         nil
 
-      rule_group, locale, access, rule ->
+      rule_group, locale, access, rule, previous ->
         function_name = Cldr.Rbnf.force_valid_function_name(rule_group)
         {:ok, parsed} = Cldr.Rbnf.Rule.parse(rule.definition)
 
         function_body = rule_body(locale, rule_group, rule, parsed, backend)
+
+        if rollback?(rule, parsed, previous) do
+          {:ok, previous_parsed} = Cldr.Rbnf.Rule.parse(previous.definition)
+          previous_body = rule_body(locale, rule_group, previous, previous_parsed, backend)
+
+          rule
+          |> define_rollback_rule(function_name, locale, previous_body)
+          |> Code.eval_quoted([], env)
+        end
 
         rule.base_value
         |> define_rule(rule.range, function_name, locale, function_body)
@@ -193,12 +202,13 @@ defmodule Cldr.Rbnf.Processor do
     unless is_nil(all_rules) do
       for {locale_name, _rule_group} <- all_rules do
         for {rule_group, %{access: access, rules: rules}} <- all_rules[locale_name] do
-          for rule <- rules do
-            fun.(rule_group, locale_name, access, rule)
-          end
+          Enum.reduce(rules, nil, fn rule, previous ->
+            fun.(rule_group, locale_name, access, rule, previous)
+            if is_integer(rule.base_value), do: rule, else: previous
+          end)
 
-          fun.(rule_group, locale_name, access, :redirect)
-          fun.(rule_group, locale_name, access, :error)
+          fun.(rule_group, locale_name, access, :redirect, nil)
+          fun.(rule_group, locale_name, access, :error, nil)
         end
       end
     end
@@ -295,6 +305,64 @@ defmodule Cldr.Rbnf.Processor do
 
   defp define_rule("x.0", _range, _rule_group, _locale_name, _body) do
     {:error, "Master rule sets are not implemented"}
+  end
+
+  # The ICU "rollback rule": when a rule has a modulo (>>) substitution and
+  # its base value is not a multiple of its divisor, a number that is a
+  # multiple of the divisor is formatted with the previous rule instead.
+  # For example in Bulgarian "20: и ←←йсет; 21: ←←йсет →→;" formats 30
+  # with the rule at 20 ("и трийсет"), not "трийсет и нула".
+  defp rollback?(%{base_value: base, divisor: divisor}, parsed, %{base_value: previous})
+       when is_integer(base) and is_integer(divisor) and divisor > 0 and is_integer(previous) do
+    rem(base, divisor) != 0 and has_modulo?(parsed)
+  end
+
+  defp rollback?(_rule, _parsed, _previous) do
+    false
+  end
+
+  defp has_modulo?(parsed) do
+    Enum.any?(parsed, fn
+      {:modulo, _} -> true
+      {:conditional, parsed} -> has_modulo?(parsed)
+      _other -> false
+    end)
+  end
+
+  defp define_rollback_rule(
+         %{base_value: base, range: "undefined", divisor: divisor},
+         rule_group,
+         locale_name,
+         body
+       ) do
+    quote location: :keep, generated: true do
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)})
+          when Kernel.and(
+                 is_integer(number),
+                 Kernel.and(number >= unquote(base), rem(number, unquote(divisor)) == 0)
+               ),
+          do: unquote(body)
+    end
+  end
+
+  defp define_rollback_rule(
+         %{base_value: base, range: range, divisor: divisor},
+         rule_group,
+         locale_name,
+         body
+       )
+       when is_integer(range) do
+    quote location: :keep, generated: true do
+      def unquote(rule_group)(number, %Cldr.LanguageTag{rbnf_locale_name: unquote(locale_name)})
+          when Kernel.and(
+                 is_integer(number),
+                 Kernel.and(
+                   Kernel.and(number >= unquote(base), number < unquote(range)),
+                   rem(number, unquote(divisor)) == 0
+                 )
+               ),
+          do: unquote(body)
+    end
   end
 
   # Get the AST of the rule body

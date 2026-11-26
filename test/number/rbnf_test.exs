@@ -48,6 +48,22 @@ defmodule Rbnf.Test do
     assert {:ok, "одна тисяча"} = Cldr.Number.to_string(1000, format: :spellout, locale: "uk")
   end
 
+  test "rbnf rolls back to the previous rule for a multiple of the divisor" do
+    assert {:ok, "сто и трийсет"} = Cldr.Number.to_string(130, format: :spellout, locale: "bg")
+
+    assert {:ok, "хиляда сто и осемдесет"} =
+             Cldr.Number.to_string(1180, format: :spellout, locale: "bg")
+
+    assert {:ok, "сто трийсет и едно"} =
+             Cldr.Number.to_string(131, format: :spellout, locale: "bg")
+
+    assert {:ok, "трехтысячный"} =
+             Cldr.Number.to_string(3000, format: :spellout_ordinal_masculine, locale: "ru")
+
+    assert {:ok, "три тысячи первый"} =
+             Cldr.Number.to_string(3001, format: :spellout_ordinal_masculine, locale: "ru")
+  end
+
   test "rbnf spellout ordinal in de" do
     assert {:ok, "fünf­und­zwanzig­tausend­drei­hundert­vierzigste"} =
              Cldr.Number.to_string(25_340, format: :spellout_ordinal, locale: "de")
